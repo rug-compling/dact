@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/stylesheets">
+        <file>dt2tree.xsl</file>
+    </qresource>
+</RCC>
