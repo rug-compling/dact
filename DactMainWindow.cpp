@@ -90,7 +90,7 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     std::istringstream xslStream(xslData.constData());
     XSLTInputSource xslIn(xslStream);
 
-    // Read XML data
+    // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
     vector<unsigned char> xmlData = corpusReader.getData(xmlFilename.toUtf8().constData());
     xmlData.push_back(0);
@@ -99,10 +99,12 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     std::ostringstream svgStream;
     XSLTResultTarget svgOut(svgStream);
 
+    // Transform to SVG.
     XalanTransformer transformer;
     int r = transformer.transform(xmlIn, xslIn, svgStream);
     QByteArray svg(svgStream.str().c_str());
 
+    // Render SVG.
     QSvgRenderer *renderer = new QSvgRenderer(svg);
     QGraphicsScene *scene = new QGraphicsScene(d_ui->treeGraphicsView);
     QGraphicsSvgItem *item = new QGraphicsSvgItem;
