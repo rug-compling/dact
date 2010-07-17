@@ -20,6 +20,8 @@ public:
 
 private slots:
     void showTree(QListWidgetItem *current, QListWidgetItem *previous);
+    void nextEntry(bool);
+    void previousEntry(bool);
     void queryChanged();
     void treeZoomIn(bool);
     void treeZoomOut(bool);

@@ -54,6 +54,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
                      this,
                      SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
+    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
+    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
@@ -87,6 +89,20 @@ void DactMainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void DactMainWindow::nextEntry(bool)
+{
+    int nextRow = d_ui->fileListWidget->currentRow() + 1;
+    if (nextRow < d_ui->fileListWidget->count())
+        d_ui->fileListWidget->setCurrentRow(nextRow);
+}
+
+void DactMainWindow::previousEntry(bool)
+{
+    int prevRow = d_ui->fileListWidget->currentRow() - 1;
+    if (prevRow >= 0)
+        d_ui->fileListWidget->setCurrentRow(prevRow);
 }
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
