@@ -83,14 +83,23 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
     QString xmlFilename = current->text();
 
-    XalanTransformer transformer;
+    // Read stylesheet.
     QFile xslFile(":/stylesheets/dt2tree.xsl");
     xslFile.open(QIODevice::ReadOnly);
     QByteArray xslData(xslFile.readAll());
-    XSLTInputSource xslIn("dt2tree.xsl");
-    XSLTInputSource xmlIn(xmlFilename.toUtf8().constData());
+    std::istringstream xslStream(xslData.constData());
+    XSLTInputSource xslIn(xslStream);
+
+    // Read XML data
+    indexedcorpus::ActCorpusReader corpusReader;
+    vector<unsigned char> xmlData = corpusReader.getData(xmlFilename.toUtf8().constData());
+    xmlData.push_back(0);
+    istringstream xmlStream(reinterpret_cast<char const *>(&xmlData[0]));
+    XSLTInputSource xmlIn(xmlStream);
     std::ostringstream svgStream;
     XSLTResultTarget svgOut(svgStream);
+
+    XalanTransformer transformer;
     int r = transformer.transform(xmlIn, xslIn, svgStream);
     QByteArray svg(svgStream.str().c_str());
 
