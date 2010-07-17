@@ -102,6 +102,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionFit"/>
+   <addaction name="zoomInAction"/>
+   <addaction name="zoomOutAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Quit">
