@@ -127,7 +127,11 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 
     // Parameters
     XalanDOMString key("expr");
-    QString valStr(QString("'") + d_query + QString("'"));
+    QString valStr;
+    if (d_query.trimmed().isEmpty())
+        valStr = "'/..'"; // Match no node...
+    else
+        valStr = QString("'") + d_query + QString("'");
     XalanDOMString val(valStr.toUtf8().constData());
 
     // Transform to SVG.
