@@ -45,6 +45,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
         addFiles();
     }
 
+    setWindowTitle(QString("Dact - ") + d_corpusPath);
+
     QObject::connect(d_ui->fileListWidget,
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
                      this,
