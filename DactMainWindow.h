@@ -10,13 +10,16 @@ namespace Ui {
 double const ZOOM_OUT_FACTOR = 0.8;
 double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
+class QListWidgetItem;
+
 class DactMainWindow : public QMainWindow {
     Q_OBJECT
 public:
     DactMainWindow(QWidget *parent = 0);
     ~DactMainWindow();
 
-public slots:
+private slots:
+    void showTree(QListWidgetItem *current, QListWidgetItem *previous);
     void treeZoomIn(bool);
     void treeZoomOut(bool);
 
@@ -24,7 +27,7 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-    void showTree();
+    void addFiles();
 
     Ui::DactMainWindow *d_ui;
 };

@@ -1,6 +1,8 @@
 #include <QFile>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
+#include <QList>
+#include <QListWidgetItem>
 #include <QString>
 #include <QStringList>
 #include <QSvgRenderer>
@@ -30,9 +32,14 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 
     d_ui->setupUi(this);
 
-    if (qApp->arguments().size() == 2)
-        showTree();
 
+    if (qApp->arguments().size() > 1)
+        addFiles();
+
+    QObject::connect(d_ui->fileListWidget,
+                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
+                     this,
+                     SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
 }
@@ -40,6 +47,15 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::~DactMainWindow()
 {
     delete d_ui;
+}
+
+void DactMainWindow::addFiles()
+{
+    QStringList args(qApp->arguments());
+
+    for (QStringList::const_iterator iter = args.constBegin() + 1;
+            iter != args.constEnd(); ++iter)
+        new QListWidgetItem(*iter, d_ui->fileListWidget);
 }
 
 void DactMainWindow::changeEvent(QEvent *e)
@@ -54,14 +70,16 @@ void DactMainWindow::changeEvent(QEvent *e)
     }
 }
 
-void DactMainWindow::showTree()
+void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
+    QString xmlFilename = current->text();
+
     XalanTransformer transformer;
     QFile xslFile(":/stylesheets/dt2tree.xsl");
     xslFile.open(QIODevice::ReadOnly);
     QByteArray xslData(xslFile.readAll());
     XSLTInputSource xslIn("dt2tree.xsl");
-    XSLTInputSource xmlIn(qApp->arguments().at(1).toUtf8().constData());
+    XSLTInputSource xmlIn(xmlFilename.toUtf8().constData());
     std::ostringstream svgStream;
     XSLTResultTarget svgOut(svgStream);
     int r = transformer.transform(xmlIn, xslIn, svgStream);
