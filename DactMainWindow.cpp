@@ -7,13 +7,19 @@
 #include <QStringList>
 #include <QSvgRenderer>
 
+#include <string>
 #include <sstream>
+#include <vector>
 
 #include <xalanc/Include/PlatformDefinitions.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xalanc/XalanTransformer/XalanTransformer.hpp>
 #include <xalanc/XSLT/XSLTInputSource.hpp>
 #include <xalanc/XSLT/XSLTResultTarget.hpp>
+
+#include <IndexedCorpus/ActCorpusReader.hh>
+
+using namespace std;
 
 XALAN_USING_XERCES(XMLPlatformUtils)
 XALAN_USING_XALAN(XalanTransformer)
@@ -33,7 +39,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui->setupUi(this);
 
 
-    if (qApp->arguments().size() > 1)
+    if (qApp->arguments().size() == 2)
         addFiles();
 
     QObject::connect(d_ui->fileListWidget,
@@ -51,11 +57,14 @@ DactMainWindow::~DactMainWindow()
 
 void DactMainWindow::addFiles()
 {
-    QStringList args(qApp->arguments());
+    indexedcorpus::ActCorpusReader corpusReader;
+    vector<string> entries = corpusReader.entries(qApp->arguments().at(1).toUtf8().constData());
 
-    for (QStringList::const_iterator iter = args.constBegin() + 1;
-            iter != args.constEnd(); ++iter)
-        new QListWidgetItem(*iter, d_ui->fileListWidget);
+    for (vector<string>::const_iterator iter = entries.begin();
+         iter !=entries.end(); ++iter)
+    {
+        new QListWidgetItem(QString(iter->c_str()), d_ui->fileListWidget);
+    }
 }
 
 void DactMainWindow::changeEvent(QEvent *e)
