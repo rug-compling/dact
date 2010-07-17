@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
+#include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
 #include <QString>
@@ -14,6 +15,7 @@
 
 #include <xalanc/Include/PlatformDefinitions.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
+#include <xalanc/XalanDOM/XalanDOMString.hpp>
 #include <xalanc/XalanTransformer/XalanTransformer.hpp>
 #include <xalanc/XSLT/XSLTInputSource.hpp>
 #include <xalanc/XSLT/XSLTResultTarget.hpp>
@@ -23,6 +25,7 @@
 using namespace std;
 
 XALAN_USING_XERCES(XMLPlatformUtils)
+XALAN_USING_XALAN(XalanDOMString)
 XALAN_USING_XALAN(XalanTransformer)
 XALAN_USING_XALAN(XSLTInputSource)
 XALAN_USING_XALAN(XSLTResultTarget)
@@ -53,6 +56,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
                      SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
+    QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
 }
 
 DactMainWindow::~DactMainWindow()
@@ -105,8 +109,14 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     std::ostringstream svgStream;
     XSLTResultTarget svgOut(svgStream);
 
+    // Parameters
+    XalanDOMString key("expr");
+    QString valStr(QString("'") + d_query + QString("'"));
+    XalanDOMString val(valStr.toUtf8().constData());
+
     // Transform to SVG.
     XalanTransformer transformer;
+    transformer.setStylesheetParam(key, val);
     int r = transformer.transform(xmlIn, xslIn, svgStream);
     QByteArray svg(svgStream.str().c_str());
 
@@ -119,6 +129,12 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     d_ui->treeGraphicsView->setScene(scene);
     //d_ui->treeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
     //d_ui->treeGraphicsView->fitInView(scene->sceneRect());
+}
+
+void DactMainWindow::queryChanged()
+{
+    d_query = d_ui->queryLineEdit->text();
+    showTree(d_ui->fileListWidget->currentItem(), 0);
 }
 
 void DactMainWindow::treeZoomIn(bool)

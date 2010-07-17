@@ -20,6 +20,7 @@ public:
 
 private slots:
     void showTree(QListWidgetItem *current, QListWidgetItem *previous);
+    void queryChanged();
     void treeZoomIn(bool);
     void treeZoomOut(bool);
 
@@ -31,6 +32,7 @@ private:
 
     Ui::DactMainWindow *d_ui;
     QString d_corpusPath;
+    QString d_query;
 };
 
 #endif // DACTMAINWINDOW_H
