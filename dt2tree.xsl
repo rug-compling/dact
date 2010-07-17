@@ -1,16 +1,46 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:saxon="http://icl.com/saxon"
+  xmlns:set="http://exslt.org/sets"
   xmlns:svg="http://www.w3.org/2000/svg"
   xmlns:exslt="http://exslt.org/common">
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
+  <xsl:param name='expr'>/..</xsl:param> <!-- matcht nooit -->
 
   <!-- adapted from Jirka Kosek's page at 
        http://www.xml.com/pub/a/2004/09/08/tree.html -->
 
+  <xsl:variable name="newexpr">
+    <!-- 
+         Wanneer de expr parameter niet tot een nodeset evalueert,
+         moeten we zorgen dat de expressie die gebruikt wordt om te
+         kijken of er gehighlight moet worden evalueert tot een lege
+         nodeset.
+     -->
+    <xsl:choose>
+      <xsl:when test="exslt:object-type(saxon:evaluate($expr)) = 'node-set'">
+        <xsl:value-of select="$expr"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>/..</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>    
+  </xsl:variable>
+
+  <xsl:variable name="selectedNodes" select="saxon:evaluate($newexpr)" />
 
   <xsl:variable name="xunit" select="35"/>
   <xsl:variable name="yunit" select="40"/>
+
+  <xsl:template name="node-color">
+      <xsl:choose>
+        <xsl:when test="set:intersection($selectedNodes, .)">
+          <xsl:text>green</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>black</xsl:otherwise>
+      </xsl:choose>
+  </xsl:template>
 
   <xsl:template match="/">
     <xsl:variable name="layoutTree">
@@ -41,6 +71,9 @@
     
     <!-- Add layout attributes to the existing node -->
     <node depth="{$depth}" width="{sum(exslt:node-set($subTree)/node/@width)}">
+      <xsl:attribute name="color">
+        <xsl:call-template name="node-color" />
+      </xsl:attribute>
       <!-- Copy original attributes and content -->
       <xsl:copy-of select="@*"/>
       <xsl:copy-of select="$subTree"/>
@@ -69,6 +102,9 @@
       </xsl:choose>
     </xsl:variable>
     <node depth="{$depth}" width="{0.2 + string-length($label) *0.12}">
+      <xsl:attribute name="color">
+        <xsl:call-template name="node-color" />
+      </xsl:attribute>
       <xsl:copy-of select="@*"/>
     </node>
   </xsl:template>
@@ -114,7 +150,12 @@
     <!-- Draw label of node -->
     <svg:text x = "{$x}" y = "{$y - 30}" font-style="italic">
       <xsl:if test ="@rel != 'top'">
+      <tspan>
+        <xsl:attribute name="fill">
+          <xsl:value-of select="@color" />
+        </xsl:attribute>
       <xsl:value-of select="@rel"/>
+      </tspan>
       </xsl:if>
     </svg:text>
               
