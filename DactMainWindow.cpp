@@ -1,4 +1,5 @@
 #include <QFile>
+#include <QFileInfo>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QList>
@@ -39,8 +40,10 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui->setupUi(this);
 
 
-    if (qApp->arguments().size() == 2)
+    if (qApp->arguments().size() == 2) {
+        d_corpusPath = qApp->arguments().at(1);
         addFiles();
+    }
 
     QObject::connect(d_ui->fileListWidget,
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
@@ -58,12 +61,13 @@ DactMainWindow::~DactMainWindow()
 void DactMainWindow::addFiles()
 {
     indexedcorpus::ActCorpusReader corpusReader;
-    vector<string> entries = corpusReader.entries(qApp->arguments().at(1).toUtf8().constData());
+    vector<string> entries = corpusReader.entries(d_corpusPath.toUtf8().constData());
 
     for (vector<string>::const_iterator iter = entries.begin();
          iter !=entries.end(); ++iter)
     {
-        new QListWidgetItem(QString(iter->c_str()), d_ui->fileListWidget);
+        QFileInfo entryFi(iter->c_str());
+        new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
     }
 }
 
@@ -81,7 +85,7 @@ void DactMainWindow::changeEvent(QEvent *e)
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
-    QString xmlFilename = current->text();
+    QString xmlFilename = d_corpusPath + "/" + current->text();
 
     // Read stylesheet.
     QFile xslFile(":/stylesheets/dt2tree.xsl");

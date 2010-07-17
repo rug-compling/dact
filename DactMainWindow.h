@@ -30,6 +30,7 @@ private:
     void addFiles();
 
     Ui::DactMainWindow *d_ui;
+    QString d_corpusPath;
 };
 
 #endif // DACTMAINWINDOW_H
