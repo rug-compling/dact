@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 2.6)
+project(DACT)
+
+if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set (CMAKE_BUILD_TYPE Release)
+endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+
+list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
+
+include (FindIndexedCorpus)
+
+if(INDEXEDCORPUS_FOUND)
+	INCLUDE_DIRECTORIES(${INDEXEDCORPUS_INCLUDE_DIR})
+endif(INDEXEDCORPUS_FOUND)
+
+include (FindXercesC)
+
+if(XERCESC_FOUND)
+	INCLUDE_DIRECTORIES(${XERCESC_INCLUDE_DIR})
+endif(XERCESC_FOUND)
+
+include (FindXalanC)
+
+if(XALANC_FOUND)
+	INCLUDE_DIRECTORIES(${XALANC_INCLUDE_DIR})
+endif(XALANC_FOUND)
+
+find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
+INCLUDE(${QT_USE_FILE})
+
+SET(dact_SRCS
+  DactMainWindow.cpp
+  main.cpp
+)
+
+SET(dact_MOC_HDRS
+  DactMainWindow.h
+)
+
+SET(dact_UI
+  DactMainWindow.ui
+)
+
+SET(dact_RCS
+  application.qrc
+)
+
+qt4_add_resources(dact_SRCS ${dact_RCS})
+qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
+
+add_executable(dact ${dact_SRCS} ${dact_MOC_SRCS})
+target_link_libraries(dact ${QT_LIBRARIES})
+target_link_libraries(dact ${XERCESC_LIBRARIES})
+target_link_libraries(dact ${XALANC_LIBRARIES})
+target_link_libraries(dact ${INDEXEDCORPUS_LIBRARIES})
