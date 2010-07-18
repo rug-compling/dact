@@ -7,6 +7,8 @@ endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 
 list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 include (FindIndexedCorpus)
 
 if(INDEXEDCORPUS_FOUND)
@@ -46,9 +48,10 @@ SET(dact_RCS
 )
 
 qt4_add_resources(dact_SRCS ${dact_RCS})
+qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(dact ${dact_SRCS} ${dact_MOC_SRCS})
+add_executable(dact ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
 target_link_libraries(dact ${QT_LIBRARIES})
 target_link_libraries(dact ${XERCESC_LIBRARIES})
 target_link_libraries(dact ${XALANC_LIBRARIES})
