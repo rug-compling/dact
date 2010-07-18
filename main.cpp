@@ -14,8 +14,10 @@ int main(int argc, char *argv[])
 
     // EXSLT extensions
     exsltCommonRegister();
+    exsltDynRegister();
     exsltSaxonRegister();
     exsltSetsRegister();
+    exsltStrRegister();
 
     DactMainWindow w;
     w.show();

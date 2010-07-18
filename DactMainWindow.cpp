@@ -52,6 +52,10 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
                      this,
                      SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
+    QObject::connect(d_ui->fileListWidget,
+                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
+                     this,
+                     SLOT(showSentence(QListWidgetItem *, QListWidgetItem *)));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
@@ -142,6 +146,47 @@ void DactMainWindow::writeSettings()
 
 void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 {
+    QString xmlFilename = d_corpusPath + "/" + current->text();
+
+    // Read stylesheet.
+    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
+    xslFile.open(QIODevice::ReadOnly);
+    QByteArray xslData(xslFile.readAll());
+    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
+    xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xslDoc);
+
+    // Read XML data.
+    indexedcorpus::ActCorpusReader corpusReader;
+    QByteArray xmlFilenameData(xmlFilename.toUtf8());
+    vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
+    xmlDocPtr xmlDoc = xmlReadMemory(reinterpret_cast<char const *>(&xmlData[0]),
+                                     xmlData.size(), 0, 0, 0);
+
+    // Parameters
+    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
+                     QString("'") + d_query + QString("'");
+    QByteArray valData(valStr.toUtf8());
+    char const *params[] = {
+        "expr",
+        valData.constData(),
+        0
+    };
+
+    // Transform...
+    xmlDocPtr res = xsltApplyStylesheet(xsl, xmlDoc, params);
+    xmlChar *output;
+    int outputLen = -1;
+    xsltSaveResultToString(&output, &outputLen, res, xsl);
+    QByteArray sentenceData(reinterpret_cast<char const *>(output), outputLen);
+
+    // Deallocate memory used for libxml2/libxslt.
+    free(output);
+    xsltFreeStylesheet(xsl);
+    xmlFreeDoc(xmlDoc);
+
+    QString sentence(sentenceData);
+    sentence = sentence.trimmed();
+    d_ui->sentenceLabel->setText(sentence);
 }
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
@@ -192,18 +237,16 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     scene->addItem(item);
     d_ui->treeGraphicsView->setScene(scene);
     d_ui->treeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
-    //d_ui->treeGraphicsView->fitInView(scene->sceneRect());
-
-/*
-
-    */
 }
 
 void DactMainWindow::queryChanged()
 {
     d_query = d_ui->queryLineEdit->text();
     if (d_ui->fileListWidget->currentItem() != 0)
+    {
+        showSentence(d_ui->fileListWidget->currentItem(), 0);
         showTree(d_ui->fileListWidget->currentItem(), 0);
+    }
 }
 
 void DactMainWindow::treeZoomIn(bool)

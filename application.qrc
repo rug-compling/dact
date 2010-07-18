@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/stylesheets">
         <file>dt2tree.xsl</file>
+        <file>bracketed-sentence.xsl</file>
     </qresource>
 </RCC>
