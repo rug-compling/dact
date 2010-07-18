@@ -155,7 +155,8 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 void DactMainWindow::queryChanged()
 {
     d_query = d_ui->queryLineEdit->text();
-    showTree(d_ui->fileListWidget->currentItem(), 0);
+    if (d_ui->fileListWidget->currentItem() != 0)
+        showTree(d_ui->fileListWidget->currentItem(), 0);
 }
 
 void DactMainWindow::treeZoomIn(bool)
