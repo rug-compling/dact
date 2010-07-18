@@ -27,6 +27,13 @@ if(XALANC_FOUND)
 	INCLUDE_DIRECTORIES(${XALANC_INCLUDE_DIR})
 endif(XALANC_FOUND)
 
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost 1.41.0 COMPONENTS system filesystem)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
 find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
@@ -56,3 +63,4 @@ target_link_libraries(dact ${QT_LIBRARIES})
 target_link_libraries(dact ${XERCESC_LIBRARIES})
 target_link_libraries(dact ${XALANC_LIBRARIES})
 target_link_libraries(dact ${INDEXEDCORPUS_LIBRARIES})
+target_link_libraries(dact ${Boost_LIBRARIES})
