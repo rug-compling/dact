@@ -5,6 +5,9 @@
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
+#include <QPoint>
+#include <QSettings>
+#include <QSize>
 #include <QString>
 #include <QStringList>
 #include <QSvgRenderer>
@@ -37,6 +40,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 {
     d_ui->setupUi(this);
 
+    readSettings();
 
     if (qApp->arguments().size() == 2) {
         d_corpusPath = qApp->arguments().at(1);
@@ -87,6 +91,12 @@ void DactMainWindow::changeEvent(QEvent *e)
     }
 }
 
+void DactMainWindow::close()
+{
+    writeSettings();
+    QMainWindow::close();
+}
+
 void DactMainWindow::nextEntry(bool)
 {
     int nextRow = d_ui->fileListWidget->currentRow() + 1;
@@ -99,6 +109,35 @@ void DactMainWindow::previousEntry(bool)
     int prevRow = d_ui->fileListWidget->currentRow() - 1;
     if (prevRow >= 0)
         d_ui->fileListWidget->setCurrentRow(prevRow);
+}
+
+void DactMainWindow::readSettings()
+{
+    QSettings settings("RUG", "Dact");
+
+    // Window geometry.
+    QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
+    QSize size = settings.value("size", QSize(800, 500)).toSize();
+    resize(size);
+
+    // Splitter.
+    d_ui->splitter->restoreState(
+            settings.value("splitterSizes").toByteArray());
+
+    // Move.
+    move(pos);
+}
+
+void DactMainWindow::writeSettings()
+{
+    QSettings settings("RUG", "Dact");
+
+    // Window geometry
+    settings.setValue("pos", pos());
+    settings.setValue("size", size());
+
+    // Splitter
+    settings.setValue("splitterSizes", d_ui->splitter->saveState());
 }
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)

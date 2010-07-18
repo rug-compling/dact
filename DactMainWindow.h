@@ -18,6 +18,9 @@ public:
     DactMainWindow(QWidget *parent = 0);
     ~DactMainWindow();
 
+public slots:
+    void close();
+
 private slots:
     void showTree(QListWidgetItem *current, QListWidgetItem *previous);
     void nextEntry(bool);
@@ -31,6 +34,8 @@ protected:
 
 private:
     void addFiles();
+    void readSettings();
+    void writeSettings();
 
     Ui::DactMainWindow *d_ui;
     QString d_corpusPath;
