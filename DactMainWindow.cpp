@@ -14,7 +14,6 @@
 #include <vector>
 
 #include <xalanc/Include/PlatformDefinitions.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
 #include <xalanc/XalanDOM/XalanDOMString.hpp>
 #include <xalanc/XalanTransformer/XalanTransformer.hpp>
 #include <xalanc/XSLT/XSLTInputSource.hpp>
@@ -24,7 +23,6 @@
 
 using namespace std;
 
-XALAN_USING_XERCES(XMLPlatformUtils)
 XALAN_USING_XALAN(XalanDOMString)
 XALAN_USING_XALAN(XalanTransformer)
 XALAN_USING_XALAN(XSLTInputSource)
@@ -37,9 +35,6 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow)
 {
-    XMLPlatformUtils::Initialize();
-    XalanTransformer::initialize();
-
     d_ui->setupUi(this);
 
 
