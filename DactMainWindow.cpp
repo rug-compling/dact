@@ -59,6 +59,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
+    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(queryChanged()));
 }
 
 DactMainWindow::~DactMainWindow()

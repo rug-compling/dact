@@ -48,9 +48,9 @@
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="applyPushButton">
             <property name="text">
-             <string>Search</string>
+             <string>Apply</string>
             </property>
            </widget>
           </item>
