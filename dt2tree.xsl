@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:saxon="http://icl.com/saxon"
   xmlns:set="http://exslt.org/sets"
   xmlns:svg="http://www.w3.org/2000/svg"
-  xmlns:exslt="http://exslt.org/common">
+  xmlns:exslt="http://exslt.org/common"
+  extension-element-prefixes="saxon set exslt">
+
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
   <xsl:param name='expr'>/..</xsl:param> <!-- matcht nooit -->
 
@@ -19,7 +21,7 @@
          nodeset.
      -->
     <xsl:choose>
-      <xsl:when test="exslt:object-type(xalan:evaluate($expr)) = 'node-set'">
+      <xsl:when test="exslt:object-type(saxon:evaluate($expr)) = 'node-set'">
         <xsl:value-of select="$expr"/>
       </xsl:when>
       <xsl:otherwise>
@@ -28,7 +30,7 @@
     </xsl:choose>    
   </xsl:variable>
 
-  <xsl:variable name="selectedNodes" select="xalan:evaluate($newexpr)" />
+  <xsl:variable name="selectedNodes" select="saxon:evaluate($newexpr)" />
 
   <xsl:variable name="xunit" select="35"/>
   <xsl:variable name="yunit" select="40"/>

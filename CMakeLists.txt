@@ -15,23 +15,26 @@ if(INDEXEDCORPUS_FOUND)
 	INCLUDE_DIRECTORIES(${INDEXEDCORPUS_INCLUDE_DIR})
 endif(INDEXEDCORPUS_FOUND)
 
-include (FindXercesC)
-
-if(XERCESC_FOUND)
-	INCLUDE_DIRECTORIES(${XERCESC_INCLUDE_DIR})
-endif(XERCESC_FOUND)
-
-include (FindXalanC)
-
-if(XALANC_FOUND)
-	INCLUDE_DIRECTORIES(${XALANC_INCLUDE_DIR})
-endif(XALANC_FOUND)
-
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.41.0 COMPONENTS system filesystem)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
+find_package(LibXml2 REQUIRED)
+if(LIBXML2_FOUND)
+  include_directories(${LIBXML2_INCLUDE_DIR})
+endif()
+
+find_package(LibXslt REQUIRED)
+if(LIBXSLT_FOUND)
+  include_directories(${LIBXSLT_INCLUDE_DIR})
+endif()
+
+find_package(LibExslt REQUIRED)
+if(LIBEXSLT_FOUND)
+  include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
 find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
@@ -60,7 +63,9 @@ qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
 add_executable(dact ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
 target_link_libraries(dact ${QT_LIBRARIES})
-target_link_libraries(dact ${XERCESC_LIBRARIES})
-target_link_libraries(dact ${XALANC_LIBRARIES})
 target_link_libraries(dact ${INDEXEDCORPUS_LIBRARIES})
 target_link_libraries(dact ${Boost_LIBRARIES})
+target_link_libraries(dact ${LIBXML2_LIBRARIES})
+target_link_libraries(dact ${LIBXSLT_LIBRARIES})
+target_link_libraries(dact ${LIBEXSLT_LIBRARIES})
+

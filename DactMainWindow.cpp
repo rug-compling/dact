@@ -12,27 +12,26 @@
 #include <QStringList>
 #include <QSvgRenderer>
 
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <vector>
 
-#include <xalanc/Include/PlatformDefinitions.hpp>
-#include <xalanc/XalanDOM/XalanDOMString.hpp>
-#include <xalanc/XalanTransformer/XalanTransformer.hpp>
-#include <xalanc/XSLT/XSLTInputSource.hpp>
-#include <xalanc/XSLT/XSLTResultTarget.hpp>
+extern "C" {
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxslt/xslt.h>
+#include <libxslt/xsltInternals.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
+}
 
 #include <IndexedCorpus/ActCorpusReader.hh>
 
-using namespace std;
-
-XALAN_USING_XALAN(XalanDOMString)
-XALAN_USING_XALAN(XalanTransformer)
-XALAN_USING_XALAN(XSLTInputSource)
-XALAN_USING_XALAN(XSLTResultTarget)
-
 #include "DactMainWindow.h"
 #include "ui_DactMainWindow.h"
+
+using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -69,7 +68,8 @@ DactMainWindow::~DactMainWindow()
 void DactMainWindow::addFiles()
 {
     indexedcorpus::ActCorpusReader corpusReader;
-    vector<string> entries = corpusReader.entries(d_corpusPath.toUtf8().constData());
+    QByteArray corpusPathData(d_corpusPath.toUtf8());
+    vector<string> entries = corpusReader.entries(corpusPathData.constData());
 
     for (vector<string>::const_iterator iter = entries.begin();
          iter !=entries.end(); ++iter)
@@ -140,6 +140,10 @@ void DactMainWindow::writeSettings()
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
 }
 
+void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
+{
+}
+
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
     QString xmlFilename = d_corpusPath + "/" + current->text();
@@ -148,32 +152,37 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     QFile xslFile(":/stylesheets/dt2tree.xsl");
     xslFile.open(QIODevice::ReadOnly);
     QByteArray xslData(xslFile.readAll());
-    std::istringstream xslStream(xslData.constData());
-    XSLTInputSource xslIn(xslStream);
+    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
+    xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xslDoc);
 
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
-    vector<unsigned char> xmlData = corpusReader.getData(xmlFilename.toUtf8().constData());
-    xmlData.push_back(0);
-    istringstream xmlStream(reinterpret_cast<char const *>(&xmlData[0]));
-    XSLTInputSource xmlIn(xmlStream);
-    std::ostringstream svgStream;
-    XSLTResultTarget svgOut(svgStream);
+    QByteArray xmlFilenameData(xmlFilename.toUtf8());
+    vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
+    xmlDocPtr xmlDoc = xmlReadMemory(reinterpret_cast<char const *>(&xmlData[0]),
+                                     xmlData.size(), 0, 0, 0);
 
     // Parameters
-    XalanDOMString key("expr");
-    QString valStr;
-    if (d_query.trimmed().isEmpty())
-        valStr = "'/..'"; // Match no node...
-    else
-        valStr = QString("'") + d_query + QString("'");
-    XalanDOMString val(valStr.toUtf8().constData());
+    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
+                     QString("'") + d_query + QString("'");
+    QByteArray valData(valStr.toUtf8());
+    char const *params[] = {
+        "expr",
+        valData.constData(),
+        0
+    };
 
-    // Transform to SVG.
-    XalanTransformer transformer;
-    transformer.setStylesheetParam(key, val);
-    int r = transformer.transform(xmlIn, xslIn, svgStream);
-    QByteArray svg(svgStream.str().c_str());
+    // Transform...
+    xmlDocPtr res = xsltApplyStylesheet(xsl, xmlDoc, params);
+    xmlChar *output;
+    int outputLen = -1;
+    xsltSaveResultToString(&output, &outputLen, res, xsl);
+    QByteArray svg(reinterpret_cast<char const *>(output), outputLen);
+
+    // Deallocate memory used for libxml2/libxslt.
+    free(output);
+    xsltFreeStylesheet(xsl);
+    xmlFreeDoc(xmlDoc);
 
     // Render SVG.
     QSvgRenderer *renderer = new QSvgRenderer(svg);
@@ -182,8 +191,12 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     item->setSharedRenderer(renderer);
     scene->addItem(item);
     d_ui->treeGraphicsView->setScene(scene);
-    //d_ui->treeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
+    d_ui->treeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
     //d_ui->treeGraphicsView->fitInView(scene->sceneRect());
+
+/*
+
+    */
 }
 
 void DactMainWindow::queryChanged()
