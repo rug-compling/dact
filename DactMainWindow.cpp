@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
+#include <QHash>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
@@ -11,24 +12,17 @@
 #include <QString>
 #include <QStringList>
 #include <QSvgRenderer>
+#include <QTextStream>
 
 #include <cstdlib>
 #include <string>
 #include <sstream>
 #include <vector>
 
-extern "C" {
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxslt/xslt.h>
-#include <libxslt/xsltInternals.h>
-#include <libxslt/transform.h>
-#include <libxslt/xsltutils.h>
-}
-
 #include <IndexedCorpus/ActCorpusReader.hh>
 
 #include "DactMainWindow.h"
+#include "XSLTransformer.hh"
 #include "ui_DactMainWindow.h"
 
 using namespace std;
@@ -38,6 +32,9 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui(new Ui::DactMainWindow)
 {
     d_ui->setupUi(this);
+
+    initSentenceTransformer();    
+    initTreeTransformer();
 
     readSettings();
 
@@ -101,6 +98,26 @@ void DactMainWindow::close()
     QMainWindow::close();
 }
 
+void DactMainWindow::initSentenceTransformer()
+{
+    // Read stylesheet.
+    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
+    xslFile.open(QIODevice::ReadOnly);
+    QTextStream xslStream(&xslFile);
+    QString xsl(xslStream.readAll());
+    d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
+}
+
+void DactMainWindow::initTreeTransformer()
+{
+	// Read stylesheet.
+    QFile xslFile(":/stylesheets/dt2tree.xsl");
+	xslFile.open(QIODevice::ReadOnly);
+	QTextStream xslStream(&xslFile);
+	QString xsl(xslStream.readAll());
+	d_treeTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
+}
+
 void DactMainWindow::nextEntry(bool)
 {
     int nextRow = d_ui->fileListWidget->currentRow() + 1;
@@ -148,44 +165,20 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 {
     QString xmlFilename = d_corpusPath + "/" + current->text();
 
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QByteArray xslData(xslFile.readAll());
-    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
-    xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xslDoc);
-
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
     QByteArray xmlFilenameData(xmlFilename.toUtf8());
     vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
-    xmlDocPtr xmlDoc = xmlReadMemory(reinterpret_cast<char const *>(&xmlData[0]),
-                                     xmlData.size(), 0, 0, 0);
+    QString xml(QString::fromUtf8(reinterpret_cast<char const *>(&xmlData[0]), xmlData.size()));
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
                      QString("'") + d_query + QString("'");
-    QByteArray valData(valStr.toUtf8());
-    char const *params[] = {
-        "expr",
-        valData.constData(),
-        0
-    };
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
 
-    // Transform...
-    xmlDocPtr res = xsltApplyStylesheet(xsl, xmlDoc, params);
-    xmlChar *output;
-    int outputLen = -1;
-    xsltSaveResultToString(&output, &outputLen, res, xsl);
-    QByteArray sentenceData(reinterpret_cast<char const *>(output), outputLen);
+    QString sentence = d_sentenceTransformer->transform(xml, params).trimmed();
 
-    // Deallocate memory used for libxml2/libxslt.
-    free(output);
-    xsltFreeStylesheet(xsl);
-    xmlFreeDoc(xmlDoc);
-
-    QString sentence(sentenceData);
-    sentence = sentence.trimmed();
     d_ui->sentenceLineEdit->setText(sentence);
     d_ui->sentenceLineEdit->setCursorPosition(0);
 }
@@ -194,44 +187,23 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
     QString xmlFilename = d_corpusPath + "/" + current->text();
 
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/dt2tree.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QByteArray xslData(xslFile.readAll());
-    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
-    xsltStylesheetPtr xsl = xsltParseStylesheetDoc(xslDoc);
-
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
     QByteArray xmlFilenameData(xmlFilename.toUtf8());
     vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
-    xmlDocPtr xmlDoc = xmlReadMemory(reinterpret_cast<char const *>(&xmlData[0]),
-                                     xmlData.size(), 0, 0, 0);
+    QString xml(QString::fromUtf8(reinterpret_cast<char const *>(&xmlData[0]), xmlData.size()));
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
                      QString("'") + d_query + QString("'");
-    QByteArray valData(valStr.toUtf8());
-    char const *params[] = {
-        "expr",
-        valData.constData(),
-        0
-    };
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
 
-    // Transform...
-    xmlDocPtr res = xsltApplyStylesheet(xsl, xmlDoc, params);
-    xmlChar *output;
-    int outputLen = -1;
-    xsltSaveResultToString(&output, &outputLen, res, xsl);
-    QByteArray svg(reinterpret_cast<char const *>(output), outputLen);
-
-    // Deallocate memory used for libxml2/libxslt.
-    free(output);
-    xsltFreeStylesheet(xsl);
-    xmlFreeDoc(xmlDoc);
+    QString svg = d_treeTransformer->transform(xml, params);
+    QByteArray svgData(svg.toUtf8());
 
     // Render SVG.
-    QSvgRenderer *renderer = new QSvgRenderer(svg);
+    QSvgRenderer *renderer = new QSvgRenderer(svgData);
     QGraphicsScene *scene = new QGraphicsScene(d_ui->treeGraphicsView);
     QGraphicsSvgItem *item = new QGraphicsSvgItem;
     item->setSharedRenderer(renderer);

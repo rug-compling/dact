@@ -35,6 +35,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
   DactMainWindow.cpp
+  XSLTransformer.cpp
   main.cpp
 )
 

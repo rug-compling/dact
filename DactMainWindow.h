@@ -2,6 +2,9 @@
 #define DACTMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
+
+#include "XSLTransformer.hh"
 
 namespace Ui {
     class DactMainWindow;
@@ -35,12 +38,16 @@ protected:
 
 private:
     void addFiles();
+    void initSentenceTransformer();
+    void initTreeTransformer();
     void readSettings();
     void writeSettings();
 
     Ui::DactMainWindow *d_ui;
     QString d_corpusPath;
     QString d_query;
+    QSharedPointer<XSLTransformer> d_sentenceTransformer;
+    QSharedPointer<XSLTransformer> d_treeTransformer;
 };
 
 #endif // DACTMAINWINDOW_H

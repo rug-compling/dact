@@ -19,9 +19,10 @@ int main(int argc, char *argv[])
     exsltSetsRegister();
     exsltStrRegister();
 
-    DactMainWindow w;
-    w.show();
+    DactMainWindow *w = new DactMainWindow;
+    w->show();
     int r = a.exec();
+    delete w;
 
     xsltCleanupGlobals();
     xmlCleanupParser();
