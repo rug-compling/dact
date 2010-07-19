@@ -167,9 +167,7 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
-    QByteArray xmlFilenameData(xmlFilename.toUtf8());
-    vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
-    QString xml(QString::fromUtf8(reinterpret_cast<char const *>(&xmlData[0]), xmlData.size()));
+    QString xml = corpusReader.getData(xmlFilename);
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
@@ -189,9 +187,7 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
-    QByteArray xmlFilenameData(xmlFilename.toUtf8());
-    vector<unsigned char> xmlData = corpusReader.getData(xmlFilenameData.constData());
-    QString xml(QString::fromUtf8(reinterpret_cast<char const *>(&xmlData[0]), xmlData.size()));
+    QString xml = corpusReader.getData(xmlFilename);
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
