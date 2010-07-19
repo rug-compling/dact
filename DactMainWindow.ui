@@ -57,7 +57,11 @@
          </layout>
         </item>
         <item>
-         <widget class="QGraphicsView" name="treeGraphicsView"/>
+         <widget class="QGraphicsView" name="treeGraphicsView">
+          <property name="dragMode">
+           <enum>QGraphicsView::ScrollHandDrag</enum>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
