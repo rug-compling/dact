@@ -75,17 +75,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="sentenceLabel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
+           <widget class="QLineEdit" name="sentenceLineEdit"/>
           </item>
          </layout>
         </item>
@@ -101,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

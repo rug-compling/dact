@@ -186,7 +186,8 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 
     QString sentence(sentenceData);
     sentence = sentence.trimmed();
-    d_ui->sentenceLabel->setText(sentence);
+    d_ui->sentenceLineEdit->setText(sentence);
+    d_ui->sentenceLineEdit->setCursorPosition(0);
 }
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
