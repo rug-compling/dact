@@ -117,7 +117,7 @@
         
       
     <!-- Create SVG wrapper -->
-    <svg:svg viewBox = "{-1 * $xunit} {-1 * $yunit} {sum($layout/node/@width) * 2 * $xunit + $xunit} {$maxDepth * 2 * $yunit + 4 * $yunit}" style="text-anchor:middle">
+    <svg:svg viewBox = "{-1 * $xunit} {-1 * $yunit} {sum($layout/node/@width) * 2 * $xunit + $xunit} {$maxDepth * 2 * $yunit + 2 * $yunit}" style="text-anchor:middle">
       <xsl:apply-templates select = "$layout/node" mode = "layout2svg"/>
     </svg:svg>
   </xsl:template>
