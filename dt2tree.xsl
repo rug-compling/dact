@@ -50,17 +50,7 @@
     </xsl:variable>
     <xsl:call-template name="layout2svg">
       <xsl:with-param name="layout" select="exslt:node-set($layoutTree)"/>
-      <xsl:with-param name="sentence" select="/alpino_ds/sentence/text()"/>
-      <xsl:with-param name="comments">
-        <xsl:apply-templates select="/alpino_ds/comments/comment"/>
-      </xsl:with-param>
     </xsl:call-template>
-  </xsl:template>
-
-  <xsl:template match="comment">
-    <xsl:text>comment: </xsl:text>
-    <xsl:apply-templates select="text()"/>
-    <xsl:text>  </xsl:text>
   </xsl:template>
 
   <xsl:template match="node[node]" mode="xml2layout">
@@ -114,8 +104,6 @@
   <!-- Convert layout to SVG -->
   <xsl:template name="layout2svg">
     <xsl:param name="layout"/>
-    <xsl:param name="sentence"/>
-    <xsl:param name="comments"/>
     
     <!-- Find depth of the tree -->
     <xsl:variable name = "maxDepth">
@@ -131,14 +119,6 @@
     <!-- Create SVG wrapper -->
     <svg:svg viewBox = "{-1 * $xunit} {-1 * $yunit} {sum($layout/node/@width) * 2 * $xunit + $xunit} {$maxDepth * 2 * $yunit + 4 * $yunit}" style="text-anchor:middle">
       <xsl:apply-templates select = "$layout/node" mode = "layout2svg"/>
-          
-      <svg:text  x="10" y="10" text-anchor="start">
-        <xsl:value-of select="$sentence"/>
-      </svg:text>
-      <svg:text x="10" y="{$maxDepth * 2 * $yunit + $yunit + $yunit}" text-anchor="start">
-        <xsl:value-of select="$comments"/>
-      </svg:text>
-            
     </svg:svg>
   </xsl:template>
         
