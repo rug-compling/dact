@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QSvgRenderer>
 #include <QTextStream>
+#include <QtDebug>
 
 #include <cstdlib>
 #include <string>
@@ -69,13 +70,12 @@ DactMainWindow::~DactMainWindow()
 void DactMainWindow::addFiles()
 {
     indexedcorpus::ActCorpusReader corpusReader;
-    QByteArray corpusPathData(d_corpusPath.toUtf8());
-    vector<string> entries = corpusReader.entries(corpusPathData.constData());
+    QVector<QString> entries = corpusReader.entries(d_corpusPath);
 
-    for (vector<string>::const_iterator iter = entries.begin();
-         iter !=entries.end(); ++iter)
+    for (QVector<QString>::const_iterator iter = entries.begin();
+         iter != entries.end(); ++iter)
     {
-        QFileInfo entryFi(iter->c_str());
+        QFileInfo entryFi(*iter);
         new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
     }
 }
@@ -169,6 +169,12 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
     indexedcorpus::ActCorpusReader corpusReader;
     QString xml = corpusReader.getData(xmlFilename);
 
+    if (xml.size() == 0) {
+        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
+        d_ui->sentenceLineEdit->clear();
+        return;
+    }
+
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
                      QString("'") + d_query + QString("'");
@@ -188,6 +194,12 @@ void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
     // Read XML data.
     indexedcorpus::ActCorpusReader corpusReader;
     QString xml = corpusReader.getData(xmlFilename);
+
+    if (xml.size() == 0) {
+        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
+        d_ui->treeGraphicsView->setScene(0);
+        return;
+    }
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
