@@ -4,8 +4,11 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
 
 extern "C" {
+#include <libxml/globals.h>
+#include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
@@ -54,11 +57,14 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 
 	// Transform...
     xmlDocPtr res = xsltApplyStylesheet(d_xslPtr, xmlDoc, cParams);
-    xmlChar *output;
+    xmlChar *output = 0;
 	int outputLen = -1;
 	xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
 
-	QString sentence(QString::fromUtf8(reinterpret_cast<char const *>(output)));
+	if (!output)
+		throw std::runtime_error("Could not apply stylesheet!");
+
+	QString result(QString::fromUtf8(reinterpret_cast<char const *>(output)));
 
 	// Deallocate parameter memory
 	for (int i = 0; i < params.size() * 2; ++i)
@@ -66,8 +72,8 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 	delete[] cParams;
 
 	// Deallocate memory used for libxml2/libxslt.
-	free(output);
+	xmlFree(output);
 	xmlFreeDoc(xmlDoc);
 
-	return sentence;
+	return result;
 }
