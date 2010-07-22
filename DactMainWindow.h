@@ -32,6 +32,7 @@ private slots:
     void showSentence(QListWidgetItem *current, QListWidgetItem *previous);
     void showTree(QListWidgetItem *current, QListWidgetItem *previous);
     void nextEntry(bool);
+    void openCorpus();
     void previousEntry(bool);
     void queryChanged();
     void treeZoomIn(bool);

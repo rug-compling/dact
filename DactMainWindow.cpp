@@ -1,4 +1,5 @@
 #include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
@@ -51,6 +52,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     readSettings();
     createTransformers();
     d_corpusPath = corpusPath;
+    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
     addFiles();
     createActions();
 }
@@ -62,6 +64,8 @@ DactMainWindow::~DactMainWindow()
 
 void DactMainWindow::addFiles()
 {
+    d_ui->fileListWidget->clear();
+
     indexedcorpus::ActCorpusReader corpusReader;
     QVector<QString> entries = corpusReader.entries(d_corpusPath);
 
@@ -129,14 +133,17 @@ void DactMainWindow::createActions()
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
                      this,
                      SLOT(showSentence(QListWidgetItem *, QListWidgetItem *)));
-    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
-    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
-    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
-    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
                      SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
     QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
+
+    // Actions
+    QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
+    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
+    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
+    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
+    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
 }
 
 void DactMainWindow::createTransformers()
@@ -170,6 +177,19 @@ void DactMainWindow::nextEntry(bool)
     int nextRow = d_ui->fileListWidget->currentRow() + 1;
     if (nextRow < d_ui->fileListWidget->count())
         d_ui->fileListWidget->setCurrentRow(nextRow);
+}
+
+void DactMainWindow::openCorpus()
+{
+    QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
+        "*.data.dz");
+    if (corpusPath.isNull())
+        return;
+
+    corpusPath.chop(8);
+    d_corpusPath = corpusPath;
+    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
+    addFiles();
 }
 
 void DactMainWindow::previousEntry(bool)
@@ -210,6 +230,11 @@ void DactMainWindow::writeSettings()
 
 void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 {
+    if (current == 0) {
+        d_ui->sentenceLineEdit->clear();
+        return;
+    }
+
     QString xmlFilename = d_corpusPath + "/" + current->text();
 
     // Read XML data.
@@ -236,6 +261,11 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
 
 void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
 {
+    if (current == 0) {
+        d_ui->treeGraphicsView->setScene(0);
+        return;
+    }
+
     QString xmlFilename = d_corpusPath + "/" + current->text();
 
     // Read XML data.
