@@ -12,6 +12,7 @@ XPathValidator::XPathValidator()
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
+    exprStr.replace('\'', '"');
     QByteArray expr(exprStr.toUtf8());
 
     xmlXPathContextPtr ctx;
