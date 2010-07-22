@@ -9,8 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-include (FindIndexedCorpus)
-
+find_package(IndexedCorpus REQUIRED)
 if(INDEXEDCORPUS_FOUND)
 	INCLUDE_DIRECTORIES(${INDEXEDCORPUS_INCLUDE_DIR})
 endif(INDEXEDCORPUS_FOUND)
