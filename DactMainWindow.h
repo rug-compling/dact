@@ -26,6 +26,7 @@ public slots:
     void close();
 
 private slots:
+    void applyQuery();
     void showSentence(QListWidgetItem *current, QListWidgetItem *previous);
     void showTree(QListWidgetItem *current, QListWidgetItem *previous);
     void nextEntry(bool);

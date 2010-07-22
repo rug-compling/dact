@@ -63,7 +63,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
-    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(queryChanged()));
+    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
 }
 
 DactMainWindow::~DactMainWindow()
@@ -82,6 +82,14 @@ void DactMainWindow::addFiles()
         QFileInfo entryFi(*iter);
         new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
     }
+}
+
+void DactMainWindow::applyQuery()
+{
+    if (!d_ui->queryLineEdit->hasAcceptableInput())
+        return;
+
+    queryChanged();
 }
 
 void DactMainWindow::changeEvent(QEvent *e)
