@@ -103,6 +103,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="openAction"/>
+    <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
     <addaction name="separator"/>
     <addaction name="quitAction"/>
@@ -199,7 +200,12 @@
   </action>
   <action name="printAction">
    <property name="text">
-    <string>&amp;Print</string>
+    <string>&amp;Print...</string>
+   </property>
+  </action>
+  <action name="pdfExportAction">
+   <property name="text">
+    <string>Export to PDF...</string>
    </property>
   </action>
  </widget>

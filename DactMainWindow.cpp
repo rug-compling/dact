@@ -142,6 +142,7 @@ void DactMainWindow::createActions()
     // Actions
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
+    QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
@@ -222,6 +223,25 @@ void DactMainWindow::openCorpus()
     addFiles();
 }
 
+void DactMainWindow::pdfExport()
+{
+    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
+    if (pdfFilename.isNull())
+        return;
+
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(pdfFilename);
+
+    QPainter painter(&printer);
+
+    // If you are asking for an empty PDF, you will get it ;).
+    if (d_ui->treeGraphicsView->scene())
+        d_ui->treeGraphicsView->scene()->render(&painter);
+
+    painter.end();
+}
+
 void DactMainWindow::previousEntry(bool)
 {
     int prevRow = d_ui->fileListWidget->currentRow() - 1;
@@ -237,6 +257,7 @@ void DactMainWindow::print()
     if (printDialog.exec()) {
         QPainter painter(&printer);
         d_ui->treeGraphicsView->scene()->render(&painter);
+        painter.end();
     }
 }
 

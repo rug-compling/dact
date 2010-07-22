@@ -34,6 +34,7 @@ private slots:
     void showTree(QString const &xml);
     void nextEntry(bool);
     void openCorpus();
+    void pdfExport();
     void previousEntry(bool);
     void print();
     void queryChanged();
