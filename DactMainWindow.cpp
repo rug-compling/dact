@@ -174,7 +174,7 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
         showSentence(xml);
     } catch(runtime_error &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
-            QString("A transformation error occured: %1 Corpus data could be corrupt...").arg(e.what()));
+            QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
 }
 
