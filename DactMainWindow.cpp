@@ -23,6 +23,7 @@
 #include <IndexedCorpus/ActCorpusReader.hh>
 
 #include "DactMainWindow.h"
+#include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactMainWindow.h"
 
@@ -30,9 +31,12 @@ using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    d_ui(new Ui::DactMainWindow)
+    d_ui(new Ui::DactMainWindow),
+    d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
+
+    d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
 
     initSentenceTransformer();    
     initTreeTransformer();

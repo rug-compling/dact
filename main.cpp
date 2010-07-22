@@ -3,6 +3,7 @@
 extern "C" {
 #include <libxslt/xslt.h>
 #include <libxml/parser.h>
+#include <libxml/xpath.h>
 #include <libexslt/exslt.h>
 }
 
@@ -18,6 +19,9 @@ int main(int argc, char *argv[])
     exsltSaxonRegister();
     exsltSetsRegister();
     exsltStrRegister();
+
+    // XPath
+    xmlXPathInit();
 
     DactMainWindow *w = new DactMainWindow;
     w->show();

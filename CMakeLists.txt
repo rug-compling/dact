@@ -39,12 +39,14 @@ INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
   DactMainWindow.cpp
+  XPathValidator.cpp
   XSLTransformer.cpp
   main.cpp
 )
 
 SET(dact_MOC_HDRS
   DactMainWindow.h
+  XPathValidator.hh
 )
 
 SET(dact_UI

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSharedPointer>
 
+#include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
 namespace Ui {
@@ -48,6 +49,7 @@ private:
     QString d_query;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
+    QSharedPointer<XPathValidator> d_xpathValidator;
 };
 
 #endif // DACTMAINWINDOW_H
