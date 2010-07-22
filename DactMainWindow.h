@@ -29,8 +29,9 @@ public slots:
 private slots:
     void applyQuery();
     void applyValidityColor(QString const &text);
-    void showSentence(QListWidgetItem *current, QListWidgetItem *previous);
-    void showTree(QListWidgetItem *current, QListWidgetItem *previous);
+    void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
+    void showSentence(QString const &xml);
+    void showTree(QString const &xml);
     void nextEntry(bool);
     void openCorpus();
     void previousEntry(bool);

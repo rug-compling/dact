@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
+#include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
 #include <QSize>
@@ -17,6 +18,7 @@
 #include <QtDebug>
 
 #include <cstdlib>
+#include <stdexcept>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -128,11 +130,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->fileListWidget,
                      SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
                      this,
-                     SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
-    QObject::connect(d_ui->fileListWidget,
-                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-                     this,
-                     SLOT(showSentence(QListWidgetItem *, QListWidgetItem *)));
+                     SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
                      SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
@@ -150,6 +148,34 @@ void DactMainWindow::createTransformers()
 {
     initSentenceTransformer();
     initTreeTransformer();
+}
+
+void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
+{
+    if (current == 0) {
+        d_ui->treeGraphicsView->setScene(0);
+        return;
+    }
+
+    QString xmlFilename = d_corpusPath + "/" + current->text();
+
+    // Read XML data.
+    indexedcorpus::ActCorpusReader corpusReader;
+    QString xml = corpusReader.getData(xmlFilename);
+
+    if (xml.size() == 0) {
+        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
+        d_ui->treeGraphicsView->setScene(0);
+        return;
+    }
+
+    try {
+        showTree(xml);
+        showSentence(xml);
+    } catch(runtime_error &e) {
+        QMessageBox::critical(this, QString("Tranformation error"),
+            QString("A transformation error occured: %1 Corpus data could be corrupt...").arg(e.what()));
+    }
 }
 
 void DactMainWindow::initSentenceTransformer()
@@ -228,25 +254,8 @@ void DactMainWindow::writeSettings()
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
 }
 
-void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
+void DactMainWindow::showSentence(QString const &xml)
 {
-    if (current == 0) {
-        d_ui->sentenceLineEdit->clear();
-        return;
-    }
-
-    QString xmlFilename = d_corpusPath + "/" + current->text();
-
-    // Read XML data.
-    indexedcorpus::ActCorpusReader corpusReader;
-    QString xml = corpusReader.getData(xmlFilename);
-
-    if (xml.size() == 0) {
-        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
-        d_ui->sentenceLineEdit->clear();
-        return;
-    }
-
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
                      QString("'") + d_query + QString("'");
@@ -259,32 +268,17 @@ void DactMainWindow::showSentence(QListWidgetItem *current, QListWidgetItem *)
     d_ui->sentenceLineEdit->setCursorPosition(0);
 }
 
-void DactMainWindow::showTree(QListWidgetItem *current, QListWidgetItem *)
+void DactMainWindow::showTree(QString const &xml)
 {
-    if (current == 0) {
-        d_ui->treeGraphicsView->setScene(0);
-        return;
-    }
-
-    QString xmlFilename = d_corpusPath + "/" + current->text();
-
-    // Read XML data.
-    indexedcorpus::ActCorpusReader corpusReader;
-    QString xml = corpusReader.getData(xmlFilename);
-
-    if (xml.size() == 0) {
-        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
-        d_ui->treeGraphicsView->setScene(0);
-        return;
-    }
-
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
                      QString("'") + d_query + QString("'");
     QHash<QString, QString> params;
     params["expr"] = valStr;
 
-    QString svg = d_treeTransformer->transform(xml, params);
+    QString svg;
+    svg = d_treeTransformer->transform(xml, params);
+
     QByteArray svgData(svg.toUtf8());
 
     // Render SVG.
@@ -301,10 +295,7 @@ void DactMainWindow::queryChanged()
 {
     d_query = d_ui->queryLineEdit->text();
     if (d_ui->fileListWidget->currentItem() != 0)
-    {
-        showSentence(d_ui->fileListWidget->currentItem(), 0);
-        showTree(d_ui->fileListWidget->currentItem(), 0);
-    }
+        entrySelected(d_ui->fileListWidget->currentItem(), 0);
 }
 
 void DactMainWindow::treeZoomIn(bool)
