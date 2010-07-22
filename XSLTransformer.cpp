@@ -34,7 +34,11 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 {
 	// Read XML data intro an xmlDoc.
     QByteArray xmlData(xml.toUtf8());
-    xmlDocPtr xmlDoc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
+    xmlDocPtr doc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
+
+    if (!doc) {
+        throw std::runtime_error("XSLTransformer::transform: Could not open XML data");
+    }
 
     // Hmpf, data conversions.
     char const **cParams = new char const *[params.size() * 2 + 1];
@@ -56,7 +60,13 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
     cParams[params.size() * 2] = 0; // Terminator
 
 	// Transform...
-    xmlDocPtr res = xsltApplyStylesheet(d_xslPtr, xmlDoc, cParams);
+    xmlDocPtr res = xsltApplyStylesheet(d_xslPtr, doc, cParams);
+
+    if (!res) {
+        xmlFreeDoc(doc);
+        throw std::runtime_error("XSLTransformer::transform: Could not apply transformation!");
+    }
+
     xmlChar *output = 0;
 	int outputLen = -1;
 	xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
@@ -73,7 +83,7 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 
 	// Deallocate memory used for libxml2/libxslt.
 	xmlFree(output);
-	xmlFreeDoc(xmlDoc);
+    xmlFreeDoc(doc);
 
 	return result;
 }
