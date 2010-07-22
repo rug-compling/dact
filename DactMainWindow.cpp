@@ -35,37 +35,24 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
-
     d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
-
-    initSentenceTransformer();    
-    initTreeTransformer();
-
     readSettings();
+    createTransformers();
+    createActions();
+}
 
-    if (qApp->arguments().size() == 2) {
-        d_corpusPath = qApp->arguments().at(1);
-        addFiles();
-    }
-
-    setWindowTitle(QString("Dact - ") + d_corpusPath);
-
-    QObject::connect(d_ui->fileListWidget,
-                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-                     this,
-                     SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
-    QObject::connect(d_ui->fileListWidget,
-                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-                     this,
-                     SLOT(showSentence(QListWidgetItem *, QListWidgetItem *)));
-    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
-    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
-    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
-    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
-    QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
-                     SLOT(applyValidityColor(QString const &)));
-    QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
-    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
+DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
+    QMainWindow(parent),
+    d_ui(new Ui::DactMainWindow),
+    d_xpathValidator(new XPathValidator)
+{
+    d_ui->setupUi(this);
+    d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
+    readSettings();
+    createTransformers();
+    d_corpusPath = corpusPath;
+    addFiles();
+    createActions();
 }
 
 DactMainWindow::~DactMainWindow()
@@ -130,6 +117,32 @@ void DactMainWindow::close()
 {
     writeSettings();
     QMainWindow::close();
+}
+
+void DactMainWindow::createActions()
+{
+    QObject::connect(d_ui->fileListWidget,
+                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
+                     this,
+                     SLOT(showTree(QListWidgetItem *, QListWidgetItem *)));
+    QObject::connect(d_ui->fileListWidget,
+                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
+                     this,
+                     SLOT(showSentence(QListWidgetItem *, QListWidgetItem *)));
+    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
+    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
+    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
+    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
+    QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
+                     SLOT(applyValidityColor(QString const &)));
+    QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
+    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
+}
+
+void DactMainWindow::createTransformers()
+{
+    initSentenceTransformer();
+    initTreeTransformer();
 }
 
 void DactMainWindow::initSentenceTransformer()

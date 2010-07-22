@@ -20,6 +20,7 @@ class DactMainWindow : public QMainWindow {
     Q_OBJECT
 public:
     DactMainWindow(QWidget *parent = 0);
+    DactMainWindow(QString const &corpusPath, QWidget *parent = 0);
     ~DactMainWindow();
 
 public slots:
@@ -41,6 +42,8 @@ protected:
 
 private:
     void addFiles();
+    void createActions();
+    void createTransformers();
     void initSentenceTransformer();
     void initTreeTransformer();
     void readSettings();

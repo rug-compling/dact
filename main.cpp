@@ -23,8 +23,13 @@ int main(int argc, char *argv[])
     // XPath
     xmlXPathInit();
 
-    DactMainWindow *w = new DactMainWindow;
+    DactMainWindow *w;
+    if (qApp->arguments().size() == 2)
+        w = new DactMainWindow(qApp->arguments().at(1));
+    else
+        w = new DactMainWindow;
     w->show();
+
     int r = a.exec();
     delete w;
 
