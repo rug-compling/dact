@@ -103,6 +103,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="openAction"/>
+    <addaction name="printAction"/>
+    <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -193,6 +195,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="printAction">
+   <property name="text">
+    <string>&amp;Print</string>
    </property>
   </action>
  </widget>

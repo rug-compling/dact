@@ -35,6 +35,7 @@ private slots:
     void nextEntry(bool);
     void openCorpus();
     void previousEntry(bool);
+    void print();
     void queryChanged();
     void treeZoomIn(bool);
     void treeZoomOut(bool);

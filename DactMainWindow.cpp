@@ -8,7 +8,10 @@
 #include <QList>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QPainter>
 #include <QPoint>
+#include <QPrintDialog>
+#include <QPrinter>
 #include <QSettings>
 #include <QSize>
 #include <QString>
@@ -140,6 +143,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
+    QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
 }
@@ -223,6 +227,17 @@ void DactMainWindow::previousEntry(bool)
     int prevRow = d_ui->fileListWidget->currentRow() - 1;
     if (prevRow >= 0)
         d_ui->fileListWidget->setCurrentRow(prevRow);
+}
+
+void DactMainWindow::print()
+{
+    QPrinter printer(QPrinter::HighResolution);
+
+    QPrintDialog printDialog(&printer, this);
+    if (printDialog.exec()) {
+        QPainter painter(&printer);
+        d_ui->treeGraphicsView->scene()->render(&painter);
+    }
 }
 
 void DactMainWindow::readSettings()
