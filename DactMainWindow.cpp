@@ -62,6 +62,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
+    QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
+                     SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
     QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
 }
@@ -90,6 +92,26 @@ void DactMainWindow::applyQuery()
         return;
 
     queryChanged();
+}
+
+void DactMainWindow::applyValidityColor(QString const &)
+{
+    // Hmpf, unfortunately we get text, rather than a sender. Attempt
+    // to determine the sender ourselvers.
+    QObject *sender = this->sender();
+
+    if (!sender)
+        return;
+
+    if (!sender->inherits("QLineEdit"))
+        return;
+
+    QLineEdit *widget = reinterpret_cast<QLineEdit *>(sender);
+
+    if (widget->hasAcceptableInput())
+        widget->setStyleSheet("");
+    else
+        widget->setStyleSheet("background-color: salmon");
 }
 
 void DactMainWindow::changeEvent(QEvent *e)
