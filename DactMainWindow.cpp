@@ -141,6 +141,7 @@ void DactMainWindow::createActions()
 
     // Actions
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
+    QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
@@ -187,6 +188,12 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
+}
+
+void DactMainWindow::fitTree()
+{
+    if (d_curTreeItem)
+        d_ui->treeGraphicsView->fitInView(d_curTreeItem, Qt::KeepAspectRatio);
 }
 
 void DactMainWindow::initSentenceTransformer()
@@ -314,11 +321,11 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     // Render SVG.
     QSvgRenderer *renderer = new QSvgRenderer(svgData);
     QGraphicsScene *scene = new QGraphicsScene(d_ui->treeGraphicsView);
-    QGraphicsSvgItem *item = new QGraphicsSvgItem;
-    item->setSharedRenderer(renderer);
-    scene->addItem(item);
+    d_curTreeItem = new QGraphicsSvgItem;
+    d_curTreeItem->setSharedRenderer(renderer);
+    scene->addItem(d_curTreeItem);
     d_ui->treeGraphicsView->setScene(scene);
-    d_ui->treeGraphicsView->fitInView(item, Qt::KeepAspectRatio);
+    d_ui->treeGraphicsView->fitInView(d_curTreeItem, Qt::KeepAspectRatio);
 }
 
 void DactMainWindow::queryChanged()

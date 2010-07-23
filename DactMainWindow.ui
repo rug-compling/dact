@@ -115,7 +115,7 @@
     <addaction name="previousAction"/>
     <addaction name="nextAction"/>
     <addaction name="separator"/>
-    <addaction name="actionFit"/>
+    <addaction name="fitAction"/>
     <addaction name="zoomInAction"/>
     <addaction name="zoomOutAction"/>
    </widget>
@@ -132,7 +132,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionFit"/>
+   <addaction name="fitAction"/>
    <addaction name="zoomInAction"/>
    <addaction name="zoomOutAction"/>
    <addaction name="nextAction"/>
@@ -147,7 +147,7 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionFit">
+  <action name="fitAction">
    <property name="text">
     <string>Fit</string>
    </property>

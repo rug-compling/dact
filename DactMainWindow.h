@@ -1,8 +1,8 @@
 #ifndef DACTMAINWINDOW_H
 #define DACTMAINWINDOW_H
 
-#include <QMainWindow>
 #include <QHash>
+#include <QMainWindow>
 #include <QSharedPointer>
 #include <QString>
 
@@ -16,6 +16,7 @@ namespace Ui {
 double const ZOOM_OUT_FACTOR = 0.8;
 double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
+class QGraphicsSvgItem;
 class QListWidgetItem;
 
 class DactMainWindow : public QMainWindow {
@@ -32,14 +33,15 @@ private slots:
     void applyQuery();
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
-    void showSentence(QString const &xml, QHash<QString, QString> const &params);
-    void showTree(QString const &xml, QHash<QString, QString> const &params);
+    void fitTree();
     void nextEntry(bool);
     void openCorpus();
     void pdfExport();
     void previousEntry(bool);
     void print();
     void queryChanged();
+    void showSentence(QString const &xml, QHash<QString, QString> const &params);
+    void showTree(QString const &xml, QHash<QString, QString> const &params);
     void treeZoomIn(bool);
     void treeZoomOut(bool);
 
@@ -61,6 +63,7 @@ private:
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     QSharedPointer<XPathValidator> d_xpathValidator;
+    QGraphicsSvgItem *d_curTreeItem; // Scene-managed
 };
 
 #endif // DACTMAINWINDOW_H
