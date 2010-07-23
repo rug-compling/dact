@@ -142,6 +142,9 @@
     </svg:text>
               
     <svg:text x = "{$x}" y = "{$y - 10}">
+      <xsl:attribute name="fill">
+	<xsl:value-of select="@color" />
+      </xsl:attribute>
       <svg:tspan font-weight="bold" fill="red">
       <xsl:value-of select="@index"/>
       </svg:tspan>
@@ -153,12 +156,15 @@
 
     <xsl:if test = "@root">
       <svg:text x = "{$x}" y = "{$y + 10}">
+        <xsl:attribute name="fill">
+          <xsl:value-of select="@color" />
+        </xsl:attribute>
         <svg:tspan>
-        <xsl:value-of select="@root"/>
+	  <xsl:value-of select="@root"/>
         </svg:tspan>
-      <svg:tspan baseline-shift = "sub">
-        <xsl:value-of select="@begin"/>
-      </svg:tspan>
+	<svg:tspan baseline-shift = "sub">
+	  <xsl:value-of select="@begin"/>
+	</svg:tspan>
       </svg:text>
     </xsl:if>
 
