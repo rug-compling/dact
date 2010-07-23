@@ -2,7 +2,9 @@
 #define DACTMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QHash>
 #include <QSharedPointer>
+#include <QString>
 
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -30,8 +32,8 @@ private slots:
     void applyQuery();
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
-    void showSentence(QString const &xml);
-    void showTree(QString const &xml);
+    void showSentence(QString const &xml, QHash<QString, QString> const &params);
+    void showTree(QString const &xml, QHash<QString, QString> const &params);
     void nextEntry(bool);
     void openCorpus();
     void pdfExport();

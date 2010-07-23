@@ -174,9 +174,15 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
         return;
     }
 
+    // Parameters
+    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
+                     QString("'") + d_query + QString("'");
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
+
     try {
-        showTree(xml);
-        showSentence(xml);
+        showTree(xml, params);
+        showSentence(xml, params);
     } catch(runtime_error &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
@@ -290,28 +296,16 @@ void DactMainWindow::writeSettings()
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
 }
 
-void DactMainWindow::showSentence(QString const &xml)
+void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
 {
-    // Parameters
-    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_query + QString("'");
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-
     QString sentence = d_sentenceTransformer->transform(xml, params).trimmed();
 
     d_ui->sentenceLineEdit->setText(sentence);
     d_ui->sentenceLineEdit->setCursorPosition(0);
 }
 
-void DactMainWindow::showTree(QString const &xml)
+void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
 {
-    // Parameters
-    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_query + QString("'");
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-
     QString svg;
     svg = d_treeTransformer->transform(xml, params);
 
