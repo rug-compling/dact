@@ -39,6 +39,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
   DactMainWindow.cpp
+  XPathFilter.cpp
   XPathValidator.cpp
   XSLTransformer.cpp
   main.cpp

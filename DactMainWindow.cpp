@@ -42,7 +42,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
-    d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
+    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
     readSettings();
     createTransformers();
     createActions();
@@ -54,13 +55,19 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
+    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
     readSettings();
     createTransformers();
     d_corpusPath = corpusPath;
+
     this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
-    addFiles();
     createActions();
+
+    d_corpusReader = QSharedPointer<CorpusReader>(
+        CorpusReader::newCorpusReader(d_corpusPath));
+
+    addFiles();
 }
 
 DactMainWindow::~DactMainWindow()
@@ -72,10 +79,11 @@ void DactMainWindow::addFiles()
 {
     d_ui->fileListWidget->clear();
 
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
-
-    QVector<QString> entries = d_corpusReader->entries();
+    QVector<QString> entries;
+    if (d_xpathFilter.isNull())
+        entries = d_corpusReader->entries();
+    else
+        entries = d_xpathFilter->entries(d_corpusReader.data());
 
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
@@ -134,11 +142,15 @@ void DactMainWindow::close()
 void DactMainWindow::createActions()
 {
     QObject::connect(d_ui->fileListWidget,
-                     SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-                     this,
-                     SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
+        SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
+        this,
+        SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
+
+    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
+        SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
-                     SLOT(applyValidityColor(QString const &)));
+        SLOT(applyValidityColor(QString const &)));
+    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
     QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
 
@@ -193,6 +205,19 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     }
 }
 
+void DactMainWindow::filterChanged()
+{
+    QString filter = d_ui->filterLineEdit->text();
+    if (filter.trimmed().isEmpty())
+        d_xpathFilter.clear();
+    else
+        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
+
+    if (!d_corpusReader.isNull())
+        addFiles();
+}
+
+
 void DactMainWindow::fitTree()
 {
     if (d_curTreeItem)
@@ -236,6 +261,9 @@ void DactMainWindow::openCorpus()
     corpusPath.chop(8);
     d_corpusPath = corpusPath;
     this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
+    d_corpusReader = QSharedPointer<CorpusReader>(
+        CorpusReader::newCorpusReader(d_corpusPath));
+
     addFiles();
 }
 

@@ -8,6 +8,7 @@
 
 #include <IndexedCorpus/CorpusReader.hh>
 
+#include "XPathFilter.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -35,6 +36,7 @@ private slots:
     void applyQuery();
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
+    void filterChanged();
     void fitTree();
     void nextEntry(bool);
     void openCorpus();
@@ -64,6 +66,7 @@ private:
     QString d_query;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
+    QSharedPointer<XPathFilter> d_xpathFilter;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<indexedcorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
