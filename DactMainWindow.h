@@ -6,6 +6,8 @@
 #include <QSharedPointer>
 #include <QString>
 
+#include <IndexedCorpus/CorpusReader.hh>
+
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -63,6 +65,7 @@ private:
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     QSharedPointer<XPathValidator> d_xpathValidator;
+    QSharedPointer<indexedcorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
 };
 

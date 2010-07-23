@@ -26,13 +26,14 @@
 #include <sstream>
 #include <vector>
 
-#include <IndexedCorpus/ActCorpusReader.hh>
+#include <IndexedCorpus/CorpusReader.hh>
 
 #include "DactMainWindow.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactMainWindow.h"
 
+using namespace indexedcorpus;
 using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
@@ -71,8 +72,10 @@ void DactMainWindow::addFiles()
 {
     d_ui->fileListWidget->clear();
 
-    indexedcorpus::ActCorpusReader corpusReader;
-    QVector<QString> entries = corpusReader.entries(d_corpusPath);
+    d_corpusReader = QSharedPointer<CorpusReader>(
+        CorpusReader::newCorpusReader(d_corpusPath));
+
+    QVector<QString> entries = d_corpusReader->entries();
 
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
@@ -163,11 +166,11 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
         return;
     }
 
-    QString xmlFilename = d_corpusPath + "/" + current->text();
-
     // Read XML data.
-    indexedcorpus::ActCorpusReader corpusReader;
-    QString xml = corpusReader.getData(xmlFilename);
+    if (d_corpusReader.isNull())
+        return;
+
+    QString xml = d_corpusReader->read(current->text());
 
     if (xml.size() == 0) {
         qWarning() << "DactMainWindow::writeSettings: empty XML data!";
