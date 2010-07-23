@@ -33,7 +33,6 @@ public slots:
     void close();
 
 private slots:
-    void applyQuery();
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();

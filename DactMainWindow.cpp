@@ -93,14 +93,6 @@ void DactMainWindow::addFiles()
     }
 }
 
-void DactMainWindow::applyQuery()
-{
-    if (!d_ui->queryLineEdit->hasAcceptableInput())
-        return;
-
-    queryChanged();
-}
-
 void DactMainWindow::applyValidityColor(QString const &)
 {
     // Hmpf, unfortunately we get text, rather than a sender. Attempt
@@ -152,7 +144,6 @@ void DactMainWindow::createActions()
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
-    QObject::connect(d_ui->applyPushButton, SIGNAL(clicked()), this, SLOT(applyQuery()));
 
     // Actions
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
