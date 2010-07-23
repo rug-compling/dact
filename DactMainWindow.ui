@@ -132,11 +132,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="fitAction"/>
+   <addaction name="previousAction"/>
+   <addaction name="nextAction"/>
    <addaction name="zoomInAction"/>
    <addaction name="zoomOutAction"/>
-   <addaction name="nextAction"/>
-   <addaction name="previousAction"/>
+   <addaction name="fitAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="quitAction">
@@ -146,8 +146,15 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="fitAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/viewmagfit.png</normaloff>:/icons/icons/viewmagfit.png</iconset>
+   </property>
    <property name="text">
     <string>Fit</string>
    </property>
@@ -157,60 +164,114 @@
    <property name="shortcut">
     <string>Ctrl+F</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="zoomInAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/viewmag+.png</normaloff>:/icons/icons/viewmag+.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom In</string>
    </property>
    <property name="shortcut">
     <string>Ctrl++</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="zoomOutAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/viewmag-.png</normaloff>:/icons/icons/viewmag-.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom Out</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="nextAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/next.png</normaloff>:/icons/icons/next.png</iconset>
+   </property>
    <property name="text">
     <string>Next</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="previousAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/previous.png</normaloff>:/icons/icons/previous.png</iconset>
+   </property>
    <property name="text">
     <string>Previous</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="openAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/fileopen.png</normaloff>:/icons/icons/fileopen.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="printAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/fileprint.png</normaloff>:/icons/icons/fileprint.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Print...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="pdfExportAction">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/icons/icons/pdf.png</normaloff>:/icons/icons/pdf.png</iconset>
+   </property>
    <property name="text">
     <string>Export to PDF...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="application.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>quitAction</sender>

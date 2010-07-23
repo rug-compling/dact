@@ -3,4 +3,14 @@
         <file>dt2tree.xsl</file>
         <file>bracketed-sentence.xsl</file>
     </qresource>
+    <qresource prefix="/icons">
+        <file>icons/viewmag-.png</file>
+        <file>icons/viewmag+.png</file>
+        <file>icons/viewmagfit.png</file>
+        <file>icons/fileopen.png</file>
+        <file>icons/fileprint.png</file>
+        <file>icons/next.png</file>
+        <file>icons/pdf.png</file>
+        <file>icons/previous.png</file>
+    </qresource>
 </RCC>
