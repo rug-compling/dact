@@ -75,6 +75,11 @@ DactMainWindow::~DactMainWindow()
     delete d_ui;
 }
 
+void DactMainWindow::aboutDialog()
+{
+    QMessageBox::about(this, "About Dact", "Please report bugs at: http://github.com/danieldk/dact");
+}
+
 void DactMainWindow::addFiles()
 {
     d_ui->fileListWidget->clear();
@@ -146,6 +151,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
 
     // Actions
+    QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
