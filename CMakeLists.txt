@@ -7,7 +7,8 @@ endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 
 list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${DACT_SOURCE_DIR}/include)
+include_directories(${DACT_BINARY_DIR})
 
 find_package(IndexedCorpus REQUIRED)
 if(INDEXEDCORPUS_FOUND)
@@ -38,24 +39,24 @@ find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
-  DactMainWindow.cpp
-  XPathFilter.cpp
-  XPathValidator.cpp
-  XSLTransformer.cpp
-  main.cpp
+  src/DactMainWindow/DactMainWindow.cpp
+  src/XPathFilter/XPathFilter.cpp
+  src/XPathValidator/XPathValidator.cpp
+  src/XSLTransformer/XSLTransformer.cpp
+  src/main.cpp
 )
 
 SET(dact_MOC_HDRS
-  DactMainWindow.h
-  XPathValidator.hh
+  include/DactMainWindow.h
+  include/XPathValidator.hh
 )
 
 SET(dact_UI
-  DactMainWindow.ui
+  ui/DactMainWindow.ui
 )
 
 SET(dact_RCS
-  application.qrc
+  qrc/application.qrc
 )
 
 qt4_add_resources(dact_SRCS ${dact_RCS})
