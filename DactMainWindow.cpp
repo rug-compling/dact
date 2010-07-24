@@ -341,8 +341,8 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     QByteArray svgData(svg.toUtf8());
 
     // Render SVG.
-    QSvgRenderer *renderer = new QSvgRenderer(svgData);
     QGraphicsScene *scene = new QGraphicsScene(d_ui->treeGraphicsView);
+    QSvgRenderer *renderer = new QSvgRenderer(svgData, scene);
     d_curTreeItem = new QGraphicsSvgItem;
     d_curTreeItem->setSharedRenderer(renderer);
     scene->addItem(d_curTreeItem);
