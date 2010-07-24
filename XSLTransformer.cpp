@@ -20,19 +20,19 @@ extern "C" {
 
 XSLTransformer::XSLTransformer(QString const &xsl)
 {
-	QByteArray xslData(xsl.toUtf8());
-	xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
+    QByteArray xslData(xsl.toUtf8());
+    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
     d_xslPtr = xsltParseStylesheetDoc(xslDoc);
 }
 
 XSLTransformer::~XSLTransformer()
 {
-	xsltFreeStylesheet(d_xslPtr);
+    xsltFreeStylesheet(d_xslPtr);
 }
 
 QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> const &params)
 {
-	// Read XML data intro an xmlDoc.
+    // Read XML data intro an xmlDoc.
     QByteArray xmlData(xml.toUtf8());
     xmlDocPtr doc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
 
@@ -59,7 +59,7 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 	}
     cParams[params.size() * 2] = 0; // Terminator
 
-	// Transform...
+    // Transform...
     xmlDocPtr res = xsltApplyStylesheet(d_xslPtr, doc, cParams);
 
     if (!res) {
@@ -71,8 +71,11 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 	int outputLen = -1;
 	xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
 
-	if (!output)
+	if (!output) {
+		xmlFreeDoc(res);
+		xmlFreeDoc(doc);
 		throw std::runtime_error("Could not apply stylesheet!");
+	}
 
 	QString result(QString::fromUtf8(reinterpret_cast<char const *>(output)));
 
@@ -83,6 +86,7 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 
 	// Deallocate memory used for libxml2/libxslt.
 	xmlFree(output);
+	xmlFreeDoc(res);
     xmlFreeDoc(doc);
 
 	return result;
