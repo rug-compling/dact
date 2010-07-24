@@ -160,7 +160,7 @@
   <action name="fitAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/viewmagfit.png</normaloff>:/icons/icons/viewmagfit.png</iconset>
+     <normaloff>:/icons/viewmagfit.png</normaloff>:/icons/viewmagfit.png</iconset>
    </property>
    <property name="text">
     <string>Fit</string>
@@ -178,7 +178,7 @@
   <action name="zoomInAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/viewmag+.png</normaloff>:/icons/icons/viewmag+.png</iconset>
+     <normaloff>:/icons/viewmag+.png</normaloff>:/icons/viewmag+.png</iconset>
    </property>
    <property name="text">
     <string>Zoom In</string>
@@ -193,7 +193,7 @@
   <action name="zoomOutAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/viewmag-.png</normaloff>:/icons/icons/viewmag-.png</iconset>
+     <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
    </property>
    <property name="text">
     <string>Zoom Out</string>
@@ -208,7 +208,7 @@
   <action name="nextAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/next.png</normaloff>:/icons/icons/next.png</iconset>
+     <normaloff>:/icons/next.png</normaloff>:/icons/next.png</iconset>
    </property>
    <property name="text">
     <string>Next</string>
@@ -223,7 +223,7 @@
   <action name="previousAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/previous.png</normaloff>:/icons/icons/previous.png</iconset>
+     <normaloff>:/icons/previous.png</normaloff>:/icons/previous.png</iconset>
    </property>
    <property name="text">
     <string>Previous</string>
@@ -238,7 +238,7 @@
   <action name="openAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/fileopen.png</normaloff>:/icons/icons/fileopen.png</iconset>
+     <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open...</string>
@@ -253,7 +253,7 @@
   <action name="printAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/fileprint.png</normaloff>:/icons/icons/fileprint.png</iconset>
+     <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Print...</string>
@@ -265,7 +265,7 @@
   <action name="pdfExportAction">
    <property name="icon">
     <iconset resource="../qrc/dact.qrc">
-     <normaloff>:/icons/icons/pdf.png</normaloff>:/icons/icons/pdf.png</iconset>
+     <normaloff>:/icons/pdf.png</normaloff>:/icons/pdf.png</iconset>
    </property>
    <property name="text">
     <string>Export to PDF...</string>
