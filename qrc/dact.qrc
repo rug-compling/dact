@@ -1,7 +1,7 @@
 <RCC>
-    <qresource prefix="/stylesheets">
-        <file>dt2tree.xsl</file>
-        <file>bracketed-sentence.xsl</file>
+    <qresource prefix="/">
+        <file>stylesheets/dt2tree.xsl</file>
+        <file>stylesheets/bracketed-sentence.xsl</file>
     </qresource>
     <qresource prefix="/icons">
         <file>icons/viewmag-.png</file>

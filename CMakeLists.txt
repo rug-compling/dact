@@ -56,7 +56,7 @@ SET(dact_UI
 )
 
 SET(dact_RCS
-  qrc/application.qrc
+  qrc/dact.qrc
 )
 
 qt4_add_resources(dact_SRCS ${dact_RCS})
