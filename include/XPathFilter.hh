@@ -5,13 +5,13 @@
 #include <QString>
 #include <QVector>
 
-#include <IndexedCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/CorpusReader.hh>
 
 class XPathFilter
 {
 public:
 	XPathFilter(QString const &xpathQuery);
-	QVector<QString> entries(indexedcorpus::CorpusReader *reader) const;
+	QVector<QString> entries(alpinocorpus::CorpusReader *reader) const;
 private:
 	QByteArray d_xpathQuery;
 };

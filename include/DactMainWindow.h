@@ -6,7 +6,7 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include <IndexedCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XPathFilter.hh"
 #include "XPathValidator.hh"
@@ -68,7 +68,7 @@ private:
     QSharedPointer<XSLTransformer> d_treeTransformer;
     QSharedPointer<XPathFilter> d_xpathFilter;
     QSharedPointer<XPathValidator> d_xpathValidator;
-    QSharedPointer<indexedcorpus::CorpusReader> d_corpusReader;
+    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
 };
 

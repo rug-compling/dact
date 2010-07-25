@@ -8,12 +8,12 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#include <IndexedCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XPathFilter.hh"
 
 using namespace std;
-using namespace indexedcorpus;
+using namespace alpinocorpus;
 
 XPathFilter::XPathFilter(QString const &xpathQuery)
 {

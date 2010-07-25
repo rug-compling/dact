@@ -26,14 +26,14 @@
 #include <sstream>
 #include <vector>
 
-#include <IndexedCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactMainWindow.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactMainWindow.h"
 
-using namespace indexedcorpus;
+using namespace alpinocorpus;
 using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
