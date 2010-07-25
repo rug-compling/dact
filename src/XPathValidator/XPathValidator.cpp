@@ -12,7 +12,7 @@ XPathValidator::XPathValidator()
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
-    if (exprStr.trimmed().size() == 0)
+    if (exprStr.trimmed().isEmpty())
         return XPathValidator::Acceptable;
 
     exprStr.replace('\'', '"');
