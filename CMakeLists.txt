@@ -70,3 +70,5 @@ target_link_libraries(dact ${LIBXML2_LIBRARIES})
 target_link_libraries(dact ${LIBXSLT_LIBRARIES})
 target_link_libraries(dact ${LIBEXSLT_LIBRARIES})
 
+install(TARGETS dact
+  RUNTIME DESTINATION bin) 
