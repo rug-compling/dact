@@ -85,10 +85,16 @@ void DactMainWindow::addFiles()
     d_ui->fileListWidget->clear();
 
     QVector<QString> entries;
-    if (d_xpathFilter.isNull())
-        entries = d_corpusReader->entries();
-    else
-        entries = d_xpathFilter->entries(d_corpusReader.data());
+
+    try {
+        if (d_xpathFilter.isNull())
+            entries = d_corpusReader->entries();
+        else
+            entries = d_xpathFilter->entries(d_corpusReader.data());
+    } catch (runtime_error &e) {
+        QMessageBox::critical(this, QString("Error reading corpus"),
+            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+    }
 
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
