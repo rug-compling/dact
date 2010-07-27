@@ -35,7 +35,7 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
@@ -63,7 +63,7 @@ qt4_add_resources(dact_SRCS ${dact_RCS})
 qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(dact ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
+add_executable(dact WIN32 ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
 target_link_libraries(dact ${QT_LIBRARIES})
 target_link_libraries(dact ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(dact ${LIBXML2_LIBRARIES})
