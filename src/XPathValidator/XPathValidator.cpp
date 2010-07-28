@@ -1,3 +1,6 @@
+#include <QObject>
+#include <QValidator>
+
 #include <libxml/xpath.h>
 
 #include "XPathValidator.hh"
@@ -6,7 +9,7 @@ void ignoreStructuredError(void *userdata, xmlErrorPtr err)
 {
 }
 
-XPathValidator::XPathValidator()
+XPathValidator::XPathValidator(QObject *parent) : QValidator(parent)
 {
 }
 
