@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
+#include <QSharedPointer>
 #include <QSize>
 #include <QString>
 #include <QVector>
@@ -29,7 +30,7 @@ using namespace std;
 
 DactFilterWindow::DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QWidget *parent) :
     QWidget(parent),
-    d_ui(new Ui::DactFilterWindow),
+    d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_mainWindow(mainWindow),
     d_corpusReader(corpusReader),
     d_xpathValidator(new XPathValidator)
@@ -43,7 +44,6 @@ DactFilterWindow::DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<al
 
 DactFilterWindow::~DactFilterWindow()
 {
-    delete d_ui;
 }
 
 void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)

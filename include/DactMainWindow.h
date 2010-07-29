@@ -67,8 +67,8 @@ private:
     void writeSettings();
     QString sentenceForFile(QFileInfo const &file, QString const &query);
 
-    Ui::DactMainWindow *d_ui;
-    DactFilterWindow *d_filterWindow;
+    QSharedPointer<Ui::DactMainWindow> d_ui;
+    QSharedPointer<DactFilterWindow> d_filterWindow;
     
     QString d_corpusPath;
     QString d_query;

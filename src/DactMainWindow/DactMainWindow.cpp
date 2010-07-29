@@ -39,8 +39,7 @@ using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    d_ui(new Ui::DactMainWindow),
-    d_filterWindow(NULL),
+    d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -54,7 +53,6 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
-    d_filterWindow(NULL),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -75,7 +73,6 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 
 DactMainWindow::~DactMainWindow()
 {
-    delete d_ui;
 }
 
 void DactMainWindow::aboutDialog()
@@ -178,8 +175,8 @@ void DactMainWindow::close()
 
 void DactMainWindow::showFilterWindow()
 {
-    if(d_filterWindow == NULL)
-        d_filterWindow = new DactFilterWindow(this, d_corpusReader, 0);
+    if(d_filterWindow.isNull())
+        d_filterWindow = QSharedPointer<DactFilterWindow>(new DactFilterWindow(this, d_corpusReader, 0));
     
     d_filterWindow->show();
 }

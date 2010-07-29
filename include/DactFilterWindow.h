@@ -24,7 +24,7 @@ class QListWidgetItem;
 class DactFilterWindow : public QWidget {
     Q_OBJECT
 public:
-    DactFilterWindow(DactMainWindow *delegate, QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QWidget *parent = 0);
+    DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QWidget *parent = 0);
     ~DactFilterWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
@@ -47,7 +47,7 @@ private:
     void writeSettings();
     QString sentenceForFile(QFileInfo const &file, QString const &query);
 
-    Ui::DactFilterWindow *d_ui;
+    QSharedPointer<Ui::DactFilterWindow> d_ui;
     DactMainWindow *d_mainWindow;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathFilter> d_xpathFilter;
