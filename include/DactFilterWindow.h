@@ -6,6 +6,7 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QFileInfo>
+#include <QCloseEvent>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
@@ -25,18 +26,18 @@ class DactFilterWindow : public QWidget {
 public:
     DactFilterWindow(DactMainWindow *delegate, QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QWidget *parent = 0);
     ~DactFilterWindow();
+    // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
 
 public slots:
-    void hide();
-
+    
 private slots:
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
 
 protected:
-    //void changeEvent(QEvent *e);
+    void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
     void addFiles();

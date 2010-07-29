@@ -36,7 +36,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <connections>
   <connection>
-   <sender>quitAction</sender>
+   <sender>closeAction</sender>
    <signal>triggered()</signal>
    <receiver>DactFilterWindow</receiver>
    <slot>close()</slot>

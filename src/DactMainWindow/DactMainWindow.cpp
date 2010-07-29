@@ -40,6 +40,7 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
+    d_filterWindow(NULL),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -53,6 +54,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
+    d_filterWindow(NULL),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -176,7 +178,7 @@ void DactMainWindow::close()
 
 void DactMainWindow::showFilterWindow()
 {
-    if(!d_filterWindow)
+    if(d_filterWindow == NULL)
         d_filterWindow = new DactFilterWindow(this, d_corpusReader, 0);
     
     d_filterWindow->show();

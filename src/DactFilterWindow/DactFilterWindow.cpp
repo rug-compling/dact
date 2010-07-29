@@ -151,8 +151,6 @@ void DactFilterWindow::filterChanged()
 
     if (!d_corpusReader.isNull())
         addFiles();
-    else
-        qWarning() << "d_corpusReader is null";
 }
 
 void DactFilterWindow::initSentenceTransformer()
@@ -165,10 +163,10 @@ void DactFilterWindow::initSentenceTransformer()
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
-void DactFilterWindow::hide()
+void DactFilterWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
-    QWidget::hide();
+    event->accept();
 }
 
 void DactFilterWindow::readSettings()
@@ -176,8 +174,8 @@ void DactFilterWindow::readSettings()
     QSettings settings("RUG", "Dact");
 
     // Window geometry.
-    QPoint pos = settings.value("filter-pos", QPoint(200, 200)).toPoint();
-    QSize size = settings.value("filter-size", QSize(350, 400)).toSize();
+    QPoint pos = settings.value("filter_pos", QPoint(200, 200)).toPoint();
+    QSize size = settings.value("filter_size", QSize(350, 400)).toSize();
     resize(size);
 
     // Move.
@@ -189,6 +187,6 @@ void DactFilterWindow::writeSettings()
     QSettings settings("RUG", "Dact");
 
     // Window geometry
-    settings.setValue("filter-pos", pos());
-    settings.setValue("filter-size", size());
+    settings.setValue("filter_pos", pos());
+    settings.setValue("filter_size", size());
 }
