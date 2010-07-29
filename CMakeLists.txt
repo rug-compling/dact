@@ -40,6 +40,7 @@ INCLUDE(${QT_USE_FILE})
 
 SET(dact_SRCS
   src/DactMainWindow/DactMainWindow.cpp
+  src/DactFilterWindow/DactFilterWindow.cpp
   src/XPathFilter/XPathFilter.cpp
   src/XPathValidator/XPathValidator.cpp
   src/XSLTransformer/XSLTransformer.cpp
@@ -48,11 +49,13 @@ SET(dact_SRCS
 
 SET(dact_MOC_HDRS
   include/DactMainWindow.h
+  include/DactFilterWindow.h
   include/XPathValidator.hh
 )
 
 SET(dact_UI
   ui/DactMainWindow.ui
+  ui/DactFilterWindow.ui
 )
 
 SET(dact_RCS
