@@ -178,6 +178,7 @@ void DactMainWindow::showFilterWindow()
     if(d_filterWindow.isNull())
         d_filterWindow = QSharedPointer<DactFilterWindow>(new DactFilterWindow(this, d_corpusReader, 0));
     
+    d_filterWindow->setFilter(d_ui->filterLineEdit->text());
     d_filterWindow->show();
 }
 

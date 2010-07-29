@@ -28,19 +28,21 @@ public:
     ~DactFilterWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
+    void setFilter(QString const &text);
 
 public slots:
     
 private slots:
     void applyValidityColor(QString const &text);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
+    void entryActivated(QListWidgetItem *subject);
     void filterChanged();
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
-    void addFiles();
+    void updateResults();
     void createActions();
     void initSentenceTransformer();
     void readSettings();

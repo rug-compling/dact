@@ -49,10 +49,24 @@ DactFilterWindow::~DactFilterWindow()
 void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
-    addFiles();
+    updateResults();
 }
 
-void DactFilterWindow::addFiles()
+void DactFilterWindow::setFilter(QString const &filter)
+{
+    d_ui->filterLineEdit->setText(filter);
+    
+    // Don't try to filter with an invalid xpath expression
+    if (filter.trimmed().isEmpty() || !d_ui->filterLineEdit->hasAcceptableInput())
+        d_xpathFilter.clear();
+    else
+        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
+
+    if (!d_corpusReader.isNull())
+        updateResults();
+}
+
+void DactFilterWindow::updateResults()
 {
     d_ui->resultsListWidget->clear();
 
@@ -127,6 +141,14 @@ void DactFilterWindow::createActions()
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
         this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
+    QObject::connect(d_ui->resultsListWidget, 
+        // itemActivated is triggered by a single click on some systems
+        // where this is the configured behavior: it can be annoying.
+        // But it also enables using [enter] to raise the main window
+        // which is the expected/preferred behavior.
+        SIGNAL(itemActivated(QListWidgetItem*)),
+        this,
+        SLOT(entryActivated(QListWidgetItem*)));
 
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
@@ -139,18 +161,20 @@ void DactFilterWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *
         return;
     
     d_mainWindow->showFile(current->data(Qt::UserRole).toString());
+    
+    // Raises this window again when using cursor keys after using\
+    // [enter] to raise the main window.
+    raise();
+}
+
+void DactFilterWindow::entryActivated(QListWidgetItem *item)
+{
+    d_mainWindow->raise();
 }
 
 void DactFilterWindow::filterChanged()
 {
-    QString filter = d_ui->filterLineEdit->text();
-    if (filter.trimmed().isEmpty())
-        d_xpathFilter.clear();
-    else
-        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
-
-    if (!d_corpusReader.isNull())
-        addFiles();
+    setFilter(d_ui->filterLineEdit->text());
 }
 
 void DactFilterWindow::initSentenceTransformer()
