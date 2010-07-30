@@ -111,11 +111,11 @@ void DactMainWindow::addFiles()
 			if(d_ui->showSentencesInFileList->isChecked())
 				item = new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
 			else
-				item = new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
+				item = new QListWidgetItem(*iter, d_ui->fileListWidget);
 			
 			item->setData(Qt::UserRole, entryFi.fileName());
 		} catch(runtime_error &e) {
-			qWarning() << "Something went wrong while populating the file list";
+            qWarning() << "Error while populating entry list: " << e.what();
 		}
     }
 }
@@ -341,7 +341,7 @@ void DactMainWindow::openCorpus()
 
     addFiles();
     
-    if(d_filterWindow == 0)
+    if(d_filterWindow != 0)
         d_filterWindow->switchCorpus(d_corpusReader);
 }
 

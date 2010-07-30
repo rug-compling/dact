@@ -91,7 +91,7 @@ void DactFilterWindow::updateResults()
 			QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
 			item->setData(Qt::UserRole, entryFi.fileName());
 		} catch(runtime_error &e) {
-			qWarning() << "Something went wrong while populating the file list";
+            qWarning() << "Error populating file list: " << e.what();
 		}
     }
 }
