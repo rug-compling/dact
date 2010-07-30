@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>stylesheets/dt2tree.xsl</file>
         <file>stylesheets/bracketed-sentence.xsl</file>
+        <file>doc/dact.qhc</file>
         <file>icons/viewmag-.png</file>
         <file>icons/viewmag+.png</file>
         <file>icons/viewmagfit.png</file>

@@ -38,6 +38,29 @@ endif()
 find_package(Qt4 COMPONENTS QtCore QtGui QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+# Documentation
+find_program(QHELP_GENERATOR_COMMAND NAMES qhelpgenerator)
+find_program(QCOLLECTION_GENERATOR_COMMAND NAMES qcollectiongenerator)
+
+add_custom_command(
+  DEPENDS
+    ${DACT_SOURCE_DIR}/doc/index.html
+    ${DACT_SOURCE_DIR}/doc/dact.qhp
+  COMMAND ${QHELP_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhp -o ${DACT_SOURCE_DIR}/doc/dact.qch
+  OUTPUT ${DACT_SOURCE_DIR}/doc/dact.qch
+)
+
+add_custom_command(
+  DEPENDS
+    ${DACT_SOURCE_DIR}/doc/dact.qch
+    ${DACT_SOURCE_DIR}/doc/dact.qhcp
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/qsrc/doc
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/qsrc/doc
+  COMMAND ${QCOLLECTION_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhcp -o ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
+  OUTPUT ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
+)
+
+# Dact sources
 SET(dact_SRCS
   src/DactMainWindow/DactMainWindow.cpp
   src/XPathFilter/XPathFilter.cpp
