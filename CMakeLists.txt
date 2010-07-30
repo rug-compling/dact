@@ -45,19 +45,10 @@ find_program(QCOLLECTION_GENERATOR_COMMAND NAMES qcollectiongenerator)
 add_custom_command(
   DEPENDS
   ${DACT_SOURCE_DIR}/doc/index.html
-  ${DACT_SOURCE_DIR}/doc/dact.qhp
-  COMMAND ${QHELP_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhp -o ${DACT_SOURCE_DIR}/doc/dact.qch
-  OUTPUT ${DACT_SOURCE_DIR}/doc/dact.qch
-)
-
-add_custom_command(
-  DEPENDS
-  ${DACT_SOURCE_DIR}/doc/dact.qch
-  ${DACT_SOURCE_DIR}/doc/dact.qhcp
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/qrc/doc
   COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/qrc/doc
-  COMMAND ${QCOLLECTION_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhcp -o ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
-  OUTPUT ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
+  COMMAND ${CMAKE_COMMAND} -E copy ${DACT_SOURCE_DIR}/doc/index.html ${DACT_SOURCE_DIR}/qrc/doc/index.html
+  OUTPUT ${DACT_SOURCE_DIR}/qrc/doc/index.html
 )
 
 # Dact sources

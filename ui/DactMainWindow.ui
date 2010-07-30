@@ -138,6 +138,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="helpAction"/>
     <addaction name="aboutAction"/>
    </widget>
    <addaction name="menu_File"/>
@@ -222,14 +223,14 @@
    </property>
   </action>
   <action name="showSentencesInFileList">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show Sentences</string>
    </property>
    <property name="toolTip">
     <string>Display bracketed sentences instead of file names</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
    </property>
   </action>
   <action name="showFilterWindow">
@@ -309,6 +310,14 @@
   <action name="aboutAction">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="helpAction">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>

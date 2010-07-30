@@ -10,6 +10,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactFilterWindow.h"
+#include "DactHelpWindow.h"
 #include "XPathFilter.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -42,6 +43,7 @@ private slots:
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
     void fitTree();
+    void help();
     void nextEntry(bool);
     void openCorpus();
     void pdfExport();
@@ -69,6 +71,7 @@ private:
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
     QSharedPointer<DactFilterWindow> d_filterWindow;
+    QSharedPointer<DactHelpWindow> d_dactHelpWindow;
     
     QString d_corpusPath;
     QString d_query;

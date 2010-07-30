@@ -18,6 +18,7 @@
 #include <QStringList>
 #include <QSvgRenderer>
 #include <QTextStream>
+#include <Qt>
 #include <QtDebug>
 
 #include <cstdlib>
@@ -40,6 +41,7 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
+    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -53,6 +55,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
+    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -200,6 +203,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
+    QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
@@ -225,6 +229,11 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     }
     
     showFile(current->data(Qt::UserRole).toString());
+}
+
+void DactMainWindow::help()
+{
+    d_dactHelpWindow->show();
 }
 
 void DactMainWindow::showFile(QString const &filename)
