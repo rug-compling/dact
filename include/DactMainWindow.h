@@ -5,15 +5,17 @@
 #include <QMainWindow>
 #include <QSharedPointer>
 #include <QString>
+#include <QFileInfo>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "DactFilterWindow.h"
 #include "XPathFilter.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
 namespace Ui {
-    class DactMainWindow;
+	class DactMainWindow;
 }
 
 double const ZOOM_OUT_FACTOR = 0.8;
@@ -31,6 +33,8 @@ public:
 
 public slots:
     void close();
+    void showFilterWindow();
+    void showFile(QString const &filename);
 
 private slots:
     void aboutDialog();
@@ -48,6 +52,7 @@ private slots:
     void showTree(QString const &xml, QHash<QString, QString> const &params);
     void treeZoomIn(bool);
     void treeZoomOut(bool);
+    void toggleSentencesInFileList(bool show);
 
 protected:
     void changeEvent(QEvent *e);
@@ -60,8 +65,11 @@ private:
     void initTreeTransformer();
     void readSettings();
     void writeSettings();
+    QString sentenceForFile(QFileInfo const &file, QString const &query);
 
-    Ui::DactMainWindow *d_ui;
+    QSharedPointer<Ui::DactMainWindow> d_ui;
+    QSharedPointer<DactFilterWindow> d_filterWindow;
+    
     QString d_corpusPath;
     QString d_query;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;

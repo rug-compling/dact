@@ -29,6 +29,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactMainWindow.h"
+#include "DactFilterWindow.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactMainWindow.h"
@@ -38,7 +39,7 @@ using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    d_ui(new Ui::DactMainWindow),
+    d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -72,7 +73,6 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 
 DactMainWindow::~DactMainWindow()
 {
-    delete d_ui;
 }
 
 void DactMainWindow::aboutDialog()
@@ -85,17 +85,54 @@ void DactMainWindow::addFiles()
     d_ui->fileListWidget->clear();
 
     QVector<QString> entries;
-    if (d_xpathFilter.isNull())
-        entries = d_corpusReader->entries();
-    else
-        entries = d_xpathFilter->entries(d_corpusReader.data());
+
+    try {
+        if (d_xpathFilter.isNull())
+            entries = d_corpusReader->entries();
+        else
+            entries = d_xpathFilter->entries(d_corpusReader.data());
+    } catch (runtime_error &e) {
+        QMessageBox::critical(this, QString("Error reading corpus"),
+            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+    }
 
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
     {
-        QFileInfo entryFi(*iter);
-        new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
+		try {
+			QFileInfo entryFi(*iter);
+			QListWidgetItem *item;
+			
+			if(d_ui->showSentencesInFileList->isChecked())
+				item = new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
+			else
+				item = new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
+			
+			item->setData(Qt::UserRole, entryFi.fileName());
+		} catch(runtime_error &e) {
+			qWarning() << "Something went wrong while populating the file list";
+		}
     }
+}
+
+QString DactMainWindow::sentenceForFile(QFileInfo const &file, QString const &query)
+{
+	// Read XML data.
+    if (d_corpusReader.isNull())
+        throw runtime_error("DactMainWindow::sentenceForFile CorpusReader not available");
+
+    QString xml = d_corpusReader->read(file.fileName());
+
+    if (xml.size() == 0)
+        throw runtime_error("DactMainWindow::sentenceForFile: empty XML data!");
+
+    // Parameters
+    QString valStr = query.trimmed().isEmpty() ? "'/..'" :
+                     QString("'") + query + QString("'");
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
+
+	return d_sentenceTransformer->transform(xml, params).trimmed();
 }
 
 void DactMainWindow::applyValidityColor(QString const &)
@@ -136,6 +173,15 @@ void DactMainWindow::close()
     QMainWindow::close();
 }
 
+void DactMainWindow::showFilterWindow()
+{
+    if(d_filterWindow.isNull())
+        d_filterWindow = QSharedPointer<DactFilterWindow>(new DactFilterWindow(this, d_corpusReader, 0));
+    
+    d_filterWindow->setFilter(d_ui->filterLineEdit->text());
+    d_filterWindow->show();
+}
+
 void DactMainWindow::createActions()
 {
     QObject::connect(d_ui->fileListWidget,
@@ -160,6 +206,9 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
+    QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
+    
+    QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
 }
 
 void DactMainWindow::createTransformers()
@@ -174,12 +223,17 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
         d_ui->treeGraphicsView->setScene(0);
         return;
     }
+    
+    showFile(current->data(Qt::UserRole).toString());
+}
 
+void DactMainWindow::showFile(QString const &filename)
+{
     // Read XML data.
     if (d_corpusReader.isNull())
         return;
 
-    QString xml = d_corpusReader->read(current->text());
+    QString xml = d_corpusReader->read(filename);
 
     if (xml.size() == 0) {
         qWarning() << "DactMainWindow::writeSettings: empty XML data!";
@@ -196,6 +250,19 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     try {
         showTree(xml, params);
         showSentence(xml, params);
+        
+        // I try to find my file back in the file list to keep the list
+        // in sync with the treegraph since showFile can be called from
+        // the child dialogs.
+        QListWidgetItem *item;
+        for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
+            item = d_ui->fileListWidget->item(i);
+            if(item->data(Qt::UserRole).toString() == filename) {
+                d_ui->fileListWidget->setCurrentItem(item);
+                break;
+            }
+        }
+        
     } catch(runtime_error &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
@@ -262,6 +329,9 @@ void DactMainWindow::openCorpus()
         CorpusReader::newCorpusReader(d_corpusPath));
 
     addFiles();
+    
+    if(d_filterWindow)
+        d_filterWindow->switchCorpus(d_corpusReader);
 }
 
 void DactMainWindow::pdfExport()
@@ -329,6 +399,12 @@ void DactMainWindow::writeSettings()
 
     // Splitter
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
+}
+
+void DactMainWindow::toggleSentencesInFileList(bool show)
+{
+	d_ui->showSentencesInFileList->setChecked(show);
+	filterChanged();
 }
 
 void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
