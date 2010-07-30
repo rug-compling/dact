@@ -84,12 +84,17 @@ void DactFilterWindow::updateResults()
         return;
     }
 
-    for (QVector<QString>::const_iterator iter = entries.begin();
-         iter != entries.end(); ++iter)
-    {
-		QFileInfo entryFi(*iter);
-		QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
-		item->setData(Qt::UserRole, entryFi.fileName());
+    try {
+        for (QVector<QString>::const_iterator iter = entries.begin();
+            iter != entries.end(); ++iter)
+        {
+            QFileInfo entryFi(*iter);
+            QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
+            item->setData(Qt::UserRole, entryFi.fileName());
+        }
+    } catch (runtime_error &e) {
+        QMessageBox::critical(this, QString("Error bracketing sentences"),
+            QString("Could not bracket sentences: %1").arg(e.what()));
     }
 }
 
