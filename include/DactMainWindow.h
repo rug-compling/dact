@@ -40,6 +40,8 @@ public slots:
 private slots:
     void aboutDialog();
     void applyValidityColor(QString const &text);
+    void bracketedEntryActivated();
+    void currentBracketedEntryChanged(QString const &entry);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
     void fitTree();

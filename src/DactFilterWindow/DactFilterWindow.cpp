@@ -20,7 +20,6 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactFilterWindow.h"
-#include "DactMainWindow.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactFilterWindow.h"
@@ -28,11 +27,10 @@
 using namespace alpinocorpus;
 using namespace std;
 
-DactFilterWindow::DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
-    d_mainWindow(mainWindow),
     d_corpusReader(corpusReader),
     d_xpathValidator(new XPathValidator)
 {
@@ -102,12 +100,12 @@ QString DactFilterWindow::sentenceForFile(QFileInfo const &file, QString const &
 {
 	// Read XML data.
     if (d_corpusReader.isNull())
-        throw runtime_error("DactMainWindow::sentenceForFile CorpusReader not available");
+        throw runtime_error("DactFilterWindow::sentenceForFile CorpusReader not available");
 
     QString xml = d_corpusReader->read(file.fileName());
 
     if (xml.size() == 0)
-        throw runtime_error("DactMainWindow::sentenceForFile: empty XML data!");
+        throw runtime_error("DactFilterWindow::sentenceForFile: empty XML data!");
 
     // Parameters
     QString valStr = query.trimmed().isEmpty() ? "'/..'" :
@@ -163,7 +161,7 @@ void DactFilterWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *
     if (current == 0)
         return;
     
-    d_mainWindow->showFile(current->data(Qt::UserRole).toString());
+    emit currentEntryChanged(current->data(Qt::UserRole).toString());
     
     // Raises this window again when using cursor keys after using\
     // [enter] to raise the main window.
@@ -172,7 +170,7 @@ void DactFilterWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *
 
 void DactFilterWindow::entryActivated(QListWidgetItem *item)
 {
-    d_mainWindow->raise();
+    emit entryActivated();
 }
 
 void DactFilterWindow::filterChanged()

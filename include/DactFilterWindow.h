@@ -19,20 +19,21 @@ namespace Ui {
 	class DactFilterWindow;
 }
 
-class DactMainWindow;
 class QListWidgetItem;
 
 class DactFilterWindow : public QWidget {
     Q_OBJECT
 public:
-    DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+    DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~DactFilterWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text);
 
-public slots:
+signals:
+    void currentEntryChanged(QString const &entry);
+    void entryActivated();
     
 private slots:
     void applyValidityColor(QString const &text);
@@ -52,7 +53,6 @@ private:
     QString sentenceForFile(QFileInfo const &file, QString const &query);
 
     QSharedPointer<Ui::DactFilterWindow> d_ui;
-    DactMainWindow *d_mainWindow;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathFilter> d_xpathFilter;
     QSharedPointer<XPathValidator> d_xpathValidator;

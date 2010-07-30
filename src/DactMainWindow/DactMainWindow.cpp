@@ -122,6 +122,12 @@ void DactMainWindow::addFiles()
     }
 }
 
+void DactMainWindow::bracketedEntryActivated()
+{
+    raise();
+    activateWindow();
+}
+
 QString DactMainWindow::sentenceForFile(QFileInfo const &file, QString const &query)
 {
 	// Read XML data.
@@ -180,11 +186,19 @@ void DactMainWindow::close()
     QMainWindow::close();
 }
 
+void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
+{
+    showFile(entry);
+}
+
 void DactMainWindow::showFilterWindow()
 {
-    if (d_filterWindow == 0)
-        d_filterWindow = new DactFilterWindow(this, d_corpusReader, this, Qt::Window);
-    
+    if (d_filterWindow == 0) {
+        d_filterWindow = new DactFilterWindow(d_corpusReader, this, Qt::Window);
+        QObject::connect(d_filterWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
+        QObject::connect(d_filterWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
+    }
+
     d_filterWindow->setFilter(d_ui->filterLineEdit->text());
     d_filterWindow->show();
 }
@@ -195,7 +209,6 @@ void DactMainWindow::createActions()
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
         this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
-
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
