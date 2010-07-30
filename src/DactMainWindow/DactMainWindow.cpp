@@ -99,6 +99,7 @@ void DactMainWindow::addFiles()
     } catch (runtime_error &e) {
         QMessageBox::critical(this, QString("Error reading corpus"),
             QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+        return;
     }
 
     for (QVector<QString>::const_iterator iter = entries.begin();
