@@ -4,52 +4,39 @@
  <widget class="QWidget" name="DactFilterWindow">
   <property name="geometry">
    <rect>
-    <x>20</x>
-    <y>20</y>
+    <x>0</x>
+    <y>0</y>
     <width>400</width>
     <height>400</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>Filter Sentences</string>
   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Filter:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="filterLineEdit"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QListWidget" name="resultsListWidget"/>
-    </item>
-   </layout>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Filter:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="filterLineEdit"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QListWidget" name="resultsListWidget"/>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <connections>
-  <connection>
-   <sender>closeAction</sender>
-   <signal>triggered()</signal>
-   <receiver>DactFilterWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <resources/>
+ <connections/>
 </ui>

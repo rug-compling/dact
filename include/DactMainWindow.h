@@ -70,8 +70,8 @@ private:
     QString sentenceForFile(QFileInfo const &file, QString const &query);
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
-    QSharedPointer<DactFilterWindow> d_filterWindow;
-    QSharedPointer<DactHelpWindow> d_dactHelpWindow;
+    DactFilterWindow *d_filterWindow;
+    DactHelpWindow *d_dactHelpWindow;
     
     QString d_corpusPath;
     QString d_query;

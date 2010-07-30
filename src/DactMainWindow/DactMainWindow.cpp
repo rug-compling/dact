@@ -42,6 +42,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_filterWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -56,6 +57,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_filterWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -178,8 +180,8 @@ void DactMainWindow::close()
 
 void DactMainWindow::showFilterWindow()
 {
-    if(d_filterWindow.isNull())
-        d_filterWindow = QSharedPointer<DactFilterWindow>(new DactFilterWindow(this, d_corpusReader, 0));
+    if (d_filterWindow == 0)
+        d_filterWindow = new DactFilterWindow(this, d_corpusReader, this, Qt::Window);
     
     d_filterWindow->setFilter(d_ui->filterLineEdit->text());
     d_filterWindow->show();
@@ -339,7 +341,7 @@ void DactMainWindow::openCorpus()
 
     addFiles();
     
-    if(d_filterWindow)
+    if(d_filterWindow == 0)
         d_filterWindow->switchCorpus(d_corpusReader);
 }
 

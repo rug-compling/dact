@@ -28,8 +28,9 @@
 using namespace alpinocorpus;
 using namespace std;
 
-DactFilterWindow::DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QWidget *parent) :
-    QWidget(parent),
+DactFilterWindow::DactFilterWindow(DactMainWindow *mainWindow, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+        QWidget *parent, Qt::WindowFlags f) :
+    QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_mainWindow(mainWindow),
     d_corpusReader(corpusReader),
