@@ -44,18 +44,18 @@ find_program(QCOLLECTION_GENERATOR_COMMAND NAMES qcollectiongenerator)
 
 add_custom_command(
   DEPENDS
-    ${DACT_SOURCE_DIR}/doc/index.html
-    ${DACT_SOURCE_DIR}/doc/dact.qhp
+  ${DACT_SOURCE_DIR}/doc/index.html
+  ${DACT_SOURCE_DIR}/doc/dact.qhp
   COMMAND ${QHELP_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhp -o ${DACT_SOURCE_DIR}/doc/dact.qch
   OUTPUT ${DACT_SOURCE_DIR}/doc/dact.qch
 )
 
 add_custom_command(
   DEPENDS
-    ${DACT_SOURCE_DIR}/doc/dact.qch
-    ${DACT_SOURCE_DIR}/doc/dact.qhcp
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/qsrc/doc
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/qsrc/doc
+  ${DACT_SOURCE_DIR}/doc/dact.qch
+  ${DACT_SOURCE_DIR}/doc/dact.qhcp
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/qrc/doc
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/qrc/doc
   COMMAND ${QCOLLECTION_GENERATOR_COMMAND} ${DACT_SOURCE_DIR}/doc/dact.qhcp -o ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
   OUTPUT ${DACT_SOURCE_DIR}/qrc/doc/dact.qhc
 )
@@ -64,6 +64,7 @@ add_custom_command(
 SET(dact_SRCS
   src/DactMainWindow/DactMainWindow.cpp
   src/DactFilterWindow/DactFilterWindow.cpp
+  src/DactHelpWindow/DactHelpWindow.cpp
   src/XPathFilter/XPathFilter.cpp
   src/XPathValidator/XPathValidator.cpp
   src/XSLTransformer/XSLTransformer.cpp
@@ -73,12 +74,14 @@ SET(dact_SRCS
 SET(dact_MOC_HDRS
   include/DactMainWindow.h
   include/DactFilterWindow.h
+  include/DactHelpWindow.h
   include/XPathValidator.hh
 )
 
 SET(dact_UI
   ui/DactMainWindow.ui
   ui/DactFilterWindow.ui
+  ui/DactHelpWindow.ui
 )
 
 SET(dact_RCS
