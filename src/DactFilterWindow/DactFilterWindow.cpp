@@ -86,13 +86,9 @@ void DactFilterWindow::updateResults()
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
     {
-		try {
-			QFileInfo entryFi(*iter);
-			QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
-			item->setData(Qt::UserRole, entryFi.fileName());
-		} catch(runtime_error &e) {
-            qWarning() << "Error populating file list: " << e.what();
-		}
+		QFileInfo entryFi(*iter);
+		QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
+		item->setData(Qt::UserRole, entryFi.fileName());
     }
 }
 

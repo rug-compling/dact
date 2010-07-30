@@ -104,19 +104,15 @@ void DactMainWindow::addFiles()
     for (QVector<QString>::const_iterator iter = entries.begin();
          iter != entries.end(); ++iter)
     {
-		try {
-			QFileInfo entryFi(*iter);
-			QListWidgetItem *item;
+		QFileInfo entryFi(*iter);
+		QListWidgetItem *item;
 			
-			if(d_ui->showSentencesInFileList->isChecked())
-				item = new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
-			else
-				item = new QListWidgetItem(*iter, d_ui->fileListWidget);
+		if(d_ui->showSentencesInFileList->isChecked())
+			item = new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
+		else
+			item = new QListWidgetItem(*iter, d_ui->fileListWidget);
 			
-			item->setData(Qt::UserRole, entryFi.fileName());
-		} catch(runtime_error &e) {
-            qWarning() << "Error while populating entry list: " << e.what();
-		}
+		item->setData(Qt::UserRole, entryFi.fileName());
     }
 }
 
