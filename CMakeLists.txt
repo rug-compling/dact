@@ -56,6 +56,7 @@ SET(dact_SRCS
   src/DactMainWindow/DactMainWindow.cpp
   src/DactFilterWindow/DactFilterWindow.cpp
   src/DactHelpWindow/DactHelpWindow.cpp
+  src/DactQueryWindow/DactQueryWindow.cpp
   src/XPathFilter/XPathFilter.cpp
   src/XPathValidator/XPathValidator.cpp
   src/XSLTransformer/XSLTransformer.cpp
@@ -66,6 +67,7 @@ SET(dact_MOC_HDRS
   include/DactMainWindow.h
   include/DactFilterWindow.h
   include/DactHelpWindow.h
+  include/DactQueryWindow.h
   include/XPathValidator.hh
 )
 
@@ -73,6 +75,7 @@ SET(dact_UI
   ui/DactMainWindow.ui
   ui/DactFilterWindow.ui
   ui/DactHelpWindow.ui
+  ui/DactQueryWindow.ui
 )
 
 SET(dact_RCS

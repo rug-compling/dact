@@ -42,6 +42,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_filterWindow(0),
+    d_queryWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -57,6 +58,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     d_ui(new Ui::DactMainWindow),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_filterWindow(0),
+    d_queryWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -201,6 +203,15 @@ void DactMainWindow::showFilterWindow()
     d_filterWindow->show();
 }
 
+void DactMainWindow::showQueryWindow()
+{
+    if (d_queryWindow == 0) {
+        d_queryWindow = new DactQueryWindow(d_corpusReader, this, Qt::Window);
+    }
+
+    d_queryWindow->show();
+}
+
 void DactMainWindow::createActions()
 {
     QObject::connect(d_ui->fileListWidget,
@@ -226,7 +237,8 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
-    
+    QObject::connect(d_ui->showQueryWindow, SIGNAL(triggered(bool)), this, SLOT(showQueryWindow()));    
+
     QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
 }
 
@@ -356,6 +368,9 @@ void DactMainWindow::openCorpus()
     
     if(d_filterWindow != 0)
         d_filterWindow->switchCorpus(d_corpusReader);
+    
+    if(d_queryWindow != 0)
+        d_queryWindow->switchCorpus(d_corpusReader);
 }
 
 void DactMainWindow::pdfExport()

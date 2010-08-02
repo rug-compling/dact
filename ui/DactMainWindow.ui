@@ -133,6 +133,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="showFilterWindow"/>
+    <addaction name="showQueryWindow"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -236,6 +237,11 @@
   <action name="showFilterWindow">
    <property name="text">
     <string>Search Sentences...</string>
+   </property>
+  </action>
+  <action name="showQueryWindow">
+   <property name="text">
+    <string>Statistics...</string>
    </property>
   </action>
   <action name="nextAction">
