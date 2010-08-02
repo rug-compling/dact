@@ -8,6 +8,8 @@
 #include <QSharedPointer>
 #include <QSize>
 #include <QString>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QVector>
 #include <QtDebug>
 
@@ -80,6 +82,7 @@ void DactQueryWindow::updateResults()
     QHash<QString,int> results;
 
     d_ui->resultsTableWidget->setRowCount(0);
+    //d_ui->resultsTableWidget->setColumnCount(3);
 
     if (d_xpathFilter.isNull())
         return;
@@ -91,22 +94,40 @@ void DactQueryWindow::updateResults()
             QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
         return;
     }
+    
+    float totalHits = 0;
+    float percentage;
+    
+    for (QHash<QString,int>::const_iterator iter = results.begin(); iter != results.end(); ++iter)
+    {
+        totalHits += iter.value();
+    }
 
     for (QHash<QString,int>::const_iterator iter = results.begin(); iter != results.end(); ++iter)
     {
-        QTableWidgetItem *resultItem = new QTableWidgetItem(iter.key());
-        // Set the flags to disable the default inline editing.
-        resultItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        d_ui->resultsTableWidget->insertRow(row);
         
-        QTableWidgetItem *countItem = new QTableWidgetItem();
+        QTableWidgetItem *resultItem = new QTableWidgetItem(iter.key());
+        resultItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        d_ui->resultsTableWidget->setItem(row, 0, resultItem);
+        
+        percentage = ((float) iter.value() / totalHits) * 100.0;
+        QTableWidgetItem *percentageItem = new QTableWidgetItem();
         // Using setData to force the value to be of the type int, or else it will sort sort alphabetically.
+        percentageItem->setData(Qt::DisplayRole, percentage);
+        percentageItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        percentageItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
+        d_ui->resultsTableWidget->setItem(row, 2, percentageItem);
+        // @TODO Make percentage pretty and correctly formatted using
+        // QString("%1%").arg(percentage, 0, 'f', 1) and 
+        // d_ui->resultsTableWidget->setCellWidget(row, 2, ...);
+
+        QTableWidgetItem *countItem = new QTableWidgetItem();
         countItem->setData(Qt::DisplayRole, iter.value());
         countItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         countItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
-
-        d_ui->resultsTableWidget->insertRow(row);
-        d_ui->resultsTableWidget->setItem(row, 0, resultItem);
         d_ui->resultsTableWidget->setItem(row, 1, countItem);
+
         ++row;
     }
 }
@@ -150,6 +171,16 @@ void DactQueryWindow::createActions()
     
     QObject::connect(d_ui->attributeComboBox, SIGNAL(currentIndexChanged(int)), this,
         SLOT(filterChanged()));
+    
+    QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
+}
+
+void DactQueryWindow::showPercentage(bool show)
+{
+   //d_ui->resultsTableWidget->setColumnHidden(1, show);
+   d_ui->resultsTableWidget->setColumnHidden(2, !show);
+    
+   d_ui->percentageCheckBox->setChecked(show);
 }
 
 void DactQueryWindow::filterChanged()
@@ -161,6 +192,11 @@ void DactQueryWindow::filterChanged()
     updateResults();
 }
 
+void DactQueryWindow::showPercentageChanged()
+{
+    showPercentage(d_ui->percentageCheckBox->isChecked());
+}
+
 void DactQueryWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
@@ -170,6 +206,9 @@ void DactQueryWindow::closeEvent(QCloseEvent *event)
 void DactQueryWindow::readSettings()
 {
     QSettings settings("RUG", "Dact");
+
+    bool show = settings.value("query_show_percentage", false).toBool();
+    showPercentage(show);
 
     // Window geometry.
     QPoint pos = settings.value("query_pos", QPoint(200, 200)).toPoint();
@@ -183,6 +222,8 @@ void DactQueryWindow::readSettings()
 void DactQueryWindow::writeSettings()
 {
     QSettings settings("RUG", "Dact");
+
+    settings.setValue("query_show_percentage", d_ui->percentageCheckBox->isChecked());
 
     // Window geometry
     settings.setValue("query_pos", pos());

@@ -31,10 +31,12 @@ public:
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text);
     void setAggregateAttribute(QString const &text);
+    void showPercentage(bool show);
 
 private slots:
     void applyValidityColor(QString const &text);
     void filterChanged();
+    void showPercentageChanged();
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.

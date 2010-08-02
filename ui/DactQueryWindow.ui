@@ -74,6 +74,18 @@
        <string>count</string>
       </property>
      </column>
+     <column>
+      <property name="text">
+       <string>percentage</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="percentageCheckBox">
+     <property name="text">
+      <string>Show Percentages</string>
+     </property>
     </widget>
    </item>
   </layout>
