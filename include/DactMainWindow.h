@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QSharedPointer>
 #include <QString>
-#include <QFileInfo>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
@@ -69,7 +68,7 @@ private:
     void initTreeTransformer();
     void readSettings();
     void writeSettings();
-    QString sentenceForFile(QFileInfo const &file, QString const &query);
+    QString sentenceForFile(QString const &filename, QString const &query);
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
     DactFilterWindow *d_filterWindow;

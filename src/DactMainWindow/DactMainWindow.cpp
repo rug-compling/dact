@@ -1,6 +1,5 @@
 #include <QFile>
 #include <QFileDialog>
-#include <QFileInfo>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QHash>
@@ -106,15 +105,14 @@ void DactMainWindow::addFiles()
         for (QVector<QString>::const_iterator iter = entries.begin();
             iter != entries.end(); ++iter)
         {
-            QFileInfo entryFi(*iter);
             QListWidgetItem *item;
 
             if(d_ui->showSentencesInFileList->isChecked())
-                item = new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
+                item = new QListWidgetItem(sentenceForFile(*iter, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
             else
-                item = new QListWidgetItem(entryFi.fileName(), d_ui->fileListWidget);
+                item = new QListWidgetItem(*iter, d_ui->fileListWidget);
 
-            item->setData(Qt::UserRole, entryFi.fileName());
+            item->setData(Qt::UserRole, *iter);
         }
     } catch (runtime_error &e) {
         QMessageBox::critical(this, QString("Error bracketing sentences"),
@@ -128,13 +126,13 @@ void DactMainWindow::bracketedEntryActivated()
     activateWindow();
 }
 
-QString DactMainWindow::sentenceForFile(QFileInfo const &file, QString const &query)
+QString DactMainWindow::sentenceForFile(QString const &filename, QString const &query)
 {
 	// Read XML data.
     if (d_corpusReader.isNull())
         throw runtime_error("DactMainWindow::sentenceForFile CorpusReader not available");
 
-    QString xml = d_corpusReader->read(file.fileName());
+    QString xml = d_corpusReader->read(filename);
 
     if (xml.size() == 0)
         throw runtime_error("DactMainWindow::sentenceForFile: empty XML data!");
