@@ -74,8 +74,10 @@ void DactFilterWindow::updateResults()
     try {
         if (d_xpathFilter.isNull())
             entries = d_corpusReader->entries();
-        else
-            entries = d_xpathFilter->entries(d_corpusReader.data());
+        else {
+            EntryFun fun;
+            entries = d_xpathFilter->fold(d_corpusReader.data(), &fun);
+        }
     } catch (runtime_error &e) {
         QMessageBox::critical(this, QString("Error reading corpus"),
             QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));

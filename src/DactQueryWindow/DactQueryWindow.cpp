@@ -88,7 +88,8 @@ void DactQueryWindow::updateResults()
         return;
 
     try {
-        results = d_xpathFilter->aggregate(d_corpusReader.data(), d_ui->attributeComboBox->currentText());
+        AggregateFun fun(d_ui->attributeComboBox->currentText());
+        results = d_xpathFilter->fold(d_corpusReader.data(), &fun);
     } catch (runtime_error &e) {
         QMessageBox::critical(this, QString("Error reading corpus"),
             QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
