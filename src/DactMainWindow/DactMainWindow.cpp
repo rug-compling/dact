@@ -43,6 +43,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
+    d_macrosWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -59,6 +60,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
+    d_macrosWindow(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -214,6 +216,15 @@ void DactMainWindow::showQueryWindow()
     d_queryWindow->show();
 }
 
+void DactMainWindow::showMacrosWindow()
+{
+    if(d_macrosWindow == 0) {
+        d_macrosWindow = new DactMacrosWindow(this, Qt::Window);
+    }
+    
+    d_macrosWindow->show();
+}
+
 void DactMainWindow::createActions()
 {
     QObject::connect(d_ui->fileListWidget,
@@ -239,7 +250,8 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
-    QObject::connect(d_ui->showQueryWindow, SIGNAL(triggered(bool)), this, SLOT(showQueryWindow()));    
+    QObject::connect(d_ui->showQueryWindow, SIGNAL(triggered(bool)), this, SLOT(showQueryWindow()));
+    QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));  
 
     QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
 }

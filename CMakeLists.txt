@@ -57,6 +57,8 @@ SET(dact_SRCS
   src/DactFilterWindow/DactFilterWindow.cpp
   src/DactHelpWindow/DactHelpWindow.cpp
   src/DactQueryWindow/DactQueryWindow.cpp
+  src/DactMacrosWindow/DactMacrosWindow.cpp
+  src/DactMacrosModel/DactMacrosModel.cpp
   src/PercentageCellDelegate/PercentageCellDelegate.cpp
   src/XPathFilter/XPathFilter.cpp
   src/XPathValidator/XPathValidator.cpp
@@ -69,6 +71,9 @@ SET(dact_MOC_HDRS
   include/DactFilterWindow.h
   include/DactHelpWindow.h
   include/DactQueryWindow.h
+  include/DactMacro.h
+  include/DactMacrosWindow.h
+  include/DactMacrosModel.h
   include/PercentageCellDelegate.h
   include/XPathValidator.hh
 )
@@ -78,6 +83,7 @@ SET(dact_UI
   ui/DactFilterWindow.ui
   ui/DactHelpWindow.ui
   ui/DactQueryWindow.ui
+  ui/DactMacrosWindow.ui
 )
 
 SET(dact_RCS

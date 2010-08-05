@@ -132,6 +132,7 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="showMacrosWindow"/>
     <addaction name="showFilterWindow"/>
     <addaction name="showQueryWindow"/>
    </widget>
@@ -232,6 +233,11 @@
    </property>
    <property name="toolTip">
     <string>Display bracketed sentences instead of file names</string>
+   </property>
+  </action>
+  <action name="showMacrosWindow">
+   <property name="text">
+    <string>Macros...</string>
    </property>
   </action>
   <action name="showFilterWindow">

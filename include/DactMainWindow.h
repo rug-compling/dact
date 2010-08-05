@@ -11,6 +11,7 @@
 #include "DactFilterWindow.h"
 #include "DactHelpWindow.h"
 #include "DactQueryWindow.h"
+#include "DactMacrosWindow.h"
 #include "XPathFilter.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -36,6 +37,7 @@ public slots:
     void close();
     void showFilterWindow();
     void showQueryWindow();
+    void showMacrosWindow();
     void showFile(QString const &filename);
 
 private slots:
@@ -76,6 +78,7 @@ private:
     DactFilterWindow *d_filterWindow;
     DactQueryWindow *d_queryWindow;
     DactHelpWindow *d_dactHelpWindow;
+    DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;
     QString d_query;
