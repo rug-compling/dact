@@ -22,6 +22,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactQueryWindow.h"
+#include "PercentageCellDelegate.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactQueryWindow.h"
@@ -37,7 +38,6 @@ DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     createActions();
     readSettings();
 }
@@ -114,15 +114,11 @@ void DactQueryWindow::updateResults()
         
         percentage = ((float) iter.value() / totalHits) * 100.0;
         QTableWidgetItem *percentageItem = new QTableWidgetItem();
-        // Using setData to force the value to be of the type int, or else it will sort sort alphabetically.
         percentageItem->setData(Qt::DisplayRole, percentage);
         percentageItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         percentageItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
         d_ui->resultsTableWidget->setItem(row, 2, percentageItem);
-        // @TODO Make percentage pretty and correctly formatted using
-        // QString("%1%").arg(percentage, 0, 'f', 1) and 
-        // d_ui->resultsTableWidget->setCellWidget(row, 2, ...);
-
+        
         QTableWidgetItem *countItem = new QTableWidgetItem();
         countItem->setData(Qt::DisplayRole, iter.value());
         countItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -162,9 +158,13 @@ void DactQueryWindow::createActions()
     d_ui->resultsTableWidget->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTableWidget->verticalHeader()->hide();
     d_ui->resultsTableWidget->setShowGrid(false);
-
     d_ui->resultsTableWidget->setSortingEnabled(true);
     d_ui->resultsTableWidget->sortByColumn(1, Qt::DescendingOrder);
+    d_ui->resultsTableWidget->setItemDelegateForColumn(2, new PercentageCellDelegate());
+    // As long as copying etc. from the columns isn't supported, I think this is the most expected behavior.
+    d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    
+    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
