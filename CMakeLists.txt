@@ -71,7 +71,6 @@ SET(dact_MOC_HDRS
   include/DactFilterWindow.h
   include/DactHelpWindow.h
   include/DactQueryWindow.h
-  include/DactMacro.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/PercentageCellDelegate.h
