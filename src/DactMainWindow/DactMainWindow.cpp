@@ -209,10 +209,10 @@ void DactMainWindow::showFilterWindow()
 
 void DactMainWindow::showQueryWindow()
 {
-    if (d_queryWindow == 0) {
+    if (d_queryWindow == 0)
         d_queryWindow = new DactQueryWindow(d_corpusReader, this, Qt::Window);
-    }
 
+    d_queryWindow->setFilter(d_ui->filterLineEdit->text());
     d_queryWindow->show();
 }
 
