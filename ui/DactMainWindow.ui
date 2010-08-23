@@ -132,6 +132,7 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="showMacrosWindow"/>
     <addaction name="showQueryWindow"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
