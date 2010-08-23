@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QFileDialog>
+#include <QFuture>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QHash>
@@ -18,6 +19,7 @@
 #include <QSvgRenderer>
 #include <QTextStream>
 #include <Qt>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include <cstdlib>
@@ -90,6 +92,11 @@ void DactMainWindow::aboutDialog()
 
 void DactMainWindow::addFiles()
 {
+    if (d_xpathFilterResult.isRunning()) {
+        d_xpathFilterResult.cancel();
+        d_xpathFilterResult.waitForFinished();
+    }
+
     d_ui->fileListWidget->clear();
 
     QVector<QString> entries;
@@ -98,8 +105,8 @@ void DactMainWindow::addFiles()
         if (d_xpathFilter.isNull())
             entries = d_corpusReader->entries();
         else {
-            EntryFun fun;
-            entries = d_xpathFilter->fold(d_corpusReader.data(), &fun);
+            d_xpathFilterResult = QtConcurrent::run(*d_xpathFilter, &XPathFilter::fold<QVector<QString> >, d_corpusReader.data(), &d_entryFun);
+            return;
         }
     } catch (runtime_error &e) {
         QMessageBox::critical(this, QString("Error reading corpus"),
@@ -107,22 +114,11 @@ void DactMainWindow::addFiles()
         return;
     }
 
-    try {
-        for (QVector<QString>::const_iterator iter = entries.begin();
-            iter != entries.end(); ++iter)
-        {
-            QListWidgetItem *item;
-
-            if(d_ui->showSentencesInFileList->isChecked())
-                item = new QListWidgetItem(sentenceForFile(*iter, d_ui->filterLineEdit->text()), d_ui->fileListWidget);
-            else
-                item = new QListWidgetItem(*iter, d_ui->fileListWidget);
-
-            item->setData(Qt::UserRole, *iter);
-        }
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error bracketing sentences"),
-            QString("Could not bracket sentences: %1").arg(e.what()));
+    for (QVector<QString>::const_iterator iter = entries.begin();
+    iter != entries.end(); ++iter)
+    {
+        QListWidgetItem *item = new QListWidgetItem(*iter, d_ui->fileListWidget);
+        item->setData(Qt::UserRole, *iter);
     }
 }
 
@@ -227,9 +223,10 @@ void DactMainWindow::showMacrosWindow()
 
 void DactMainWindow::createActions()
 {
+    QObject::connect(&d_entryFun, SIGNAL(entryFound(QString)), this,
+        SLOT(entryFound(QString)));
     QObject::connect(d_ui->fileListWidget,
-        SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-        this,
+        SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
@@ -260,6 +257,12 @@ void DactMainWindow::createTransformers()
 {
     initSentenceTransformer();
     initTreeTransformer();
+}
+
+void DactMainWindow::entryFound(QString entry)
+{
+    QListWidgetItem *item = new QListWidgetItem(entry, d_ui->fileListWidget);
+    item->setData(Qt::UserRole, entry);
 }
 
 void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)

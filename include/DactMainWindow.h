@@ -1,10 +1,12 @@
 #ifndef DACTMAINWINDOW_H
 #define DACTMAINWINDOW_H
 
+#include <QFuture>
 #include <QHash>
 #include <QMainWindow>
 #include <QSharedPointer>
 #include <QString>
+#include <QVector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
@@ -45,6 +47,7 @@ private slots:
     void applyValidityColor(QString const &text);
     void bracketedEntryActivated();
     void currentBracketedEntryChanged(QString const &entry);
+    void entryFound(QString entry);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
     void fitTree();
@@ -81,10 +84,12 @@ private:
     DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;
+    EntryFun d_entryFun;
     QString d_query;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     QSharedPointer<XPathFilter> d_xpathFilter;
+    QFuture<QVector<QString> > d_xpathFilterResult;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed

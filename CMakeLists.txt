@@ -74,6 +74,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/PercentageCellDelegate.h
+  include/XPathFilter.hh
   include/XPathValidator.hh
 )
 

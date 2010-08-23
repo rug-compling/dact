@@ -26,7 +26,10 @@ EntryFun::~EntryFun() {}
 void EntryFun::operator()(QVector<QString> *acc, QString const &entry, xmlXPathObjectPtr xpathObj)
 {
     if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0)
+    {
         acc->push_back(entry);
+        emit entryFound(acc->last());
+    }
 }
 
 AggregateFun::~AggregateFun() {}

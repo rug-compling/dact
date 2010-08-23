@@ -34,10 +34,15 @@ private:
 	QByteArray d_xpathQuery;
 };
 
-struct EntryFun : public filter_function<QVector<QString> *, QString const &, xmlXPathObjectPtr, void>
+class EntryFun : public QObject, public filter_function<QVector<QString> *, QString const &, xmlXPathObjectPtr, void>
 {
+    Q_OBJECT
+
+public:
     ~EntryFun();
     void operator()(QVector<QString> *acc, QString const &entry, xmlXPathObjectPtr xpathObj);
+signals:
+    void entryFound(QString entry);
 };
 
 struct AggregateFun : public filter_function<QHash<QString, int> *, QString const &, xmlXPathObjectPtr, void>
