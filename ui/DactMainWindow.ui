@@ -126,14 +126,13 @@
     <addaction name="zoomInAction"/>
     <addaction name="zoomOutAction"/>
     <addaction name="separator"/>
-    <addaction name="showSentencesInFileList"/>
+    <addaction name="showFilterWindow"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
     <addaction name="showMacrosWindow"/>
-    <addaction name="showFilterWindow"/>
     <addaction name="showQueryWindow"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -242,7 +241,10 @@
   </action>
   <action name="showFilterWindow">
    <property name="text">
-    <string>Search Sentences...</string>
+    <string>Bracketed sentences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="showQueryWindow">
