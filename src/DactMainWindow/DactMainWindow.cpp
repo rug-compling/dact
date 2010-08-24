@@ -9,6 +9,7 @@
 #include <QList>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QMutexLocker>
 #include <QPainter>
 #include <QPoint>
 #include <QPrintDialog>
@@ -95,6 +96,8 @@ void DactMainWindow::aboutDialog()
 
 void DactMainWindow::addFiles()
 {
+    QMutexLocker locker(&d_xpathFilterMutex);
+
     if (d_xpathFilterResult.isRunning()) {
         d_xpathFilterResult.cancel();
         d_xpathFilterResult.waitForFinished();
