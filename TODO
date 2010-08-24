@@ -1,0 +1,2 @@
+- Implement filtering as a QThread that can be cancelled, rather than running
+  it via QtConcurrent::run.
