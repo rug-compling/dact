@@ -5,6 +5,7 @@
 #include <QFutureWatcher>
 #include <QHash>
 #include <QMainWindow>
+#include <QMutex>
 #include <QSharedPointer>
 #include <QString>
 #include <QVector>
@@ -91,6 +92,7 @@ private:
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;
     QSharedPointer<XPathFilter> d_xpathFilter;
+    QMutex d_xpathFilterMutex;
     QFuture<QVector<QString> > d_xpathFilterResult;
     QSharedPointer<QFutureWatcher<QVector<QString> > > d_xpathFilterResultWatcher;
     QSharedPointer<XPathValidator> d_xpathValidator;
