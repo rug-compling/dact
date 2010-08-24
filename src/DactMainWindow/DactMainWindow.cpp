@@ -83,6 +83,8 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 
 DactMainWindow::~DactMainWindow()
 {
+    if (d_xpathFilterResult.isRunning())
+        d_xpathFilterResult.waitForFinished();
 }
 
 void DactMainWindow::aboutDialog()
