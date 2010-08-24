@@ -2,6 +2,7 @@
 #define DACTMAINWINDOW_H
 
 #include <QFuture>
+#include <QFutureWatcher>
 #include <QHash>
 #include <QMainWindow>
 #include <QSharedPointer>
@@ -44,6 +45,7 @@ public slots:
 
 private slots:
     void aboutDialog();
+    void allEntriesFound();
     void applyValidityColor(QString const &text);
     void bracketedEntryActivated();
     void currentBracketedEntryChanged(QString const &entry);
@@ -84,12 +86,13 @@ private:
     DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;
-    EntryFun d_entryFun;
     QString d_query;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
+    EntryFun d_entryFun;
     QSharedPointer<XPathFilter> d_xpathFilter;
     QFuture<QVector<QString> > d_xpathFilterResult;
+    QSharedPointer<QFutureWatcher<QVector<QString> > > d_xpathFilterResultWatcher;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed

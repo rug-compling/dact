@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFuture>
+#include <QFutureWatcher>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QHash>
@@ -107,7 +108,10 @@ void DactMainWindow::addFiles()
         if (d_xpathFilter.isNull())
             entries = d_corpusReader->entries();
         else {
+            d_xpathFilterResultWatcher = QSharedPointer<QFutureWatcher<QVector<QString> > >(new QFutureWatcher<QVector<QString> >);
+            QObject::connect(d_xpathFilterResultWatcher.data(), SIGNAL(finished()), this, SLOT(allEntriesFound()));
             d_xpathFilterResult = QtConcurrent::run(*d_xpathFilter, &XPathFilter::fold<QVector<QString> >, d_corpusReader.data(), &d_entryFun);
+            d_xpathFilterResultWatcher->setFuture(d_xpathFilterResult);
             return;
         }
     } catch (runtime_error &e) {
@@ -122,6 +126,11 @@ void DactMainWindow::addFiles()
         QListWidgetItem *item = new QListWidgetItem(*iter, d_ui->fileListWidget);
         item->setData(Qt::UserRole, *iter);
     }
+}
+
+void DactMainWindow::allEntriesFound()
+{
+    this->statusBar()->showMessage("Finished filtering entries...", 3000);
 }
 
 void DactMainWindow::bracketedEntryActivated()
