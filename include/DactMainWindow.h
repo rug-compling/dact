@@ -17,6 +17,7 @@
 #include "DactQueryWindow.h"
 #include "DactMacrosWindow.h"
 #include "XPathFilter.hh"
+#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -91,10 +92,12 @@ private:
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;
+    EntryMap d_entryMap;
+    QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathFilter> d_xpathFilter;
     QMutex d_xpathFilterMutex;
     QFuture<QVector<QString> > d_xpathFilterResult;
-    QSharedPointer<QFutureWatcher<QVector<QString> > > d_xpathFilterResultWatcher;
+    //QSharedPointer<QFutureWatcher<QVector<QString> > > d_xpathFilterResultWatcher;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
