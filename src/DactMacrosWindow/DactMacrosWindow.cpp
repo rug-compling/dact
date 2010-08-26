@@ -1,4 +1,5 @@
 #include <QSettings>
+#include <QVector>
 #include <QtDebug>
 
 #include "DactMacrosWindow.h"
@@ -96,7 +97,7 @@ void DactMacrosWindow::removeButtonPressed()
     
     // d_model.rowCount is the maximum rows we can remove, so this should be enough.
     // It whould have been prettier if I could get the length of selectedIndexes.
-    int removedRows[d_model.rowCount(QModelIndex())];
+    QVector<int> removedRows(d_model.rowCount(QModelIndex()));
     int i = 0;
     int n;
     int rowsBeforeRowDeleted;
