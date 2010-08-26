@@ -96,7 +96,7 @@ qt4_add_resources(dact_SRCS ${dact_RCS})
 qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(dact WIN32 ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
+add_executable(dact MACOSX_BUNDLE WIN32 ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
 target_link_libraries(dact ${QT_LIBRARIES})
 target_link_libraries(dact ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(dact ${LIBXML2_LIBRARIES})
@@ -104,4 +104,35 @@ target_link_libraries(dact ${LIBXSLT_LIBRARIES})
 target_link_libraries(dact ${LIBEXSLT_LIBRARIES})
 
 install(TARGETS dact
-  RUNTIME DESTINATION bin) 
+  BUNDLE DESTINATION . COMPONENT Runtime
+  RUNTIME DESTINATION bin COMPONENT Runtime) 
+
+# OS X bundle creation
+if(APPLE)
+
+find_package(QDictZip REQUIRED)
+
+get_filename_component(ALPINOCORPUS_LIBRARY_DIR
+  ${ALPINOCORPUS_LIBRARIES} PATH)
+get_filename_component(QDICTZIP_LIBRARY_DIR
+  ${QDICTZIP_LIBRARIES} PATH)
+
+set(DIRS
+  ${QT_LIBRARY_DIR}
+  ${ALPINOCORPUS_LIBRARY_DIR}
+  ${QDICTZIP_LIBRARY_DIR})
+
+INSTALL(CODE "
+  file(WRITE \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt.conf\")
+  file(MAKE_DIRECTORY \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt_menu.nib\")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+    \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
+    \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt_menu.nib\")
+  include(BundleUtilities)
+  fixup_bundle(\"${DACT_BINARY_DIR}/dact.app\" \"\" \"${DIRS}\")
+" COMPONENT Runtime)
+
+set(CPACK_BINARY_DRAGNDROP ON)
+include(CPack)
+
+endif(APPLE)
