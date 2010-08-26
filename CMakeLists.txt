@@ -61,6 +61,7 @@ SET(dact_SRCS
   src/DactMacrosModel/DactMacrosModel.cpp
   src/PercentageCellDelegate/PercentageCellDelegate.cpp
   src/XPathFilter/XPathFilter.cpp
+  src/XPathMapper/XPathMapper.cpp
   src/XPathValidator/XPathValidator.cpp
   src/XSLTransformer/XSLTransformer.cpp
   src/main.cpp
@@ -75,6 +76,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosModel.h
   include/PercentageCellDelegate.h
   include/XPathFilter.hh
+  include/XPathMapper.hh
   include/XPathValidator.hh
 )
 
