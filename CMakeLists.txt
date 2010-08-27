@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(DACT)
 
+set(VERSION "0.0.1")
+
 if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -92,16 +94,29 @@ SET(dact_RCS
   resources/dact.qrc
 )
 
+set(dact_MACOSX_RESOURCE_FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.icns)
+
+set_source_files_properties(
+  ${dact_MACOSX_RESOURCE_FILES}
+  PROPERTIES
+  MACOSX_PACKAGE_LOCATION Resources
+)
+
 qt4_add_resources(dact_SRCS ${dact_RCS})
 qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(dact MACOSX_BUNDLE WIN32 ${dact_SRCS} ${dact_MOC_SRCS} ${dact_UI_HDRS})
+add_executable(dact MACOSX_BUNDLE WIN32
+	${dact_SRCS}
+	${dact_MOC_SRCS}
+	${dact_UI_HDRS}
+	${dact_MACOSX_RESOURCE_FILES})
 target_link_libraries(dact ${QT_LIBRARIES})
 target_link_libraries(dact ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(dact ${LIBXML2_LIBRARIES})
 target_link_libraries(dact ${LIBXSLT_LIBRARIES})
 target_link_libraries(dact ${LIBEXSLT_LIBRARIES})
+
 
 install(TARGETS dact
   BUNDLE DESTINATION . COMPONENT Runtime
@@ -121,6 +136,9 @@ set(DIRS
   ${QT_LIBRARY_DIR}
   ${ALPINOCORPUS_LIBRARY_DIR}
   ${QDICTZIP_LIBRARY_DIR})
+
+set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
 INSTALL(CODE "
   file(WRITE \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt.conf\")
