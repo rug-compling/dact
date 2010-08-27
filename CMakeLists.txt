@@ -4,7 +4,7 @@ project(DACT)
 if(APPLE)
 set(PROGNAME Dact)
 else(APPLE)
-set({PROGNAME dact)
+set(PROGNAME dact)
 endif(APPLE)
 
 set(VERSION "0.0.1")
