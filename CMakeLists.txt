@@ -100,6 +100,13 @@ SET(dact_RCS
   resources/dact.qrc
 )
 
+if(WIN32)
+  set(dact_SRCS
+    ${dact_SRCS}
+    resources/dact.rc
+  )
+endif(WIN32)
+
 set(dact_MACOSX_RESOURCE_FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.icns)
 
 set_source_files_properties(
