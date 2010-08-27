@@ -45,10 +45,10 @@ find_program(QCOLLECTION_GENERATOR_COMMAND NAMES qcollectiongenerator)
 add_custom_command(
   DEPENDS
   ${DACT_SOURCE_DIR}/doc/index.html
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/qrc/doc
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/qrc/doc
-  COMMAND ${CMAKE_COMMAND} -E copy ${DACT_SOURCE_DIR}/doc/index.html ${DACT_SOURCE_DIR}/qrc/doc/index.html
-  OUTPUT ${DACT_SOURCE_DIR}/qrc/doc/index.html
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/resource/doc
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/resources/doc
+  COMMAND ${CMAKE_COMMAND} -E copy ${DACT_SOURCE_DIR}/doc/index.html ${DACT_SOURCE_DIR}/resources/doc/index.html
+  OUTPUT ${DACT_SOURCE_DIR}/resources/doc/index.html
 )
 
 # Dact sources
@@ -89,7 +89,7 @@ SET(dact_UI
 )
 
 SET(dact_RCS
-  qrc/dact.qrc
+  resources/dact.qrc
 )
 
 qt4_add_resources(dact_SRCS ${dact_RCS})
