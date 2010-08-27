@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QVector>
@@ -28,6 +29,8 @@ XPathMapper::XPathMapper(map_function<QString const &, xmlXPathObjectPtr> *fun)
 
 void XPathMapper::setQuery(QString xpathQuery)
 {
+    QMutexLocker locker(&d_runningMutex);
+
     if(d_running)
         throw std::runtime_error("XPathMapper::setQuery: Cannot change query when mapper is running");
     
@@ -36,6 +39,8 @@ void XPathMapper::setQuery(QString xpathQuery)
 
 void XPathMapper::start(alpinocorpus::CorpusReader *reader)
 {
+    QMutexLocker locker(&d_runningMutex);
+
     if(d_running)
         throw std::runtime_error("XPathMapper::start: XPathMapper cannot start when already running");
     
@@ -48,6 +53,8 @@ void XPathMapper::start(alpinocorpus::CorpusReader *reader)
 
 void XPathMapper::terminate()
 {
+    QMutexLocker locker(&d_runningMutex);
+
     d_running = false;
     QThread::terminate();
     wait();
@@ -55,7 +62,10 @@ void XPathMapper::terminate()
 
 void XPathMapper::run()
 {
-    d_running = true;
+    {
+        QMutexLocker locker(&d_runningMutex);
+        d_running = true;
+    }
     
     QVector<QString> corpusEntries(d_reader->entries());
     for (QVector<QString>::const_iterator iter = corpusEntries.constBegin();
@@ -93,6 +103,7 @@ void XPathMapper::run()
         //msleep(10);
     }
     
+    QMutexLocker locker(&d_runningMutex);
     d_running = false;
 }
 

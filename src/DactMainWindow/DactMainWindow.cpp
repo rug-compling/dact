@@ -103,9 +103,8 @@ void DactMainWindow::addFiles()
 {
     //QMutexLocker locker(&d_xpathFilterMutex);
 
-    if (d_xpathMapper->isRunning()) {
+    if (d_xpathMapper->isRunning())
         d_xpathMapper->terminate();
-    }
 
     d_ui->fileListWidget->clear();
 

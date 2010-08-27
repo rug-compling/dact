@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <QHash>
+#include <QMutex>
 #include <QString>
 #include <QThread>
 #include <QVector>
@@ -46,6 +47,7 @@ protected:
     
 private:
     bool d_running;
+    QMutex d_runningMutex;
     alpinocorpus::CorpusReader *d_reader;
 	QByteArray d_xpathQuery;
     map_function<QString const &, xmlXPathObjectPtr> *d_mapFunction;
