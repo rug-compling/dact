@@ -90,8 +90,10 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 
 DactMainWindow::~DactMainWindow()
 {
-    if (d_xpathFilterResult.isRunning())
-        d_xpathFilterResult.waitForFinished();
+    if (d_xpathMapper->isRunning()) {
+        d_xpathMapper->cancel();
+        d_xpathMapper->wait();
+    }
 }
 
 void DactMainWindow::aboutDialog()
@@ -101,10 +103,12 @@ void DactMainWindow::aboutDialog()
 
 void DactMainWindow::addFiles()
 {
-    //QMutexLocker locker(&d_xpathFilterMutex);
+    QMutexLocker locker(&d_addFilesMutex);
 
-    if (d_xpathMapper->isRunning())
-        d_xpathMapper->terminate();
+    if (d_xpathMapper->isRunning()) {
+        d_xpathMapper->cancel();
+        d_xpathMapper->wait();
+    }
 
     d_ui->fileListWidget->clear();
 
@@ -338,14 +342,18 @@ void DactMainWindow::showFile(QString const &filename)
 
 void DactMainWindow::filterChanged()
 {
+    QMutexLocker locker(&d_filterChangedMutex);
+
     QString filter = d_ui->filterLineEdit->text();
     if (filter.trimmed().isEmpty()) {
         d_xpathFilter.clear();
     } else {
         d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
         
-        if(d_xpathMapper->isRunning())
-            d_xpathMapper->terminate();
+        if (d_xpathMapper->isRunning()) {
+            d_xpathMapper->cancel();
+            d_xpathMapper->wait();
+        }
         
         d_xpathMapper->setQuery(filter);
     }

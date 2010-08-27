@@ -95,9 +95,8 @@ private:
     EntryMap d_entryMap;
     QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathFilter> d_xpathFilter;
-    QMutex d_xpathFilterMutex;
-    QFuture<QVector<QString> > d_xpathFilterResult;
-    //QSharedPointer<QFutureWatcher<QVector<QString> > > d_xpathFilterResultWatcher;
+    QMutex d_addFilesMutex;
+    QMutex d_filterChangedMutex;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
