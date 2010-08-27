@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 project(DACT)
 
+if(APPLE)
+set(PROGNAME Dact)
+else(APPLE)
+set({PROGNAME dact)
+endif(APPLE)
+
 set(VERSION "0.0.1")
 
 if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -106,19 +112,19 @@ qt4_add_resources(dact_SRCS ${dact_RCS})
 qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(dact MACOSX_BUNDLE WIN32
+add_executable(${PROGNAME} MACOSX_BUNDLE WIN32
 	${dact_SRCS}
 	${dact_MOC_SRCS}
 	${dact_UI_HDRS}
 	${dact_MACOSX_RESOURCE_FILES})
-target_link_libraries(dact ${QT_LIBRARIES})
-target_link_libraries(dact ${ALPINOCORPUS_LIBRARIES})
-target_link_libraries(dact ${LIBXML2_LIBRARIES})
-target_link_libraries(dact ${LIBXSLT_LIBRARIES})
-target_link_libraries(dact ${LIBEXSLT_LIBRARIES})
+target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
+target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
+target_link_libraries(${PROGNAME} ${LIBXML2_LIBRARIES})
+target_link_libraries(${PROGNAME} ${LIBXSLT_LIBRARIES})
+target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})
 
 
-install(TARGETS dact
+install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime
   RUNTIME DESTINATION bin COMPONENT Runtime) 
 
@@ -141,13 +147,13 @@ set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
 set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
 INSTALL(CODE "
-  file(WRITE \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt.conf\")
-  file(MAKE_DIRECTORY \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt_menu.nib\")
+  file(WRITE \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt.conf\")
+  file(MAKE_DIRECTORY \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt_menu.nib\")
   execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
     \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
-    \"${DACT_BINARY_DIR}/dact.app/Contents/Resources/qt_menu.nib\")
+    \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt_menu.nib\")
   include(BundleUtilities)
-  fixup_bundle(\"${DACT_BINARY_DIR}/dact.app\" \"\" \"${DIRS}\")
+  fixup_bundle(\"${DACT_BINARY_DIR}/${PROGNAME}.app\" \"\" \"${DIRS}\")
 " COMPONENT Runtime)
 
 set(CPACK_BINARY_DRAGNDROP ON)
