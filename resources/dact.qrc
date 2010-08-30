@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>dact-espresso.png</file>
         <file>stylesheets/dt2tree.xsl</file>
         <file>stylesheets/bracketed-sentence.xsl</file>
         <file>doc/index.html</file>

@@ -21,7 +21,6 @@
 #include <QSvgRenderer>
 #include <QTextStream>
 #include <Qt>
-#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include <cstdlib>
@@ -32,11 +31,15 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactMainWindow.h"
-#include "DactFilterWindow.h"
-#include "XPathValidator.hh"
-#include "XSLTransformer.hh"
-#include "ui_DactMainWindow.h"
+#include <AboutWindow.hh>
+#include <DactHelpWindow.h>
+#include <DactMainWindow.h>
+#include <DactFilterWindow.h>
+#include <DactMacrosWindow.h>
+#include <DactQueryWindow.h>
+#include <XPathValidator.hh>
+#include <XSLTransformer.hh>
+#include <ui_DactMainWindow.h>
 
 using namespace alpinocorpus;
 using namespace std;
@@ -45,6 +48,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
@@ -65,6 +69,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
     d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
@@ -98,7 +103,7 @@ DactMainWindow::~DactMainWindow()
 
 void DactMainWindow::aboutDialog()
 {
-    QMessageBox::about(this, "About Dact", "Please report bugs at: http://github.com/danieldk/dact");
+	d_aboutWindow->show();
 }
 
 void DactMainWindow::addFiles()

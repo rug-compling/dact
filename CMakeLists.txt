@@ -61,6 +61,7 @@ add_custom_command(
 
 # Dact sources
 SET(dact_SRCS
+  src/AboutWindow/AboutWindow.cpp
   src/DactMainWindow/DactMainWindow.cpp
   src/DactFilterWindow/DactFilterWindow.cpp
   src/DactHelpWindow/DactHelpWindow.cpp
@@ -76,6 +77,7 @@ SET(dact_SRCS
 )
 
 SET(dact_MOC_HDRS
+  include/AboutWindow.hh
   include/DactMainWindow.h
   include/DactFilterWindow.h
   include/DactHelpWindow.h
@@ -89,6 +91,7 @@ SET(dact_MOC_HDRS
 )
 
 SET(dact_UI
+  ui/AboutWindow.ui
   ui/DactMainWindow.ui
   ui/DactFilterWindow.ui
   ui/DactHelpWindow.ui
