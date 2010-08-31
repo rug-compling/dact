@@ -1,4 +1,6 @@
 #include <QDesktopServices>
+#include <QGraphicsScene>
+#include <QPixmap>
 #include <QSharedPointer>
 #include <QUrl>
 #include <QWidget>
@@ -12,6 +14,12 @@ AboutWindow::AboutWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui(QSharedPointer<Ui::AboutWindow>(new Ui::AboutWindow))
 {
     d_ui->setupUi(this);
+
+    QGraphicsScene *scene = new QGraphicsScene(d_ui->aboutGraphicsView);
+    QPixmap logo(":/dact-espresso.png");
+    scene->addPixmap(logo);
+
+    d_ui->aboutGraphicsView->setScene(scene);
 
     QObject::connect(d_ui->bugPushButton, SIGNAL(clicked()),
         this, SLOT(reportBug()));

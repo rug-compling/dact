@@ -103,6 +103,7 @@ DactMainWindow::~DactMainWindow()
 void DactMainWindow::aboutDialog()
 {
 	d_aboutWindow->show();
+    d_aboutWindow->raise();
 }
 
 void DactMainWindow::addFiles()
