@@ -61,14 +61,17 @@ void XPathMapper::run()
         QString xmlStr(d_reader->read(*iter));
         QByteArray xmlData(xmlStr.toUtf8());
         xmlDocPtr doc = xmlParseMemory(xmlData.constData(), xmlData.size());
-        if (!doc)
-            throw std::runtime_error("XPathMapper::run: could not parse XML data.");
+        if (!doc) {
+            qWarning() << "XPathMapper::run: could not parse XML data: " << *iter;
+            continue;
+        }
 
         // Parse XPath query
         xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
         if (!ctx) {
             xmlFreeDoc(doc);
-            throw std::runtime_error("XPathMapper::run: could not construct XPath context.");
+            qWarning() << "XPathMapper::run: could not construct XPath context from document: " << *iter;
+            continue;
         }
 
         xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression(
@@ -76,7 +79,8 @@ void XPathMapper::run()
         if (!xpathObj) {
             xmlXPathFreeContext(ctx);
             xmlFreeDoc(doc);
-            throw std::runtime_error("XPathMapper::run: could not evaluate XPath expression.");
+            qWarning() << "XPathMapper::run: could not evaluate XPath expression.";
+            break;
         }
 
         (*d_mapFunction)(*iter, xpathObj);
