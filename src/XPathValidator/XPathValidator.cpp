@@ -9,7 +9,8 @@ void ignoreStructuredError(void *userdata, xmlErrorPtr err)
 {
 }
 
-XPathValidator::XPathValidator(QObject *parent) : QValidator(parent)
+XPathValidator::XPathValidator(QObject *parent, bool variables) :
+        QValidator(parent), d_variables(variables)
 {
 }
 
@@ -18,18 +19,22 @@ XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
     if (exprStr.trimmed().isEmpty())
         return XPathValidator::Acceptable;
 
+    // Consistent quoting
     exprStr.replace('\'', '"');
+
     QByteArray expr(exprStr.toUtf8());
 
-    xmlXPathContextPtr ctx;
-    ctx = xmlXPathNewContext(0);
+    // Prepare context
+    xmlXPathContextPtr ctx = xmlXPathNewContext(0);
+    if (!d_variables)
+        ctx->flags = XML_XPATH_NOVAR;
     xmlSetStructuredErrorFunc(ctx, &ignoreStructuredError);
 
+    // Compile expression
     xmlXPathCompExprPtr r = xmlXPathCtxtCompile(ctx,
         reinterpret_cast<xmlChar const *>(expr.constData()));
 
-    if (!r)
-    {
+    if (!r) {
         xmlXPathFreeContext(ctx);
         return XPathValidator::Intermediate;
     }

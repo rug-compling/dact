@@ -8,8 +8,10 @@ class XPathValidator : public QValidator
 {
     Q_OBJECT
 public:
-    XPathValidator(QObject *parent = 0);
+    XPathValidator(QObject *parent = 0, bool variables = false);
     State validate(QString &exprStr, int &pos) const;
+private:
+    bool d_variables;
 };
 
 #endif // XPATHVALIDATOR_HH
