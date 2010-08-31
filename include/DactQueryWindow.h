@@ -44,6 +44,7 @@ protected:
 private:
     void updateResults();
     void createActions();
+    void readNodeAttributes();
     void readSettings();
     void writeSettings();
 

@@ -13,6 +13,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include <algorithm>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
@@ -27,6 +28,11 @@
 #include "XSLTransformer.hh"
 #include "ui_DactQueryWindow.h"
 
+#include <libxml/hash.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlIO.h>
+
 using namespace alpinocorpus;
 using namespace std;
 
@@ -39,6 +45,7 @@ DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
 {
     d_ui->setupUi(this);
     createActions();
+    readNodeAttributes();
     readSettings();
 }
 
@@ -202,6 +209,56 @@ void DactQueryWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
     event->accept();
+}
+
+void DactQueryWindow::readNodeAttributes()
+{
+    QFile dtdFile(":/dtd/alpino_ds.dtd"); // XXX - hardcode?
+    if (!dtdFile.open(QFile::ReadOnly)) {
+        qWarning() << "DactQueryWindow::readNodeAttributes(): Could not read DTD.";
+        return;
+    }
+    QByteArray dtdData(dtdFile.readAll());
+
+    xmlParserInputBufferPtr input = xmlParserInputBufferCreateMem(dtdData.constData(),
+        dtdData.size(), XML_CHAR_ENCODING_8859_1);
+    // Note: xmlFreeParserInputBuffer() seems to segfault in input. It's probably because
+    // xmlIOParseDTD takes (some?) ownership.
+
+    xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_8859_1);
+    if (dtd == NULL) {
+        qWarning() << "DactQueryWindow::readNodeAttributes(): Could not parse DTD.";
+        return;
+    }
+
+    if (dtd->elements == NULL) {
+        qWarning() << "DactQueryWindow::readNodeAttributes(): DTD hashtable contains no elements.";
+        xmlFreeDtd(dtd);
+        return;
+    }
+
+    xmlNode *elem = reinterpret_cast<xmlNode *>(xmlHashLookup(
+        reinterpret_cast<xmlHashTablePtr>(dtd->elements),
+        reinterpret_cast<xmlChar const *>("node")));
+    if (elem == NULL) {
+        qWarning() << "DactQueryWindow::readNodeAttributes(): could not finde 'node' element.";
+        xmlFreeDtd(dtd);
+        return;
+    }
+
+    // Should be safe to clear items now...
+    d_ui->attributeComboBox->clear();
+
+    QStringList attrs;
+    for (xmlAttr *attr = elem->properties; attr != NULL; attr = attr->next)
+          if (attr->type == XML_ATTRIBUTE_DECL)
+              attrs.push_back(reinterpret_cast<char const *>(attr->name));
+
+    sort(attrs.begin(), attrs.end());
+
+    d_ui->attributeComboBox->addItems(attrs);
+
+    xmlFreeDtd(dtd);
 }
 
 void DactQueryWindow::readSettings()
