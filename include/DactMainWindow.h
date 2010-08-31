@@ -26,7 +26,6 @@ double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
 class AboutWindow;
 class DactFilterWindow;
-class DactHelpWindow;
 class DactMacrosWindow;
 class DactQueryWindow;
 
@@ -89,7 +88,6 @@ private:
     AboutWindow *d_aboutWindow;
     DactFilterWindow *d_filterWindow;
     DactQueryWindow *d_queryWindow;
-    DactHelpWindow *d_dactHelpWindow;
     DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;

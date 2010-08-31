@@ -1,3 +1,4 @@
+#include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
 #include <QFuture>
@@ -20,6 +21,7 @@
 #include <QStringList>
 #include <QSvgRenderer>
 #include <QTextStream>
+#include <QUrl>
 #include <Qt>
 #include <QtDebug>
 
@@ -32,7 +34,6 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include <AboutWindow.hh>
-#include <DactHelpWindow.h>
 #include <DactMainWindow.h>
 #include <DactFilterWindow.h>
 #include <DactMacrosWindow.h>
@@ -47,7 +48,6 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
-    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
@@ -68,7 +68,6 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
-    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
@@ -301,7 +300,7 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 
 void DactMainWindow::help()
 {
-    d_dactHelpWindow->show();
+    QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/wiki/Usage"));
 }
 
 void DactMainWindow::showFile(QString const &filename)

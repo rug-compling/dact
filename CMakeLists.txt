@@ -64,7 +64,6 @@ SET(dact_SRCS
   src/AboutWindow/AboutWindow.cpp
   src/DactMainWindow/DactMainWindow.cpp
   src/DactFilterWindow/DactFilterWindow.cpp
-  src/DactHelpWindow/DactHelpWindow.cpp
   src/DactQueryWindow/DactQueryWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
@@ -80,7 +79,6 @@ SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactMainWindow.h
   include/DactFilterWindow.h
-  include/DactHelpWindow.h
   include/DactQueryWindow.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
@@ -94,7 +92,6 @@ SET(dact_UI
   ui/AboutWindow.ui
   ui/DactMainWindow.ui
   ui/DactFilterWindow.ui
-  ui/DactHelpWindow.ui
   ui/DactQueryWindow.ui
   ui/DactMacrosWindow.ui
 )
