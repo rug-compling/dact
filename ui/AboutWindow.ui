@@ -123,7 +123,7 @@ p, li { white-space: pre-wrap; }
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="bugPushButton">
        <property name="text">
         <string>Report a bug</string>
        </property>

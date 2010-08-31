@@ -14,6 +14,9 @@ public:
     AboutWindow(QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~AboutWindow();
 
+private slots:
+    void reportBug();
+
 private:
     QSharedPointer<Ui::AboutWindow> d_ui;
 };
