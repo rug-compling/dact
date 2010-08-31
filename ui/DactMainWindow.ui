@@ -236,6 +236,9 @@
    </property>
   </action>
   <action name="showMacrosWindow">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Macros...</string>
    </property>
