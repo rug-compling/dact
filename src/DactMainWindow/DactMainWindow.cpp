@@ -261,6 +261,7 @@ void DactMainWindow::createActions()
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
+    QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -410,21 +411,20 @@ void DactMainWindow::openCorpus()
 
     corpusPath.chop(8);
     d_corpusPath = corpusPath;
-    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
 
-    if(d_xpathMapper->isRunning())
-        d_xpathMapper->terminate();
+    readCorpus();
+}
 
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
+void DactMainWindow::openDirectoryCorpus()
+{
+    QString corpusPath = QFileDialog::getExistingDirectory(this,
+        "Open directory corpus");
+    if (corpusPath.isNull())
+        return;
 
-    addFiles();
-    
-    if(d_filterWindow != 0)
-        d_filterWindow->switchCorpus(d_corpusReader);
-    
-    if(d_queryWindow != 0)
-        d_queryWindow->switchCorpus(d_corpusReader);
+    d_corpusPath = corpusPath;
+
+    readCorpus();
 }
 
 void DactMainWindow::pdfExport()
@@ -463,6 +463,25 @@ void DactMainWindow::print()
         d_ui->treeGraphicsView->scene()->render(&painter);
         painter.end();
     }
+}
+
+void DactMainWindow::readCorpus()
+{ 
+    this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
+
+    if(d_xpathMapper->isRunning())
+        d_xpathMapper->terminate();
+
+    d_corpusReader = QSharedPointer<CorpusReader>(
+        CorpusReader::newCorpusReader(d_corpusPath));
+
+    addFiles();
+    
+    if(d_filterWindow != 0)
+        d_filterWindow->switchCorpus(d_corpusReader);
+    
+    if(d_queryWindow != 0)
+        d_queryWindow->switchCorpus(d_corpusReader);
 }
 
 void DactMainWindow::readSettings()

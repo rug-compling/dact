@@ -60,6 +60,7 @@ private slots:
     void help();
     void nextEntry(bool);
     void openCorpus();
+    void openDirectoryCorpus();
     void pdfExport();
     void previousEntry(bool);
     void print();
@@ -79,6 +80,7 @@ private:
     void createTransformers();
     void initSentenceTransformer();
     void initTreeTransformer();
+    void readCorpus();
     void readSettings();
     void writeSettings();
     QString sentenceForFile(QString const &filename, QString const &query);
