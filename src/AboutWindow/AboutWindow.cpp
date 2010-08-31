@@ -1,5 +1,6 @@
 #include <QDesktopServices>
 #include <QSharedPointer>
+#include <QUrl>
 #include <QWidget>
 
 #include <AboutWindow.hh>
