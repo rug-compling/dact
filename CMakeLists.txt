@@ -6,7 +6,7 @@ if(APPLE)
   set (CMAKE_OSX_ARCHITECTURES "i386;x86_64")
   set (CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
 else(APPLE)
-set({PROGNAME dact)
+set(PROGNAME dact)
 endif(APPLE)
 
 set(VERSION "0.0.1")
@@ -63,9 +63,9 @@ add_custom_command(
 
 # Dact sources
 SET(dact_SRCS
+  src/AboutWindow/AboutWindow.cpp
   src/DactMainWindow/DactMainWindow.cpp
   src/DactFilterWindow/DactFilterWindow.cpp
-  src/DactHelpWindow/DactHelpWindow.cpp
   src/DactQueryWindow/DactQueryWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
@@ -78,9 +78,9 @@ SET(dact_SRCS
 )
 
 SET(dact_MOC_HDRS
+  include/AboutWindow.hh
   include/DactMainWindow.h
   include/DactFilterWindow.h
-  include/DactHelpWindow.h
   include/DactQueryWindow.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
@@ -91,9 +91,9 @@ SET(dact_MOC_HDRS
 )
 
 SET(dact_UI
+  ui/AboutWindow.ui
   ui/DactMainWindow.ui
   ui/DactFilterWindow.ui
-  ui/DactHelpWindow.ui
   ui/DactQueryWindow.ui
   ui/DactMacrosWindow.ui
 )
@@ -101,6 +101,13 @@ SET(dact_UI
 SET(dact_RCS
   resources/dact.qrc
 )
+
+if(WIN32)
+  set(dact_SRCS
+    ${dact_SRCS}
+    resources/dact.rc
+  )
+endif(WIN32)
 
 set(dact_MACOSX_RESOURCE_FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.icns)
 

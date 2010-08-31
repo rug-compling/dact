@@ -12,10 +12,6 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactFilterWindow.h"
-#include "DactHelpWindow.h"
-#include "DactQueryWindow.h"
-#include "DactMacrosWindow.h"
 #include "XPathFilter.hh"
 #include "XPathMapper.hh"
 #include "XPathValidator.hh"
@@ -27,6 +23,11 @@ namespace Ui {
 
 double const ZOOM_OUT_FACTOR = 0.8;
 double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
+
+class AboutWindow;
+class DactFilterWindow;
+class DactMacrosWindow;
+class DactQueryWindow;
 
 class QGraphicsSvgItem;
 class QListWidgetItem;
@@ -58,6 +59,7 @@ private slots:
     void help();
     void nextEntry(bool);
     void openCorpus();
+    void openDirectoryCorpus();
     void pdfExport();
     void previousEntry(bool);
     void print();
@@ -77,14 +79,15 @@ private:
     void createTransformers();
     void initSentenceTransformer();
     void initTreeTransformer();
+    void readCorpus();
     void readSettings();
     void writeSettings();
     QString sentenceForFile(QString const &filename, QString const &query);
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
+    AboutWindow *d_aboutWindow;
     DactFilterWindow *d_filterWindow;
     DactQueryWindow *d_queryWindow;
-    DactHelpWindow *d_dactHelpWindow;
     DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;

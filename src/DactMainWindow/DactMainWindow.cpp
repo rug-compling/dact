@@ -1,3 +1,4 @@
+#include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
 #include <QFuture>
@@ -20,8 +21,8 @@
 #include <QStringList>
 #include <QSvgRenderer>
 #include <QTextStream>
+#include <QUrl>
 #include <Qt>
-#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include <cstdlib>
@@ -32,11 +33,14 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactMainWindow.h"
-#include "DactFilterWindow.h"
-#include "XPathValidator.hh"
-#include "XSLTransformer.hh"
-#include "ui_DactMainWindow.h"
+#include <AboutWindow.hh>
+#include <DactMainWindow.h>
+#include <DactFilterWindow.h>
+#include <DactMacrosWindow.h>
+#include <DactQueryWindow.h>
+#include <XPathValidator.hh>
+#include <XSLTransformer.hh>
+#include <ui_DactMainWindow.h>
 
 using namespace alpinocorpus;
 using namespace std;
@@ -44,7 +48,7 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
-    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
@@ -64,7 +68,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
-    d_dactHelpWindow(new DactHelpWindow(this, Qt::Window)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
@@ -98,7 +102,7 @@ DactMainWindow::~DactMainWindow()
 
 void DactMainWindow::aboutDialog()
 {
-    QMessageBox::about(this, "About Dact", "Please report bugs at: http://github.com/danieldk/dact");
+	d_aboutWindow->show();
 }
 
 void DactMainWindow::addFiles()
@@ -256,6 +260,7 @@ void DactMainWindow::createActions()
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
+    QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -295,7 +300,7 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 
 void DactMainWindow::help()
 {
-    d_dactHelpWindow->show();
+    QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/wiki/Usage"));
 }
 
 void DactMainWindow::showFile(QString const &filename)
@@ -405,21 +410,20 @@ void DactMainWindow::openCorpus()
 
     corpusPath.chop(8);
     d_corpusPath = corpusPath;
-    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
 
-    if(d_xpathMapper->isRunning())
-        d_xpathMapper->terminate();
+    readCorpus();
+}
 
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
+void DactMainWindow::openDirectoryCorpus()
+{
+    QString corpusPath = QFileDialog::getExistingDirectory(this,
+        "Open directory corpus");
+    if (corpusPath.isNull())
+        return;
 
-    addFiles();
-    
-    if(d_filterWindow != 0)
-        d_filterWindow->switchCorpus(d_corpusReader);
-    
-    if(d_queryWindow != 0)
-        d_queryWindow->switchCorpus(d_corpusReader);
+    d_corpusPath = corpusPath;
+
+    readCorpus();
 }
 
 void DactMainWindow::pdfExport()
@@ -458,6 +462,25 @@ void DactMainWindow::print()
         d_ui->treeGraphicsView->scene()->render(&painter);
         painter.end();
     }
+}
+
+void DactMainWindow::readCorpus()
+{ 
+    this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
+
+    if(d_xpathMapper->isRunning())
+        d_xpathMapper->terminate();
+
+    d_corpusReader = QSharedPointer<CorpusReader>(
+        CorpusReader::newCorpusReader(d_corpusPath));
+
+    addFiles();
+    
+    if(d_filterWindow != 0)
+        d_filterWindow->switchCorpus(d_corpusReader);
+    
+    if(d_queryWindow != 0)
+        d_queryWindow->switchCorpus(d_corpusReader);
 }
 
 void DactMainWindow::readSettings()
