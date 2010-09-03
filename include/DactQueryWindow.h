@@ -7,11 +7,13 @@
 #include <QWidget>
 #include <QSharedPointer>
 #include <QString>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <Qt>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathFilter.hh"
+#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -19,7 +21,7 @@ namespace Ui {
 	class DactQueryWindow;
 }
 
-class QListWidgetItem;
+class DactQueryWindowResultsRow;
 
 class DactQueryWindow : public QWidget {
     Q_OBJECT
@@ -35,23 +37,61 @@ public:
 
 private slots:
     void applyValidityColor(QString const &text);
+	void attributeFound(QString value);
     void filterChanged();
+	void progressStarted(int total);
+	void progressChanged(int n, int total);
+	void progressStopped(int n, int total);
     void showPercentageChanged();
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
-    void updateResults();
+	void updateResults();
+	void updateResultsPercentages();
+	void updateResultsTotalCount();
     void createActions();
+    QSharedPointer<DactQueryWindowResultsRow> createResultsRow(QString const &value);
     void readNodeAttributes();
+	void startMapper();
+	void stopMapper();
     void readSettings();
     void writeSettings();
 
-    QSharedPointer<Ui::DactQueryWindow> d_ui;
-    QSharedPointer<XPathFilter> d_xpathFilter;
-    QSharedPointer<XPathValidator> d_xpathValidator;
+    AttributeMap *d_attrMap;
+	QSharedPointer<Ui::DactQueryWindow> d_ui;
+	QSharedPointer<XPathMapper> d_xpathMapper;
+	QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+	
+	// combination of <attribute value, hits count>
+	// @TODO This one could be re-used for exporting functions. It's "finished"
+	// when d_xpathMapper.data() emits it's 'stopped' signal.
+	QHash<QString,int> d_results;
+	QHash<QString,QSharedPointer<DactQueryWindowResultsRow> > d_resultsTable;
+	int d_totalHits;
+};
+
+// Main purpose of this object is to keep the three cells and their update functions
+// together, so I can keep track of them through a hashtable. Because I don't trust
+// that QTableWidget thingy with its numerical rows. They change! I tell you! I saw
+// them change!
+class DactQueryWindowResultsRow : public QObject
+{
+public:
+	DactQueryWindowResultsRow();
+	~DactQueryWindowResultsRow();
+	void setText(QString const &);
+	void setValue(int);
+	void setMax(int);
+	int insertIntoTable(QTableWidget *table);
+	
+private:
+	int d_hits;
+	QTableWidgetItem *d_labelItem;
+	QTableWidgetItem *d_countItem;
+	QTableWidgetItem *d_percentageItem;
 };
 
 #endif // DACTQUERYWINDOW_H

@@ -41,9 +41,12 @@ DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactQueryWindow>(new Ui::DactQueryWindow)),
     d_corpusReader(corpusReader),
-    d_xpathValidator(new XPathValidator)
+    d_xpathValidator(new XPathValidator),
+	d_attrMap(NULL),
+	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper))
 {
     d_ui->setupUi(this);
+	
     createActions();
     readNodeAttributes();
     readSettings();
@@ -53,8 +56,34 @@ DactQueryWindow::~DactQueryWindow()
 {
 }
 
+void DactQueryWindow::startMapper()
+{
+	if(d_xpathMapper->isRunning()) {
+		qWarning() << "DactQueryWindow::startMapper: Trying to start mapper while it is running? This should not happen. Terminating running mapper anyway.";
+		stopMapper();
+	}
+	
+	d_attrMap = new AttributeMap(d_ui->attributeComboBox->currentText());
+		
+	QObject::connect(d_attrMap, SIGNAL(attributeFound(QString)), this, SLOT(attributeFound(QString)));
+	
+	// When I am released, does d_xpathMapper crash because the pointer that points to d_attrMap points to released space?
+	// And when so, would a destructor which makes sure this thread is destroyed before d_attrMap gets freed fix this?
+	d_xpathMapper->start(d_corpusReader.data(), d_ui->filterLineEdit->text(), d_attrMap);
+}
+
+void DactQueryWindow::stopMapper()
+{
+	if(d_xpathMapper->isRunning()) {
+		d_xpathMapper->cancel();
+		d_xpathMapper->wait();
+	}
+}
+
 void DactQueryWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
+	stopMapper();
+	
     d_corpusReader = corpusReader;
     
     updateResults();
@@ -63,12 +92,10 @@ void DactQueryWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> co
 void DactQueryWindow::setFilter(QString const &filter)
 {
     d_ui->filterLineEdit->setText(filter);
-    
-    // Don't try to filter with an invalid xpath expression
-    if (filter.trimmed().isEmpty() || !d_ui->filterLineEdit->hasAcceptableInput())
-        d_xpathFilter.clear();
-    else
-        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
+	
+	// Don't try to filter with an invalid xpath expression
+    if (!filter.trimmed().isEmpty() && d_ui->filterLineEdit->hasAcceptableInput())
+        updateResults();
 }
 
 void DactQueryWindow::setAggregateAttribute(QString const &detail)
@@ -80,60 +107,76 @@ void DactQueryWindow::setAggregateAttribute(QString const &detail)
 void DactQueryWindow::updateResults()
 {
     // @TODO: allow the user to copy and/or export this table.
+	try {
+		if (d_corpusReader.isNull())
+			return;
+		
+		if (d_ui->filterLineEdit->text().trimmed().isEmpty() || !d_ui->filterLineEdit->hasAcceptableInput())
+			return;
+		
+		stopMapper();
+		
+		d_results.clear();
+		d_totalHits = 0;
+		
+		d_ui->resultsTableWidget->setRowCount(0);
+		d_resultsTable.clear(); // @TODO should I release each row? Since they are dynamically allocated...
+		updateResultsTotalCount();
+		
+		startMapper();
+		
+		return;
+	} catch (runtime_error &e) {
+		QMessageBox::critical(this, QString("Error calculating"),
+		    QString("Could not start searching: %1").arg(e.what()));
+	}
+}
 
-    if (d_corpusReader.isNull())
-        return;
-        
-    int row = 0;
+QSharedPointer<DactQueryWindowResultsRow> DactQueryWindow::createResultsRow(QString const &value)
+{
+	QSharedPointer<DactQueryWindowResultsRow> row = QSharedPointer<DactQueryWindowResultsRow>(new DactQueryWindowResultsRow());
+	row->setText(value);
+	row->insertIntoTable(d_ui->resultsTableWidget);
+	d_resultsTable[value] = row;
+	return row;
+}
 
-    QHash<QString,int> results;
+void DactQueryWindow::attributeFound(QString value)
+{
+	QSharedPointer<DactQueryWindowResultsRow> row;
+	
+	int hits = ++d_results[value];
+	++d_totalHits;
+	
+	try {
+		if (d_resultsTable.contains(value)) {
+			row = d_resultsTable[value];
+		} else {
+			row = createResultsRow(value);
+		}
 
-    d_ui->resultsTableWidget->setRowCount(0);
-    //d_ui->resultsTableWidget->setColumnCount(3);
+		row->setValue(hits);
+		
+		updateResultsTotalCount();		
+	} catch (runtime_error &e) {
+		qWarning() << QString("DactQueryWindow::attributeFound: Could not add result to table: %1").arg(e.what());
+	}
+}
 
-    if (d_xpathFilter.isNull())
-        return;
+void DactQueryWindow::updateResultsTotalCount()
+{
+	d_ui->totalHitsLabel->setText(QString("%1").arg(d_totalHits));
+	
+	updateResultsPercentages();
+}
 
-    try {
-        AggregateFun fun(d_ui->attributeComboBox->currentText());
-        results = d_xpathFilter->fold(d_corpusReader.data(), &fun);
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error reading corpus"),
-            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-        return;
-    }
-    
-    float totalHits = 0;
-    float percentage;
-    
-    for (QHash<QString,int>::const_iterator iter = results.begin(); iter != results.end(); ++iter)
-    {
-        totalHits += iter.value();
-    }
-
-    for (QHash<QString,int>::const_iterator iter = results.begin(); iter != results.end(); ++iter)
-    {
-        d_ui->resultsTableWidget->insertRow(row);
-        
-        QTableWidgetItem *resultItem = new QTableWidgetItem(iter.key());
-        resultItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        d_ui->resultsTableWidget->setItem(row, 0, resultItem);
-        
-        percentage = ((float) iter.value() / totalHits) * 100.0;
-        QTableWidgetItem *percentageItem = new QTableWidgetItem();
-        percentageItem->setData(Qt::DisplayRole, percentage);
-        percentageItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        percentageItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
-        d_ui->resultsTableWidget->setItem(row, 2, percentageItem);
-        
-        QTableWidgetItem *countItem = new QTableWidgetItem();
-        countItem->setData(Qt::DisplayRole, iter.value());
-        countItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        countItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
-        d_ui->resultsTableWidget->setItem(row, 1, countItem);
-
-        ++row;
-    }
+void DactQueryWindow::updateResultsPercentages()
+{
+	for (QHash<QString,QSharedPointer<DactQueryWindowResultsRow> >::const_iterator iter = d_resultsTable.constBegin();
+		 iter != d_resultsTable.constEnd(); ++iter)
+	{
+		iter.value()->setMax(d_totalHits);
+	}
 }
 
 void DactQueryWindow::applyValidityColor(QString const &)
@@ -172,7 +215,12 @@ void DactQueryWindow::createActions()
     d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+	
+	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int,int)), this, SLOT(progressChanged(int,int)));
     
+	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(progressStarted(int)));
+	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int,int)), this, SLOT(progressStopped(int,int)));
+	
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
@@ -203,6 +251,26 @@ void DactQueryWindow::filterChanged()
 void DactQueryWindow::showPercentageChanged()
 {
     showPercentage(d_ui->percentageCheckBox->isChecked());
+}
+
+void DactQueryWindow::progressStarted(int total)
+{
+	d_ui->filterProgress->setMaximum(total);
+	d_ui->filterProgress->setDisabled(false);
+	d_ui->filterProgress->setVisible(true);
+}
+
+void DactQueryWindow::progressChanged(int n, int total)
+{
+	d_ui->filterProgress->setValue(n);
+}
+
+void DactQueryWindow::progressStopped(int n, int total)
+{
+	// @TODO maybe indicate some way when n != total that it's not busy anymore
+	// but also not finished. (e.g. it was cancelled by pressing [esc], which isn't
+	// even implemented yet.)
+	d_ui->filterProgress->setVisible(false);
 }
 
 void DactQueryWindow::closeEvent(QCloseEvent *event)
@@ -286,4 +354,58 @@ void DactQueryWindow::writeSettings()
     // Window geometry
     settings.setValue("query_pos", pos());
     settings.setValue("query_size", size());
+}
+
+DactQueryWindowResultsRow::DactQueryWindowResultsRow() :
+	d_hits(0),
+	d_labelItem(new QTableWidgetItem()),
+	d_countItem(new QTableWidgetItem()),
+	d_percentageItem(new QTableWidgetItem())
+{
+	d_labelItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	
+	d_percentageItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	d_percentageItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
+	
+	d_countItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	d_countItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
+}
+
+int DactQueryWindowResultsRow::insertIntoTable(QTableWidget *table)
+{
+	int row = table->rowCount();
+	table->insertRow(row);
+	
+	table->setItem(row, 0, d_labelItem);
+	table->setItem(row, 1, d_countItem);
+	table->setItem(row, 2, d_percentageItem);
+	
+	return row;
+}
+
+DactQueryWindowResultsRow::~DactQueryWindowResultsRow()
+{
+	// I expected that I needed to delete d_labelItem etc. manually, but
+	// that just tells me I can't access that piece of memory. Aparently
+	// they are already released?
+	
+	//delete d_labelItem;
+	//delete d_countItem;
+	//delete d_percentageItem;
+}
+
+void DactQueryWindowResultsRow::setText(QString const &text)
+{
+	d_labelItem->setText(text);
+}
+
+void DactQueryWindowResultsRow::setValue(int n)
+{
+	d_hits = n;
+	d_countItem->setData(Qt::DisplayRole, n);
+}
+
+void DactQueryWindowResultsRow::setMax(int totalHits)
+{
+	d_percentageItem->setData(Qt::DisplayRole, ((float) d_hits / totalHits) * 100.0);
 }
