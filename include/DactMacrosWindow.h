@@ -18,7 +18,7 @@ namespace Ui {
 class DactMacrosWindow : public QWidget {
     Q_OBJECT
 public:
-    DactMacrosWindow(QWidget *parent = 0, Qt::WindowFlags f = 0);
+    DactMacrosWindow(QSharedPointer<DactMacrosModel> model, QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~DactMacrosWindow();
 
 private slots:
@@ -34,7 +34,7 @@ private:
     void readSettings();
     void writeSettings();
     
-    DactMacrosModel d_model;
+    QSharedPointer<DactMacrosModel> d_model;
     QSharedPointer<Ui::DactMacrosWindow> d_ui;
 };
 

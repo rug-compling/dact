@@ -21,13 +21,15 @@ namespace Ui {
 	class DactQueryWindow;
 }
 
+class DactMacrosModel;
+
 class DactQueryWindowResultsRow;
 
 class DactQueryWindow : public QWidget {
     Q_OBJECT
 public:
     DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
-        QWidget *parent = 0, Qt::WindowFlags f = 0);
+        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~DactQueryWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
@@ -61,6 +63,7 @@ private:
 
     AttributeMap *d_attrMap;
 	QSharedPointer<Ui::DactQueryWindow> d_ui;
+	QSharedPointer<DactMacrosModel> d_macrosModel;
 	QSharedPointer<XPathMapper> d_xpathMapper;
 	QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;

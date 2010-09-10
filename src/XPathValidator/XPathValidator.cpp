@@ -10,9 +10,18 @@ void ignoreStructuredError(void *userdata, xmlErrorPtr err)
 }
 
 XPathValidator::XPathValidator(QObject *parent, bool variables) :
-        QValidator(parent), d_variables(variables)
+	QValidator(parent),
+	d_variables(variables)
 {
 }
+
+XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent, bool variables) :
+	QValidator(parent),
+	d_variables(variables),
+	d_macrosModel(macrosModel)
+{
+}
+
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
@@ -21,8 +30,10 @@ XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 
     // Consistent quoting
     exprStr.replace('\'', '"');
-
-    QByteArray expr(exprStr.toUtf8());
+	
+	QByteArray expr(d_macrosModel.isNull()
+		? exprStr.toUtf8()
+		: (d_macrosModel->expand(exprStr)).toUtf8());
 
     // Prepare context
     xmlXPathContextPtr ctx = xmlXPathNewContext(0);

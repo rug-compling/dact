@@ -36,6 +36,7 @@
 #include <AboutWindow.hh>
 #include <DactMainWindow.h>
 #include <DactFilterWindow.h>
+#include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
 #include <DactQueryWindow.h>
 #include <XPathValidator.hh>
@@ -50,8 +51,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
 	d_filterWindow(0),
     d_queryWindow(0),
-    d_macrosWindow(0),
-    d_xpathValidator(new XPathValidator)
+    d_macrosWindow(0)
 {
     init();
 }
@@ -62,8 +62,7 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 	d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
-    d_macrosWindow(0),
-    d_xpathValidator(new XPathValidator)
+    d_macrosWindow(0)
 {
 	init();
 	
@@ -74,11 +73,15 @@ void DactMainWindow::init()
 {
 	// the code shared by both the constructors.
 	
-	d_ui->setupUi(this);
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
-    
+	d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
+	
     d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper());
+    
+	d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
+	
+	d_ui->setupUi(this);
+	d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
     
     readSettings();
     createTransformers();
@@ -116,7 +119,7 @@ void DactMainWindow::addFiles()
         if (d_filter.isEmpty())
             entries = d_corpusReader->entries();
         else {
-            d_xpathMapper->start(d_corpusReader.data(), d_filter, &d_entryMap);
+            d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_filter), &d_entryMap);
             return;
         }
     } catch (runtime_error &e) {
@@ -210,28 +213,28 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 void DactMainWindow::showFilterWindow()
 {
     if (d_filterWindow == 0) {
-        d_filterWindow = new DactFilterWindow(d_corpusReader, this, Qt::Window);
+        d_filterWindow = new DactFilterWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
         QObject::connect(d_filterWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
         QObject::connect(d_filterWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
     }
 
-    d_filterWindow->setFilter(d_ui->filterLineEdit->text());
+    d_filterWindow->setFilter(d_filter);
     d_filterWindow->show();
 }
 
 void DactMainWindow::showQueryWindow()
 {
     if (d_queryWindow == 0)
-        d_queryWindow = new DactQueryWindow(d_corpusReader, this, Qt::Window);
+        d_queryWindow = new DactQueryWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
 
-    d_queryWindow->setFilter(d_ui->filterLineEdit->text());
+    d_queryWindow->setFilter(d_filter);
     d_queryWindow->show();
 }
 
 void DactMainWindow::showMacrosWindow()
 {
     if(d_macrosWindow == 0) {
-        d_macrosWindow = new DactMacrosWindow(this, Qt::Window);
+        d_macrosWindow = new DactMacrosWindow(d_macrosModel, this, Qt::Window);
     }
     
     d_macrosWindow->show();
@@ -318,7 +321,7 @@ void DactMainWindow::showFile(QString const &filename)
 
     // Parameters
     QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_query + QString("'");
+                     QString("'") + d_macrosModel->expand(d_query) + QString("'");
     QHash<QString, QString> params;
     params["expr"] = valStr;
 
@@ -350,7 +353,7 @@ void DactMainWindow::filterChanged()
 
 	d_filter = d_ui->filterLineEdit->text().trimmed();
 	
-    if (!d_corpusReader.isNull())
+	if (!d_corpusReader.isNull())
         addFiles();
 }
 

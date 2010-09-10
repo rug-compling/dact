@@ -6,10 +6,10 @@
 #include "DactMacrosModel.h"
 #include "ui_DactMacrosWindow.h"
 
-DactMacrosWindow::DactMacrosWindow(QWidget *parent, Qt::WindowFlags f) :
+DactMacrosWindow::DactMacrosWindow(QSharedPointer<DactMacrosModel> model, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactMacrosWindow>(new Ui::DactMacrosWindow)),
-    d_model(new DactMacrosModel())
+    d_model(model)
 {
     d_ui->setupUi(this);
     createActions();
@@ -22,7 +22,7 @@ DactMacrosWindow::~DactMacrosWindow()
 
 void DactMacrosWindow::createActions()
 {
-    d_ui->macrosTable->setModel(&d_model);
+    d_ui->macrosTable->setModel(d_model.data());
     d_ui->macrosTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     d_ui->macrosTable->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
     d_ui->macrosTable->verticalHeader()->hide();
@@ -74,12 +74,12 @@ void DactMacrosWindow::closeEvent(QCloseEvent *event)
 
 void DactMacrosWindow::addButtonPressed()
 {
-    int row = d_model.rowCount(QModelIndex());
+    int row = d_model->rowCount(QModelIndex());
     
-    d_model.insertRows(row, 1, QModelIndex());
+    d_model->insertRows(row, 1, QModelIndex());
     
     // move focus to newly added cell and start editing.
-    QModelIndex index = d_model.index(row, 0, QModelIndex());
+    QModelIndex index = d_model->index(row, 0, QModelIndex());
     
     d_ui->macrosTable->setCurrentIndex(index);
     d_ui->macrosTable->edit(index);
@@ -97,7 +97,7 @@ void DactMacrosWindow::removeButtonPressed()
     
     // d_model.rowCount is the maximum rows we can remove, so this should be enough.
     // It whould have been prettier if I could get the length of selectedIndexes.
-    QVector<int> removedRows(d_model.rowCount(QModelIndex()));
+    QVector<int> removedRows(d_model->rowCount(QModelIndex()));
     int i = 0;
     int n;
     int rowsBeforeRowDeleted;
@@ -108,7 +108,7 @@ void DactMacrosWindow::removeButtonPressed()
                 ++rowsBeforeRowDeleted;
         }
         
-        d_model.removeRows(index.row() - rowsBeforeRowDeleted, 1, QModelIndex());
+        d_model->removeRows(index.row() - rowsBeforeRowDeleted, 1, QModelIndex());
         
         removedRows[i++] = index.row();
     }

@@ -20,6 +20,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactFilterWindow.h"
+#include "DactMacrosModel.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_DactFilterWindow.h"
@@ -28,13 +29,14 @@ using namespace alpinocorpus;
 using namespace std;
 
 DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
-        QWidget *parent, Qt::WindowFlags f) :
+        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_corpusReader(corpusReader),
-	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
 	d_entryMap(0),
-    d_xpathValidator(new XPathValidator)
+	d_macrosModel(macrosModel),
+	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
+	d_xpathValidator(new XPathValidator(d_macrosModel))
 {
     d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
@@ -88,10 +90,12 @@ void DactFilterWindow::updateResults()
 		if(d_entryMap)
 			delete d_entryMap;
 		
-		d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, d_filter);
+		QString xpathExpression = d_macrosModel->expand(d_filter);
+		
+		d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, xpathExpression);
 		QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
 		
-		d_xpathMapper->start(d_corpusReader.data(), d_filter, d_entryMap);
+		d_xpathMapper->start(d_corpusReader.data(), xpathExpression, d_entryMap);
 	} catch(runtime_error &e) {
 		QMessageBox::critical(this, QString("Error reading corpus"),
 		    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));

@@ -23,6 +23,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactQueryWindow.h"
+#include "DactMacrosModel.h";
 #include "PercentageCellDelegate.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -37,13 +38,14 @@ using namespace alpinocorpus;
 using namespace std;
 
 DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
-        QWidget *parent, Qt::WindowFlags f) :
+        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactQueryWindow>(new Ui::DactQueryWindow)),
     d_corpusReader(corpusReader),
-    d_xpathValidator(new XPathValidator),
+    d_macrosModel(macrosModel),
 	d_attrMap(NULL),
-	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper))
+	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
+	d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
 {
     d_ui->setupUi(this);
 	
@@ -69,7 +71,7 @@ void DactQueryWindow::startMapper()
 	
 	// When I am released, does d_xpathMapper crash because the pointer that points to d_attrMap points to released space?
 	// And when so, would a destructor which makes sure this thread is destroyed before d_attrMap gets freed fix this?
-	d_xpathMapper->start(d_corpusReader.data(), d_ui->filterLineEdit->text(), d_attrMap);
+	d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_ui->filterLineEdit->text()), d_attrMap);
 }
 
 void DactQueryWindow::stopMapper()

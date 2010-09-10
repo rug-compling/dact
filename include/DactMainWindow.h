@@ -26,6 +26,7 @@ double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
 class AboutWindow;
 class DactFilterWindow;
+class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryWindow;
 
@@ -97,6 +98,8 @@ private:
     QString d_corpusPath;
     QString d_query;
 	QString d_filter;
+	QString d_filterExpr; // Stores the raw, unexpanded filter expression
+	QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;
