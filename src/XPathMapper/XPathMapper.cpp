@@ -17,44 +17,11 @@
 using namespace std;
 using namespace alpinocorpus;
 
-// depricated
-XPathMapper::XPathMapper(map_function<QString const &, xmlXPathObjectPtr> *fun)
-{
-    d_mapFunction = fun;
-    d_cancel = 0;
-    
-    // We will do the termination ourselves by setting d_running to false.
-    //setTerminationEnabled(false);
-}
-
 XPathMapper::XPathMapper() {}
 
 void XPathMapper::cancel()
 {
     d_cancel = 1;
-}
-
-void XPathMapper::setQuery(QString xpathQuery)
-{
-    if (isRunning())
-        throw std::runtime_error("XPathMapper::setQuery: Cannot change query when mapper is running");
-    
-    d_xpathQuery = xpathQuery.toUtf8();
-}
-
-// depricated in favor of the one with more arguments. That one allows us to change
-// the map_function–which is required by the statistics window–without creating a
-// new instance each time.
-void XPathMapper::start(alpinocorpus::CorpusReader *reader)
-{
-    if(isRunning())
-        throw std::runtime_error("XPathMapper::start: XPathMapper cannot start when already running");
-    
-    if(d_xpathQuery.isEmpty())
-        throw std::runtime_error("XPathMapper::start: Cannot run without a query");
-    
-    d_reader = reader;
-    QThread::start();
 }
 
 void XPathMapper::start(alpinocorpus::CorpusReader *reader, QString query, map_function<QString const &, xmlXPathObjectPtr> *fun)

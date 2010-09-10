@@ -42,6 +42,13 @@
         <item>
          <widget class="QListWidget" name="fileListWidget"/>
         </item>
+        <item>
+         <widget class="QProgressBar" name="filterProgressBar">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QGroupBox" name="groupBox_2">

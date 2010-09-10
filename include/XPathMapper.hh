@@ -28,19 +28,7 @@ class XPathMapper : public QThread
     Q_OBJECT
 public:
 	XPathMapper();
-	XPathMapper(map_function<QString const &, xmlXPathObjectPtr> *fun);
-    void cancel();
-	// The query can be changed (will throw when trying to change it on a
-	// running mapper) which allows for reuse of the same mapper. This might
-	// come in handy when the ui wants to bind the mapper for progress events.
-	// @TODO this could be combined with start() if DactMainWindow would save
-	// the last-entered query somewhere.
-    void setQuery(QString xpathQuery);
-    // Reader is inserted at start which allows the mapper to be created when
-    // there isn't a reader present in DactMainWindow. It will throw when you
-    // try to start an already running mapper.
-    void start(alpinocorpus::CorpusReader *reader);
-	
+	void cancel();
 	void start(alpinocorpus::CorpusReader *reader, QString query, map_function<QString const &, xmlXPathObjectPtr> *fun);
 
 signals:

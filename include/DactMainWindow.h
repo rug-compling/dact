@@ -69,6 +69,9 @@ private slots:
     void treeZoomIn(bool);
     void treeZoomOut(bool);
     void toggleSentencesInFileList(bool show);
+	void mapperStarted(int);
+	void mapperStopped(int, int);
+	void mapperProgressed(int, int);
 
 protected:
     void changeEvent(QEvent *e);
@@ -77,27 +80,28 @@ private:
     void addFiles();
     void createActions();
     void createTransformers();
+	void init();
     void initSentenceTransformer();
     void initTreeTransformer();
-    void readCorpus();
+    void readCorpus(QString const &corpusPath);
     void readSettings();
     void writeSettings();
     QString sentenceForFile(QString const &filename, QString const &query);
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
-    AboutWindow *d_aboutWindow;
+	AboutWindow *d_aboutWindow;
     DactFilterWindow *d_filterWindow;
     DactQueryWindow *d_queryWindow;
     DactMacrosWindow *d_macrosWindow;
     
     QString d_corpusPath;
     QString d_query;
+	QString d_filter;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;
     EntryMap d_entryMap;
     QSharedPointer<XPathMapper> d_xpathMapper;
-    QSharedPointer<XPathFilter> d_xpathFilter;
     QMutex d_addFilesMutex;
     QMutex d_filterChangedMutex;
     QSharedPointer<XPathValidator> d_xpathValidator;

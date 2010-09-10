@@ -48,48 +48,41 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
-    d_aboutWindow(new AboutWindow(this, Qt::Window)),
-    d_filterWindow(0),
+	d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
     d_xpathValidator(new XPathValidator)
 {
-    d_ui->setupUi(this);
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
-    
-    d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper(&d_entryMap));
-    
-    readSettings();
-    createTransformers();
-    createActions();
+    init();
 }
 
 DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
     QMainWindow(parent),
     d_ui(new Ui::DactMainWindow),
-    d_aboutWindow(new AboutWindow(this, Qt::Window)),
+	d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
     d_xpathValidator(new XPathValidator)
 {
-    d_ui->setupUi(this);
+	init();
+	
+    readCorpus(corpusPath);
+}
+
+void DactMainWindow::init()
+{
+	// the code shared by both the constructors.
+	
+	d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    d_ui->queryLineEdit->setValidator(&*d_xpathValidator);
+    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
+    
+    d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper());
+    
     readSettings();
     createTransformers();
-    d_corpusPath = corpusPath;
-
-    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
-    createActions();
-
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
-
-    d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper(&d_entryMap));
-
-    addFiles();
+    createActions();	
 }
 
 DactMainWindow::~DactMainWindow()
@@ -120,10 +113,10 @@ void DactMainWindow::addFiles()
     QVector<QString> entries;
 
     try {
-        if (d_xpathFilter.isNull())
+        if (d_filter.isEmpty())
             entries = d_corpusReader->entries();
         else {
-            d_xpathMapper->start(d_corpusReader.data());
+            d_xpathMapper->start(d_corpusReader.data(), d_filter, &d_entryMap);
             return;
         }
     } catch (runtime_error &e) {
@@ -248,6 +241,11 @@ void DactMainWindow::createActions()
 {
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
+	
+	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
+	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
+	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
+	
     QObject::connect(d_ui->fileListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
@@ -350,20 +348,8 @@ void DactMainWindow::filterChanged()
 {
     QMutexLocker locker(&d_filterChangedMutex);
 
-    QString filter = d_ui->filterLineEdit->text();
-    if (filter.trimmed().isEmpty()) {
-        d_xpathFilter.clear();
-    } else {
-        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
-        
-        if (d_xpathMapper->isRunning()) {
-            d_xpathMapper->cancel();
-            d_xpathMapper->wait();
-        }
-        
-        d_xpathMapper->setQuery(filter);
-    }
-
+	d_filter = d_ui->filterLineEdit->text().trimmed();
+	
     if (!d_corpusReader.isNull())
         addFiles();
 }
@@ -395,6 +381,24 @@ void DactMainWindow::initTreeTransformer()
 	d_treeTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
+void DactMainWindow::mapperStarted(int totalEntries)
+{
+	d_ui->filterProgressBar->setMinimum(0);
+	d_ui->filterProgressBar->setMaximum(totalEntries);
+	d_ui->filterProgressBar->setValue(0);
+	d_ui->filterProgressBar->setVisible(true);
+}
+
+void DactMainWindow::mapperStopped(int processedEntries, int totalEntries)
+{
+	d_ui->filterProgressBar->setVisible(false);
+}
+
+void DactMainWindow::mapperProgressed(int processedEntries, int totalEntries)
+{
+	d_ui->filterProgressBar->setValue(processedEntries);
+}
+
 void DactMainWindow::nextEntry(bool)
 {
     int nextRow = d_ui->fileListWidget->currentRow() + 1;
@@ -410,9 +414,8 @@ void DactMainWindow::openCorpus()
         return;
 
     corpusPath.chop(8);
-    d_corpusPath = corpusPath;
-
-    readCorpus();
+	
+    readCorpus(corpusPath);
 }
 
 void DactMainWindow::openDirectoryCorpus()
@@ -422,9 +425,7 @@ void DactMainWindow::openDirectoryCorpus()
     if (corpusPath.isNull())
         return;
 
-    d_corpusPath = corpusPath;
-
-    readCorpus();
+    readCorpus(corpusPath);
 }
 
 void DactMainWindow::pdfExport()
@@ -465,8 +466,10 @@ void DactMainWindow::print()
     }
 }
 
-void DactMainWindow::readCorpus()
+void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
+	d_corpusPath = corpusPath;
+	
     this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
 
     if(d_xpathMapper->isRunning())
