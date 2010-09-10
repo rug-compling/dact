@@ -33,6 +33,7 @@ DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_corpusReader(corpusReader),
 	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
+	d_entryMap(0),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -73,10 +74,8 @@ void DactFilterWindow::setFilter(QString const &filter)
 
 void DactFilterWindow::updateResults()
 {
-	if(!d_corpusReader || d_filter.isEmpty()) {
-		qWarning() << "Not running, empty reader or filter";
+	if(!d_corpusReader || d_filter.isEmpty())
 		return;
-	}
 	
     try {
 		if(d_xpathMapper->isRunning()) {
@@ -86,7 +85,13 @@ void DactFilterWindow::updateResults()
 		
 		d_ui->resultsListWidget->clear();
 		
-		d_xpathMapper->start(d_corpusReader.data(), d_filter, &d_entryMap);
+		if(d_entryMap)
+			delete d_entryMap;
+		
+		d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, d_filter);
+		QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
+		
+		d_xpathMapper->start(d_corpusReader.data(), d_filter, d_entryMap);
 	} catch(runtime_error &e) {
 		QMessageBox::critical(this, QString("Error reading corpus"),
 		    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
@@ -95,31 +100,10 @@ void DactFilterWindow::updateResults()
 	return;
 }
 
-void DactFilterWindow::entryFound(QString file)
+void DactFilterWindow::sentenceFound(QString file, QString sentence)
 {
-	QString label = sentenceForFile(file, d_filter);
-	QListWidgetItem *item(new QListWidgetItem(label, d_ui->resultsListWidget));
+	QListWidgetItem *item(new QListWidgetItem(sentence, d_ui->resultsListWidget));
 	item->setData(Qt::UserRole, file);
-}
-
-QString DactFilterWindow::sentenceForFile(QString const &file, QString const &query)
-{
-	// Read XML data.
-    if (d_corpusReader.isNull())
-        throw runtime_error("DactFilterWindow::sentenceForFile CorpusReader not available");
-
-    QString xml = d_corpusReader->read(file);
-
-    if (xml.size() == 0)
-        throw runtime_error("DactFilterWindow::sentenceForFile: empty XML data!");
-
-    // Parameters
-    QString valStr = query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + query + QString("'");
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-
-	return d_sentenceTransformer->transform(xml, params).trimmed();
 }
 
 void DactFilterWindow::applyValidityColor(QString const &)
@@ -144,8 +128,6 @@ void DactFilterWindow::applyValidityColor(QString const &)
 
 void DactFilterWindow::createActions()
 {
-	QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this, SLOT(entryFound(QString)));
-	
 	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
 	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
 	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
@@ -188,9 +170,7 @@ void DactFilterWindow::entryActivated(QListWidgetItem *item)
 
 void DactFilterWindow::filterChanged()
 {
-	qWarning() << "Filter Changed";
-	
-    setFilter(d_ui->filterLineEdit->text());
+	setFilter(d_ui->filterLineEdit->text());
 }
 
 void DactFilterWindow::initSentenceTransformer()
@@ -248,4 +228,40 @@ void DactFilterWindow::writeSettings()
     // Window geometry
     settings.setValue("filter_pos", pos());
     settings.setValue("filter_size", size());
+}
+
+EntryMapAndTransform::EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QSharedPointer<XSLTransformer> xslTransformer, QString const &query) :
+	d_corpusReader(corpusReader),
+	d_xslTransformer(xslTransformer),
+	d_query(query)
+{}
+
+void EntryMapAndTransform::operator()(QString const &entry, xmlXPathObjectPtr xpathObj)
+{
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0)
+    {
+		emit sentenceFound(entry, transform(entry));
+    }
+}
+
+QString EntryMapAndTransform::transform(QString const &file)
+{
+	// Read XML data.
+    if (d_corpusReader.isNull())
+        throw runtime_error("EntryMapAndTransform::transform CorpusReader not available");
+	
+    QString xml = d_corpusReader->read(file);
+	
+    if (xml.size() == 0)
+        throw runtime_error("EntryMapAndTransform::transform: empty XML data!");
+	
+    // Parameters
+    QString valStr = d_query.trimmed().isEmpty()
+		? "'/..'"
+		: QString("'") + d_query + QString("'");
+	
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
+	
+	return d_xslTransformer->transform(xml, params).trimmed();	
 }
