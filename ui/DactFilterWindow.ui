@@ -34,6 +34,13 @@
    <item>
     <widget class="QListWidget" name="resultsListWidget"/>
    </item>
+   <item>
+    <widget class="QProgressBar" name="filterProgressBar">
+     <property name="visible">
+      <bool>false</bool>
+	 </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -32,6 +32,7 @@ DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_corpusReader(corpusReader),
+	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
     d_xpathValidator(new XPathValidator)
 {
     d_ui->setupUi(this);
@@ -47,64 +48,67 @@ DactFilterWindow::~DactFilterWindow()
 
 void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
+	if(d_xpathMapper->isRunning()) {
+        d_xpathMapper->terminate();
+		d_xpathMapper->wait();
+	}
+	
     d_corpusReader = corpusReader;
+	
     updateResults();
 }
 
 void DactFilterWindow::setFilter(QString const &filter)
 {
-    d_ui->filterLineEdit->setText(filter);
+	d_ui->filterLineEdit->setText(filter);
     
-    // Don't try to filter with an invalid xpath expression
-    if (filter.trimmed().isEmpty() || !d_ui->filterLineEdit->hasAcceptableInput())
-        d_xpathFilter.clear();
+	// Don't try to filter with an invalid xpath expression
+    if (!d_ui->filterLineEdit->hasAcceptableInput())
+        d_filter = QString();
     else
-        d_xpathFilter = QSharedPointer<XPathFilter>(new XPathFilter(filter));
+        d_filter = filter.trimmed();
 
-    if (!d_corpusReader.isNull())
-        updateResults();
+	updateResults();
 }
 
 void DactFilterWindow::updateResults()
 {
-    d_ui->resultsListWidget->clear();
-
-    QVector<QString> entries;
-
+	if(!d_corpusReader || d_filter.isEmpty()) {
+		qWarning() << "Not running, empty reader or filter";
+		return;
+	}
+	
     try {
-        if (d_xpathFilter.isNull())
-            entries = d_corpusReader->entries();
-        else {
-            EntryFun fun;
-            entries = d_xpathFilter->fold(d_corpusReader.data(), &fun);
-        }
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error reading corpus"),
-            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-        return;
-    }
-
-    try {
-        for (QVector<QString>::const_iterator iter = entries.begin();
-            iter != entries.end(); ++iter)
-        {
-            QFileInfo entryFi(*iter);
-            QListWidgetItem *item(new QListWidgetItem(sentenceForFile(entryFi, d_ui->filterLineEdit->text()), d_ui->resultsListWidget));
-            item->setData(Qt::UserRole, entryFi.fileName());
-        }
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error bracketing sentences"),
-            QString("Could not bracket sentences: %1").arg(e.what()));
-    }
+		if(d_xpathMapper->isRunning()) {
+			d_xpathMapper->cancel();
+			d_xpathMapper->wait();
+		}
+		
+		d_ui->resultsListWidget->clear();
+		
+		d_xpathMapper->start(d_corpusReader.data(), d_filter, &d_entryMap);
+	} catch(runtime_error &e) {
+		QMessageBox::critical(this, QString("Error reading corpus"),
+		    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+	}
+	
+	return;
 }
 
-QString DactFilterWindow::sentenceForFile(QFileInfo const &file, QString const &query)
+void DactFilterWindow::entryFound(QString file)
+{
+	QString label = sentenceForFile(file, d_filter);
+	QListWidgetItem *item(new QListWidgetItem(label, d_ui->resultsListWidget));
+	item->setData(Qt::UserRole, file);
+}
+
+QString DactFilterWindow::sentenceForFile(QString const &file, QString const &query)
 {
 	// Read XML data.
     if (d_corpusReader.isNull())
         throw runtime_error("DactFilterWindow::sentenceForFile CorpusReader not available");
 
-    QString xml = d_corpusReader->read(file.fileName());
+    QString xml = d_corpusReader->read(file);
 
     if (xml.size() == 0)
         throw runtime_error("DactFilterWindow::sentenceForFile: empty XML data!");
@@ -140,6 +144,12 @@ void DactFilterWindow::applyValidityColor(QString const &)
 
 void DactFilterWindow::createActions()
 {
+	QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this, SLOT(entryFound(QString)));
+	
+	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
+	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
+	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
+	
     QObject::connect(d_ui->resultsListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
         this,
@@ -155,6 +165,7 @@ void DactFilterWindow::createActions()
 
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
+	
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
 }
 
@@ -177,6 +188,8 @@ void DactFilterWindow::entryActivated(QListWidgetItem *item)
 
 void DactFilterWindow::filterChanged()
 {
+	qWarning() << "Filter Changed";
+	
     setFilter(d_ui->filterLineEdit->text());
 }
 
@@ -189,6 +202,25 @@ void DactFilterWindow::initSentenceTransformer()
     QString xsl(xslStream.readAll());
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
+
+void DactFilterWindow::mapperStarted(int totalEntries)
+{
+	d_ui->filterProgressBar->setMinimum(0);
+	d_ui->filterProgressBar->setMaximum(totalEntries);
+	d_ui->filterProgressBar->setValue(0);
+	d_ui->filterProgressBar->setVisible(true);
+}
+
+void DactFilterWindow::mapperStopped(int processedEntries, int totalEntries)
+{
+	d_ui->filterProgressBar->setVisible(false);
+}
+
+void DactFilterWindow::mapperProgressed(int processedEntries, int totalEntries)
+{
+	d_ui->filterProgressBar->setValue(processedEntries);
+}
+
 
 void DactFilterWindow::closeEvent(QCloseEvent *event)
 {

@@ -11,7 +11,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathFilter.hh"
+#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -40,6 +40,10 @@ private slots:
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void entryActivated(QListWidgetItem *subject);
     void filterChanged();
+	void entryFound(QString value);
+	void mapperStarted(int);
+	void mapperStopped(int, int);
+	void mapperProgressed(int, int);
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
@@ -50,11 +54,13 @@ private:
     void initSentenceTransformer();
     void readSettings();
     void writeSettings();
-    QString sentenceForFile(QFileInfo const &file, QString const &query);
+    QString sentenceForFile(QString const &file, QString const &query);
 
+	EntryMap d_entryMap;
+	QString d_filter;
     QSharedPointer<Ui::DactFilterWindow> d_ui;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
-    QSharedPointer<XPathFilter> d_xpathFilter;
+    QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
 };
