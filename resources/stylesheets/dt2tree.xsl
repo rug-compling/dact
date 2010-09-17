@@ -81,12 +81,12 @@
         <xsl:when test = "@pos = 'UNKNOWN'">
           <xsl:text>capitalslong</xsl:text>
         </xsl:when>
-        <xsl:when test = "string-length(@root) &gt; string-length(@pos) 
-          and string-length(@root) &gt; string-length(@rel)">
-          <xsl:value-of select="@root"/>
+        <xsl:when test = "string-length(@lemma) &gt; string-length(@pt) 
+          and string-length(@lemma) &gt; string-length(@rel)">
+          <xsl:value-of select="@lemma"/>
         </xsl:when>
-        <xsl:when test = "string-length(@pos) &gt; string-length(@rel) ">
-          <xsl:value-of select="@pos"/>
+        <xsl:when test = "string-length(@pt) &gt; string-length(@rel) ">
+          <xsl:value-of select="@pt"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@rel"/>
@@ -148,19 +148,19 @@
       <svg:tspan font-weight="bold" fill="red">
       <xsl:value-of select="@index"/>
       </svg:tspan>
-      <xsl:if test = "@index and (@cat|@pos)">
+      <xsl:if test = "@index and (@cat|@pt)">
         <xsl:text>:</xsl:text>
       </xsl:if>
-      <xsl:value-of select="@cat|@pos"/>
+      <xsl:value-of select="@cat|@pt"/>
     </svg:text>
 
-    <xsl:if test = "@root">
+    <xsl:if test = "@lemma">
       <svg:text x = "{$x}" y = "{$y + 10}">
         <xsl:attribute name="fill">
           <xsl:value-of select="@color" />
         </xsl:attribute>
         <svg:tspan>
-	  <xsl:value-of select="@root"/>
+	  <xsl:value-of select="@lemma"/>
         </svg:tspan>
 	<svg:tspan baseline-shift = "sub">
 	  <xsl:value-of select="@begin"/>
