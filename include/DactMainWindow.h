@@ -8,6 +8,7 @@
 #include <QMutex>
 #include <QSharedPointer>
 #include <QString>
+#include <QTimer>
 #include <QVector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
@@ -29,6 +30,7 @@ class DactFilterWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryWindow;
+class OpenProgressDialog;
 
 class QGraphicsSvgItem;
 class QListWidgetItem;
@@ -52,6 +54,8 @@ private slots:
     void allEntriesFound();
     void applyValidityColor(QString const &text);
     void bracketedEntryActivated();
+    void corpusOpenTick();
+    void corpusRead(int idx);
     void currentBracketedEntryChanged(QString const &entry);
     void entryFound(QString entry);
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
@@ -94,6 +98,7 @@ private:
     DactFilterWindow *d_filterWindow;
     DactQueryWindow *d_queryWindow;
     DactMacrosWindow *d_macrosWindow;
+    OpenProgressDialog *d_openProgressDialog;
     
     QString d_corpusPath;
     QString d_query;
@@ -108,6 +113,9 @@ private:
     QMutex d_addFilesMutex;
     QMutex d_filterChangedMutex;
     QSharedPointer<XPathValidator> d_xpathValidator;
+    QFuture<bool> d_corpusOpenFuture;
+    QTimer d_corpusOpenTimer;
+    QFutureWatcher<bool> d_corpusOpenWatcher;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QGraphicsSvgItem *d_curTreeItem; // Scene-managed
 };

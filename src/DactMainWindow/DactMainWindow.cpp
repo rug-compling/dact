@@ -1,7 +1,6 @@
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
-#include <QFuture>
 #include <QFutureWatcher>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
@@ -23,6 +22,7 @@
 #include <QTextStream>
 #include <QUrl>
 #include <Qt>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include <cstdlib>
@@ -39,6 +39,7 @@
 #include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
 #include <DactQueryWindow.h>
+#include <OpenProgressDialog.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
 #include <ui_DactMainWindow.h>
@@ -51,7 +52,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
 	d_filterWindow(0),
     d_queryWindow(0),
-    d_macrosWindow(0)
+    d_macrosWindow(0),
+    d_openProgressDialog(0)
 {
     init();
 }
@@ -62,11 +64,12 @@ DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
 	d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_filterWindow(0),
     d_queryWindow(0),
-    d_macrosWindow(0)
+    d_macrosWindow(0),
+    d_openProgressDialog(0)
 {
 	init();
 	
-    readCorpus(corpusPath);
+    //readCorpus(corpusPath);
 }
 
 void DactMainWindow::init()
@@ -242,6 +245,9 @@ void DactMainWindow::showMacrosWindow()
 
 void DactMainWindow::createActions()
 {
+    QObject::connect(&d_corpusOpenTimer, SIGNAL(timeout()), this, SLOT(corpusOpenTick()));
+    QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
+
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
 	
@@ -276,6 +282,12 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));  
 
     QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
+}
+
+void DactMainWindow::corpusOpenTick()
+{
+    d_openProgressDialog->setProgress(d_corpusReader->entries().size());
+    qDebug() << d_corpusReader->entries().size();
 }
 
 void DactMainWindow::createTransformers()
@@ -478,16 +490,33 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
     if(d_xpathMapper->isRunning())
         d_xpathMapper->terminate();
 
+    if (d_corpusOpenWatcher.isRunning()) {
+        d_corpusOpenWatcher.cancel();
+        d_corpusOpenWatcher.waitForFinished();
+    }
+
+    if (d_openProgressDialog == 0)
+        d_openProgressDialog = new OpenProgressDialog(this);
+
+    d_openProgressDialog->open();
+
     d_corpusReader = QSharedPointer<CorpusReader>(
         CorpusReader::newCorpusReader(d_corpusPath));
-    if (!d_corpusReader->open())
-       return; // XXX - return boolean, and handle in caller!
+    d_corpusOpenTimer.start(250);
+    d_corpusOpenFuture = QtConcurrent::run(d_corpusReader.data(), &CorpusReader::open);
+    d_corpusOpenWatcher.setFuture(d_corpusOpenFuture);
+}
+
+void DactMainWindow::corpusRead(int idx)
+{
+    d_corpusOpenTimer.stop();
+    d_openProgressDialog->accept();
 
     addFiles();
-    
+
     if(d_filterWindow != 0)
         d_filterWindow->switchCorpus(d_corpusReader);
-    
+
     if(d_queryWindow != 0)
         d_queryWindow->switchCorpus(d_corpusReader);
 }
