@@ -24,11 +24,11 @@ int main(int argc, char *argv[])
     xmlXPathInit();
 
     DactMainWindow *w;
-    if (qApp->arguments().size() == 2)
-        w = new DactMainWindow(qApp->arguments().at(1));
-    else
-        w = new DactMainWindow;
+    w = new DactMainWindow;
     w->show();
+
+    if (qApp->arguments().size() == 2)
+        w->readCorpus(qApp->arguments().at(1));
 
     int r = a.exec();
     delete w;

@@ -39,8 +39,8 @@ class DactMainWindow : public QMainWindow {
     Q_OBJECT
 public:
     DactMainWindow(QWidget *parent = 0);
-    DactMainWindow(QString const &corpusPath, QWidget *parent = 0);
     ~DactMainWindow();
+    void readCorpus(QString const &corpusPath);
 
 public slots:
     void close();
@@ -89,7 +89,6 @@ private:
 	void init();
     void initSentenceTransformer();
     void initTreeTransformer();
-    void readCorpus(QString const &corpusPath);
     void readSettings();
     void writeSettings();
     QString sentenceForFile(QString const &filename, QString const &query);

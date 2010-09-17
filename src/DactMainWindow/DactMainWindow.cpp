@@ -50,26 +50,13 @@ using namespace std;
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window)),
 	d_filterWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0)
 {
     init();
-}
-
-DactMainWindow::DactMainWindow(const QString &corpusPath, QWidget *parent) :
-    QMainWindow(parent),
-    d_ui(new Ui::DactMainWindow),
-	d_aboutWindow(new AboutWindow(this, Qt::Window)),
-    d_filterWindow(0),
-    d_queryWindow(0),
-    d_macrosWindow(0),
-    d_openProgressDialog(0)
-{
-	init();
-	
-    //readCorpus(corpusPath);
 }
 
 void DactMainWindow::init()
@@ -287,7 +274,6 @@ void DactMainWindow::createActions()
 void DactMainWindow::corpusOpenTick()
 {
     d_openProgressDialog->setProgress(d_corpusReader->entries().size());
-    qDebug() << d_corpusReader->entries().size();
 }
 
 void DactMainWindow::createTransformers()
