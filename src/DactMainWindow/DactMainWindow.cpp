@@ -317,6 +317,18 @@ void DactMainWindow::help()
     QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/wiki/Usage"));
 }
 
+QString DactMainWindow::getHighlightQuery()
+{
+	if(!d_filter.isEmpty())
+		return d_filter;
+	
+	else if(!d_query.isEmpty())
+		return d_query;
+	
+	else
+		return QString();
+}
+
 void DactMainWindow::showFile(QString const &filename)
 {
     // Read XML data.
@@ -332,8 +344,9 @@ void DactMainWindow::showFile(QString const &filename)
     }
 
     // Parameters
-    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_macrosModel->expand(d_query) + QString("'");
+	QString query = getHighlightQuery();
+    QString valStr = query.isEmpty() ? "'/..'" :
+                     QString("'") + query + QString("'");
     QHash<QString, QString> params;
     params["expr"] = valStr;
 
@@ -583,7 +596,7 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
 
 void DactMainWindow::queryChanged()
 {
-    d_query = d_ui->queryLineEdit->text();
+    d_query = d_ui->queryLineEdit->text().trimmed();
     if (d_ui->fileListWidget->currentItem() != 0)
         entrySelected(d_ui->fileListWidget->currentItem(), 0);
 }
