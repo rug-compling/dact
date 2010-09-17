@@ -480,6 +480,8 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 
     d_corpusReader = QSharedPointer<CorpusReader>(
         CorpusReader::newCorpusReader(d_corpusPath));
+    if (!d_corpusReader->open())
+       return; // XXX - return boolean, and handle in caller!
 
     addFiles();
     
