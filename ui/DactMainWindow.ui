@@ -349,6 +349,9 @@
    <property name="text">
     <string>Open Directory...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
