@@ -351,6 +351,11 @@ void DactMainWindow::filterChanged()
 
 	d_filter = d_ui->filterLineEdit->text().trimmed();
 	
+    if (d_ui->queryLineEdit->text().trimmed().isEmpty()) {
+        d_ui->queryLineEdit->setText(d_filter);
+        queryChanged();
+    }
+
 	if (!d_corpusReader.isNull())
         addFiles();
 }
