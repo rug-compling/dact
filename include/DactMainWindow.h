@@ -85,7 +85,6 @@ private:
     void addFiles();
     void createActions();
     void createTransformers();
-	QString getHighlightQuery();
 	void init();
     void initSentenceTransformer();
     void initTreeTransformer();
