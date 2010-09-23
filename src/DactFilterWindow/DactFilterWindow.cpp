@@ -33,10 +33,10 @@ DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
     d_corpusReader(corpusReader),
-	d_entryMap(0),
-	d_macrosModel(macrosModel),
-	d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
-	d_xpathValidator(new XPathValidator(d_macrosModel))
+    d_entryMap(0),
+    d_macrosModel(macrosModel),
+    d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
+    d_xpathValidator(new XPathValidator(d_macrosModel))
 {
     d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
@@ -55,62 +55,62 @@ void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
     stopMapper();
 
     d_corpusReader = corpusReader;
-	
+    
     updateResults();
 }
 
 void DactFilterWindow::setFilter(QString const &filter)
 {
-	d_ui->filterLineEdit->setText(filter);
+    d_ui->filterLineEdit->setText(filter);
     
-	// Don't try to filter with an invalid xpath expression
+    // Don't try to filter with an invalid xpath expression
     if (!d_ui->filterLineEdit->hasAcceptableInput())
         d_filter = QString();
     else
         d_filter = filter.trimmed();
 
-	updateResults();
+    updateResults();
 }
 
 void DactFilterWindow::stopMapper()
 {
-		if(d_xpathMapper->isRunning()) {
-			d_xpathMapper->cancel();
-			d_xpathMapper->wait();
-		}
+    	if(d_xpathMapper->isRunning()) {
+    		d_xpathMapper->cancel();
+    		d_xpathMapper->wait();
+    	}
 }
 
 void DactFilterWindow::updateResults()
 {
-	if(!d_corpusReader || d_filter.isEmpty())
-		return;
-	
+    if(!d_corpusReader || d_filter.isEmpty())
+    	return;
+    
     try {
         stopMapper();
-		
-		d_ui->resultsListWidget->clear();
-		
-		if(d_entryMap)
-			delete d_entryMap;
-		
-		QString xpathExpression = d_macrosModel->expand(d_filter);
-		
-		d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, xpathExpression);
-		QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
-		
-		d_xpathMapper->start(d_corpusReader.data(), xpathExpression, d_entryMap);
-	} catch(runtime_error &e) {
-		QMessageBox::critical(this, QString("Error reading corpus"),
-		    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-	}
-	
-	return;
+    	
+    	d_ui->resultsListWidget->clear();
+    	
+    	if(d_entryMap)
+    		delete d_entryMap;
+    	
+    	QString xpathExpression = d_macrosModel->expand(d_filter);
+    	
+    	d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, xpathExpression);
+    	QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
+    	
+    	d_xpathMapper->start(d_corpusReader.data(), xpathExpression, d_entryMap);
+    } catch(runtime_error &e) {
+    	QMessageBox::critical(this, QString("Error reading corpus"),
+    	    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+    }
+    
+    return;
 }
 
 void DactFilterWindow::sentenceFound(QString file, QString sentence)
 {
-	QListWidgetItem *item(new QListWidgetItem(sentence, d_ui->resultsListWidget));
-	item->setData(Qt::UserRole, file);
+    QListWidgetItem *item(new QListWidgetItem(sentence, d_ui->resultsListWidget));
+    item->setData(Qt::UserRole, file);
 }
 
 void DactFilterWindow::applyValidityColor(QString const &)
@@ -135,10 +135,10 @@ void DactFilterWindow::applyValidityColor(QString const &)
 
 void DactFilterWindow::createActions()
 {
-	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
-	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
-	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
-	
+    QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
+    QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
+    QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
+    
     QObject::connect(d_ui->resultsListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
         this,
@@ -154,7 +154,7 @@ void DactFilterWindow::createActions()
 
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
-	
+    
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
 }
 
@@ -177,7 +177,7 @@ void DactFilterWindow::entryActivated(QListWidgetItem *item)
 
 void DactFilterWindow::filterChanged()
 {
-	setFilter(d_ui->filterLineEdit->text());
+    setFilter(d_ui->filterLineEdit->text());
 }
 
 void DactFilterWindow::initSentenceTransformer()
@@ -192,20 +192,20 @@ void DactFilterWindow::initSentenceTransformer()
 
 void DactFilterWindow::mapperStarted(int totalEntries)
 {
-	d_ui->filterProgressBar->setMinimum(0);
-	d_ui->filterProgressBar->setMaximum(totalEntries);
-	d_ui->filterProgressBar->setValue(0);
-	d_ui->filterProgressBar->setVisible(true);
+    d_ui->filterProgressBar->setMinimum(0);
+    d_ui->filterProgressBar->setMaximum(totalEntries);
+    d_ui->filterProgressBar->setValue(0);
+    d_ui->filterProgressBar->setVisible(true);
 }
 
 void DactFilterWindow::mapperStopped(int processedEntries, int totalEntries)
 {
-	d_ui->filterProgressBar->setVisible(false);
+    d_ui->filterProgressBar->setVisible(false);
 }
 
 void DactFilterWindow::mapperProgressed(int processedEntries, int totalEntries)
 {
-	d_ui->filterProgressBar->setValue(processedEntries);
+    d_ui->filterProgressBar->setValue(processedEntries);
 }
 
 
@@ -238,37 +238,37 @@ void DactFilterWindow::writeSettings()
 }
 
 EntryMapAndTransform::EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QSharedPointer<XSLTransformer> xslTransformer, QString const &query) :
-	d_corpusReader(corpusReader),
-	d_xslTransformer(xslTransformer),
-	d_query(query)
+    d_corpusReader(corpusReader),
+    d_xslTransformer(xslTransformer),
+    d_query(query)
 {}
 
 void EntryMapAndTransform::operator()(QString const &entry, xmlXPathObjectPtr xpathObj)
 {
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0)
+    if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0)
     {
-		emit sentenceFound(entry, transform(entry));
+    	emit sentenceFound(entry, transform(entry));
     }
 }
 
 QString EntryMapAndTransform::transform(QString const &file)
 {
-	// Read XML data.
+    // Read XML data.
     if (d_corpusReader.isNull())
         throw runtime_error("EntryMapAndTransform::transform CorpusReader not available");
-	
+    
     QString xml = d_corpusReader->read(file);
-	
+    
     if (xml.size() == 0)
         throw runtime_error("EntryMapAndTransform::transform: empty XML data!");
-	
+    
     // Parameters
     QString valStr = d_query.trimmed().isEmpty()
-		? "'/..'"
-		: QString("'") + d_query + QString("'");
-	
+    	? "'/..'"
+    	: QString("'") + d_query + QString("'");
+    
     QHash<QString, QString> params;
     params["expr"] = valStr;
-	
-	return d_xslTransformer->transform(xml, params).trimmed();	
+    
+    return d_xslTransformer->transform(xml, params).trimmed();	
 }

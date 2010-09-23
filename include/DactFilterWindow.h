@@ -16,7 +16,7 @@
 #include "XSLTransformer.hh"
 
 namespace Ui {
-	class DactFilterWindow;
+    class DactFilterWindow;
 }
 
 class DactMacrosModel;
@@ -42,10 +42,10 @@ private slots:
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void entryActivated(QListWidgetItem *subject);
     void filterChanged();
-	void sentenceFound(QString file, QString sentence);
-	void mapperStarted(int);
-	void mapperStopped(int, int);
-	void mapperProgressed(int, int);
+    void sentenceFound(QString file, QString sentence);
+    void mapperStarted(int);
+    void mapperStopped(int, int);
+    void mapperProgressed(int, int);
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
@@ -58,10 +58,10 @@ private:
     void writeSettings();
     void stopMapper();
 
-	EntryMapAndTransform *d_entryMap;
-	QString d_filter;
+    EntryMapAndTransform *d_entryMap;
+    QString d_filter;
     QSharedPointer<Ui::DactFilterWindow> d_ui;
-	QSharedPointer<DactMacrosModel> d_macrosModel;
+    QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
@@ -72,18 +72,18 @@ class EntryMapAndTransform : public EntryMap
 {
     Q_OBJECT
 public:
-	EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> reader, QSharedPointer<XSLTransformer> transformer, QString const &query);
+    EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> reader, QSharedPointer<XSLTransformer> transformer, QString const &query);
     void operator()(QString const &entry, xmlXPathObjectPtr xpathObj);
 private:
-	QString transform(QString const &file);
+    QString transform(QString const &file);
 
 signals:
-	void sentenceFound(QString file, QString sentence);
-	
+    void sentenceFound(QString file, QString sentence);
+    
 private:
-	QString d_query;
-	QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-	QSharedPointer<XSLTransformer> d_xslTransformer;
+    QString d_query;
+    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+    QSharedPointer<XSLTransformer> d_xslTransformer;
 };
 
 #endif // DACTFILTERWINDOW_H
