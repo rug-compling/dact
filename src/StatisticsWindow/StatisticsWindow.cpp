@@ -23,12 +23,12 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactQueryWindow.h"
+#include "StatisticsWindow.hh"
 #include "DactMacrosModel.h";
 #include "PercentageCellDelegate.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
-#include "ui_DactQueryWindow.h"
+#include "ui_StatisticsWindow.h"
 
 #include <libxml/hash.h>
 #include <libxml/parser.h>
@@ -38,10 +38,10 @@
 using namespace alpinocorpus;
 using namespace std;
 
-DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::DactQueryWindow>(new Ui::DactQueryWindow)),
+    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
     d_corpusReader(corpusReader),
     d_macrosModel(macrosModel),
     d_attrMap(NULL),
@@ -55,15 +55,15 @@ DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
     readSettings();
 }
 
-DactQueryWindow::~DactQueryWindow()
+StatisticsWindow::~StatisticsWindow()
 {
     stopMapper();
 }
 
-void DactQueryWindow::startMapper()
+void StatisticsWindow::startMapper()
 {
     if(d_xpathMapper->isRunning()) {
-    	qWarning() << "DactQueryWindow::startMapper: Trying to start mapper while it is running? This should not happen. Terminating running mapper anyway.";
+    	qWarning() << "StatisticsWindow::startMapper: Trying to start mapper while it is running? This should not happen. Terminating running mapper anyway.";
     	stopMapper();
     }
     
@@ -76,7 +76,7 @@ void DactQueryWindow::startMapper()
     d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_ui->filterLineEdit->text()), d_attrMap);
 }
 
-void DactQueryWindow::stopMapper()
+void StatisticsWindow::stopMapper()
 {
     if(d_xpathMapper->isRunning()) {
     	d_xpathMapper->cancel();
@@ -84,7 +84,7 @@ void DactQueryWindow::stopMapper()
     }
 }
 
-void DactQueryWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
+void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     stopMapper();
     
@@ -93,18 +93,18 @@ void DactQueryWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> co
     updateResults();
 }
 
-void DactQueryWindow::setFilter(QString const &filter)
+void StatisticsWindow::setFilter(QString const &filter)
 {
     d_ui->filterLineEdit->setText(filter);
 }
 
-void DactQueryWindow::setAggregateAttribute(QString const &detail)
+void StatisticsWindow::setAggregateAttribute(QString const &detail)
 {
     // @TODO: update d_ui->attributeComboBox.currentIndex when changed from outside
     // to reflect the current (changed) state of the window.
 }
 
-void DactQueryWindow::updateResults()
+void StatisticsWindow::updateResults()
 {
     // @TODO: allow the user to copy and/or export this table.
     try {
@@ -132,18 +132,18 @@ void DactQueryWindow::updateResults()
     }
 }
 
-QSharedPointer<DactQueryWindowResultsRow> DactQueryWindow::createResultsRow(QString const &value)
+QSharedPointer<StatisticsWindowResultsRow> StatisticsWindow::createResultsRow(QString const &value)
 {
-    QSharedPointer<DactQueryWindowResultsRow> row = QSharedPointer<DactQueryWindowResultsRow>(new DactQueryWindowResultsRow());
+    QSharedPointer<StatisticsWindowResultsRow> row = QSharedPointer<StatisticsWindowResultsRow>(new StatisticsWindowResultsRow());
     row->setText(value);
     row->insertIntoTable(d_ui->resultsTableWidget);
     d_resultsTable[value] = row;
     return row;
 }
 
-void DactQueryWindow::attributeFound(QString value)
+void StatisticsWindow::attributeFound(QString value)
 {
-    QSharedPointer<DactQueryWindowResultsRow> row;
+    QSharedPointer<StatisticsWindowResultsRow> row;
     
     int hits = ++d_results[value];
     ++d_totalHits;
@@ -159,27 +159,27 @@ void DactQueryWindow::attributeFound(QString value)
     	
     	updateResultsTotalCount();		
     } catch (runtime_error &e) {
-    	qWarning() << QString("DactQueryWindow::attributeFound: Could not add result to table: %1").arg(e.what());
+    	qWarning() << QString("StatisticsWindow::attributeFound: Could not add result to table: %1").arg(e.what());
     }
 }
 
-void DactQueryWindow::updateResultsTotalCount()
+void StatisticsWindow::updateResultsTotalCount()
 {
     d_ui->totalHitsLabel->setText(QString("%1").arg(d_totalHits));
     
     updateResultsPercentages();
 }
 
-void DactQueryWindow::updateResultsPercentages()
+void StatisticsWindow::updateResultsPercentages()
 {
-    for (QHash<QString,QSharedPointer<DactQueryWindowResultsRow> >::const_iterator iter = d_resultsTable.constBegin();
+    for (QHash<QString,QSharedPointer<StatisticsWindowResultsRow> >::const_iterator iter = d_resultsTable.constBegin();
     	 iter != d_resultsTable.constEnd(); ++iter)
     {
     	iter.value()->setMax(d_totalHits);
     }
 }
 
-void DactQueryWindow::applyValidityColor(QString const &)
+void StatisticsWindow::applyValidityColor(QString const &)
 {
     // @TODO: maybe we can create a template, mixin or something else to allow
     // this function to be shared across most of the window classes.
@@ -202,7 +202,7 @@ void DactQueryWindow::applyValidityColor(QString const &)
         widget->setStyleSheet("background-color: salmon");
 }
 
-void DactQueryWindow::createActions()
+void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
     d_ui->resultsTableWidget->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
@@ -231,7 +231,7 @@ void DactQueryWindow::createActions()
     QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
 }
 
-void DactQueryWindow::keyPressEvent(QKeyEvent *event)
+void StatisticsWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape)
         stopMapper();
@@ -239,7 +239,7 @@ void DactQueryWindow::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
 }
 
-void DactQueryWindow::showPercentage(bool show)
+void StatisticsWindow::showPercentage(bool show)
 {
    //d_ui->resultsTableWidget->setColumnHidden(1, show);
    d_ui->resultsTableWidget->setColumnHidden(2, !show);
@@ -247,7 +247,7 @@ void DactQueryWindow::showPercentage(bool show)
    d_ui->percentageCheckBox->setChecked(show);
 }
 
-void DactQueryWindow::startQuery()
+void StatisticsWindow::startQuery()
 {
     setFilter(d_ui->filterLineEdit->text());
     
@@ -256,24 +256,24 @@ void DactQueryWindow::startQuery()
     updateResults();
 }
 
-void DactQueryWindow::showPercentageChanged()
+void StatisticsWindow::showPercentageChanged()
 {
     showPercentage(d_ui->percentageCheckBox->isChecked());
 }
 
-void DactQueryWindow::progressStarted(int total)
+void StatisticsWindow::progressStarted(int total)
 {
     d_ui->filterProgress->setMaximum(total);
     d_ui->filterProgress->setDisabled(false);
     d_ui->filterProgress->setVisible(true);
 }
 
-void DactQueryWindow::progressChanged(int n, int total)
+void StatisticsWindow::progressChanged(int n, int total)
 {
     d_ui->filterProgress->setValue(n);
 }
 
-void DactQueryWindow::progressStopped(int n, int total)
+void StatisticsWindow::progressStopped(int n, int total)
 {
     // @TODO maybe indicate some way when n != total that it's not busy anymore
     // but also not finished. (e.g. it was cancelled by pressing [esc], which isn't
@@ -281,17 +281,17 @@ void DactQueryWindow::progressStopped(int n, int total)
     d_ui->filterProgress->setVisible(false);
 }
 
-void DactQueryWindow::closeEvent(QCloseEvent *event)
+void StatisticsWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
     event->accept();
 }
 
-void DactQueryWindow::readNodeAttributes()
+void StatisticsWindow::readNodeAttributes()
 {
     QFile dtdFile(":/dtd/alpino_ds.dtd"); // XXX - hardcode?
     if (!dtdFile.open(QFile::ReadOnly)) {
-        qWarning() << "DactQueryWindow::readNodeAttributes(): Could not read DTD.";
+        qWarning() << "StatisticsWindow::readNodeAttributes(): Could not read DTD.";
         return;
     }
     QByteArray dtdData(dtdFile.readAll());
@@ -303,12 +303,12 @@ void DactQueryWindow::readNodeAttributes()
 
     xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_8859_1);
     if (dtd == NULL) {
-        qWarning() << "DactQueryWindow::readNodeAttributes(): Could not parse DTD.";
+        qWarning() << "StatisticsWindow::readNodeAttributes(): Could not parse DTD.";
         return;
     }
 
     if (dtd->elements == NULL) {
-        qWarning() << "DactQueryWindow::readNodeAttributes(): DTD hashtable contains no elements.";
+        qWarning() << "StatisticsWindow::readNodeAttributes(): DTD hashtable contains no elements.";
         xmlFreeDtd(dtd);
         return;
     }
@@ -317,7 +317,7 @@ void DactQueryWindow::readNodeAttributes()
         reinterpret_cast<xmlHashTablePtr>(dtd->elements),
         reinterpret_cast<xmlChar const *>("node")));
     if (elem == NULL) {
-        qWarning() << "DactQueryWindow::readNodeAttributes(): could not finde 'node' element.";
+        qWarning() << "StatisticsWindow::readNodeAttributes(): could not finde 'node' element.";
         xmlFreeDtd(dtd);
         return;
     }
@@ -337,7 +337,7 @@ void DactQueryWindow::readNodeAttributes()
     xmlFreeDtd(dtd);
 }
 
-void DactQueryWindow::readSettings()
+void StatisticsWindow::readSettings()
 {
     QSettings settings("RUG", "Dact");
 
@@ -353,7 +353,7 @@ void DactQueryWindow::readSettings()
     move(pos);
 }
 
-void DactQueryWindow::writeSettings()
+void StatisticsWindow::writeSettings()
 {
     QSettings settings("RUG", "Dact");
 
@@ -364,7 +364,7 @@ void DactQueryWindow::writeSettings()
     settings.setValue("query_size", size());
 }
 
-DactQueryWindowResultsRow::DactQueryWindowResultsRow() :
+StatisticsWindowResultsRow::StatisticsWindowResultsRow() :
     d_hits(0),
     d_labelItem(new QTableWidgetItem()),
     d_countItem(new QTableWidgetItem()),
@@ -379,7 +379,7 @@ DactQueryWindowResultsRow::DactQueryWindowResultsRow() :
     d_countItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
 }
 
-int DactQueryWindowResultsRow::insertIntoTable(QTableWidget *table)
+int StatisticsWindowResultsRow::insertIntoTable(QTableWidget *table)
 {
     int row = table->rowCount();
     table->insertRow(row);
@@ -391,7 +391,7 @@ int DactQueryWindowResultsRow::insertIntoTable(QTableWidget *table)
     return row;
 }
 
-DactQueryWindowResultsRow::~DactQueryWindowResultsRow()
+StatisticsWindowResultsRow::~StatisticsWindowResultsRow()
 {
     // I expected that I needed to delete d_labelItem etc. manually, but
     // that just tells me I can't access that piece of memory. Aparently
@@ -402,18 +402,18 @@ DactQueryWindowResultsRow::~DactQueryWindowResultsRow()
     //delete d_percentageItem;
 }
 
-void DactQueryWindowResultsRow::setText(QString const &text)
+void StatisticsWindowResultsRow::setText(QString const &text)
 {
     d_labelItem->setText(text);
 }
 
-void DactQueryWindowResultsRow::setValue(int n)
+void StatisticsWindowResultsRow::setValue(int n)
 {
     d_hits = n;
     d_countItem->setData(Qt::DisplayRole, n);
 }
 
-void DactQueryWindowResultsRow::setMax(int totalHits)
+void StatisticsWindowResultsRow::setMax(int totalHits)
 {
     d_percentageItem->setData(Qt::DisplayRole, ((float) d_hits / totalHits) * 100.0);
 }

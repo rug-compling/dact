@@ -141,7 +141,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="showMacrosWindow"/>
-    <addaction name="showQueryWindow"/>
+    <addaction name="showStatisticsWindow"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -258,7 +258,7 @@
     <string>Ctrl+B</string>
    </property>
   </action>
-  <action name="showQueryWindow">
+  <action name="showStatisticsWindow">
    <property name="text">
     <string>Statistics...</string>
    </property>

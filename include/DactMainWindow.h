@@ -29,7 +29,7 @@ class AboutWindow;
 class DactFilterWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
-class DactQueryWindow;
+class StatisticsWindow;
 class OpenProgressDialog;
 
 class QGraphicsSvgItem;
@@ -46,7 +46,7 @@ public:
 public slots:
     void close();
     void showFilterWindow();
-    void showQueryWindow();
+    void showStatisticsWindow();
     void showMacrosWindow();
     void showFile(QString const &filename);
 
@@ -97,7 +97,7 @@ private:
     QSharedPointer<Ui::DactMainWindow> d_ui;
 	AboutWindow *d_aboutWindow;
     DactFilterWindow *d_filterWindow;
-    DactQueryWindow *d_queryWindow;
+    StatisticsWindow *d_queryWindow;
     DactMacrosWindow *d_macrosWindow;
     OpenProgressDialog *d_openProgressDialog;
     

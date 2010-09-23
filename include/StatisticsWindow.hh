@@ -18,21 +18,21 @@
 #include "XSLTransformer.hh"
 
 namespace Ui {
-    class DactQueryWindow;
+    class StatisticsWindow;
 }
 
 class DactMacrosModel;
 
-class DactQueryWindowResultsRow;
+class StatisticsWindowResultsRow;
 
 class QKeyEvent;
 
-class DactQueryWindow : public QWidget {
+class StatisticsWindow : public QWidget {
     Q_OBJECT
 public:
-    DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+    StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
-    ~DactQueryWindow();
+    ~StatisticsWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text);
@@ -57,7 +57,7 @@ private:
     void updateResultsPercentages();
     void updateResultsTotalCount();
     void createActions();
-    QSharedPointer<DactQueryWindowResultsRow> createResultsRow(QString const &value);
+    QSharedPointer<StatisticsWindowResultsRow> createResultsRow(QString const &value);
     void readNodeAttributes();
     void startMapper();
     void stopMapper();
@@ -65,7 +65,7 @@ private:
     void writeSettings();
 
     AttributeMap *d_attrMap;
-    QSharedPointer<Ui::DactQueryWindow> d_ui;
+    QSharedPointer<Ui::StatisticsWindow> d_ui;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
@@ -75,7 +75,7 @@ private:
     // @TODO This one could be re-used for exporting functions. It's "finished"
     // when d_xpathMapper.data() emits it's 'stopped' signal.
     QHash<QString,int> d_results;
-    QHash<QString,QSharedPointer<DactQueryWindowResultsRow> > d_resultsTable;
+    QHash<QString,QSharedPointer<StatisticsWindowResultsRow> > d_resultsTable;
     int d_totalHits;
 };
 
@@ -83,11 +83,11 @@ private:
 // together, so I can keep track of them through a hashtable. Because I don't trust
 // that QTableWidget thingy with its numerical rows. They change! I tell you! I saw
 // them change!
-class DactQueryWindowResultsRow : public QObject
+class StatisticsWindowResultsRow : public QObject
 {
 public:
-    DactQueryWindowResultsRow();
-    ~DactQueryWindowResultsRow();
+    StatisticsWindowResultsRow();
+    ~StatisticsWindowResultsRow();
     void setText(QString const &);
     void setValue(int);
     void setMax(int);

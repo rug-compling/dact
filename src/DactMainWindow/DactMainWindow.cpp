@@ -39,7 +39,7 @@
 #include <DactFilterWindow.h>
 #include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
-#include <DactQueryWindow.h>
+#include <StatisticsWindow.hh>
 #include <OpenProgressDialog.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
@@ -213,10 +213,10 @@ void DactMainWindow::showFilterWindow()
     d_filterWindow->show();
 }
 
-void DactMainWindow::showQueryWindow()
+void DactMainWindow::showStatisticsWindow()
 {
     if (d_queryWindow == 0)
-        d_queryWindow = new DactQueryWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
+        d_queryWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
 
     d_queryWindow->setFilter(d_filter);
     d_queryWindow->show();
@@ -266,7 +266,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
-    QObject::connect(d_ui->showQueryWindow, SIGNAL(triggered(bool)), this, SLOT(showQueryWindow()));
+    QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));  
 
     QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
