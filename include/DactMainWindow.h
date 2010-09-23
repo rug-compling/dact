@@ -9,7 +9,6 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QTimer>
-#include <QVector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 

@@ -1,12 +1,10 @@
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
-#include <QFutureWatcher>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QHash>
 #include <QLineEdit>
-#include <QList>
 #include <QListWidgetItem>
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -18,7 +16,6 @@
 #include <QSettings>
 #include <QSize>
 #include <QString>
-#include <QStringList>
 #include <QSvgRenderer>
 #include <QTextStream>
 #include <QUrl>
@@ -28,9 +25,6 @@
 
 #include <cstdlib>
 #include <stdexcept>
-#include <string>
-#include <sstream>
-#include <vector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
