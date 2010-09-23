@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
@@ -188,6 +189,14 @@ void DactFilterWindow::initSentenceTransformer()
     QTextStream xslStream(&xslFile);
     QString xsl(xslStream.readAll());
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
+}
+
+void DactFilterWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape)
+      stopMapper();
+    else
+      QWidget::keyPressEvent(event);
 }
 
 void DactFilterWindow::mapperStarted(int totalEntries)
