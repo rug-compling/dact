@@ -262,6 +262,9 @@
    <property name="text">
     <string>Statistics...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
   </action>
   <action name="nextAction">
    <property name="icon">
