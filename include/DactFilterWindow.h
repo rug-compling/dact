@@ -56,6 +56,7 @@ private:
     void initSentenceTransformer();
     void readSettings();
     void writeSettings();
+    void stopMapper();
 
 	EntryMapAndTransform *d_entryMap;
 	QString d_filter;

@@ -47,15 +47,13 @@ DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> co
 
 DactFilterWindow::~DactFilterWindow()
 {
+    stopMapper();
 }
 
 void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
-	if(d_xpathMapper->isRunning()) {
-        d_xpathMapper->terminate();
-		d_xpathMapper->wait();
-	}
-	
+    stopMapper();
+
     d_corpusReader = corpusReader;
 	
     updateResults();
@@ -74,16 +72,21 @@ void DactFilterWindow::setFilter(QString const &filter)
 	updateResults();
 }
 
+void DactFilterWindow::stopMapper()
+{
+		if(d_xpathMapper->isRunning()) {
+			d_xpathMapper->cancel();
+			d_xpathMapper->wait();
+		}
+}
+
 void DactFilterWindow::updateResults()
 {
 	if(!d_corpusReader || d_filter.isEmpty())
 		return;
 	
     try {
-		if(d_xpathMapper->isRunning()) {
-			d_xpathMapper->cancel();
-			d_xpathMapper->wait();
-		}
+        stopMapper();
 		
 		d_ui->resultsListWidget->clear();
 		
