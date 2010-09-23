@@ -91,6 +91,7 @@ private:
     void initSentenceTransformer();
     void initTreeTransformer();
     void readSettings();
+    void stopMapper();
     void writeSettings();
     QString sentenceForFile(QString const &filename, QString const &query);
 

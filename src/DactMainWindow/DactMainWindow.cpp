@@ -81,10 +81,7 @@ void DactMainWindow::init()
 
 DactMainWindow::~DactMainWindow()
 {
-    if (d_xpathMapper->isRunning()) {
-        d_xpathMapper->cancel();
-        d_xpathMapper->wait();
-    }
+    stopMapper();
 }
 
 void DactMainWindow::aboutDialog()
@@ -97,10 +94,7 @@ void DactMainWindow::addFiles()
 {
     QMutexLocker locker(&d_addFilesMutex);
 
-    if (d_xpathMapper->isRunning()) {
-        d_xpathMapper->cancel();
-        d_xpathMapper->wait();
-    }
+    stopMapper();
 
     d_ui->fileListWidget->clear();
 
@@ -306,13 +300,8 @@ void DactMainWindow::help()
 
 void DactMainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Escape) {
-        QMutexLocker locker(&d_addFilesMutex);
-        if (d_xpathMapper->isRunning()) {
-            d_xpathMapper->cancel();
-            d_xpathMapper->wait();
-        }
-    }
+    if (event->key() == Qt::Key_Escape)
+        stopMapper();
     else
       QMainWindow::keyPressEvent(event);
 }
@@ -492,8 +481,7 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
     
     this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
 
-    if(d_xpathMapper->isRunning())
-        d_xpathMapper->terminate();
+    stopMapper();
 
     if (d_corpusOpenWatcher.isRunning()) {
         d_corpusOpenWatcher.cancel();
@@ -584,6 +572,14 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     scene->addItem(d_curTreeItem);
     d_ui->treeGraphicsView->setScene(scene);
     d_ui->treeGraphicsView->fitInView(d_curTreeItem, Qt::KeepAspectRatio);
+}
+
+void DactMainWindow::stopMapper()
+{
+    if (d_xpathMapper->isRunning()) {
+        d_xpathMapper->cancel();
+        d_xpathMapper->wait();
+    }
 }
 
 void DactMainWindow::queryChanged()
