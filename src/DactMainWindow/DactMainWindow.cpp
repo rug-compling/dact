@@ -52,7 +52,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
-	d_bracketedWindow(0),
+    d_bracketedWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0)
@@ -62,21 +62,21 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 
 void DactMainWindow::init()
 {
-	// the code shared by both the constructors.
-	
-	d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
-	
+    // the code shared by both the constructors.
+    
+    d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
+    
     d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper());
     
-	d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
-	
-	d_ui->setupUi(this);
-	d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+    d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
+    
+    d_ui->setupUi(this);
+    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
     
     readSettings();
     createTransformers();
-    createActions();	
+    createActions();    
 }
 
 DactMainWindow::~DactMainWindow()
@@ -89,7 +89,7 @@ DactMainWindow::~DactMainWindow()
 
 void DactMainWindow::aboutDialog()
 {
-	d_aboutWindow->show();
+    d_aboutWindow->show();
     d_aboutWindow->raise();
 }
 
@@ -140,7 +140,7 @@ void DactMainWindow::bracketedEntryActivated()
 
 QString DactMainWindow::sentenceForFile(QString const &filename, QString const &query)
 {
-	// Read XML data.
+    // Read XML data.
     if (d_corpusReader.isNull())
         throw runtime_error("DactMainWindow::sentenceForFile CorpusReader not available");
 
@@ -155,7 +155,7 @@ QString DactMainWindow::sentenceForFile(QString const &filename, QString const &
     QHash<QString, QString> params;
     params["expr"] = valStr;
 
-	return d_sentenceTransformer->transform(xml, params).trimmed();
+    return d_sentenceTransformer->transform(xml, params).trimmed();
 }
 
 void DactMainWindow::applyValidityColor(QString const &)
@@ -238,11 +238,11 @@ void DactMainWindow::createActions()
 
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
-	
-	QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
-	QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
-	QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
-	
+    
+    QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
+    QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
+    QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
+    
     QObject::connect(d_ui->fileListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
@@ -363,14 +363,14 @@ void DactMainWindow::filterChanged()
 {
     QMutexLocker locker(&d_filterChangedMutex);
 
-	d_filter = d_ui->filterLineEdit->text().trimmed();
-	
+    d_filter = d_ui->filterLineEdit->text().trimmed();
+    
     if (d_ui->queryLineEdit->text().trimmed().isEmpty()) {
         d_ui->queryLineEdit->setText(d_filter);
         queryChanged();
     }
 
-	if (!d_corpusReader.isNull())
+    if (!d_corpusReader.isNull())
         addFiles();
 }
 
@@ -393,30 +393,30 @@ void DactMainWindow::initSentenceTransformer()
 
 void DactMainWindow::initTreeTransformer()
 {
-	// Read stylesheet.
+    // Read stylesheet.
     QFile xslFile(":/stylesheets/dt2tree.xsl");
-	xslFile.open(QIODevice::ReadOnly);
-	QTextStream xslStream(&xslFile);
-	QString xsl(xslStream.readAll());
-	d_treeTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
+    xslFile.open(QIODevice::ReadOnly);
+    QTextStream xslStream(&xslFile);
+    QString xsl(xslStream.readAll());
+    d_treeTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
 void DactMainWindow::mapperStarted(int totalEntries)
 {
-	d_ui->filterProgressBar->setMinimum(0);
-	d_ui->filterProgressBar->setMaximum(totalEntries);
-	d_ui->filterProgressBar->setValue(0);
-	d_ui->filterProgressBar->setVisible(true);
+    d_ui->filterProgressBar->setMinimum(0);
+    d_ui->filterProgressBar->setMaximum(totalEntries);
+    d_ui->filterProgressBar->setValue(0);
+    d_ui->filterProgressBar->setVisible(true);
 }
 
 void DactMainWindow::mapperStopped(int processedEntries, int totalEntries)
 {
-	d_ui->filterProgressBar->setVisible(false);
+    d_ui->filterProgressBar->setVisible(false);
 }
 
 void DactMainWindow::mapperProgressed(int processedEntries, int totalEntries)
 {
-	d_ui->filterProgressBar->setValue(processedEntries);
+    d_ui->filterProgressBar->setValue(processedEntries);
 }
 
 void DactMainWindow::nextEntry(bool)
@@ -434,7 +434,7 @@ void DactMainWindow::openCorpus()
         return;
 
     corpusPath.chop(8);
-	
+    
     readCorpus(corpusPath);
 }
 
@@ -488,8 +488,8 @@ void DactMainWindow::print()
 
 void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
-	d_corpusPath = corpusPath;
-	
+    d_corpusPath = corpusPath;
+    
     this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
 
     if(d_xpathMapper->isRunning())
@@ -557,8 +557,8 @@ void DactMainWindow::writeSettings()
 
 void DactMainWindow::toggleSentencesInFileList(bool show)
 {
-	d_ui->showSentencesInFileList->setChecked(show);
-	filterChanged();
+    d_ui->showSentencesInFileList->setChecked(show);
+    filterChanged();
 }
 
 void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
