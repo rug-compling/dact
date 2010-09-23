@@ -65,7 +65,7 @@ add_custom_command(
 SET(dact_SRCS
   src/AboutWindow/AboutWindow.cpp
   src/DactMainWindow/DactMainWindow.cpp
-  src/DactFilterWindow/DactFilterWindow.cpp
+  src/BracketedWindow/BracketedWindow.cpp
   src/StatisticsWindow/StatisticsWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
@@ -81,7 +81,7 @@ SET(dact_SRCS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactMainWindow.h
-  include/DactFilterWindow.h
+  include/BracketedWindow.hh
   include/StatisticsWindow.hh
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
@@ -95,7 +95,7 @@ SET(dact_MOC_HDRS
 SET(dact_UI
   ui/AboutWindow.ui
   ui/DactMainWindow.ui
-  ui/DactFilterWindow.ui
+  ui/BracketedWindow.ui
   ui/StatisticsWindow.ui
   ui/DactMacrosWindow.ui
   ui/OpenProgressDialog.ui

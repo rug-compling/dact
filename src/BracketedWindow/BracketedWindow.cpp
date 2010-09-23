@@ -20,19 +20,19 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactFilterWindow.h"
+#include "BracketedWindow.hh"
 #include "DactMacrosModel.h"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
-#include "ui_DactFilterWindow.h"
+#include "ui_BracketedWindow.h"
 
 using namespace alpinocorpus;
 using namespace std;
 
-DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::DactFilterWindow>(new Ui::DactFilterWindow)),
+    d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow)),
     d_corpusReader(corpusReader),
     d_entryMap(0),
     d_macrosModel(macrosModel),
@@ -46,12 +46,12 @@ DactFilterWindow::DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     readSettings();
 }
 
-DactFilterWindow::~DactFilterWindow()
+BracketedWindow::~BracketedWindow()
 {
     stopMapper();
 }
 
-void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
+void BracketedWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     stopMapper();
 
@@ -60,7 +60,7 @@ void DactFilterWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
     updateResults();
 }
 
-void DactFilterWindow::setFilter(QString const &filter)
+void BracketedWindow::setFilter(QString const &filter)
 {
     d_ui->filterLineEdit->setText(filter);
     
@@ -73,7 +73,7 @@ void DactFilterWindow::setFilter(QString const &filter)
     updateResults();
 }
 
-void DactFilterWindow::stopMapper()
+void BracketedWindow::stopMapper()
 {
     	if(d_xpathMapper->isRunning()) {
     		d_xpathMapper->cancel();
@@ -81,7 +81,7 @@ void DactFilterWindow::stopMapper()
     	}
 }
 
-void DactFilterWindow::updateResults()
+void BracketedWindow::updateResults()
 {
     if(!d_corpusReader || d_filter.isEmpty())
     	return;
@@ -108,13 +108,13 @@ void DactFilterWindow::updateResults()
     return;
 }
 
-void DactFilterWindow::sentenceFound(QString file, QString sentence)
+void BracketedWindow::sentenceFound(QString file, QString sentence)
 {
     QListWidgetItem *item(new QListWidgetItem(sentence, d_ui->resultsListWidget));
     item->setData(Qt::UserRole, file);
 }
 
-void DactFilterWindow::applyValidityColor(QString const &)
+void BracketedWindow::applyValidityColor(QString const &)
 {
     // Hmpf, unfortunately we get text, rather than a sender. Attempt
     // to determine the sender ourselvers.
@@ -134,7 +134,7 @@ void DactFilterWindow::applyValidityColor(QString const &)
         widget->setStyleSheet("background-color: salmon");
 }
 
-void DactFilterWindow::createActions()
+void BracketedWindow::createActions()
 {
     QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
     QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
@@ -159,7 +159,7 @@ void DactFilterWindow::createActions()
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
 }
 
-void DactFilterWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
+void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 {
     if (current == 0)
         return;
@@ -171,17 +171,17 @@ void DactFilterWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *
     raise();
 }
 
-void DactFilterWindow::entryActivated(QListWidgetItem *item)
+void BracketedWindow::entryActivated(QListWidgetItem *item)
 {
     emit entryActivated();
 }
 
-void DactFilterWindow::filterChanged()
+void BracketedWindow::filterChanged()
 {
     setFilter(d_ui->filterLineEdit->text());
 }
 
-void DactFilterWindow::initSentenceTransformer()
+void BracketedWindow::initSentenceTransformer()
 {
     // Read stylesheet.
     QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
@@ -191,7 +191,7 @@ void DactFilterWindow::initSentenceTransformer()
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
-void DactFilterWindow::keyPressEvent(QKeyEvent *event)
+void BracketedWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape)
       stopMapper();
@@ -199,7 +199,7 @@ void DactFilterWindow::keyPressEvent(QKeyEvent *event)
       QWidget::keyPressEvent(event);
 }
 
-void DactFilterWindow::mapperStarted(int totalEntries)
+void BracketedWindow::mapperStarted(int totalEntries)
 {
     d_ui->filterProgressBar->setMinimum(0);
     d_ui->filterProgressBar->setMaximum(totalEntries);
@@ -207,24 +207,24 @@ void DactFilterWindow::mapperStarted(int totalEntries)
     d_ui->filterProgressBar->setVisible(true);
 }
 
-void DactFilterWindow::mapperStopped(int processedEntries, int totalEntries)
+void BracketedWindow::mapperStopped(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setVisible(false);
 }
 
-void DactFilterWindow::mapperProgressed(int processedEntries, int totalEntries)
+void BracketedWindow::mapperProgressed(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setValue(processedEntries);
 }
 
 
-void DactFilterWindow::closeEvent(QCloseEvent *event)
+void BracketedWindow::closeEvent(QCloseEvent *event)
 {
     writeSettings();
     event->accept();
 }
 
-void DactFilterWindow::readSettings()
+void BracketedWindow::readSettings()
 {
     QSettings settings("RUG", "Dact");
 
@@ -237,7 +237,7 @@ void DactFilterWindow::readSettings()
     move(pos);
 }
 
-void DactFilterWindow::writeSettings()
+void BracketedWindow::writeSettings()
 {
     QSettings settings("RUG", "Dact");
 

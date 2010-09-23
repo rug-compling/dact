@@ -16,7 +16,7 @@
 #include "XSLTransformer.hh"
 
 namespace Ui {
-    class DactFilterWindow;
+    class BracketedWindow;
 }
 
 class QKeyEvent;
@@ -25,12 +25,12 @@ class DactMacrosModel;
 class QListWidgetItem;
 class EntryMapAndTransform;
 
-class DactFilterWindow : public QWidget {
+class BracketedWindow : public QWidget {
     Q_OBJECT
 public:
-    DactFilterWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+    BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
-    ~DactFilterWindow();
+    ~BracketedWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text);
@@ -63,7 +63,7 @@ private:
 
     EntryMapAndTransform *d_entryMap;
     QString d_filter;
-    QSharedPointer<Ui::DactFilterWindow> d_ui;
+    QSharedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathMapper> d_xpathMapper;

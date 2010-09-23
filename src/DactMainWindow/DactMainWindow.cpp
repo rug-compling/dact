@@ -36,7 +36,7 @@
 
 #include <AboutWindow.hh>
 #include <DactMainWindow.h>
-#include <DactFilterWindow.h>
+#include <BracketedWindow.hh>
 #include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
 #include <StatisticsWindow.hh>
@@ -52,7 +52,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
-	d_filterWindow(0),
+	d_bracketedWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0)
@@ -203,14 +203,14 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 
 void DactMainWindow::showFilterWindow()
 {
-    if (d_filterWindow == 0) {
-        d_filterWindow = new DactFilterWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-        QObject::connect(d_filterWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
-        QObject::connect(d_filterWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
+    if (d_bracketedWindow == 0) {
+        d_bracketedWindow = new BracketedWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
+        QObject::connect(d_bracketedWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
+        QObject::connect(d_bracketedWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
     }
 
-    d_filterWindow->setFilter(d_filter);
-    d_filterWindow->show();
+    d_bracketedWindow->setFilter(d_filter);
+    d_bracketedWindow->show();
 }
 
 void DactMainWindow::showStatisticsWindow()
@@ -519,8 +519,8 @@ void DactMainWindow::corpusRead(int idx)
 
     addFiles();
 
-    if(d_filterWindow != 0)
-        d_filterWindow->switchCorpus(d_corpusReader);
+    if(d_bracketedWindow != 0)
+        d_bracketedWindow->switchCorpus(d_corpusReader);
 
     if(d_queryWindow != 0)
         d_queryWindow->switchCorpus(d_corpusReader);

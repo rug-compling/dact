@@ -26,7 +26,7 @@ double const ZOOM_OUT_FACTOR = 0.8;
 double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
 class AboutWindow;
-class DactFilterWindow;
+class BracketedWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class StatisticsWindow;
@@ -96,7 +96,7 @@ private:
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
 	AboutWindow *d_aboutWindow;
-    DactFilterWindow *d_filterWindow;
+    BracketedWindow *d_bracketedWindow;
     StatisticsWindow *d_queryWindow;
     DactMacrosWindow *d_macrosWindow;
     OpenProgressDialog *d_openProgressDialog;
