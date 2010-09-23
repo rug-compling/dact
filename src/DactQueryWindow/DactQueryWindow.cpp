@@ -57,6 +57,7 @@ DactQueryWindow::DactQueryWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
 
 DactQueryWindow::~DactQueryWindow()
 {
+    stopMapper();
 }
 
 void DactQueryWindow::startMapper()
