@@ -221,7 +221,9 @@ void DactQueryWindow::createActions()
     QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int,int)), this, SLOT(progressStopped(int,int)));
     
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
-        this, SLOT(applyValidityColor(QString const &)));
+        this, SLOT(applyValidityColor(QString const &))); 
+    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this,
+        SLOT(startQuery()));
     QObject::connect(d_ui->startPushButton, SIGNAL(clicked()),
         this, SLOT(startQuery()));
     
