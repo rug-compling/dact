@@ -19,7 +19,7 @@
 #include "XSLTransformer.hh"
 
 namespace Ui {
-	class DactMainWindow;
+    class DactMainWindow;
 }
 
 double const ZOOM_OUT_FACTOR = 0.8;
@@ -75,9 +75,9 @@ private slots:
     void treeZoomIn(bool);
     void treeZoomOut(bool);
     void toggleSentencesInFileList(bool show);
-	void mapperStarted(int);
-	void mapperStopped(int, int);
-	void mapperProgressed(int, int);
+    void mapperStarted(int);
+    void mapperStopped(int, int);
+    void mapperProgressed(int, int);
 
 protected:
     void changeEvent(QEvent *e);
@@ -87,7 +87,7 @@ private:
     void addFiles();
     void createActions();
     void createTransformers();
-	void init();
+    void init();
     void initSentenceTransformer();
     void initTreeTransformer();
     void readSettings();
@@ -96,7 +96,7 @@ private:
     QString sentenceForFile(QString const &filename, QString const &query);
 
     QSharedPointer<Ui::DactMainWindow> d_ui;
-	AboutWindow *d_aboutWindow;
+    AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
     StatisticsWindow *d_queryWindow;
     DactMacrosWindow *d_macrosWindow;
@@ -104,9 +104,9 @@ private:
     
     QString d_corpusPath;
     QString d_query;
-	QString d_filter;
-	QString d_filterExpr; // Stores the raw, unexpanded filter expression
-	QSharedPointer<DactMacrosModel> d_macrosModel;
+    QString d_filter;
+    QString d_filterExpr; // Stores the raw, unexpanded filter expression
+    QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;
