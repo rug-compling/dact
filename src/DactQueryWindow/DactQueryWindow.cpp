@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
@@ -225,6 +226,14 @@ void DactQueryWindow::createActions()
         this, SLOT(startQuery()));
     
     QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
+}
+
+void DactQueryWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape)
+        stopMapper();
+    else
+        QWidget::keyPressEvent(event);
 }
 
 void DactQueryWindow::showPercentage(bool show)

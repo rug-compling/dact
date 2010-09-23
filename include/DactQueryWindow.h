@@ -25,6 +25,8 @@ class DactMacrosModel;
 
 class DactQueryWindowResultsRow;
 
+class QKeyEvent;
+
 class DactQueryWindow : public QWidget {
     Q_OBJECT
 public:
@@ -48,6 +50,7 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     void updateResults();
