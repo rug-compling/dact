@@ -34,6 +34,7 @@ class OpenProgressDialog;
 
 class QGraphicsSvgItem;
 class QListWidgetItem;
+class QKeyEvent;
 
 class DactMainWindow : public QMainWindow {
     Q_OBJECT
@@ -80,6 +81,7 @@ private slots:
 
 protected:
     void changeEvent(QEvent *e);
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     void addFiles();

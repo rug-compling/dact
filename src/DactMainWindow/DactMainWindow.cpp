@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QList>
 #include <QListWidgetItem>
+#include <QKeyEvent>
 #include <QMessageBox>
 #include <QMutexLocker>
 #include <QPainter>
@@ -301,6 +302,19 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 void DactMainWindow::help()
 {
     QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/wiki/Usage"));
+}
+
+void DactMainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        QMutexLocker locker(&d_addFilesMutex);
+        if (d_xpathMapper->isRunning()) {
+            d_xpathMapper->cancel();
+            d_xpathMapper->wait();
+        }
+    }
+    else
+      QMainWindow::keyPressEvent(event);
 }
 
 void DactMainWindow::showFile(QString const &filename)
