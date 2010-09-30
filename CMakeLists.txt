@@ -11,6 +11,17 @@ endif(APPLE)
 
 set(VERSION "0.0.1")
 
+set(GIT_REVISION "unknown")
+exec_program(git
+  ARGS "log --format=format:\"%ad (commit: %h)\" --date=iso -2"
+  OUTPUT_VARIABLE GIT_REVISION 
+)
+
+message(STATUS "Building revision: ${GIT_REVISION}")
+
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/include/config.hh.cmake 
+  ${CMAKE_SOURCE_DIR}/include/config.hh)
+
 if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)

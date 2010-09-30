@@ -5,6 +5,8 @@
 #include <QUrl>
 #include <QWidget>
 
+#include <config.hh>
+
 #include <AboutWindow.hh>
 
 #include <ui_AboutWindow.h>
@@ -14,6 +16,8 @@ AboutWindow::AboutWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui(QSharedPointer<Ui::AboutWindow>(new Ui::AboutWindow))
 {
     d_ui->setupUi(this);
+
+    d_ui->buildLabel->setText(GIT_REVISION);
 
     QGraphicsScene *scene = new QGraphicsScene(d_ui->aboutGraphicsView);
     QPixmap logo(":/dact-espresso.png");
