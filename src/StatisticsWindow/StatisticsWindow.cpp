@@ -53,6 +53,11 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     createActions();
     readNodeAttributes();
     readSettings();
+
+    // Pick a sane default attribute.
+    int idx = d_ui->attributeComboBox->findText("word");
+    if (idx != -1)
+      d_ui->attributeComboBox->setCurrentIndex(idx);
 }
 
 StatisticsWindow::~StatisticsWindow()
