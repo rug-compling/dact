@@ -1,0 +1,6 @@
+#ifndef DACT_CONFIG_HH
+#define DACT_CONFIG_HH
+
+#define GIT_REVISION "${GIT_REVISION}"
+
+#endif // DACT_CONFIG_HH
