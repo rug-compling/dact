@@ -2,9 +2,11 @@
     <qresource prefix="/">
         <file>dact-espresso.png</file>
         <file>dtd/alpino_ds.dtd</file>
-        <file>stylesheets/dt2tree.xsl</file>
+        <file>stylesheets/tree.xsl</file>
         <file>stylesheets/bracketed-sentence.xsl</file>
         <file>doc/index.html</file>
+		<file>icons/1leftarrow.png</file>
+		<file>icons/1rightarrow.png</file>
         <file>icons/viewmag-.png</file>
         <file>icons/viewmag+.png</file>
         <file>icons/viewmagfit.png</file>

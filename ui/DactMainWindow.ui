@@ -170,6 +170,8 @@
    <addaction name="zoomInAction"/>
    <addaction name="zoomOutAction"/>
    <addaction name="fitAction"/>
+   <addaction name="previousTreeNodeAction"/>
+   <addaction name="nextTreeNodeAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="quitAction">
@@ -226,6 +228,36 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="nextTreeNodeAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next Node</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="previousTreeNodeAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Previous Node</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>

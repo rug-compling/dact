@@ -81,6 +81,7 @@ SET(dact_SRCS
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
   src/OpenProgressDialog/OpenProgressDialog.cpp  
+  src/DactTreeScene/DactTreeScene.cpp
   src/PercentageCellDelegate/PercentageCellDelegate.cpp
   src/XPathFilter/XPathFilter.cpp
   src/XPathMapper/XPathMapper.cpp
@@ -97,6 +98,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/OpenProgressDialog.hh
+  include/DactTreeScene.h
   include/PercentageCellDelegate.h
   include/XPathFilter.hh
   include/XPathMapper.hh

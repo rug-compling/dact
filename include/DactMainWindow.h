@@ -30,8 +30,10 @@ class DactMacrosModel;
 class DactMacrosWindow;
 class StatisticsWindow;
 class OpenProgressDialog;
+class DactQueryWindow;
+class DactTreeNode;
+class DactTreeScene;
 
-class QGraphicsSvgItem;
 class QListWidgetItem;
 class QKeyEvent;
 
@@ -61,6 +63,8 @@ private slots:
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
     void fitTree();
+    void focusNextTreeNode(bool);
+    void focusPreviousTreeNode(bool);
     void help();
     void nextEntry(bool);
     void openCorpus();
@@ -87,6 +91,8 @@ private:
     void createActions();
     void createTransformers();
     void init();
+    void focusTreeNode(int direction);
+    QString getHighlightQuery();
     void initSentenceTransformer();
     void initTreeTransformer();
     void readSettings();
@@ -118,7 +124,7 @@ private:
     QTimer d_corpusOpenTimer;
     QFutureWatcher<bool> d_corpusOpenWatcher;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-    QGraphicsSvgItem *d_curTreeItem; // Scene-managed
+    DactTreeScene *d_treeScene;
 };
 
 #endif // DACTMAINWINDOW_H

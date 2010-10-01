@@ -35,6 +35,7 @@
 #include <DactMacrosWindow.h>
 #include <StatisticsWindow.hh>
 #include <OpenProgressDialog.hh>
+#include <DactTreeScene.h>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
 #include <ui_DactMainWindow.h>
@@ -49,7 +50,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_bracketedWindow(0),
     d_queryWindow(0),
     d_macrosWindow(0),
-    d_openProgressDialog(0)
+    d_openProgressDialog(0),
+    d_treeScene(0)
 {
     init();
 }
@@ -253,6 +255,8 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
     QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
+    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusNextTreeNode(bool)));
+    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusPreviousTreeNode(bool)));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
     QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));  
@@ -285,6 +289,8 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     }
     
     showFile(current->data(Qt::UserRole).toString());
+    
+    fitTree();
 }
 
 void DactMainWindow::help()
@@ -360,8 +366,10 @@ void DactMainWindow::filterChanged()
 
 void DactMainWindow::fitTree()
 {
-    if (d_curTreeItem)
-        d_ui->treeGraphicsView->fitInView(d_curTreeItem, Qt::KeepAspectRatio);
+    if (!d_treeScene)
+        return;
+    
+    d_ui->treeGraphicsView->fitInView(d_treeScene->rootNode()->boundingRect(), Qt::KeepAspectRatio);
 }
 
 void DactMainWindow::initSentenceTransformer()
@@ -377,7 +385,7 @@ void DactMainWindow::initSentenceTransformer()
 void DactMainWindow::initTreeTransformer()
 {
     // Read stylesheet.
-    QFile xslFile(":/stylesheets/dt2tree.xsl");
+    QFile xslFile(":/stylesheets/tree.xsl");
     xslFile.open(QIODevice::ReadOnly);
     QTextStream xslStream(&xslFile);
     QString xsl(xslStream.readAll());
@@ -553,19 +561,16 @@ void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> co
 
 void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
 {
-    QString svg;
-    svg = d_treeTransformer->transform(xml, params);
-
-    QByteArray svgData(svg.toUtf8());
-
-    // Render SVG.
-    QGraphicsScene *scene = new QGraphicsScene(d_ui->treeGraphicsView);
-    QSvgRenderer *renderer = new QSvgRenderer(svgData, scene);
-    d_curTreeItem = new QGraphicsSvgItem;
-    d_curTreeItem->setSharedRenderer(renderer);
-    scene->addItem(d_curTreeItem);
-    d_ui->treeGraphicsView->setScene(scene);
-    d_ui->treeGraphicsView->fitInView(d_curTreeItem, Qt::KeepAspectRatio);
+    if (d_treeScene)
+        delete d_treeScene;
+    
+    d_treeScene = new DactTreeScene(d_ui->treeGraphicsView);
+    
+    QString xml_tree = d_treeTransformer->transform(xml, params);
+    
+    d_treeScene->parseTree(xml_tree);
+    
+    d_ui->treeGraphicsView->setScene(d_treeScene);
 }
 
 void DactMainWindow::stopMapper()
@@ -578,9 +583,9 @@ void DactMainWindow::stopMapper()
 
 void DactMainWindow::queryChanged()
 {
-    d_query = d_ui->queryLineEdit->text();
+    d_query = d_ui->queryLineEdit->text().trimmed();
     if (d_ui->fileListWidget->currentItem() != 0)
-        entrySelected(d_ui->fileListWidget->currentItem(), 0);
+        showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
 }
 
 void DactMainWindow::treeZoomIn(bool)
@@ -591,4 +596,56 @@ void DactMainWindow::treeZoomIn(bool)
 void DactMainWindow::treeZoomOut(bool)
 {
     d_ui->treeGraphicsView->scale(ZOOM_OUT_FACTOR, ZOOM_OUT_FACTOR);
+}
+
+void DactMainWindow::focusNextTreeNode(bool)
+{
+    focusTreeNode(1);
+}
+
+void DactMainWindow::focusPreviousTreeNode(bool)
+{
+    focusTreeNode(-1);
+}
+
+void DactMainWindow::focusTreeNode(int direction)
+{
+    if (!d_treeScene)
+        return;
+    
+    QList<DactTreeNode*> nodes = d_treeScene->nodes();
+    
+    int offset = 0;
+    int nodeCount = nodes.length();
+    
+    // Find the currently focussed node
+    for (int i = 0; i < nodeCount; ++i)
+    {
+        if (nodes[i]->hasFocus())
+        {
+            offset = i + direction;
+            break;
+        }
+    }
+    
+    // then find the next node that's active
+    for (int i = 0; i < nodeCount; ++i)
+    {
+        // nodeCount + offset + direction * i is positive for [0..nodeCount]
+        // whichever the direction, and modulo nodeCount makes shure it wraps around.
+        DactTreeNode* node = nodes[(nodeCount + offset + direction * i) % nodeCount];
+        
+        if (node->isActive())
+        {
+            node->setFocus();
+            
+            // reset the matrix to undo the scale operation done by fitTree.
+            // I don't like this yet, because it always resets the zoom.
+            //d_ui->treeGraphicsView->setMatrix(QMatrix());
+            
+            // move the focus to the center of the focussed leaf
+            d_ui->treeGraphicsView->centerOn(node->mapToScene(node->leafRect().center()));
+            break;
+        }
+    }
 }
