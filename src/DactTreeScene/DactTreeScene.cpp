@@ -153,8 +153,8 @@ QString DactTreeScene::processXMLString(xmlChar* xmlValue) const
 {
 	if (xmlValue == NULL)
 		return QString();
-	
-	QString value(reinterpret_cast<const char *>(xmlValue));
+
+  QString value(QString::fromUtf8(reinterpret_cast<const char *>(xmlValue)));
 	xmlFree(xmlValue);
 	return value;
 }
