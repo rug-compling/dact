@@ -13,12 +13,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    xmlInitMemory();
+    xmlInitParser();
+
     // EXSLT extensions
-    exsltCommonRegister();
-    exsltDynRegister();
-    exsltSaxonRegister();
-    exsltSetsRegister();
-    exsltStrRegister();
+    exsltRegisterAll();
 
     // XPath
     xmlXPathInit();
