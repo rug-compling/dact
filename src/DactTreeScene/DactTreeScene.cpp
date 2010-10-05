@@ -53,7 +53,10 @@ QList<DactTreeNode*> const &DactTreeScene::nodes()
 
 DactTreeNode* DactTreeScene::rootNode()
 {
-	return d_nodes[0];
+  if (d_nodes.size() > 0)
+	  return d_nodes[0];
+  else
+    return 0;
 }
 
 void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*> &list, QStack<DactTreeNode*> &stack)
@@ -154,7 +157,7 @@ QString DactTreeScene::processXMLString(xmlChar* xmlValue) const
 	if (xmlValue == NULL)
 		return QString();
 
-  QString value(QString::fromUtf8(reinterpret_cast<const char *>(xmlValue)));
+  QString value(QString::fromUtf8(reinterpret_cast<char const *>(xmlValue)));
 	xmlFree(xmlValue);
 	return value;
 }
@@ -355,7 +358,7 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
 	QString labels;
 	
 	foreach (QString label, d_labels)
-		labels += label + '\n';
+		labels += QString("%1\n").arg(label);
 	
 	QRectF textBox(leaf);
 	

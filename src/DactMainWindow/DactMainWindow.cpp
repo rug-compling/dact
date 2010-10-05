@@ -368,8 +368,9 @@ void DactMainWindow::fitTree()
 {
     if (!d_treeScene)
         return;
-    
-    d_ui->treeGraphicsView->fitInView(d_treeScene->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+   
+    if (d_treeScene->rootNode() != 0)
+      d_ui->treeGraphicsView->fitInView(d_treeScene->rootNode()->boundingRect(), Qt::KeepAspectRatio);
 }
 
 void DactMainWindow::initSentenceTransformer()
