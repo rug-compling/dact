@@ -42,52 +42,65 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 
     // Hmpf, data conversions.
     char const **cParams = new char const *[params.size() * 2 + 1];
-	int i = 0;
-	for (QHash<QString, QString>::const_iterator iter = params.constBegin();
+  int i = 0;
+  for (QHash<QString, QString>::const_iterator iter = params.constBegin();
         iter != params.constEnd(); ++iter)
-	{
-		QByteArray keyData(iter.key().toUtf8());
-		QByteArray valueData(iter.value().toUtf8());
+  {
+    QByteArray keyData(iter.key().toUtf8());
+    QByteArray valueData(iter.value().toUtf8());
 
-		char const *cKey = strdup(keyData.constData());
+    char const *cKey = strdup(keyData.constData());
         char const *cValue = strdup(valueData.constData());
 
-		cParams[i] = cKey;
-		cParams[i + 1] = cValue;
+    cParams[i] = cKey;
+    cParams[i + 1] = cValue;
 
-		i += 2;
-	}
-    cParams[params.size() * 2] = 0; // Terminator
+    i += 2;
+  }
+
+  cParams[params.size() * 2] = 0; // Terminator
+
+  xsltTransformContextPtr ctx = xsltNewTransformContext(d_xslPtr, doc);
 
     // Transform...
-    xmlDocPtr res = xsltApplyStylesheet(d_xslPtr, doc, cParams);
+  xmlDocPtr res = xsltApplyStylesheetUser(d_xslPtr, doc, cParams, NULL,
+      NULL, ctx);
 
-    if (!res) {
-        xmlFreeDoc(doc);
-        throw std::runtime_error("XSLTransformer::transform: Could not apply transformation!");
-    }
+  if (!res) {
+    xsltFreeTransformContext(ctx);
+    xmlFreeDoc(doc);
+    throw std::runtime_error("XSLTransformer::transform: Could not apply transformation!");
+  }
+  else if (ctx->state != XSLT_STATE_OK) {
+    xsltFreeTransformContext(ctx);
+    xmlFreeDoc(res);
+    xmlFreeDoc(doc);
+    throw std::runtime_error("XSLTransformer::transform: Transformation error, check your query!");
+  }
 
-    xmlChar *output = 0;
-	int outputLen = -1;
-	xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
+  xsltFreeTransformContext(ctx);
 
-	if (!output) {
-		xmlFreeDoc(res);
-		xmlFreeDoc(doc);
-		throw std::runtime_error("Could not apply stylesheet!");
-	}
+  xmlChar *output = 0;
+  int outputLen = -1;
+  xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
 
-	QString result(QString::fromUtf8(reinterpret_cast<char const *>(output)));
+  if (!output) {
+    xmlFreeDoc(res);
+    xmlFreeDoc(doc);
+    throw std::runtime_error("Could not apply stylesheet!");
+  }
 
-	// Deallocate parameter memory
-	for (int i = 0; i < params.size() * 2; ++i)
+  QString result(QString::fromUtf8(reinterpret_cast<char const *>(output)));
+
+  // Deallocate parameter memory
+  for (int i = 0; i < params.size() * 2; ++i)
         free(const_cast<char *>(cParams[i]));
-	delete[] cParams;
+  delete[] cParams;
 
-	// Deallocate memory used for libxml2/libxslt.
-	xmlFree(output);
-	xmlFreeDoc(res);
+  // Deallocate memory used for libxml2/libxslt.
+  xmlFree(output);
+  xmlFreeDoc(res);
     xmlFreeDoc(doc);
 
-	return result;
+  return result;
 }
