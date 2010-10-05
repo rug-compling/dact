@@ -367,7 +367,13 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
 	textBox.setWidth(leaf.width() - d_leafPadding);
 	textBox.setHeight(leaf.height() - d_leafPadding);
 	textBox.translate(d_leafPadding, d_leafPadding);
-		
+
+  // You can't be serious... Yes you can.
+  double appDpi = qt_defaultDpi();
+  double ratio = appDpi / painter->device()->logicalDpiY();
+  QFont painterFont(font());
+  painterFont.setPointSizeF(painterFont.pointSize() * ratio);
+  painter->setFont(painterFont);
 	painter->drawText(textBox, Qt::AlignLeft, labels);
 }
 

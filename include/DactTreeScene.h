@@ -12,6 +12,8 @@ extern "C" {
 	#include <libxml/xmlreader.h>
 };
 
+extern int qt_defaultDpi();
+
 class DactTreeNode;
 
 class DactTreeScene : public QGraphicsScene
