@@ -103,7 +103,7 @@ private:
     QSharedPointer<Ui::DactMainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
-    StatisticsWindow *d_queryWindow;
+    StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
     OpenProgressDialog *d_openProgressDialog;
     

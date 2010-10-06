@@ -48,7 +48,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::DactMainWindow>(new Ui::DactMainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_bracketedWindow(0),
-    d_queryWindow(0),
+    d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0),
     d_treeScene(0)
@@ -205,11 +205,11 @@ void DactMainWindow::showFilterWindow()
 
 void DactMainWindow::showStatisticsWindow()
 {
-    if (d_queryWindow == 0)
-        d_queryWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
+    if (d_statisticsWindow == 0)
+        d_statisticsWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
 
-    d_queryWindow->setFilter(d_filter);
-    d_queryWindow->show();
+    d_statisticsWindow->setFilter(d_filter);
+    d_statisticsWindow->show();
 }
 
 void DactMainWindow::showMacrosWindow()
@@ -511,8 +511,8 @@ void DactMainWindow::corpusRead(int idx)
     if(d_bracketedWindow != 0)
         d_bracketedWindow->switchCorpus(d_corpusReader);
 
-    if(d_queryWindow != 0)
-        d_queryWindow->switchCorpus(d_corpusReader);
+    if(d_statisticsWindow != 0)
+        d_statisticsWindow->switchCorpus(d_corpusReader);
 }
 
 void DactMainWindow::readSettings()
