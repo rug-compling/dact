@@ -334,7 +334,7 @@ void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 	
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
-	QColor background(isActive() ? Qt::red : Qt::white);
+	QColor background(isActive() ? Qt::darkGreen : Qt::white);
 	
 	if (isSelected())
 		background = background.darker(125);
