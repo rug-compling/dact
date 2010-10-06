@@ -316,7 +316,7 @@ void DactTreeNode::layout()
 
 QFont DactTreeNode::font() const
 {
-	return QFont("times", 12);
+	return QFont("helvetica", 12);
 }
 
 void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
