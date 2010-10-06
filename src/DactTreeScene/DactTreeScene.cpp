@@ -329,8 +329,7 @@ void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 	// pixels inside the leaf's box.
 	
 	painter->setRenderHint(QPainter::Antialiasing, true);
-	
-	painter->setPen(QColor(Qt::black));
+
 	paintEdges(painter, leaf);
 	
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -379,6 +378,9 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
 
 void DactTreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
 {
+  QPen edgePen(Qt::black, 1);
+	painter->setPen(edgePen);
+
 	QPointF origin(leaf.x() + leaf.width() / 2, leaf.y() + leaf.height());
 	
 	foreach (DactTreeNode* child, d_childNodes)
