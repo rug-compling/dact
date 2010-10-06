@@ -72,7 +72,7 @@ private slots:
     void pdfExport();
     void previousEntry(bool);
     void print();
-    void queryChanged();
+    void highlightChanged();
     void showSentence(QString const &xml, QHash<QString, QString> const &params);
     void showTree(QString const &xml, QHash<QString, QString> const &params);
     void treeZoomIn(bool);
@@ -108,7 +108,7 @@ private:
     OpenProgressDialog *d_openProgressDialog;
     
     QString d_corpusPath;
-    QString d_query;
+    QString d_highlight;
     QString d_filter;
     QString d_filterExpr; // Stores the raw, unexpanded filter expression
     QSharedPointer<DactMacrosModel> d_macrosModel;

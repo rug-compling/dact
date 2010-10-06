@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DactMainWindow</class>
- <widget class="QMainWindow" name="DactMainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="DactMainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,60 +10,60 @@
     <height>660</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Dact</string>
   </property>
-  <widget class="QWidget" name="centralWidget" >
-   <layout class="QVBoxLayout" name="verticalLayout_3" >
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QSplitter" name="splitter" >
-      <property name="orientation" >
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QGroupBox" name="groupBox" >
-       <property name="title" >
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
         <string>Files</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout" >
+       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QGridLayout" name="gridLayout_2" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="label_2" >
-            <property name="text" >
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
              <string>Filter:</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QLineEdit" name="filterLineEdit" />
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="filterLineEdit"/>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QListWidget" name="fileListWidget" />
+         <widget class="QListWidget" name="fileListWidget"/>
         </item>
         <item>
-         <widget class="QProgressBar" name="filterProgressBar" >
-          <property name="visible" >
+         <widget class="QProgressBar" name="filterProgressBar">
+          <property name="visible">
            <bool>false</bool>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QGroupBox" name="groupBox_2" >
-       <property name="title" >
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
         <string>Tree</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2" >
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <layout class="QGridLayout" name="gridLayout" >
-          <item row="0" column="2" >
-           <widget class="QLineEdit" name="queryLineEdit" />
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="highlightLineEdit"/>
           </item>
-          <item row="0" column="1" >
-           <widget class="QLabel" name="label" >
-            <property name="text" >
+          <item row="0" column="1">
+           <widget class="QLabel" name="label">
+            <property name="text">
              <string>Highlight:</string>
             </property>
            </widget>
@@ -70,29 +71,29 @@
          </layout>
         </item>
         <item>
-         <widget class="QGraphicsView" name="treeGraphicsView" >
-          <property name="dragMode" >
+         <widget class="QGraphicsView" name="treeGraphicsView">
+          <property name="dragMode">
            <enum>QGraphicsView::ScrollHandDrag</enum>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" >
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QLabel" name="label_1" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+           <widget class="QLabel" name="label_1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Sentence:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="sentenceLineEdit" />
+           <widget class="QLineEdit" name="sentenceLineEdit"/>
           </item>
          </layout>
         </item>
@@ -102,298 +103,298 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar" >
-   <property name="geometry" >
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>29</height>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File" >
-    <property name="title" >
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="openAction" />
-    <addaction name="openDirectoryAction" />
-    <addaction name="pdfExportAction" />
-    <addaction name="printAction" />
-    <addaction name="separator" />
-    <addaction name="quitAction" />
+    <addaction name="openAction"/>
+    <addaction name="openDirectoryAction"/>
+    <addaction name="pdfExportAction"/>
+    <addaction name="printAction"/>
+    <addaction name="separator"/>
+    <addaction name="quitAction"/>
    </widget>
-   <widget class="QMenu" name="menuView" >
-    <property name="title" >
+   <widget class="QMenu" name="menuView">
+    <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="previousAction" />
-    <addaction name="nextAction" />
-    <addaction name="separator" />
-    <addaction name="fitAction" />
-    <addaction name="zoomInAction" />
-    <addaction name="zoomOutAction" />
-    <addaction name="separator" />
-    <addaction name="previousTreeNodeAction" />
-    <addaction name="nextTreeNodeAction" />
-    <addaction name="separator" />
-    <addaction name="showFilterWindow" />
+    <addaction name="previousAction"/>
+    <addaction name="nextAction"/>
+    <addaction name="separator"/>
+    <addaction name="fitAction"/>
+    <addaction name="zoomInAction"/>
+    <addaction name="zoomOutAction"/>
+    <addaction name="separator"/>
+    <addaction name="previousTreeNodeAction"/>
+    <addaction name="nextTreeNodeAction"/>
+    <addaction name="separator"/>
+    <addaction name="showFilterWindow"/>
    </widget>
-   <widget class="QMenu" name="menuTools" >
-    <property name="title" >
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="showMacrosWindow" />
-    <addaction name="showStatisticsWindow" />
+    <addaction name="showMacrosWindow"/>
+    <addaction name="showStatisticsWindow"/>
    </widget>
-   <widget class="QMenu" name="menuHelp" >
-    <property name="title" >
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="helpAction" />
-    <addaction name="aboutAction" />
+    <addaction name="helpAction"/>
+    <addaction name="aboutAction"/>
    </widget>
-   <addaction name="menu_File" />
-   <addaction name="menuView" />
-   <addaction name="menuTools" />
-   <addaction name="menuHelp" />
+   <addaction name="menu_File"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar" >
-   <property name="toolButtonStyle" >
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
-   <attribute name="toolBarArea" >
+   <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
-   <attribute name="toolBarBreak" >
+   <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="previousAction" />
-   <addaction name="nextAction" />
-   <addaction name="zoomInAction" />
-   <addaction name="zoomOutAction" />
-   <addaction name="fitAction" />
-   <addaction name="previousTreeNodeAction" />
-   <addaction name="nextTreeNodeAction" />
+   <addaction name="previousAction"/>
+   <addaction name="nextAction"/>
+   <addaction name="zoomInAction"/>
+   <addaction name="zoomOutAction"/>
+   <addaction name="fitAction"/>
+   <addaction name="previousTreeNodeAction"/>
+   <addaction name="nextTreeNodeAction"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar" />
-  <action name="quitAction" >
-   <property name="text" >
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="quitAction">
+   <property name="text">
     <string>&amp;Quit</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="fitAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="fitAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/viewmagfit.png</normaloff>:/icons/viewmagfit.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Fit</string>
    </property>
-   <property name="toolTip" >
+   <property name="toolTip">
     <string>Fit the tree to the tree view</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+F</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="zoomInAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="zoomInAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/viewmag+.png</normaloff>:/icons/viewmag+.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Zoom In</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl++</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="zoomOutAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="zoomOutAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Zoom Out</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+-</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="nextTreeNodeAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="nextTreeNodeAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Next Node</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+.</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="previousTreeNodeAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="previousTreeNodeAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Previous Node</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+,</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="showSentencesInFileList" >
-   <property name="checkable" >
+  <action name="showSentencesInFileList">
+   <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Show Sentences</string>
    </property>
-   <property name="toolTip" >
+   <property name="toolTip">
     <string>Display bracketed sentences instead of file names</string>
    </property>
   </action>
-  <action name="showMacrosWindow" >
-   <property name="enabled" >
+  <action name="showMacrosWindow">
+   <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Macros...</string>
    </property>
   </action>
-  <action name="showFilterWindow" >
-   <property name="text" >
+  <action name="showFilterWindow">
+   <property name="text">
     <string>Bracketed sentences</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+B</string>
    </property>
   </action>
-  <action name="showStatisticsWindow" >
-   <property name="text" >
+  <action name="showStatisticsWindow">
+   <property name="text">
     <string>Statistics...</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+T</string>
    </property>
   </action>
-  <action name="nextAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="nextAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/next.png</normaloff>:/icons/next.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Next</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="previousAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="previousAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/previous.png</normaloff>:/icons/previous.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Previous</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+P</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="openAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="openAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>&amp;Open...</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="printAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="printAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>&amp;Print...</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="pdfExportAction" >
-   <property name="icon" >
-    <iconset resource="../resources/dact.qrc" >
+  <action name="pdfExportAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/pdf.png</normaloff>:/icons/pdf.png</iconset>
    </property>
-   <property name="text" >
+   <property name="text">
     <string>Export to PDF...</string>
    </property>
-   <property name="iconVisibleInMenu" >
+   <property name="iconVisibleInMenu">
     <bool>false</bool>
    </property>
   </action>
-  <action name="aboutAction" >
-   <property name="text" >
+  <action name="aboutAction">
+   <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="helpAction" >
-   <property name="text" >
+  <action name="helpAction">
+   <property name="text">
     <string>Help</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>F1</string>
    </property>
   </action>
-  <action name="openDirectoryAction" >
-   <property name="text" >
+  <action name="openDirectoryAction">
+   <property name="text">
     <string>Open Directory...</string>
    </property>
-   <property name="shortcut" >
+   <property name="shortcut">
     <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../resources/dact.qrc" />
+  <include location="../resources/dact.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -402,11 +403,11 @@
    <receiver>DactMainWindow</receiver>
    <slot>close()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>394</x>
      <y>329</y>
     </hint>

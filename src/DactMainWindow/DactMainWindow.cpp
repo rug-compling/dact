@@ -68,7 +68,7 @@ void DactMainWindow::init()
     
     d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    d_ui->queryLineEdit->setValidator(d_xpathValidator.data());
+    d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
     
     readSettings();
     createTransformers();
@@ -238,10 +238,10 @@ void DactMainWindow::createActions()
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
-    QObject::connect(d_ui->queryLineEdit, SIGNAL(textChanged(QString const &)), this,
+    QObject::connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
-    QObject::connect(d_ui->queryLineEdit, SIGNAL(returnPressed()), this, SLOT(queryChanged()));
+    QObject::connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()), this, SLOT(highlightChanged()));
 
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
@@ -321,8 +321,8 @@ void DactMainWindow::showFile(QString const &filename)
     }
 
     // Parameters
-    QString valStr = d_query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_macrosModel->expand(d_query) + QString("'");
+    QString valStr = d_highlight.trimmed().isEmpty() ? "'/..'" :
+                     QString("'") + d_macrosModel->expand(d_highlight) + QString("'");
     QHash<QString, QString> params;
     params["expr"] = valStr;
 
@@ -354,10 +354,8 @@ void DactMainWindow::filterChanged()
 
     d_filter = d_ui->filterLineEdit->text().trimmed();
     
-    if (d_ui->queryLineEdit->text().trimmed().isEmpty()) {
-        d_ui->queryLineEdit->setText(d_filter);
-        queryChanged();
-    }
+    d_ui->highlightLineEdit->setText(d_filter);
+    highlightChanged();
 
     if (!d_corpusReader.isNull())
         addFiles();
@@ -582,9 +580,9 @@ void DactMainWindow::stopMapper()
     }
 }
 
-void DactMainWindow::queryChanged()
+void DactMainWindow::highlightChanged()
 {
-    d_query = d_ui->queryLineEdit->text().trimmed();
+    d_highlight = d_ui->highlightLineEdit->text().trimmed();
     if (d_ui->fileListWidget->currentItem() != 0)
         showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
 }
