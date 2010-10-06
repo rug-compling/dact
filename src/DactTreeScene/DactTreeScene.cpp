@@ -361,10 +361,8 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
 	
 	QRectF textBox(leaf);
 	
-	// I'm intentionally not subtracting 2 * d_leafPadding because the textBox
-	// seems a bit too tight
-	textBox.setWidth(leaf.width() - d_leafPadding);
-	textBox.setHeight(leaf.height() - d_leafPadding);
+	textBox.setWidth(leaf.width() - 2*d_leafPadding);
+	textBox.setHeight(leaf.height() - 2*d_leafPadding);
 	textBox.translate(d_leafPadding, d_leafPadding);
 
   // You can't be serious... Yes you can.
@@ -373,7 +371,7 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
   QFont painterFont(font());
   painterFont.setPointSizeF(painterFont.pointSize() * ratio);
   painter->setFont(painterFont);
-	painter->drawText(textBox, Qt::AlignLeft, labels);
+	painter->drawText(textBox, Qt::AlignCenter, labels);
 }
 
 void DactTreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
