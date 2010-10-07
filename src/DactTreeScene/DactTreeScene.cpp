@@ -458,7 +458,9 @@ void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
   QFont painterFont(font());
   painterFont.setPointSizeF(painterFont.pointSize() * ratio);
 
+  painter->setOpacity(0.9);
   painter->fillRect(boundingRect(), QBrush(Qt::gray));
+  painter->setOpacity(1.0);
   painter->setFont(painterFont);
   painter->drawText(boundingRect(), Qt::AlignCenter, lines);
 }
