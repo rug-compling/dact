@@ -327,7 +327,7 @@ QSizeF DactTreeNode::leafSize() const
 			leaf.setWidth(labelWidth);
 	}
 	
-	qreal labelsHeight = d_labels.size() * metrics.height() + 2 * d_leafPadding;
+	qreal labelsHeight = d_labels.size() * metrics.lineSpacing() + 2 * d_leafPadding;
 	if (labelsHeight > leaf.height())
 		leaf.setHeight(labelsHeight);
 	
@@ -491,7 +491,7 @@ QSizeF PopupItem::size() const
       popupSize.setWidth(labelWidth);
     }
 
-    qreal labelsHeight = d_lines.size() * metrics.height();
+    qreal labelsHeight = d_lines.size() * metrics.lineSpacing();
     if (labelsHeight > popupSize.height())
       popupSize.setHeight(labelsHeight);
 
