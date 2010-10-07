@@ -343,6 +343,9 @@ void DactTreeNode::layout()
 {
 	qreal left = 0;
 	QSizeF leaf = leafSize();
+
+  if (d_popupItem)
+    d_popupItem->setPos(scenePos());
 	
 	foreach (DactTreeNode* child, d_childNodes)
 	{
