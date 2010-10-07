@@ -15,6 +15,7 @@ extern "C" {
 extern int qt_defaultDpi();
 
 class DactTreeNode;
+class PopupItem;
 
 class DactTreeScene : public QGraphicsScene
 {
@@ -40,6 +41,7 @@ public:
 	void setAttribute(QString const &name, QString const &value);
 	void appendChild(DactTreeNode *node);
 	void appendLabel(QString const &label);
+  void appendPopupLine(QString const &line);
 	QString asString(QString const &indent = "") const; // debugging purpuse
 	QRectF boundingRect() const;
 	QRectF leafBoundingRect() const;
@@ -52,7 +54,13 @@ public:
 	bool isActive() const;
 	void layout();
 	void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
+  QList<QString> const &popupLines() const;
+  void setPopupItem(PopupItem *item);
 	QPainterPath shape() const;
+protected:
+  void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+  void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
 private:
 	void paintLabels(QPainter *painter, QRectF const &leaf);
 	void paintEdges(QPainter *painter, QRectF const &leaf);
@@ -60,11 +68,41 @@ private:
 	QHash<QString,QString> d_attributes;
 	QList<DactTreeNode*> d_childNodes;
 	QList<QString> d_labels;
+  QList<QString> d_popupLines;
+  PopupItem *d_popupItem;
 	qreal d_spaceBetweenNodes;
 	qreal d_spaceBetweenLayers;
 	qreal d_leafMinimumWidth;
 	qreal d_leafMinimumHeight;
 	qreal d_leafPadding;
 };
+
+class PopupItem : public QGraphicsItem
+{
+public:
+	PopupItem(QGraphicsItem *parent = 0,
+    QList<QString> lines = QList<QString>());
+  QRectF boundingRect() const;
+  QFont font() const;
+  void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
+  QSizeF size() const;
+private:
+  QList<QString> d_lines;
+};
+
+inline QList<QString> const &DactTreeNode::popupLines() const
+{
+  return d_popupLines;
+}
+
+inline void DactTreeNode::appendPopupLine(QString const &line)
+{
+  d_popupLines.append(line);
+}
+
+inline void DactTreeNode::setPopupItem(PopupItem *item)
+{
+  d_popupItem = item;
+}
 
 #endif

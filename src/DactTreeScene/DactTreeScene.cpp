@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <QFont>
 #include <QFontMetrics>
+#include <QGraphicsSceneHoverEvent>
 #include <QHash>
 #include <QPainter>
 #include <QStack>
@@ -90,7 +91,7 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 					processXMLAttribute(reader, node);
 				}
 			}
-			else if (name == "line")
+			else if (name == "line" || name == "hoverLine")
 			{
 				if (stack.isEmpty())
 				{
@@ -119,8 +120,11 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 						label += value;
 					}
 				}
-				
-				stack.top()->appendLabel(label);
+			
+        if (name == "line")
+				  stack.top()->appendLabel(label);
+        else
+          stack.top()->appendPopupLine(label);
 			}
 			break;
 		case XML_READER_TYPE_END_ELEMENT:
@@ -133,7 +137,14 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 					break;
 				}
 				
-				stack.pop();
+				DactTreeNode *node = stack.pop();
+        if (node->popupLines().size() > 0) {
+          PopupItem *popupItem = new PopupItem(0, node->popupLines());
+          popupItem->setVisible(false);
+          popupItem->setZValue(1.0);
+          node->setPopupItem(popupItem);
+          addItem(popupItem);
+        }
 			}
 			break;
 	}
@@ -167,6 +178,7 @@ DactTreeNode::DactTreeNode(QGraphicsItem *parent) :
 	d_attributes(),
 	d_childNodes(),
 	d_labels(),
+  d_popupItem(0),
 	d_spaceBetweenLayers(40),
 	d_spaceBetweenNodes(10),
 	d_leafMinimumWidth(30),
@@ -174,6 +186,7 @@ DactTreeNode::DactTreeNode(QGraphicsItem *parent) :
 	d_leafPadding(10)
 {
 	setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+  setAcceptHoverEvents(true);
 }
 
 bool DactTreeNode::isLeaf() const
@@ -200,6 +213,32 @@ void DactTreeNode::appendLabel(QString const &label)
 QList<DactTreeNode*> DactTreeNode::children()
 {
 	return d_childNodes;
+}
+
+void DactTreeNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+  // This doesn't seem to work well, but is not necessary yet, since
+  // we only have popup lines on leaf nodes:
+  // 
+  //QList<QGraphicsItem *> items(scene()->items(event->scenePos(),
+  //  Qt::IntersectsItemBoundingRect, Qt::AscendingOrder));
+  //if (items.contains(this) && d_popupItem) {
+  if (d_popupItem) {
+    d_popupItem->setPos(event->scenePos());
+    d_popupItem->setVisible(true);
+  }
+}
+
+void DactTreeNode::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+  if (d_popupItem && d_popupItem->isVisible())
+    d_popupItem->setVisible(false);
+}
+
+void DactTreeNode::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+  if (d_popupItem && d_popupItem->isVisible())
+    d_popupItem->setPos(event->scenePos());
 }
 
 void DactTreeNode::setAttribute(QString const &name, QString const &value)
@@ -355,7 +394,6 @@ void DactTreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
 	// but if I could implement drawing each line separately, it would be easy as pie
 	// to implement colors, weights etc for each line separately.
 	QString labels;
-	
 	foreach (QString label, d_labels)
 		labels += QString("%1\n").arg(label);
 	
@@ -389,3 +427,58 @@ void DactTreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
 		painter->drawLine(origin, target);
 	}
 }
+
+PopupItem::PopupItem(QGraphicsItem *parent, QList<QString> lines) :
+  QGraphicsItem(parent), d_lines(lines)
+{
+}
+
+QRectF PopupItem::boundingRect() const
+{
+  // XXX - Is there a way to get this for system cursors?
+  double cursorHeight = 32.0;
+  return QRectF(QPointF(-size().width() / 2.0, -cursorHeight), size());
+}
+
+QFont PopupItem::font() const
+{
+  return QFont("verdana", 12);
+}
+
+
+void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
+    QWidget *widget)
+{
+  QString lines;
+  foreach (QString line, d_lines)
+    lines += QString("%1\n").arg(line);
+
+  double appDpi = qt_defaultDpi();
+  double ratio = appDpi / painter->device()->logicalDpiY();
+  QFont painterFont(font());
+  painterFont.setPointSizeF(painterFont.pointSize() * ratio);
+
+  painter->fillRect(boundingRect(), QBrush(Qt::gray));
+  painter->setFont(painterFont);
+  painter->drawText(boundingRect(), Qt::AlignCenter, lines);
+}
+
+QSizeF PopupItem::size() const
+{
+  QFontMetricsF metrics(font());
+  QSizeF popupSize(10, 10);
+
+  foreach (QString label, d_lines) {
+    qreal labelWidth = metrics.width(label);
+    if (labelWidth > popupSize.width())
+      popupSize.setWidth(labelWidth);
+    }
+
+    qreal labelsHeight = d_lines.size() * metrics.height();
+    if (labelsHeight > popupSize.height())
+      popupSize.setHeight(labelsHeight);
+
+  return popupSize;
+  
+}
+

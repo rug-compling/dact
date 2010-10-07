@@ -80,6 +80,10 @@
 	<xsl:value-of select="@lemma"/>
       </line>
       <!--<xsl:apply-templates select="node" mode="xml2layout" />-->
+
+      <hoverLine>
+        <xsl:value-of select="@postag" />
+      </hoverLine>
     </node>
   </xsl:template>
 </xsl:stylesheet>
