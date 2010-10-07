@@ -88,6 +88,7 @@ public:
   QSizeF size() const;
 private:
   QList<QString> d_lines;
+  qreal d_padding;
 };
 
 inline QList<QString> const &DactTreeNode::popupLines() const

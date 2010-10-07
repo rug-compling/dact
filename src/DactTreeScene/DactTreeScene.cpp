@@ -429,15 +429,14 @@ void DactTreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
 }
 
 PopupItem::PopupItem(QGraphicsItem *parent, QList<QString> lines) :
-  QGraphicsItem(parent), d_lines(lines)
+  QGraphicsItem(parent), d_lines(lines), d_padding(5.0)
 {
 }
 
 QRectF PopupItem::boundingRect() const
 {
-  // XXX - Is there a way to get this for system cursors?
-  double cursorHeight = 32.0;
-  return QRectF(QPointF(-size().width() / 2.0, -cursorHeight), size());
+  // XXX - map to real screen pixels.
+  return QRectF(QPointF(-size().width() / 2.0, -32.0), size());
 }
 
 QFont PopupItem::font() const
@@ -453,16 +452,29 @@ void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
   foreach (QString line, d_lines)
     lines += QString("%1\n").arg(line);
 
+  // Get the font size.
   double appDpi = qt_defaultDpi();
   double ratio = appDpi / painter->device()->logicalDpiY();
   QFont painterFont(font());
   painterFont.setPointSizeF(painterFont.pointSize() * ratio);
 
+  QRectF bRect(boundingRect());
+  QRectF textRect(bRect.x() + d_padding, bRect.y() + d_padding,
+      bRect.width() - 2.0 * d_padding, bRect.height() - 2.0 * d_padding);
+
+  // Popup box
+  painter->setRenderHint(QPainter::Antialiasing, true);
   painter->setOpacity(0.9);
-  painter->fillRect(boundingRect(), QBrush(Qt::gray));
+  painter->setBrush(QBrush(Qt::gray));
+  painter->setPen(QPen(QBrush(), 0.0));
+  painter->drawRoundedRect(boundingRect(), 5.0, 5.0);
+
+  // Popup text
   painter->setOpacity(1.0);
+  painter->setBrush(QBrush());
+  painter->setPen(QPen());
   painter->setFont(painterFont);
-  painter->drawText(boundingRect(), Qt::AlignCenter, lines);
+  painter->drawText(textRect, Qt::AlignCenter, lines);
 }
 
 QSizeF PopupItem::size() const
@@ -479,6 +491,9 @@ QSizeF PopupItem::size() const
     qreal labelsHeight = d_lines.size() * metrics.height();
     if (labelsHeight > popupSize.height())
       popupSize.setHeight(labelsHeight);
+
+  popupSize.setWidth(popupSize.width() + 2.0 * d_padding);
+  popupSize.setHeight(popupSize.height() + 2.0 * d_padding);
 
   return popupSize;
   
