@@ -282,12 +282,12 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Macros...</string>
+    <string>Macros…</string>
    </property>
   </action>
   <action name="showFilterWindow">
    <property name="text">
-    <string>Bracketed sentences</string>
+    <string>Bracketed sentences…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
@@ -295,7 +295,7 @@
   </action>
   <action name="showStatisticsWindow">
    <property name="text">
-    <string>Statistics...</string>
+    <string>Statistics…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
@@ -337,7 +337,7 @@
      <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Open...</string>
+    <string>&amp;Open…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -352,7 +352,7 @@
      <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Print...</string>
+    <string>&amp;Print…</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -364,7 +364,7 @@
      <normaloff>:/icons/pdf.png</normaloff>:/icons/pdf.png</iconset>
    </property>
    <property name="text">
-    <string>Export to PDF...</string>
+    <string>Export to PDF…</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -385,7 +385,7 @@
   </action>
   <action name="openDirectoryAction">
    <property name="text">
-    <string>Open Directory...</string>
+    <string>Open Directory…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>

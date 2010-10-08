@@ -201,6 +201,7 @@ void DactMainWindow::showFilterWindow()
 
     d_bracketedWindow->setFilter(d_filter);
     d_bracketedWindow->show();
+	d_bracketedWindow->raise();
 }
 
 void DactMainWindow::showStatisticsWindow()
@@ -210,6 +211,7 @@ void DactMainWindow::showStatisticsWindow()
 
     d_statisticsWindow->setFilter(d_filter);
     d_statisticsWindow->show();
+	d_statisticsWindow->raise();
 }
 
 void DactMainWindow::showMacrosWindow()
@@ -219,6 +221,7 @@ void DactMainWindow::showMacrosWindow()
     }
     
     d_macrosWindow->show();
+	d_macrosWindow->raise();
 }
 
 void DactMainWindow::createActions()
