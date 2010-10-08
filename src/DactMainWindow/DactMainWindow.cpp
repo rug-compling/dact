@@ -189,6 +189,7 @@ void DactMainWindow::close()
 void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 {
     showFile(entry);
+	fitTree();
 }
 
 void DactMainWindow::showFilterWindow()
