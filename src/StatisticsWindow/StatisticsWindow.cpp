@@ -172,7 +172,7 @@ void StatisticsWindow::updateResultsTotalCount()
 {
     d_ui->totalHitsLabel->setText(QString("%1").arg(d_totalHits));
     
-    updateResultsPercentages();
+    //updateResultsPercentages();
 }
 
 void StatisticsWindow::updateResultsPercentages()
@@ -284,6 +284,8 @@ void StatisticsWindow::progressStopped(int n, int total)
     // but also not finished. (e.g. it was cancelled by pressing [esc], which isn't
     // even implemented yet.)
     d_ui->filterProgress->setVisible(false);
+
+	updateResultsPercentages();
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
