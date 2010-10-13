@@ -121,6 +121,8 @@
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
     <addaction name="separator"/>
+    <addaction name="preferencesAction"/>
+    <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -245,7 +247,7 @@
     <string>Next Node</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+.</string>
+    <string>Ctrl+]</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -260,7 +262,7 @@
     <string>Previous Node</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+,</string>
+    <string>Ctrl+[</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -389,6 +391,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="preferencesAction">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
    </property>
   </action>
  </widget>

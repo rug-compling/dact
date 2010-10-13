@@ -1,4 +1,7 @@
+#include <QtCore/QSettings>
+#include <QtCore/QVariant>
 #include <QtGui/QApplication>
+#include <QtGui/QFont>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -12,6 +15,11 @@ extern "C" {
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QSettings settings("RUG", "Dact");
+    QVariant fontValue = settings.value("appFont", qApp->font().toString());
+    QFont appFont;
+    appFont.fromString(fontValue.toString());
+    qApp->setFont(appFont);
 
     xmlInitMemory();
     xmlInitParser();

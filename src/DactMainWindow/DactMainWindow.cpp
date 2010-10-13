@@ -33,8 +33,9 @@
 #include <BracketedWindow.hh>
 #include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
-#include <StatisticsWindow.hh>
 #include <OpenProgressDialog.hh>
+#include <PreferencesWindow.hh>
+#include <StatisticsWindow.hh>
 #include <DactTreeScene.h>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
@@ -51,6 +52,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0),
+    d_preferencesWindow(0),
     d_treeScene(0)
 {
     init();
@@ -255,6 +257,8 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
+    QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this,
+      SLOT(preferencesWindow()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
@@ -459,6 +463,14 @@ void DactMainWindow::pdfExport()
         d_ui->treeGraphicsView->scene()->render(&painter);
 
     painter.end();
+}
+
+void DactMainWindow::preferencesWindow()
+{
+  if (d_preferencesWindow == 0)
+    d_preferencesWindow = new PreferencesWindow(this);
+  d_preferencesWindow->show();
+  d_preferencesWindow->raise();
 }
 
 void DactMainWindow::previousEntry(bool)

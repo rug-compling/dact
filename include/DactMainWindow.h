@@ -30,6 +30,7 @@ class DactMacrosModel;
 class DactMacrosWindow;
 class StatisticsWindow;
 class OpenProgressDialog;
+class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -70,6 +71,7 @@ private slots:
     void openCorpus();
     void openDirectoryCorpus();
     void pdfExport();
+    void preferencesWindow();
     void previousEntry(bool);
     void print();
     void highlightChanged();
@@ -103,9 +105,10 @@ private:
     QSharedPointer<Ui::DactMainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
-    StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
     OpenProgressDialog *d_openProgressDialog;
+    PreferencesWindow *d_preferencesWindow;
+    StatisticsWindow *d_statisticsWindow;
     
     QString d_corpusPath;
     QString d_highlight;
