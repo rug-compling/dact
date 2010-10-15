@@ -20,6 +20,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "BracketedColorDelegate.hh";
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.h"
 #include "XPathValidator.hh"
@@ -157,6 +158,8 @@ void BracketedWindow::createActions()
         SLOT(applyValidityColor(QString const &)));
     
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
+    
+    d_ui->resultsListWidget->setItemDelegate(new BracketedColorDelegate());
 }
 
 void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
