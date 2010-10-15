@@ -52,6 +52,19 @@ QList<DactTreeNode*> const &DactTreeScene::nodes()
 	return d_nodes;
 }
 
+QList<DactTreeNode*> DactTreeScene::activeNodes()
+{
+    QList<DactTreeNode*> nodes;
+    
+    foreach (DactTreeNode* node, d_nodes)
+    {
+        if (node->isActive())
+            nodes.append(node);
+    }
+    
+    return nodes;
+}
+
 DactTreeNode* DactTreeScene::rootNode()
 {
   if (d_nodes.size() > 0)

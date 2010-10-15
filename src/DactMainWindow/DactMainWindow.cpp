@@ -191,7 +191,7 @@ void DactMainWindow::close()
 void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 {
     showFile(entry);
-	fitTree();
+	focusFitTree();
 }
 
 void DactMainWindow::showFilterWindow()
@@ -298,7 +298,7 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     
     showFile(current->data(Qt::UserRole).toString());
     
-    fitTree();
+    focusFitTree();
 }
 
 void DactMainWindow::help()
@@ -377,6 +377,25 @@ void DactMainWindow::fitTree()
    
     if (d_treeScene->rootNode() != 0)
       d_ui->treeGraphicsView->fitInView(d_treeScene->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+}
+
+void DactMainWindow::focusFitTree()
+{
+    if (!d_treeScene)
+        return;
+    
+    if (d_treeScene->activeNodes().length())
+    {
+        resetTreeZoom();
+        focusTreeNode(1);
+    }
+    else
+        fitTree();
+}
+
+void DactMainWindow::resetTreeZoom()
+{
+    d_ui->treeGraphicsView->setMatrix(QMatrix());
 }
 
 void DactMainWindow::initSentenceTransformer()

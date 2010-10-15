@@ -64,9 +64,11 @@ private slots:
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void filterChanged();
     void fitTree();
+	void focusFitTree();
     void focusNextTreeNode(bool);
     void focusPreviousTreeNode(bool);
     void help();
+    void highlightChanged();
     void nextEntry(bool);
     void openCorpus();
     void openDirectoryCorpus();
@@ -74,7 +76,7 @@ private slots:
     void preferencesWindow();
     void previousEntry(bool);
     void print();
-    void highlightChanged();
+	void resetTreeZoom();
     void showSentence(QString const &xml, QHash<QString, QString> const &params);
     void showTree(QString const &xml, QHash<QString, QString> const &params);
     void treeZoomIn(bool);
