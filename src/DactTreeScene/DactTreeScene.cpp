@@ -2,6 +2,7 @@
 #include <QFont>
 #include <QFontMetrics>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsView>
 #include <QHash>
 #include <QPainter>
 #include <QStack>
@@ -134,12 +135,12 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 					}
 				}
 			
-        if (name == "line")
-				  stack.top()->appendLabel(label);
-        else
-          stack.top()->appendPopupLine(label);
-			}
-			break;
+				if (name == "line")
+					stack.top()->appendLabel(label);
+				else
+					stack.top()->appendPopupLine(label);
+				}
+				break;
 		case XML_READER_TYPE_END_ELEMENT:
 			if (name == "node")
 			{
@@ -151,13 +152,13 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 				}
 				
 				DactTreeNode *node = stack.pop();
-        if (node->popupLines().size() > 0) {
-          PopupItem *popupItem = new PopupItem(0, node->popupLines());
-          popupItem->setVisible(false);
-          popupItem->setZValue(1.0);
-          node->setPopupItem(popupItem);
-          addItem(popupItem);
-        }
+				if (node->popupLines().size() > 0) {
+					PopupItem *popupItem = new PopupItem(0, node->popupLines());
+					popupItem->setVisible(false);
+					popupItem->setZValue(1.0);
+					node->setPopupItem(popupItem);
+					addItem(popupItem);
+				}
 			}
 			break;
 	}
@@ -181,7 +182,7 @@ QString DactTreeScene::processXMLString(xmlChar* xmlValue) const
 	if (xmlValue == NULL)
 		return QString();
 
-  QString value(QString::fromUtf8(reinterpret_cast<char const *>(xmlValue)));
+	QString value(QString::fromUtf8(reinterpret_cast<char const *>(xmlValue)));
 	xmlFree(xmlValue);
 	return value;
 }
@@ -451,67 +452,89 @@ PopupItem::PopupItem(QGraphicsItem *parent, QList<QString> lines) :
 
 QRectF PopupItem::boundingRect() const
 {
-  // XXX - map to real screen pixels.
-  return QRectF(QPointF(-size().width() / 2.0, -32.0), size());
+	QRectF popup = rect();
+	qreal scale = viewScale();
+	return QRectF(popup.topLeft() / scale,
+				  popup.size() / scale);
+}
+
+QRectF PopupItem::rect() const
+{
+	QSizeF popup = size();
+	return QRectF(QPointF(-popup.width() / 2.0, -34.0), popup);
 }
 
 QFont PopupItem::font() const
 {
-  return QFont("verdana", 12);
+	return QFont("verdana", 12);
 }
 
 
 void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
     QWidget *widget)
 {
-  QString lines;
-  foreach (QString line, d_lines)
-    lines += QString("%1\n").arg(line);
+	QString lines;
+	foreach (QString line, d_lines)
+		lines += QString("%1\n").arg(line);
 
-  // Get the font size.
-  double appDpi = qt_defaultDpi();
-  double ratio = appDpi / painter->device()->logicalDpiY();
-  QFont painterFont(font());
-  painterFont.setPointSizeF(painterFont.pointSize() * ratio);
+	// Get the font size.
+	double appDpi = qt_defaultDpi();
+	double ratio = appDpi / painter->device()->logicalDpiY();
+	QFont painterFont(font());
+	painterFont.setPointSizeF(painterFont.pointSize() * ratio);
 
-  QRectF bRect(boundingRect());
-  QRectF textRect(bRect.x() + d_padding, bRect.y() + d_padding,
-      bRect.width() - 2.0 * d_padding, bRect.height() - 2.0 * d_padding);
+	QRectF bRect(rect());
+	QRectF textRect(bRect.x() + d_padding, bRect.y() + d_padding,
+		bRect.width() - 2.0 * d_padding, bRect.height() - 2.0 * d_padding);
 
-  // Popup box
-  painter->setRenderHint(QPainter::Antialiasing, true);
-  painter->setOpacity(0.9);
-  painter->setBrush(QBrush(Qt::gray));
-  painter->setPen(QPen(QBrush(), 0.0));
-  painter->drawRoundedRect(boundingRect(), 5.0, 5.0);
+	painter->save();
+	
+	qreal scale = 1 / viewScale();
+	painter->scale(scale, scale);
+	
+	// Popup box
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setOpacity(0.9);
+	painter->setBrush(QBrush(Qt::gray));
+	painter->setPen(QPen(QBrush(), 0.0));
+	painter->drawRoundedRect(rect(), 5.0, 5.0);
 
-  // Popup text
-  painter->setOpacity(1.0);
-  painter->setBrush(QBrush());
-  painter->setPen(QPen());
-  painter->setFont(painterFont);
-  painter->drawText(textRect, Qt::AlignCenter, lines);
+	// Popup text
+	painter->setOpacity(1.0);
+	painter->setBrush(QBrush());
+	painter->setPen(QPen());
+	painter->setFont(painterFont);
+	painter->drawText(textRect, Qt::AlignCenter, lines);
+	
+	painter->restore();
 }
 
 QSizeF PopupItem::size() const
 {
-  QFontMetricsF metrics(font());
-  QSizeF popupSize(10, 10);
+	QFontMetricsF metrics(font());
+	QSizeF popupSize(10, 10);
+	
+	foreach (QString label, d_lines)
+	{
+		qreal labelWidth = metrics.width(label);
+		if (labelWidth > popupSize.width())
+			popupSize.setWidth(labelWidth);
+	}
+	
+	qreal labelsHeight = d_lines.size() * metrics.lineSpacing();
+	if (labelsHeight > popupSize.height())
+		popupSize.setHeight(labelsHeight);
 
-  foreach (QString label, d_lines) {
-    qreal labelWidth = metrics.width(label);
-    if (labelWidth > popupSize.width())
-      popupSize.setWidth(labelWidth);
-    }
-
-    qreal labelsHeight = d_lines.size() * metrics.lineSpacing();
-    if (labelsHeight > popupSize.height())
-      popupSize.setHeight(labelsHeight);
-
-  popupSize.setWidth(popupSize.width() + 2.0 * d_padding);
-  popupSize.setHeight(popupSize.height() + 2.0 * d_padding);
-
-  return popupSize;
-  
+	popupSize.setWidth(popupSize.width() + 2.0 * d_padding);
+	popupSize.setHeight(popupSize.height() + 2.0 * d_padding);
+	
+	return popupSize;
 }
 
+qreal PopupItem::viewScale() const
+{
+	if (!scene() || scene()->views().isEmpty())
+		return 1.0;
+	
+	return scene()->views().first()->transform().m11();
+}

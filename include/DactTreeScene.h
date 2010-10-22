@@ -86,7 +86,9 @@ public:
 	QFont font() const;
 	void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
 	QSizeF size() const;
+	QRectF rect() const;
 private:
+	qreal viewScale() const;
 	QList<QString> d_lines;
 	qreal d_padding;
 };
