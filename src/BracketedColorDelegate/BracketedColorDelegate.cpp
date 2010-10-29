@@ -11,18 +11,37 @@ QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const
     return option.fontMetrics.size(Qt::TextSingleLine, index.data().toString());
 }
 
+QList<Chunk> BracketedColorDelegate::interpretSentence(QString const &sentence) const
+{
+    QList<Chunk> chunks;
+    
+    int depth = 0, pos = -1, readTill = 0;
+    
+    while ((pos = sentence.indexOf(QRegExp("\\[|\\]"), readTill)) != -1)
+    {
+        chunks.append(Chunk(depth, sentence.mid(readTill, pos - readTill)));
+        
+        readTill = pos + 1;
+        
+        if (sentence[pos] == '[')
+            ++depth;
+        
+        else if (sentence[pos] == ']')
+            --depth;
+    }
+    
+    chunks.append(Chunk(depth, sentence.mid(readTill)));
+    
+    return chunks;
+}
+
 void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QString sentence = index.data().toString();
-    
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    // Find the position of the matching block of text. It won't have any trouble
-    // with nested blocks, but it will make a mess when two non-nested blocks are
-    // found.
-    int openingBracketPos = sentence.indexOf('[');
-    int closingBracketPos = sentence.lastIndexOf(']') + 1;
+    QString sentence = index.data().toString();
+    QList<Chunk> chunks = interpretSentence(sentence);
     QRectF textBox = option.rect;
     QRectF usedSpace;
     
@@ -37,33 +56,26 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         << sentence.mid(closingBracketPos);
     */
     
-    // Words before the match
-    if (openingBracketPos > 0)
+    foreach (Chunk chunk, chunks)
     {
-        painter->setPen(brush.color());
-        painter->setBrush(brush);
-        painter->drawText(textBox, Qt::AlignLeft, sentence.left(openingBracketPos), &usedSpace);
-        textBox.setLeft(textBox.left() + usedSpace.width());
-    }
-    
-    // Words for the matching node
-    {
-        QString matchNodeText = sentence.mid(openingBracketPos, closingBracketPos - openingBracketPos);
-        QRectF matchBox = textBox;
-        matchBox.setWidth(option.fontMetrics.width(matchNodeText));
-    
-        painter->setPen(QColor(Qt::white));
-        painter->fillRect(matchBox, QColor(Qt::darkGreen));
-        painter->drawText(matchBox, Qt::AlignLeft, matchNodeText);
-    
-        textBox.setLeft(textBox.left() + matchBox.width());
-    }
-    
-    // rest of the sentence
-    if (closingBracketPos < sentence.length())
-    {
-        painter->setPen(brush.color());
-        painter->setBrush(brush);
-        painter->drawText(textBox, Qt::AlignLeft, sentence.mid(closingBracketPos), &usedSpace);
+        if (chunk.text().isEmpty())
+            continue;
+        
+        QRectF chunkBox = textBox;
+        chunkBox.setWidth(option.fontMetrics.width(chunk.text()));
+        
+        if (chunk.depth() > 0)
+        {
+            painter->setPen(QColor(Qt::white));
+            painter->fillRect(chunkBox, QColor(Qt::darkGreen));
+        }
+        else
+        {
+            painter->setPen(brush.color());
+            painter->setBrush(brush);
+        }
+        
+        painter->drawText(chunkBox, Qt::AlignLeft, chunk.text());
+        textBox.setLeft(textBox.left() + chunkBox.width());
     }
 }
