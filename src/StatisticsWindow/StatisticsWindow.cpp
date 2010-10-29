@@ -232,6 +232,7 @@ void StatisticsWindow::createActions()
         SLOT(startQuery()));
     QObject::connect(d_ui->startPushButton, SIGNAL(clicked()),
         this, SLOT(startQuery()));
+    QObject::connect(d_ui->resultsTableWidget, SIGNAL(itemActivated(QTableWidgetItem*)), this, SLOT(itemActivated(QTableWidgetItem*)));
     
     QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
 }
@@ -242,6 +243,34 @@ void StatisticsWindow::keyPressEvent(QKeyEvent *event)
         stopMapper();
     else
         QWidget::keyPressEvent(event);
+}
+
+QString StatisticsWindow::expandFilter(QString const &base, QString const &attribute, QString const &value) const
+{
+    int subSelectionPos = base.lastIndexOf('/');
+    
+    if (!subSelectionPos)
+        return QString();
+    
+    int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
+    
+    QString condition = QString("@%1=\"%2\"").arg(attribute).arg(value);
+    
+    if (closingBracketPos == -1)
+        return QString("%1[%2]").arg(base).arg(condition);
+    else
+        return QString("%1 and %2%3").arg(
+            base.left(closingBracketPos + 1),
+            condition,
+            base.mid(closingBracketPos + 1));
+}
+
+void StatisticsWindow::itemActivated(QTableWidgetItem* item)
+{
+    qWarning() << expandFilter(
+        d_ui->filterLineEdit->text(),
+        d_ui->attributeComboBox->currentText(),
+        item->data(Qt::UserRole).toString());
 }
 
 void StatisticsWindow::showPercentage(bool show)
@@ -399,19 +428,14 @@ int StatisticsWindowResultsRow::insertIntoTable(QTableWidget *table)
 }
 
 StatisticsWindowResultsRow::~StatisticsWindowResultsRow()
-{
-    // I expected that I needed to delete d_labelItem etc. manually, but
-    // that just tells me I can't access that piece of memory. Aparently
-    // they are already released?
-    
-    //delete d_labelItem;
-    //delete d_countItem;
-    //delete d_percentageItem;
-}
+{}
 
 void StatisticsWindowResultsRow::setText(QString const &text)
 {
     d_labelItem->setText(text);
+    d_labelItem->setData(Qt::UserRole, text);
+    d_percentageItem->setData(Qt::UserRole, text);
+    d_countItem->setData(Qt::UserRole, text);
 }
 
 void StatisticsWindowResultsRow::setValue(int n)

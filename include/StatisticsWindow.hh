@@ -47,12 +47,14 @@ private slots:
     void progressChanged(int n, int total);
     void progressStopped(int n, int total);
     void showPercentageChanged();
+    void itemActivated(QTableWidgetItem* item);
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    QString expandFilter(QString const &base, QString const &attribute, QString const &value) const;
     void updateResults();
     void updateResultsPercentages();
     void updateResultsTotalCount();
