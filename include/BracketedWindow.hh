@@ -34,6 +34,7 @@ public:
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text);
+    inline QString const &filter() const { return d_filter; };
 
 signals:
     void currentEntryChanged(QString const &entry);

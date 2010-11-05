@@ -77,6 +77,8 @@ private slots:
     void previousEntry(bool);
     void print();
 	void resetTreeZoom();
+	void setFilter(QString const &filter);
+	void setHighlight(QString const &filter);
     void showSentence(QString const &xml, QHash<QString, QString> const &params);
     void showTree(QString const &xml, QHash<QString, QString> const &params);
 	void statisticsEntryActivated(QString const &value, QString const &query);

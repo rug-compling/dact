@@ -126,8 +126,15 @@ void DactMainWindow::allEntriesFound()
 
 void DactMainWindow::bracketedEntryActivated()
 {
+    setHighlight(d_bracketedWindow->filter());
     raise();
     activateWindow();
+}
+
+void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
+{
+    showFile(entry);
+	focusFitTree();
 }
 
 QString DactMainWindow::sentenceForFile(QString const &filename, QString const &query)
@@ -186,12 +193,6 @@ void DactMainWindow::close()
 {
     writeSettings();
     QMainWindow::close();
-}
-
-void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
-{
-    showFile(entry);
-	focusFitTree();
 }
 
 void DactMainWindow::showFilterWindow()
@@ -364,6 +365,12 @@ void DactMainWindow::showFile(QString const &filename)
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
+}
+
+void DactMainWindow::setFilter(QString const &query)
+{
+    d_ui->filterLineEdit->setText(query);
+    filterChanged();
 }
 
 void DactMainWindow::filterChanged()
@@ -623,6 +630,12 @@ void DactMainWindow::stopMapper()
         d_xpathMapper->cancel();
         d_xpathMapper->wait();
     }
+}
+
+void DactMainWindow::setHighlight(QString const &query)
+{
+    d_ui->highlightLineEdit->setText(query);
+    highlightChanged();
 }
 
 void DactMainWindow::highlightChanged()
