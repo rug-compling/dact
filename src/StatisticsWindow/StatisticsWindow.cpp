@@ -245,12 +245,14 @@ void StatisticsWindow::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
 }
 
-QString StatisticsWindow::expandFilter(QString const &base, QString const &attribute, QString const &value) const
+QString StatisticsWindow::generateQuery(QString const &base, QString const &attribute, QString const &value) const
 {
     int subSelectionPos = base.lastIndexOf('/');
     
     if (!subSelectionPos)
         return QString();
+    
+    qWarning() << base.mid(subSelectionPos);
     
     int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
     
@@ -260,17 +262,24 @@ QString StatisticsWindow::expandFilter(QString const &base, QString const &attri
         return QString("%1[%2]").arg(base).arg(condition);
     else
         return QString("%1 and %2%3").arg(
-            base.left(closingBracketPos + 1),
+            base.left(subSelectionPos + closingBracketPos),
             condition,
-            base.mid(closingBracketPos + 1));
+            base.mid(subSelectionPos + closingBracketPos));
+}
+
+QString StatisticsWindow::generateQuery(QTableWidgetItem *item) const
+{
+    return generateQuery(
+        d_ui->filterLineEdit->text(),
+        d_ui->attributeComboBox->currentText(),
+        item->data(Qt::UserRole).toString());
 }
 
 void StatisticsWindow::itemActivated(QTableWidgetItem* item)
 {
-    qWarning() << expandFilter(
-        d_ui->filterLineEdit->text(),
-        d_ui->attributeComboBox->currentText(),
-        item->data(Qt::UserRole).toString());
+    emit entryActivated(
+        item->text(),
+        generateQuery(item));
 }
 
 void StatisticsWindow::showPercentage(bool show)

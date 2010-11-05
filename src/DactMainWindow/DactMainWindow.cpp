@@ -196,7 +196,8 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 
 void DactMainWindow::showFilterWindow()
 {
-    if (d_bracketedWindow == 0) {
+    if (d_bracketedWindow == 0)
+    {
         d_bracketedWindow = new BracketedWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
         QObject::connect(d_bracketedWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
         QObject::connect(d_bracketedWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
@@ -210,18 +211,27 @@ void DactMainWindow::showFilterWindow()
 void DactMainWindow::showStatisticsWindow()
 {
     if (d_statisticsWindow == 0)
+    {
         d_statisticsWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
+        QObject::connect(d_statisticsWindow, SIGNAL(entryActivated(QString, QString)),
+            this, SLOT(statisticsEntryActivated(QString const &, QString const &)));
+    }
 
     d_statisticsWindow->setFilter(d_filter);
     d_statisticsWindow->show();
 	d_statisticsWindow->raise();
 }
 
+void DactMainWindow::statisticsEntryActivated(QString const &value, QString const &query)
+{
+    d_ui->filterLineEdit->setText(query);
+    filterChanged();
+}
+
 void DactMainWindow::showMacrosWindow()
 {
-    if(d_macrosWindow == 0) {
+    if (d_macrosWindow == 0)
         d_macrosWindow = new DactMacrosWindow(d_macrosModel, this, Qt::Window);
-    }
     
     d_macrosWindow->show();
 	d_macrosWindow->raise();

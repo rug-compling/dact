@@ -39,6 +39,9 @@ public:
     void setAggregateAttribute(QString const &text);
     void showPercentage(bool show);
 
+signals:
+    void entryActivated(QString, QString);
+
 private slots:
     void applyValidityColor(QString const &text);
     void attributeFound(QString value);
@@ -54,7 +57,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    QString expandFilter(QString const &base, QString const &attribute, QString const &value) const;
+    QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;
+    QString generateQuery(QTableWidgetItem *item) const;
     void updateResults();
     void updateResultsPercentages();
     void updateResultsTotalCount();

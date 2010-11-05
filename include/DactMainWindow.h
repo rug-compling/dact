@@ -79,6 +79,7 @@ private slots:
 	void resetTreeZoom();
     void showSentence(QString const &xml, QHash<QString, QString> const &params);
     void showTree(QString const &xml, QHash<QString, QString> const &params);
+	void statisticsEntryActivated(QString const &value, QString const &query);
     void treeZoomIn(bool);
     void treeZoomOut(bool);
     void toggleSentencesInFileList(bool show);
