@@ -1,3 +1,4 @@
+#include <cmath>
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPalette>
@@ -44,18 +45,12 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     QList<Chunk> chunks = interpretSentence(sentence);
     QRectF textBox = option.rect;
     QRectF usedSpace;
+    QColor highlightColor = QColor(Qt::darkGreen);
     
     QBrush brush = option.state & QStyle::State_Selected
         ? option.palette.highlightedText()
         : option.palette.text();
-    
-    /*
-    qWarning()
-        << sentence.left(openingBracketPos) << "::"
-        << sentence.mid(openingBracketPos, closingBracketPos - openingBracketPos) << "::"
-        << sentence.mid(closingBracketPos);
-    */
-    
+        
     foreach (Chunk chunk, chunks)
     {
         if (chunk.text().isEmpty())
@@ -66,8 +61,9 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         
         if (chunk.depth() > 0)
         {
+            highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(), 255));
             painter->setPen(QColor(Qt::white));
-            painter->fillRect(chunkBox, QColor(Qt::darkGreen));
+            painter->fillRect(chunkBox, highlightColor);
         }
         else
         {
