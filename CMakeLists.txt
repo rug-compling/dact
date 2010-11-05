@@ -76,7 +76,9 @@ add_custom_command(
 SET(dact_SRCS
   src/AboutWindow/AboutWindow.cpp
   src/DactMainWindow/DactMainWindow.cpp
-  src/BracketedColorDelegate/BracketedColorDelegate.cpp
+  src/BracketedDelegates/BracketedDelegate.cpp
+  src/BracketedDelegates/BracketedColorDelegate.cpp
+  src/BracketedDelegates/BracketedVisibilityDelegate.cpp
   src/BracketedWindow/BracketedWindow.cpp
   src/StatisticsWindow/StatisticsWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
@@ -95,7 +97,7 @@ SET(dact_SRCS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactMainWindow.h
-  include/BracketedColorDelegate.hh
+  include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
   include/DactMacrosWindow.h
