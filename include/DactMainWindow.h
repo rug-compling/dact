@@ -28,6 +28,7 @@ class AboutWindow;
 class BracketedWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
+class DactQueryHistory;
 class StatisticsWindow;
 class OpenProgressDialog;
 class PreferencesWindow;
@@ -120,6 +121,7 @@ private:
     QString d_filter;
     QString d_filterExpr; // Stores the raw, unexpanded filter expression
     QSharedPointer<DactMacrosModel> d_macrosModel;
+	QSharedPointer<DactQueryHistory> d_queryHistory;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XSLTransformer> d_treeTransformer;
     EntryFun d_entryFun;

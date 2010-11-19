@@ -33,6 +33,7 @@
 #include <BracketedWindow.hh>
 #include <DactMacrosModel.h>
 #include <DactMacrosWindow.h>
+#include <DactQueryHistory.hh>
 #include <OpenProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
@@ -53,7 +54,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_macrosWindow(0),
     d_openProgressDialog(0),
     d_preferencesWindow(0),
-    d_treeScene(0)
+    d_treeScene(0),
+	d_queryHistory(0)
 {
     init();
 }
@@ -62,16 +64,20 @@ void DactMainWindow::init()
 {
     // the code shared by both the constructors.
     
+	d_ui->setupUi(this);
+    
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
     
     d_xpathMapper = QSharedPointer<XPathMapper>(new XPathMapper());
     
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
-    
-    d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-    
+	/*
+	d_queryHistory = QSharedPointer<DactQueryHistory>(new DactQueryHistory());
+	d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
+	d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
+    */
     readSettings();
     createTransformers();
     createActions();    
@@ -378,6 +384,9 @@ void DactMainWindow::filterChanged()
     QMutexLocker locker(&d_filterChangedMutex);
 
     d_filter = d_ui->filterLineEdit->text().trimmed();
+	
+	if (d_queryHistory)
+		d_queryHistory->addToHistory(d_filter);
     
     d_ui->highlightLineEdit->setText(d_filter);
     highlightChanged();
@@ -641,6 +650,10 @@ void DactMainWindow::setHighlight(QString const &query)
 void DactMainWindow::highlightChanged()
 {
     d_highlight = d_ui->highlightLineEdit->text().trimmed();
+	
+	if (d_queryHistory)
+		d_queryHistory->addToHistory(d_highlight);
+	
     if (d_ui->fileListWidget->currentItem() != 0)
         showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
 }

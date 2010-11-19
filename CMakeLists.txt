@@ -83,6 +83,7 @@ SET(dact_SRCS
   src/StatisticsWindow/StatisticsWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
+  src/DactQueryHistory/DactQueryHistory.cpp
   src/OpenProgressDialog/OpenProgressDialog.cpp  
   src/DactTreeScene/DactTreeScene.cpp
   src/PercentageCellDelegate/PercentageCellDelegate.cpp
@@ -102,6 +103,7 @@ SET(dact_MOC_HDRS
   include/StatisticsWindow.hh
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
+  include/DactQueryHistory.hh
   include/OpenProgressDialog.hh
   include/DactTreeScene.h
   include/PercentageCellDelegate.h
