@@ -18,7 +18,8 @@ QString BracketedVisibilityDelegate::formatSentence(QString const &sentence) con
         
         // each result on a new line, like they are individual entries.
         if (!result.isEmpty())
-            result += "\n";
+            // result += '\n' // use this for one line per match
+            result += ", "; // or this for one line per file
         
         // note that text() currently does not contain the text of the full match
         // because it could contain submatches, which are separate chunks.

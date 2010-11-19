@@ -23,6 +23,7 @@ class QKeyEvent;
 
 class DactMacrosModel;
 class QListWidgetItem;
+class QStyledItemDelegate;
 class EntryMapAndTransform;
 
 class BracketedWindow : public QWidget {
@@ -49,21 +50,27 @@ private slots:
     void mapperStarted(int);
     void mapperStopped(int, int);
     void mapperProgressed(int, int);
+	void listDelegateChanged(int index);
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    void updateResults();
+	void addListDelegate(QString const &name, QStyledItemDelegate*(*factory)());
+	void updateResults();
     void createActions();
     void initSentenceTransformer();
     void readSettings();
     void writeSettings();
     void stopMapper();
+	
+	static QStyledItemDelegate* colorDelegateFactory();
+	static QStyledItemDelegate* visibilityDelegateFactory();
 
     EntryMapAndTransform *d_entryMap;
     QString d_filter;
+	QList<QStyledItemDelegate*(*)()>d_listDelegateFactories;
     QSharedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;

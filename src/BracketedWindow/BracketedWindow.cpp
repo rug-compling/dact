@@ -159,7 +159,10 @@ void BracketedWindow::createActions()
     
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     
-    d_ui->resultsListWidget->setItemDelegate(new BracketedVisibilityDelegate());
+	QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(listDelegateChanged(int)));
+	
+    addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
+	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
 }
 
 void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
@@ -182,6 +185,27 @@ void BracketedWindow::entryActivated(QListWidgetItem *item)
 void BracketedWindow::filterChanged()
 {
     setFilter(d_ui->filterLineEdit->text());
+}
+
+void BracketedWindow::addListDelegate(QString const &name, QStyledItemDelegate*(*factory)())
+{
+	d_ui->listDelegateComboBox->addItem(name, d_listDelegateFactories.size());
+	d_listDelegateFactories.append(factory);
+}
+
+void BracketedWindow::listDelegateChanged(int index)
+{
+	int delegateIndex = d_ui->listDelegateComboBox->itemData(index, Qt::UserRole).toInt();
+	
+	if (delegateIndex >= d_listDelegateFactories.size())
+	{
+		qWarning() << QString("Trying to select a list delegate (%1) beyond the boundary "
+							  "of the d_listDelegateFactories list (%2)")
+							 .arg(delegateIndex).arg(d_listDelegateFactories.size());
+		return;
+	}
+	
+	d_ui->resultsListWidget->setItemDelegate(d_listDelegateFactories[delegateIndex]());
 }
 
 void BracketedWindow::initSentenceTransformer()
@@ -234,10 +258,11 @@ void BracketedWindow::readSettings()
     // Window geometry.
     QPoint pos = settings.value("filter_pos", QPoint(200, 200)).toPoint();
     QSize size = settings.value("filter_size", QSize(350, 400)).toSize();
-    resize(size);
-
-    // Move.
-    move(pos);
+	resize(size);
+	move(pos);
+	
+	// restore last selected display method
+	listDelegateChanged(settings.value("filter_list_delegate", 0).toInt());
 }
 
 void BracketedWindow::writeSettings()
@@ -247,6 +272,19 @@ void BracketedWindow::writeSettings()
     // Window geometry
     settings.setValue("filter_pos", pos());
     settings.setValue("filter_size", size());
+	
+	// display method
+	settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
+}
+
+QStyledItemDelegate* BracketedWindow::colorDelegateFactory()
+{
+	return new BracketedColorDelegate();
+}
+
+QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory()
+{
+	return new BracketedVisibilityDelegate();
 }
 
 EntryMapAndTransform::EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QSharedPointer<XSLTransformer> xslTransformer, QString const &query) :
