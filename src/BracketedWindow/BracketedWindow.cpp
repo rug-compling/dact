@@ -163,6 +163,7 @@ void BracketedWindow::createActions()
 	
     addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
 	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
+	addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);
 }
 
 void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
@@ -285,6 +286,11 @@ QStyledItemDelegate* BracketedWindow::colorDelegateFactory()
 QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory()
 {
 	return new BracketedVisibilityDelegate();
+}
+
+QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory()
+{
+	return new BracketedKeywordInContextDelegate();
 }
 
 EntryMapAndTransform::EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QSharedPointer<XSLTransformer> xslTransformer, QString const &query) :

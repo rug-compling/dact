@@ -8,11 +8,14 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::interpretSentence(QString con
     
     while ((pos = sentence.indexOf(QRegExp("\\[|\\]"), readTill)) != -1)
     {
+		// reading one char less on the left and right to omit the bracktes surrounding the match.
+		// @TODO use xml for this instead of silly brackets. Maybe even merge this parser with the
+		// one in DactTreeScene and keep theses parsed trees in memory to speed things up.
         chunks.append(Chunk(depth,
-			sentence.left(readTill),
+			sentence.left(readTill == 0 ? readTill : readTill - 1),
 			sentence.mid(readTill, pos - readTill),
-			sentence.mid(pos)));
-        
+			sentence.mid(pos + 1)));
+			
         readTill = pos + 1;
                 
         if (sentence[pos] == '[')
@@ -53,4 +56,9 @@ QString const &BracketedDelegate::Chunk::text() const
 QString const &BracketedDelegate::Chunk::right() const
 {
 	return d_right;
+}
+
+QString BracketedDelegate::Chunk::sentence() const
+{
+	return d_left + d_text + d_right;
 }

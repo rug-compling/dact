@@ -67,6 +67,7 @@ private:
 	
 	static QStyledItemDelegate* colorDelegateFactory();
 	static QStyledItemDelegate* visibilityDelegateFactory();
+	static QStyledItemDelegate* keywordInContextDelegateFactory();
 
     EntryMapAndTransform *d_entryMap;
     QString d_filter;

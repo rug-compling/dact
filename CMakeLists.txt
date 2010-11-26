@@ -79,6 +79,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
+  src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedWindow/BracketedWindow.cpp
   src/StatisticsWindow/StatisticsWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
