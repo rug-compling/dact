@@ -4,17 +4,6 @@
 #include <QList>
 #include <QStyledItemDelegate>
 
-class Chunk
-{
-    int d_depth;
-    QString d_text;
-    
-public:
-    Chunk(int depth, QString text) : d_depth(depth), d_text(text) {}
-    inline int depth() const { return d_depth; };
-    inline QString const &text() const { return d_text; };
-};
-
 class BracketedDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -22,6 +11,20 @@ public:
     BracketedDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
 
 protected:
+	class Chunk
+	{
+		int d_depth;
+		QString d_left;
+		QString d_text;
+		QString d_right;
+		
+	public:
+		Chunk(int depth, QString const &left, QString const &text, QString const &right);
+		int depth() const;
+		QString const &left() const;
+		QString const &text() const;
+		QString const &right() const;
+	};
     QList<Chunk> interpretSentence(QString const &sentence) const;
 };
 
