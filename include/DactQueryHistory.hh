@@ -3,7 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QCompleter>
-#include <QList>;
+#include <QList>
 
 class DactQueryHistory : public QAbstractListModel
 {
