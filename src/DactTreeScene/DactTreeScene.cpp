@@ -48,12 +48,12 @@ void DactTreeScene::parseTree(QString const &xml)
 	d_nodes[0]->layout();
 }
 
-QList<DactTreeNode*> const &DactTreeScene::nodes()
+QList<DactTreeNode*> const &DactTreeScene::nodes() const
 {
 	return d_nodes;
 }
 
-QList<DactTreeNode*> DactTreeScene::activeNodes()
+QList<DactTreeNode*> DactTreeScene::activeNodes() const
 {
     QList<DactTreeNode*> nodes;
     
@@ -87,8 +87,8 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
 			if (name == "node")
 			{
 				DactTreeNode* node = new DactTreeNode();
-				list.append(node);
-				
+				d_nodes.append(node);
+
 				// When this isn't the root-node, append it to it's parent.
 				if (!stack.isEmpty())
 					stack.top()->appendChild(node);

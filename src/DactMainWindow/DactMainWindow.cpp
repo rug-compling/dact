@@ -703,18 +703,18 @@ void DactMainWindow::focusTreeNode(int direction)
     {
         // nodeCount + offset + direction * i is positive for [0..nodeCount]
         // whichever the direction, and modulo nodeCount makes shure it wraps around.
-        DactTreeNode* node = nodes[(nodeCount + offset + direction * i) % nodeCount];
+        DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
         
-        if (node->isActive())
+        if (node.isActive())
         {
-            node->setFocus();
+            node.setFocus();
             
             // reset the matrix to undo the scale operation done by fitTree.
             // I don't like this yet, because it always resets the zoom.
             //d_ui->treeGraphicsView->setMatrix(QMatrix());
             
             // move the focus to the center of the focussed leaf
-            d_ui->treeGraphicsView->centerOn(node->mapToScene(node->leafRect().center()));
+            d_ui->treeGraphicsView->centerOn(node.mapToScene(node.leafRect().center()));
             break;
         }
     }
