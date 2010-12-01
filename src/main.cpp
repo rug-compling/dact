@@ -2,8 +2,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QApplication>
 #include <QtGui/QFont>
-
-#include <memory>
+#include <QScopedPointer>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -32,7 +31,7 @@ int main(int argc, char *argv[])
     // XPath
     xmlXPathInit();
 
-    std::auto_ptr<DactMainWindow> w(new DactMainWindow);
+    QScopedPointer<DactMainWindow> w(new DactMainWindow);
     w->show();
 
     if (qApp->arguments().size() == 2)
