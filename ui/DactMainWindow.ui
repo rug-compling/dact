@@ -199,7 +199,7 @@
     <string>Fit</string>
    </property>
    <property name="toolTip">
-    <string>Fit the tree to the tree view</string>
+    <string>Fit tree to tree view (Ctrl+F)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
@@ -214,10 +214,13 @@
      <normaloff>:/icons/viewmag+.png</normaloff>:/icons/viewmag+.png</iconset>
    </property>
    <property name="text">
-    <string>Zoom In</string>
+    <string>Zoom in</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom in on tree (Ctrl+=)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl++</string>
+    <string>Ctrl+=</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -229,7 +232,10 @@
      <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
    </property>
    <property name="text">
-    <string>Zoom Out</string>
+    <string>Zoom out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom out (Ctrl+-)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
@@ -244,7 +250,10 @@
      <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
    </property>
    <property name="text">
-    <string>Next Node</string>
+    <string>Next node</string>
+   </property>
+   <property name="toolTip">
+    <string>Next node (Ctrl+])</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+]</string>
@@ -259,7 +268,10 @@
      <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
    </property>
    <property name="text">
-    <string>Previous Node</string>
+    <string>Previous node</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous node (Ctrl+[)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+[</string>
@@ -311,6 +323,9 @@
    <property name="text">
     <string>Next</string>
    </property>
+   <property name="toolTip">
+    <string>Next sentence/tree (Ctrl+N)</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
@@ -325,6 +340,9 @@
    </property>
    <property name="text">
     <string>Previous</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous sentence/tree (Ctrl+P)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
