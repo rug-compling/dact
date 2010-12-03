@@ -20,7 +20,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "BracketedDelegates.hh";
+#include "BracketedDelegates.hh"
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.h"
 #include "XPathValidator.hh"
