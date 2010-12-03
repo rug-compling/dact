@@ -2,7 +2,6 @@
 #include <QtCore/QVariant>
 #include <QtGui/QApplication>
 #include <QtGui/QFont>
-#include <QScopedPointer>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -31,7 +30,7 @@ int main(int argc, char *argv[])
     // XPath
     xmlXPathInit();
 
-    QScopedPointer<DactMainWindow> w(new DactMainWindow);
+    DactMainWindow* w = new DactMainWindow;
     w->show();
 
     if (qApp->arguments().size() == 2)
@@ -39,8 +38,13 @@ int main(int argc, char *argv[])
 
     int r = a.exec();
 
+	// Delete the main window explicitly to force-stop all transformers and other
+	// xml operations. Otherwise commencing xml and xslt cleanup while they are
+	// still in use causes errors.
+	delete w;
+	
     xsltCleanupGlobals();
     xmlCleanupParser();
-
+	
     return r;
 }

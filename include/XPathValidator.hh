@@ -7,6 +7,10 @@
 
 #include "DactMacrosModel.h"
 
+/*!
+ This class is used by the QLineEdit widgets for xpath queries. It uses
+ the DactMacrosModel to support queries with macros in them.
+ */
 class XPathValidator : public QValidator
 {
     Q_OBJECT

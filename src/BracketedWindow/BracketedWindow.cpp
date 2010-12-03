@@ -42,6 +42,7 @@ BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
 {
     d_ui->setupUi(this);
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+	initListDelegates();
     initSentenceTransformer();
     createActions();
     readSettings();
@@ -160,10 +161,6 @@ void BracketedWindow::createActions()
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     
 	QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(listDelegateChanged(int)));
-	
-    addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
-	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
-	addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);
 }
 
 void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
@@ -207,6 +204,13 @@ void BracketedWindow::listDelegateChanged(int index)
 	}
 	
 	d_ui->resultsListWidget->setItemDelegate(d_listDelegateFactories[delegateIndex]());
+}
+
+void BracketedWindow::initListDelegates()
+{
+    addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
+	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
+	addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);	
 }
 
 void BracketedWindow::initSentenceTransformer()
@@ -263,7 +267,9 @@ void BracketedWindow::readSettings()
 	move(pos);
 	
 	// restore last selected display method
-	listDelegateChanged(settings.value("filter_list_delegate", 0).toInt());
+	int delegateIndex = settings.value("filter_list_delegate", 0).toInt();
+	listDelegateChanged(delegateIndex);
+	d_ui->listDelegateComboBox->setCurrentIndex(delegateIndex);
 }
 
 void BracketedWindow::writeSettings()
