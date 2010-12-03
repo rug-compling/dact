@@ -57,13 +57,6 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_treeScene(0),
 	d_queryHistory(0)
 {
-    init();
-}
-
-void DactMainWindow::init()
-{
-    // the code shared by both the constructors.
-    
 	d_ui->setupUi(this);
     
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
@@ -79,7 +72,11 @@ void DactMainWindow::init()
 	d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
     */
     readSettings();
-    createTransformers();
+    
+	initSentenceTransformer();
+	
+    initTreeTransformer();
+	
     createActions();    
 }
 
@@ -125,11 +122,6 @@ void DactMainWindow::addFiles()
     }
 }
 
-void DactMainWindow::allEntriesFound()
-{
-    this->statusBar()->showMessage("Finished filtering entries...", 3000);
-}
-
 void DactMainWindow::bracketedEntryActivated()
 {
     setHighlight(d_bracketedWindow->filter());
@@ -141,26 +133,6 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 {
     showFile(entry);
 	focusFitTree();
-}
-
-QString DactMainWindow::sentenceForFile(QString const &filename, QString const &query)
-{
-    // Read XML data.
-    if (d_corpusReader.isNull())
-        throw runtime_error("DactMainWindow::sentenceForFile CorpusReader not available");
-
-    QString xml = d_corpusReader->read(filename);
-
-    if (xml.size() == 0)
-        throw runtime_error("DactMainWindow::sentenceForFile: empty XML data!");
-
-    // Parameters
-    QString valStr = query.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + query + QString("'");
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-
-    return d_sentenceTransformer->transform(xml, params).trimmed();
 }
 
 void DactMainWindow::applyValidityColor(QString const &)
@@ -284,20 +256,12 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusPreviousTreeNode(bool)));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
     QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
-    QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));  
-
-    QObject::connect(d_ui->showSentencesInFileList, SIGNAL(toggled(bool)), this, SLOT(toggleSentencesInFileList(bool)));
+    QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
 }
 
 void DactMainWindow::corpusOpenTick()
 {
     d_openProgressDialog->setProgress(d_corpusReader->entries().size());
-}
-
-void DactMainWindow::createTransformers()
-{
-    initSentenceTransformer();
-    initTreeTransformer();
 }
 
 void DactMainWindow::entryFound(QString entry)
@@ -605,12 +569,6 @@ void DactMainWindow::writeSettings()
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
 }
 
-void DactMainWindow::toggleSentencesInFileList(bool show)
-{
-    d_ui->showSentencesInFileList->setChecked(show);
-    filterChanged();
-}
-
 void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
 {
     QString sentence = d_sentenceTransformer->transform(xml, params).trimmed();
@@ -621,6 +579,8 @@ void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> co
 
 void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
 {
+	// @TODO why is the scene recreated for every tree, and not just cleared and reused?
+	// (well, currently because calling parseTree twice will cause a segfault)
     if (d_treeScene)
         delete d_treeScene;
     
