@@ -60,6 +60,7 @@ private:
 	void addListDelegate(QString const &name, QStyledItemDelegate*(*factory)());
 	void updateResults();
     void createActions();
+	void initListDelegates();
     void initSentenceTransformer();
     void readSettings();
     void writeSettings();
