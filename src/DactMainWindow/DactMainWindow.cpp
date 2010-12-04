@@ -440,9 +440,6 @@ void DactMainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
-    // XXX Very ugly hack to ".dbxml" files working; breaks .data.gz
-    corpusPath.chop(6);
-    
     readCorpus(corpusPath);
 }
 
