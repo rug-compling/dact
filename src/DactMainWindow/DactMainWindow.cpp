@@ -440,6 +440,8 @@ void DactMainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
+    corpusPath.chop(8);
+    
     readCorpus(corpusPath);
 }
 
