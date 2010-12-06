@@ -1,9 +1,9 @@
 # Find the Oracle Berkeley DB XML library and its requirements
 
-find_library(XQILLA_LIBRARY names xqilla libxqilla.so PATH ${DBXML_PREFIX}/lib)
-find_library(XERCES_LIBRARY names xerces-c libxerces-c.so PATH ${DBXML_PREFIX}/lib)
-find_library(DBXML_LIBRARY names dbxml libdbxml.so PATH ${DBXML_PREFIX}/lib)
-find_library(DBCXX_LIBRARY names db_cxx lib_dbcxx.so PATH ${DBXML_PREFIX}/lib)
+find_library(XQILLA_LIBRARY NAMES xqilla)
+find_library(XERCES_LIBRARY NAMES xerces-c)
+find_library(DBXML_LIBRARY NAMES dbxml)
+find_library(DBCXX_LIBRARY NAMES db_cxx)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(DBXML DEFAULT_MSG DBXML_LIBRARY)
