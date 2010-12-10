@@ -26,61 +26,40 @@
   <xsl:variable name="selectedNodes" select="saxon:evaluate($newexpr)" />
 
   <xsl:template name="node-active">
-    <xsl:attribute name="active">
       <xsl:choose>
         <xsl:when test="set:intersection($selectedNodes, .)">
           <xsl:text>yes</xsl:text>
         </xsl:when>
       </xsl:choose>
-    </xsl:attribute>
   </xsl:template>
 
   <xsl:template match="/">
-    <xsl:apply-templates select="/alpino_ds/node"/>
+    <xsl:apply-templates select="/alpino_ds/node[not(@pt='let')]"/>
   </xsl:template>
 
   <!-- Interior nodes -->
   <xsl:template match="node[node]">
     <node>
-      <xsl:call-template name="node-active" />
+      <xsl:attribute name="active">
+        <xsl:call-template name="node-active" />
+      </xsl:attribute>
       <xsl:copy-of select="@*"/>
-      <line>
-        <xsl:value-of select="@rel"/>
-      </line>
-      <line>
-        <xsl:value-of select="@index"/>
-        <xsl:if test = "@index and (@cat|@pt)">
-          <xsl:text>:</xsl:text>
-        </xsl:if>
-        <xsl:value-of select="@cat|@pt"/>
-      </line>
-      <xsl:apply-templates select="node"/>
+      <xsl:apply-templates select="node[not(@pt='let')]"/>
     </node>
   </xsl:template>
 
   <!-- Leaf nodes -->
   <xsl:template match="node">
     <node>
-      <xsl:call-template name="node-active" />
+      <xsl:attribute name="active">
+        <xsl:call-template name="node-active" />
+      </xsl:attribute>
       <xsl:copy-of select="@*"/>
-      <line>
-        <xsl:value-of select="@rel"/>
-      </line>
-      <line>
-        <xsl:value-of select="@index"/>
-        <xsl:if test = "@index and (@cat|@pt)">
-          <xsl:text>:</xsl:text>
-        </xsl:if>
-        <xsl:value-of select="@cat|@pt"/>
-      </line>
-      <line>
-        <xsl:value-of select="@lemma"/>
-      </line>
-      <hoverLine>
-        <xsl:value-of select="@postag" />
-      </hoverLine>
+      <word><xsl:value-of select="@root"/></word>
+	  <xsl:variable name="end" select="@end"/>
+	  <xsl:for-each select="//node[@pt='let' and @begin=$end]">
+		<punct><xsl:value-of select="@root"/></punct>
+	  </xsl:for-each>
     </node>
   </xsl:template>
 </xsl:stylesheet>
-
-
