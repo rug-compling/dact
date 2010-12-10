@@ -1,6 +1,6 @@
 #include "BracketedDelegates.hh"
 
-QList<BracketedDelegate::Chunk> BracketedDelegate::interpretSentence(QString const &sentence) const
+QList<BracketedDelegate::Chunk> BracketedDelegate::parseSentence(QString const &sentence) const
 {
     QList<Chunk> chunks;
     QRegExp brackets("\\[|\\]");

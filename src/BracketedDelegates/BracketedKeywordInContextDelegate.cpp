@@ -9,19 +9,24 @@
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QList<Chunk> chunks(interpretSentence(index.data().toString()));
+    QList<Chunk> chunks(parseSentence(index.data().toString()));
 	QSize lineBox;
 	
 	int previousDepth = 0;
-	int lineCount = 0;
 	
 	foreach (Chunk chunk, chunks)
 	{
 		bool skip = false;
 		
+		// if this chunk comes after a submatch (a chunk at a deeper level)
+		// than we can ignore this chunk because we already printed it at
+		// the start. (@TODO we did, did we?)
 		if (chunk.depth() <= previousDepth)
 			skip = true;
 		
+		// If it is empty, there is no real use printing it.
+		// (It's only empty in cases like the chunk between the first and
+		// second opening bracket in "I [[love]] peanutbutter".
 		if (chunk.text().isEmpty())
 			skip = true;
 		
@@ -29,8 +34,6 @@ QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &op
 		
 		if (skip)
 			continue;
-		
-		++lineCount;
 		
 		previousDepth = chunk.depth();
 		
@@ -45,27 +48,12 @@ QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &op
     return lineBox;
 }
 
-BracketedDelegate::Chunk &BracketedKeywordInContextDelegate::chooseChunk(QList<Chunk> &chunks) const
-{
-	Chunk *chunk = &chunks[0];
-	int i = 0;
-	while (i++ < chunks.size())
-	{
-		if (chunk->depth() > 0 && !chunk->text().isEmpty())
-			break;
-		
-		chunk = &chunks[i];
-	}
-	
-	return *chunk;
-}
-
 void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    QList<Chunk> chunks(interpretSentence(index.data().toString()));
+    QList<Chunk> chunks(parseSentence(index.data().toString()));
     QRectF textBox(option.rect);
     
 	QBrush brush(option.state & QStyle::State_Selected
@@ -76,6 +64,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 	
 	foreach (Chunk chunk, chunks)
 	{
+		// Indeed, this is copy-pastework from ~20
 		bool skip = false;
 		
 		if (chunk.depth() <= previousDepth)
@@ -89,6 +78,24 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 		if (skip)
 			continue;
 		
+		/*
+		          This is [my sentence] for now
+		      and this is [my other sentence] also
+		  leftContentBox |---matchBox--|-----| rightContentBox
+		|--------------------textBox---------------------------|
+		 
+	    leftContentBox has a static width,
+		matchBox is moved $that_static_width to the right, and gets
+		its dimensions once drawn. rightContentBox is then moved
+		$that_static_width + $just_drawn_text_width to the right
+		and is drawn. Width of this box doen't really matter,
+		sizeHint determines the area that is shown.
+		textBox is the box that is used to draw a line, and is then
+		moved one line downwards to draw the next one. sizeHint is
+		quite important here since we are allowed to draw on other
+		ListItems.
+		*/
+		 
 		QRectF leftContextBox(textBox);
 		leftContextBox.setWidth(400);
 		
@@ -99,7 +106,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 		
 		painter->save();
 		
-		painter->setPen(QColor(Qt::darkGray));
+		painter->setPen(QColor(Qt::darkGray)); // @TODO make colors changealbe in preferences
 		painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
 		
 		QRectF usedSpace;
@@ -107,13 +114,13 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 		painter->drawText(matchBox, Qt::AlignLeft, chunk.fullText(), &usedSpace);
 		
 		rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
-		//rightContextBox.setWidth(400000);
 		
 		painter->setPen(QColor(Qt::darkGray));
 		painter->drawText(rightContextBox, Qt::AlignLeft, chunk.remainingRight());
 		
 		painter->restore();
 		
+		// move textBox one line lower.
 		textBox.setTop(textBox.top() + usedSpace.height());
 	}
 }
