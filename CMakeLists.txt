@@ -76,25 +76,25 @@ add_custom_command(
 
 # Dact sources
 SET(dact_SRCS
-  src/AboutWindow/AboutWindow.cpp
-  src/DactMainWindow/DactMainWindow.cpp
+  src/AboutWindow.cpp
+  src/DactMainWindow.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
-  src/BracketedWindow/BracketedWindow.cpp
-  src/StatisticsWindow/StatisticsWindow.cpp
-  src/DactMacrosWindow/DactMacrosWindow.cpp
-  src/DactMacrosModel/DactMacrosModel.cpp
-  src/DactQueryHistory/DactQueryHistory.cpp
-  src/OpenProgressDialog/OpenProgressDialog.cpp  
-  src/DactTreeScene/DactTreeScene.cpp
-  src/PercentageCellDelegate/PercentageCellDelegate.cpp
-  src/PreferencesWindow/PreferencesWindow.cpp
-  src/XPathFilter/XPathFilter.cpp
-  src/XPathMapper/XPathMapper.cpp
-  src/XPathValidator/XPathValidator.cpp
-  src/XSLTransformer/XSLTransformer.cpp
+  src/BracketedWindow.cpp
+  src/StatisticsWindow.cpp
+  src/DactMacrosWindow.cpp
+  src/DactMacrosModel.cpp
+  src/DactQueryHistory.cpp
+  src/OpenProgressDialog.cpp  
+  src/DactTreeScene.cpp
+  src/PercentageCellDelegate.cpp
+  src/PreferencesWindow.cpp
+  src/XPathFilter.cpp
+  src/XPathMapper.cpp
+  src/XPathValidator.cpp
+  src/XSLTransformer.cpp
   src/main.cpp
 )
 
