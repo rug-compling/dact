@@ -51,6 +51,8 @@ public:
 	*/
     void readCorpus(QString const &corpusPath);
 
+    bool readAndShowFiles(QString const &path);
+
 public slots:
 	/*!
 	 Hide the main window
@@ -467,13 +469,6 @@ private:
     QSharedPointer<XPathValidator> d_xpathValidator;
 	
 	/*!
-	 Since opening a large corpus takes some time (especially a directory corpus)
-	 defer it using QConcurrent and store its promise.
-	 \sa readCorpus
-	 */
-    QFuture<bool> d_corpusOpenFuture;
-	
-	/*!
 	 While opening a corpus, we present a progress dialog. This is the
 	 timer used in polling the corpus reader on its progress.
 	 \sa corpusOpenTick
@@ -484,7 +479,7 @@ private:
 	 \sa d_corpusOpenFuture
 	 \sa corpusRead
 	 */
-    QFutureWatcher<bool> d_corpusOpenWatcher;
+    QFutureWatcher<void> d_corpusOpenWatcher;
 	
 	/*!
 	 Currently loaded corpus. Shared between all the windows that might need

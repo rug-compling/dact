@@ -440,10 +440,6 @@ void DactMainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
-    // Remove .data.dz extension. We do not want to display the extension
-    // in the title bar.
-    //corpusPath.chop(8);
-    
     readCorpus(corpusPath);
 }
 
@@ -505,8 +501,6 @@ void DactMainWindow::print()
 
 void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
-    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
-
     stopMapper();
 
     if (d_corpusOpenWatcher.isRunning()) {
@@ -519,19 +513,29 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 
     d_openProgressDialog->open();
 
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(corpusPath));
     d_corpusOpenTimer.start(250);
-    d_corpusOpenFuture = QtConcurrent::run(d_corpusReader.data(), &CorpusReader::open);
-    d_corpusOpenWatcher.setFuture(d_corpusOpenFuture);
+    QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &DactMainWindow::readAndShowFiles, corpusPath);
+    d_corpusOpenWatcher.setFuture(corpusOpenFuture);
+}
+
+bool DactMainWindow::readAndShowFiles(QString const &path)
+{
+    try {
+        d_corpusReader = QSharedPointer<CorpusReader>(
+            CorpusReader::newCorpusReader(path));
+        addFiles();
+    } catch (std::runtime_error const &e) {
+        // TODO display a nice error window here
+        return false;
+    }
+
+    return true;
 }
 
 void DactMainWindow::corpusRead(int idx)
 {
     d_corpusOpenTimer.stop();
     d_openProgressDialog->accept();
-
-    addFiles();
 
     if(d_bracketedWindow != 0)
         d_bracketedWindow->switchCorpus(d_corpusReader);
