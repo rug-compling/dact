@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(DACT)
 
+set(CMAKE_CXX_FLAGS "-pthread")
+
 if(APPLE)
   set(PROGNAME Dact)
   set (CMAKE_OSX_ARCHITECTURES "i386;x86_64")
