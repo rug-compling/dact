@@ -9,7 +9,43 @@
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return option.fontMetrics.size(Qt::TextSingleLine, index.data().toString());
+    QList<Chunk> chunks(parseSentence(index.data().toString()));
+	QSize lineBox;
+	
+	int previousDepth = 0;
+	
+	foreach (Chunk chunk, chunks)
+	{
+		bool skip = false;
+		
+		// if this chunk comes after a submatch (a chunk at a deeper level)
+		// than we can ignore this chunk because we already printed it at
+		// the start. (@TODO we did, did we?)
+		if (chunk.depth() <= previousDepth)
+			skip = true;
+		
+		// If it is empty, there is no real use printing it.
+		// (It's only empty in cases like the chunk between the first and
+		// second opening bracket in "I [[love]] peanutbutter".
+		if (chunk.text().isEmpty())
+			skip = true;
+		
+		previousDepth = chunk.depth();
+		
+		if (skip)
+			continue;
+		
+		previousDepth = chunk.depth();
+		
+		QSize textBox = option.fontMetrics.size(Qt::TextSingleLine, chunk.text() + chunk.right());
+		lineBox.setHeight(lineBox.height() + textBox.height());
+		if (textBox.width() > lineBox.width())
+			lineBox.setWidth(textBox.width());
+	}
+	
+	lineBox.setWidth(lineBox.width() + 400);
+	
+    return lineBox;
 }
 
 void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -17,48 +53,74 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    QList<Chunk> chunks(interpretSentence(index.data().toString()));
+    QList<Chunk> chunks(parseSentence(index.data().toString()));
     QRectF textBox(option.rect);
     
 	QBrush brush(option.state & QStyle::State_Selected
 				 ? option.palette.highlightedText()
 				 : option.palette.text());
 	
-	Chunk chunk(chunks[0]);
-	int i = 1;
-	while (true)
+	int previousDepth = 0;
+	
+	foreach (Chunk chunk, chunks)
 	{
-		if (chunks.size() < i)
-			break;
+		// Indeed, this is copy-pastework from ~20
+		bool skip = false;
 		
-		if (chunk.depth() > 0 && !chunk.text().isEmpty())
-			break;
+		if (chunk.depth() <= previousDepth)
+			skip = true;
 		
-		chunk = chunks[i++];
+		if (chunk.text().isEmpty())
+			skip = true;
+		
+		previousDepth = chunk.depth();
+		
+		if (skip)
+			continue;
+		
+		/*
+		          This is [my sentence] for now
+		      and this is [my other sentence] also
+		  leftContentBox |---matchBox--|-----| rightContentBox
+		|--------------------textBox---------------------------|
+		 
+	    leftContentBox has a static width,
+		matchBox is moved $that_static_width to the right, and gets
+		its dimensions once drawn. rightContentBox is then moved
+		$that_static_width + $just_drawn_text_width to the right
+		and is drawn. Width of this box doen't really matter,
+		sizeHint determines the area that is shown.
+		textBox is the box that is used to draw a line, and is then
+		moved one line downwards to draw the next one. sizeHint is
+		quite important here since we are allowed to draw on other
+		ListItems.
+		*/
+		 
+		QRectF leftContextBox(textBox);
+		leftContextBox.setWidth(400);
+		
+		QRectF matchBox(textBox);
+		matchBox.moveLeft(matchBox.left() + leftContextBox.width());
+		
+		QRectF rightContextBox(textBox);
+		
+		painter->save();
+		
+		painter->setPen(QColor(Qt::darkGray)); // @TODO make colors changealbe in preferences
+		painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
+		
+		QRectF usedSpace;
+		painter->setPen(QColor(Qt::black));
+		painter->drawText(matchBox, Qt::AlignLeft, chunk.fullText(), &usedSpace);
+		
+		rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
+		
+		painter->setPen(QColor(Qt::darkGray));
+		painter->drawText(rightContextBox, Qt::AlignLeft, chunk.remainingRight());
+		
+		painter->restore();
+		
+		// move textBox one line lower.
+		textBox.setTop(textBox.top() + usedSpace.height());
 	}
-	
-	QRectF leftContextBox(textBox);
-	leftContextBox.setWidth(400);
-	
-	QRectF matchBox(textBox);
-	matchBox.setLeft(matchBox.left() + leftContextBox.width());
-	
-	QRectF rightContextBox(textBox);
-	
-	painter->save();
-	
-	painter->setPen(QColor(Qt::darkGray));
-	painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
-	
-	QRectF usedSpace;
-	painter->setPen(QColor(Qt::black));
-	painter->drawText(matchBox, Qt::AlignLeft, chunk.text(), &usedSpace);
-	
-	rightContextBox.setLeft(rightContextBox.left() + 400 + usedSpace.width());
-	rightContextBox.setWidth(400000);
-	
-	painter->setPen(QColor(Qt::darkGray));
-	painter->drawText(rightContextBox, Qt::AlignLeft, chunk.right());
-	
-	painter->restore();
 }

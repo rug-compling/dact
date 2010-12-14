@@ -440,6 +440,10 @@ void DactMainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
+    // Remove .data.dz extension. We do not want to display the extension
+    // in the title bar.
+    corpusPath.chop(8);
+    
     readCorpus(corpusPath);
 }
 
