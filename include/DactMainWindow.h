@@ -400,12 +400,6 @@ private:
     StatisticsWindow *d_statisticsWindow;
     
 	/*!
-	 Path to the corpus, set by readCorpus. Not really used at the moment.
-	 \sa readCorpus
-	 */
-    QString d_corpusPath;
-	
-	/*!
 	 The XPath query currently used to highlight nodes in the tree scene.
 	 */
     QString d_highlight;

@@ -442,7 +442,7 @@ void DactMainWindow::openCorpus()
 
     // Remove .data.dz extension. We do not want to display the extension
     // in the title bar.
-    corpusPath.chop(8);
+    //corpusPath.chop(8);
     
     readCorpus(corpusPath);
 }
@@ -505,9 +505,7 @@ void DactMainWindow::print()
 
 void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
-    d_corpusPath = corpusPath;
-    
-    this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
+    this->setWindowTitle(QString("Dact - %1").arg(corpusPath));
 
     stopMapper();
 
@@ -522,7 +520,7 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
     d_openProgressDialog->open();
 
     d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
+        CorpusReader::newCorpusReader(corpusPath));
     d_corpusOpenTimer.start(250);
     d_corpusOpenFuture = QtConcurrent::run(d_corpusReader.data(), &CorpusReader::open);
     d_corpusOpenWatcher.setFuture(d_corpusOpenFuture);
