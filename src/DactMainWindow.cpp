@@ -99,26 +99,24 @@ void DactMainWindow::addFiles()
 
     d_ui->fileListWidget->clear();
 
-    QVector<QString> entries;
-
     try {
-        if (d_filter.isEmpty())
-            entries = d_corpusReader->entries();
-        else {
+        if (!d_filter.isEmpty()) {
             d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_filter), &d_entryMap);
             return;
         }
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error reading corpus"),
-            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-        return;
-    }
 
-    for (QVector<QString>::const_iterator iter = entries.begin();
-    iter != entries.end(); ++iter)
-    {
-        QListWidgetItem *item = new QListWidgetItem(*iter, d_ui->fileListWidget);
-        item->setData(Qt::UserRole, *iter);
+        for (CorpusReader::EntryIterator i(d_corpusReader->begin()),
+                                         end(d_corpusReader->end());
+             i != end; ++i) {
+            QListWidgetItem *item = new QListWidgetItem(*i,
+                                                        d_ui->fileListWidget);
+            item->setData(Qt::UserRole, *i);
+        }
+    } catch (std::runtime_error const &e) {
+        QMessageBox::critical(this, QString("Error reading corpus"),
+                              QString("Could not read corpus: %1.")
+                                .arg(e.what()));
+        return;
     }
 }
 
