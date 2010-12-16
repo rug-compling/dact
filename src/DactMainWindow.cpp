@@ -519,8 +519,7 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 bool DactMainWindow::readAndShowFiles(QString const &path)
 {
     try {
-        d_corpusReader = QSharedPointer<CorpusReader>(
-            CorpusReader::newCorpusReader(path));
+        d_corpusReader = QSharedPointer<CorpusReader>(CorpusReader::open(path));
         addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here
