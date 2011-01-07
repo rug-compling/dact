@@ -88,6 +88,7 @@ SET(dact_SRCS
   src/DactQueryHistory/DactQueryHistory.cpp
   src/OpenProgressDialog/OpenProgressDialog.cpp  
   src/DactTreeScene/DactTreeScene.cpp
+  src/DactTreeView.cpp
   src/PercentageCellDelegate/PercentageCellDelegate.cpp
   src/PreferencesWindow/PreferencesWindow.cpp
   src/XPathFilter/XPathFilter.cpp
@@ -109,6 +110,7 @@ SET(dact_MOC_HDRS
   include/DactQueryHistory.hh
   include/OpenProgressDialog.hh
   include/DactTreeScene.h
+  include/DactTreeView.h
   include/PercentageCellDelegate.h
   include/PreferencesWindow.hh
   include/XPathFilter.hh
