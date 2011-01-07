@@ -3,7 +3,7 @@ project(DACT)
 
 if(APPLE)
   set(PROGNAME Dact)
-  set (CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+  set (CMAKE_OSX_ARCHITECTURES "x86_64")
   set (CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
 else(APPLE)
 set(PROGNAME dact)
@@ -81,6 +81,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedWindow/BracketedWindow.cpp
+  src/DactListWidget.cpp
   src/StatisticsWindow/StatisticsWindow.cpp
   src/DactMacrosWindow/DactMacrosWindow.cpp
   src/DactMacrosModel/DactMacrosModel.cpp
@@ -102,6 +103,7 @@ SET(dact_MOC_HDRS
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
+  include/DactListWidget.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/DactQueryHistory.hh
