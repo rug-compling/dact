@@ -434,7 +434,7 @@ void DactMainWindow::nextEntry(bool)
 void DactMainWindow::openCorpus()
 {
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        "*.data.dz;;*.dbxml");
+        "*.dbxml;;*.data.dz");
     if (corpusPath.isNull())
         return;
 
