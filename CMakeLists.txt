@@ -110,7 +110,7 @@ SET(dact_MOC_HDRS
   include/DactQueryHistory.hh
   include/OpenProgressDialog.hh
   include/DactTreeScene.h
-  include/DactTreeView.h
+  include/dacttreeview.h
   include/PercentageCellDelegate.h
   include/PreferencesWindow.hh
   include/XPathFilter.hh
