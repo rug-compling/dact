@@ -92,6 +92,7 @@ SET(dact_SRCS
   src/DactQueryHistory.cpp
   src/OpenProgressDialog.cpp  
   src/DactTreeScene.cpp
+  src/DactTreeView.cpp
   src/PercentageCellDelegate.cpp
   src/PreferencesWindow.cpp
   src/XPathFilter.cpp
