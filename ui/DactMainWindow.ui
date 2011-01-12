@@ -71,7 +71,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QGraphicsView" name="treeGraphicsView">
+         <widget class="DactTreeView" name="treeGraphicsView">
           <property name="dragMode">
            <enum>QGraphicsView::ScrollHandDrag</enum>
           </property>
