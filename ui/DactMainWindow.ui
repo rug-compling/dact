@@ -118,6 +118,7 @@
     </property>
     <addaction name="openAction"/>
     <addaction name="openDirectoryAction"/>
+    <addaction name="saveCorpus"/>
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
     <addaction name="separator"/>
@@ -409,6 +410,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="saveCorpus">
+   <property name="text">
+    <string>Save corpus…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="preferencesAction">

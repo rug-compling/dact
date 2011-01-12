@@ -27,6 +27,8 @@
 #include <stdexcept>
 
 #include <AlpinoCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
 #include <DactMainWindow.h>
@@ -42,6 +44,7 @@
 #include <XSLTransformer.hh>
 #include <ui_DactMainWindow.h>
 
+namespace ac = alpinocorpus;
 using namespace alpinocorpus;
 using namespace std;
 
@@ -240,6 +243,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
+    QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(saveCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -259,7 +263,7 @@ void DactMainWindow::createActions()
 
 void DactMainWindow::corpusOpenTick()
 {
-    d_openProgressDialog->setProgress(d_corpusReader->entries().size());
+    //d_openProgressDialog->setProgress(d_corpusReader->entries().size());
 }
 
 void DactMainWindow::entryFound(QString entry)
@@ -556,6 +560,18 @@ void DactMainWindow::readSettings()
 
     // Move.
     move(pos);
+}
+
+void DactMainWindow::saveCorpus()
+{
+    QString filename(QFileDialog::getSaveFileName(this, "Save selection",
+                                                  QString(), "*.dbxml"));
+    if (!filename.isNull() && d_corpusReader)
+        try {
+            ac::DbCorpusWriter(filename, true).write(*d_corpusReader);
+        } catch (ac::Error const &e) {
+            // TODO: display error window
+        }
 }
 
 void DactMainWindow::writeSettings()

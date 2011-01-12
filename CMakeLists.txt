@@ -39,6 +39,9 @@ if(ALPINOCORPUS_FOUND)
 endif(ALPINOCORPUS_FOUND)
 
 find_package(DBXML REQUIRED)
+if (DBXML_FOUND)
+  include_directories(${DBXML_INCLUDE_DIR})
+endif()
 
 find_package(Iconv REQUIRED)
 if(ICONV_FOUND)

@@ -241,7 +241,14 @@ private slots:
 	 Resets the zoom matrix for the tree scene. 1px is 1px again.
 	 */
 	void resetTreeZoom();
-	
+
+    /*!
+     * Save currently opened corpus to DBXML file (filename obtained from
+     * dialog window).
+     * XXX: should save current selection rather than entire corpus.
+     */
+    void saveCorpus();
+
 	/*!
 	 Changes the filter query field used to filter the file list and calls
 	 filterChanged. Used to set the filter from one of the child windows.
