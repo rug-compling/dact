@@ -568,8 +568,9 @@ void DactMainWindow::saveCorpus()
     if (!filename.isNull() && d_corpusReader)
         try {
             ac::DbCorpusWriter(filename, true).write(*d_corpusReader);
-        } catch (ac::Error const &e) {
-            // TODO: display error window
+        } catch (std::runtime_error const &e) {
+            QMessageBox::critical(this, QString("Error in saving corpus"),
+                                  e.what());
         }
 }
 
