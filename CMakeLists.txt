@@ -107,7 +107,7 @@ SET(dact_MOC_HDRS
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
-  include/DactListWidget.h
+  include/dactlistwidget.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/DactQueryHistory.hh
