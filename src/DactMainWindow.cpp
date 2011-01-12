@@ -45,8 +45,6 @@
 #include <ui_DactMainWindow.h>
 
 namespace ac = alpinocorpus;
-using namespace alpinocorpus;
-using namespace std;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -108,8 +106,8 @@ void DactMainWindow::addFiles()
             return;
         }
 
-        for (CorpusReader::EntryIterator i(d_corpusReader->begin()),
-                                         end(d_corpusReader->end());
+        for (ac::CorpusReader::EntryIterator i(d_corpusReader->begin()),
+                                             end(d_corpusReader->end());
              i != end; ++i) {
             QListWidgetItem *item = new QListWidgetItem(*i,
                                                         d_ui->fileListWidget);
@@ -333,7 +331,7 @@ void DactMainWindow::showFile(QString const &filename)
             }
         }
         
-    } catch(runtime_error &e) {
+    } catch (std::runtime_error const &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
@@ -523,7 +521,8 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 bool DactMainWindow::readAndShowFiles(QString const &path)
 {
     try {
-        d_corpusReader = QSharedPointer<CorpusReader>(CorpusReader::open(path));
+        d_corpusReader =
+            QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
         addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here

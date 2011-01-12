@@ -35,9 +35,6 @@
 #include <libxml/tree.h>
 #include <libxml/xmlIO.h>
 
-using namespace alpinocorpus;
-using namespace std;
-
 StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
@@ -131,7 +128,7 @@ void StatisticsWindow::updateResults()
     	startMapper();
     	
     	return;
-    } catch (runtime_error &e) {
+    } catch (std::runtime_error const &e) {
     	QMessageBox::critical(this, QString("Error calculating"),
     	    QString("Could not start searching: %1").arg(e.what()));
     }
@@ -163,7 +160,7 @@ void StatisticsWindow::attributeFound(QString value)
     	row->setValue(hits);
     	
     	updateResultsTotalCount();		
-    } catch (runtime_error &e) {
+    } catch (std::runtime_error const &e) {
     	qWarning() << QString("StatisticsWindow::attributeFound: Could not add result to table: %1").arg(e.what());
     }
 }
@@ -375,7 +372,7 @@ void StatisticsWindow::readNodeAttributes()
           if (attr->type == XML_ATTRIBUTE_DECL)
               attrs.push_back(reinterpret_cast<char const *>(attr->name));
 
-    sort(attrs.begin(), attrs.end());
+    std::sort(attrs.begin(), attrs.end());
 
     d_ui->attributeComboBox->addItems(attrs);
 

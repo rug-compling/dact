@@ -14,9 +14,6 @@
 
 #include "XPathMapper.hh"
 
-using namespace std;
-using namespace alpinocorpus;
-
 XPathMapper::XPathMapper() {}
 
 void XPathMapper::cancel()

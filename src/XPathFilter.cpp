@@ -13,9 +13,6 @@
 
 #include "XPathFilter.hh"
 
-using namespace std;
-using namespace alpinocorpus;
-
 XPathFilter::XPathFilter(QString const &xpathQuery)
 {
     d_xpathQuery = xpathQuery.toUtf8();
