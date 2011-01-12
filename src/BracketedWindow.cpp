@@ -203,7 +203,9 @@ void BracketedWindow::listDelegateChanged(int index)
 		return;
 	}
 	
+	QAbstractItemDelegate* prevItemDelegate = d_ui->resultsListWidget->itemDelegate();
 	d_ui->resultsListWidget->setItemDelegate(d_listDelegateFactories[delegateIndex]());
+	delete prevItemDelegate;
 }
 
 void BracketedWindow::initListDelegates()

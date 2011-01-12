@@ -35,7 +35,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QListWidget" name="resultsListWidget"/>
+    <widget class="DactListWidget" name="resultsListWidget"/>
    </item>
    <item>
     <widget class="QProgressBar" name="filterProgressBar">
