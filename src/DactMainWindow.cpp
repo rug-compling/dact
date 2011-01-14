@@ -261,7 +261,7 @@ void DactMainWindow::createActions()
 
 void DactMainWindow::corpusOpenTick()
 {
-    //d_openProgressDialog->setProgress(d_corpusReader->entries().size());
+    d_openProgressDialog->setProgress(d_corpusReader->size());
 }
 
 void DactMainWindow::entryFound(QString entry)

@@ -56,47 +56,4 @@ private:
     QString d_attribute;
 };
 
-
-template <typename T>
-T XPathFilter::fold(alpinocorpus::CorpusReader *reader,
-    filter_function<T*, QString const &, xmlXPathObjectPtr, void> *fun)
-{
-    T result;
-
-    QVector<QString> corpusEntries(reader->entries());
-    for (QVector<QString>::const_iterator iter = corpusEntries.constBegin();
-        iter != corpusEntries.constEnd(); ++iter)
-    {
-        // Parse XML data...
-        QString xmlStr(reader->read(*iter));
-        QByteArray xmlData(xmlStr.toUtf8());
-        xmlDocPtr doc = xmlParseMemory(xmlData.constData(), xmlData.size());
-        if (!doc)
-            throw std::runtime_error("XPathFilter::filter: could not parse XML data.");
-
-        // Parse XPath query
-        xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
-        if (!ctx) {
-            xmlFreeDoc(doc);
-            throw std::runtime_error("XPathFilter::filter: could not construct XPath context.");
-        }
-
-        xmlXPathObjectPtr xpathObj = xmlXPathEvalExpression(
-            reinterpret_cast<xmlChar const *>(d_xpathQuery.constData()), ctx);
-        if (!xpathObj) {
-            xmlXPathFreeContext(ctx);
-            xmlFreeDoc(doc);
-            throw std::runtime_error("XPathFilter::filter: could not evaluate XPath expression.");
-        }
-
-        (*fun)(&result, *iter, xpathObj);
-
-        xmlXPathFreeObject(xpathObj);
-        xmlXPathFreeContext(ctx);
-        xmlFreeDoc(doc);
-    }
-
-    return result;
-}
-
 #endif // XPATH_FILTER_HH
