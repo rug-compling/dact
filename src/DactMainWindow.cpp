@@ -322,6 +322,10 @@ void DactMainWindow::showFile(QString const &filename)
         // I try to find my file back in the file list to keep the list
         // in sync with the treegraph since showFile can be called from
         // the child dialogs.
+        
+        // TODO: disabled this for now because it messes up the selection
+        // when deselecting files by ctrl/cmd-clicking on them.
+        /*
         QListWidgetItem *item;
         for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
             item = d_ui->fileListWidget->item(i);
@@ -330,6 +334,7 @@ void DactMainWindow::showFile(QString const &filename)
                 break;
             }
         }
+        */
         
     } catch (std::runtime_error const &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
@@ -567,7 +572,23 @@ void DactMainWindow::saveCorpus()
                                                   QString(), "*.dbxml"));
     if (!filename.isNull() && d_corpusReader)
         try {
-            ac::DbCorpusWriter(filename, true).write(*d_corpusReader);
+            ac::DbCorpusWriter corpus(filename, true);
+            
+            // TODO this is ugly, selectedItems returns a QList but QListWidget
+            // only allows access to its listitems by index.
+            if(d_ui->fileListWidget->selectedItems().size())
+                foreach (QListWidgetItem* item, d_ui->fileListWidget->selectedItems())
+                {
+                    QString filename(item->data(Qt::UserRole).toString());
+                    corpus.write(filename, d_corpusReader->read(filename));
+                }
+            else
+                for (int idx = 0, end = d_ui->fileListWidget->count(); idx < end; ++idx)
+                {
+                    QString filename(d_ui->fileListWidget->item(idx)->data(Qt::UserRole).toString());
+                    corpus.write(filename, d_corpusReader->read(filename));
+                }
+            
         } catch (std::runtime_error const &e) {
             QMessageBox::critical(this, QString("Error in saving corpus"),
                                   e.what());
