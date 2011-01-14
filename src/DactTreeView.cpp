@@ -31,6 +31,12 @@ void DactTreeView::wheelEvent(QWheelEvent * event)
 	else if (zoomFactor <= 0.0)
 		zoomFactor = 0.1;
 	
-	// Todo: zoom in on the position on the mouse, like Google maps does.
+	// TODO: some kind of limit which prevents zooming in or out too far.
+	// because being able to do that is silly.
+	
+	// Zoom in on position of the mouse (like Google Maps)
+	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 	scale(zoomFactor, zoomFactor);
+	
+	event->accept();
 }
