@@ -40,21 +40,22 @@ void XPathMapper::start(alpinocorpus::CorpusReader *reader, QString query, map_f
 
 void XPathMapper::run()
 {    
-    QVector<QString> corpusEntries(d_reader->entries());
-	
-	int n = 0, totalEntries = corpusEntries.count();
-	
-	emit started(totalEntries);
-	
-    for (QVector<QString>::const_iterator iter = corpusEntries.constBegin();
-        d_cancel == 0 && iter != corpusEntries.constEnd(); ++iter)
-    {
+    size_t n = 0, totalEntries = d_reader->size();
+    QVector<QString> corpusEntries;
+    // can't construct QVector from iterator pair, unfortunately
+    std::copy(d_reader->begin(), d_reader->end(), corpusEntries.begin());
+
+    emit started(totalEntries);
+
+    for (QVector<QString>::const_iterator i(corpusEntries.constBegin()),
+                                          end(corpusEntries.constEnd());
+        !d_cancel && i != end; ++i) {
         // Parse XML data...
-        QString xmlStr(d_reader->read(*iter));
+        QString xmlStr(d_reader->read(*i));
         QByteArray xmlData(xmlStr.toUtf8());
         xmlDocPtr doc = xmlParseMemory(xmlData.constData(), xmlData.size());
         if (!doc) {
-            qWarning() << "XPathMapper::run: could not parse XML data: " << *iter;
+            qWarning() << "XPathMapper::run: could not parse XML data: " << *i;
             continue;
         }
 
@@ -62,7 +63,7 @@ void XPathMapper::run()
         xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
         if (!ctx) {
             xmlFreeDoc(doc);
-            qWarning() << "XPathMapper::run: could not construct XPath context from document: " << *iter;
+            qWarning() << "XPathMapper::run: could not construct XPath context from document: " << *i;
             continue;
         }
 
@@ -75,7 +76,7 @@ void XPathMapper::run()
             break;
         }
 
-        (*d_mapFunction)(*iter, xpathObj);
+        (*d_mapFunction)(*i, xpathObj);
 
         xmlXPathFreeObject(xpathObj);
         xmlXPathFreeContext(ctx);
