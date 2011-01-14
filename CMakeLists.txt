@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(DACT)
 
+set(CMAKE_CXX_FLAGS "-pthread")
+
 if(APPLE)
   set(PROGNAME Dact)
   set (CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -35,6 +37,11 @@ find_package(AlpinoCorpus REQUIRED)
 if(ALPINOCORPUS_FOUND)
 	INCLUDE_DIRECTORIES(${ALPINOCORPUS_INCLUDE_DIR})
 endif(ALPINOCORPUS_FOUND)
+
+find_package(DBXML REQUIRED)
+if (DBXML_FOUND)
+  include_directories(${DBXML_INCLUDE_DIR})
+endif()
 
 find_package(Iconv REQUIRED)
 if(ICONV_FOUND)
@@ -74,27 +81,27 @@ add_custom_command(
 
 # Dact sources
 SET(dact_SRCS
-  src/AboutWindow/AboutWindow.cpp
-  src/DactMainWindow/DactMainWindow.cpp
+  src/AboutWindow.cpp
+  src/DactMainWindow.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
-  src/BracketedWindow/BracketedWindow.cpp
+  src/BracketedWindow.cpp
+  src/StatisticsWindow.cpp
   src/DactListWidget.cpp
-  src/StatisticsWindow/StatisticsWindow.cpp
-  src/DactMacrosWindow/DactMacrosWindow.cpp
-  src/DactMacrosModel/DactMacrosModel.cpp
-  src/DactQueryHistory/DactQueryHistory.cpp
-  src/OpenProgressDialog/OpenProgressDialog.cpp  
-  src/DactTreeScene/DactTreeScene.cpp
+  src/DactMacrosWindow.cpp
+  src/DactMacrosModel.cpp
+  src/DactQueryHistory.cpp
+  src/OpenProgressDialog.cpp  
+  src/DactTreeScene.cpp
   src/DactTreeView.cpp
-  src/PercentageCellDelegate/PercentageCellDelegate.cpp
-  src/PreferencesWindow/PreferencesWindow.cpp
-  src/XPathFilter/XPathFilter.cpp
-  src/XPathMapper/XPathMapper.cpp
-  src/XPathValidator/XPathValidator.cpp
-  src/XSLTransformer/XSLTransformer.cpp
+  src/PercentageCellDelegate.cpp
+  src/PreferencesWindow.cpp
+  src/XPathFilter.cpp
+  src/XPathMapper.cpp
+  src/XPathValidator.cpp
+  src/XSLTransformer.cpp
   src/main.cpp
 )
 
@@ -104,7 +111,7 @@ SET(dact_MOC_HDRS
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
-  include/DactListWidget.h
+  include/dactlistwidget.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/DactQueryHistory.hh
@@ -158,6 +165,10 @@ add_executable(${PROGNAME} MACOSX_BUNDLE WIN32
 	${dact_MACOSX_RESOURCE_FILES})
 target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
+target_link_libraries(${PROGNAME} ${DBXML_LIBRARY})
+#target_link_libraries(${PROGNAME} ${DBCXX_LIBRARY})
+#target_link_libraries(${PROGNAME} ${XQILLA_LIBRARY})
+#target_link_libraries(${PROGNAME} ${XERCES_LIBRARY})
 target_link_libraries(${PROGNAME} ${LIBXML2_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXSLT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})

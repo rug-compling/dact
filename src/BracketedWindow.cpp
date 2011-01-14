@@ -27,9 +27,6 @@
 #include "XSLTransformer.hh"
 #include "ui_BracketedWindow.h"
 
-using namespace alpinocorpus;
-using namespace std;
-
 BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
@@ -102,7 +99,7 @@ void BracketedWindow::updateResults()
     	QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
     	
     	d_xpathMapper->start(d_corpusReader.data(), xpathExpression, d_entryMap);
-    } catch(runtime_error &e) {
+    } catch (std::runtime_error const &e) {
     	QMessageBox::critical(this, QString("Error reading corpus"),
     	    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
@@ -318,13 +315,15 @@ void EntryMapAndTransform::operator()(QString const &entry, xmlXPathObjectPtr xp
 QString EntryMapAndTransform::transform(QString const &file)
 {
     // Read XML data.
-    if (d_corpusReader.isNull())
-        throw runtime_error("EntryMapAndTransform::transform CorpusReader not available");
+    if (!d_corpusReader)
+        throw std::runtime_error(
+                "EntryMapAndTransform::transform CorpusReader not available");
     
     QString xml = d_corpusReader->read(file);
     
     if (xml.size() == 0)
-        throw runtime_error("EntryMapAndTransform::transform: empty XML data!");
+        throw std::runtime_error(
+                "EntryMapAndTransform::transform: empty XML data");
     
     // Parameters
     QString valStr = d_query.trimmed().isEmpty()

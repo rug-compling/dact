@@ -27,6 +27,8 @@
 #include <stdexcept>
 
 #include <AlpinoCorpus/CorpusReader.hh>
+#include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
 #include <DactMainWindow.h>
@@ -42,8 +44,7 @@
 #include <XSLTransformer.hh>
 #include <ui_DactMainWindow.h>
 
-using namespace alpinocorpus;
-using namespace std;
+namespace ac = alpinocorpus;
 
 DactMainWindow::DactMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -99,26 +100,24 @@ void DactMainWindow::addFiles()
 
     d_ui->fileListWidget->clear();
 
-    QVector<QString> entries;
-
     try {
-        if (d_filter.isEmpty())
-            entries = d_corpusReader->entries();
-        else {
+        if (!d_filter.isEmpty()) {
             d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_filter), &d_entryMap);
             return;
         }
-    } catch (runtime_error &e) {
-        QMessageBox::critical(this, QString("Error reading corpus"),
-            QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-        return;
-    }
 
-    for (QVector<QString>::const_iterator iter = entries.begin();
-    iter != entries.end(); ++iter)
-    {
-        QListWidgetItem *item = new QListWidgetItem(*iter, d_ui->fileListWidget);
-        item->setData(Qt::UserRole, *iter);
+        for (ac::CorpusReader::EntryIterator i(d_corpusReader->begin()),
+                                             end(d_corpusReader->end());
+             i != end; ++i) {
+            QListWidgetItem *item = new QListWidgetItem(*i,
+                                                        d_ui->fileListWidget);
+            item->setData(Qt::UserRole, *i);
+        }
+    } catch (std::runtime_error const &e) {
+        QMessageBox::critical(this, QString("Error reading corpus"),
+                              QString("Could not read corpus: %1.")
+                                .arg(e.what()));
+        return;
     }
 }
 
@@ -242,6 +241,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
+    QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(saveCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -261,7 +261,7 @@ void DactMainWindow::createActions()
 
 void DactMainWindow::corpusOpenTick()
 {
-    d_openProgressDialog->setProgress(d_corpusReader->entries().size());
+    //d_openProgressDialog->setProgress(d_corpusReader->entries().size());
 }
 
 void DactMainWindow::entryFound(QString entry)
@@ -322,6 +322,10 @@ void DactMainWindow::showFile(QString const &filename)
         // I try to find my file back in the file list to keep the list
         // in sync with the treegraph since showFile can be called from
         // the child dialogs.
+        
+        // TODO: disabled this for now because it messes up the selection
+        // when deselecting files by ctrl/cmd-clicking on them.
+        /*
         QListWidgetItem *item;
         for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
             item = d_ui->fileListWidget->item(i);
@@ -330,8 +334,9 @@ void DactMainWindow::showFile(QString const &filename)
                 break;
             }
         }
+        */
         
-    } catch(runtime_error &e) {
+    } catch (std::runtime_error const &e) {
         QMessageBox::critical(this, QString("Tranformation error"),
             QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
     }
@@ -436,14 +441,10 @@ void DactMainWindow::nextEntry(bool)
 void DactMainWindow::openCorpus()
 {
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        "*.data.dz");
+        "*.dbxml;;*.data.dz");
     if (corpusPath.isNull())
         return;
 
-    // Remove .data.dz extension. We do not want to display the extension
-    // in the title bar.
-    corpusPath.chop(8);
-    
     readCorpus(corpusPath);
 }
 
@@ -505,10 +506,6 @@ void DactMainWindow::print()
 
 void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
-    d_corpusPath = corpusPath;
-    
-    this->setWindowTitle(QString("Dact - %1").arg(d_corpusPath));
-
     stopMapper();
 
     if (d_corpusOpenWatcher.isRunning()) {
@@ -521,19 +518,29 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 
     d_openProgressDialog->open();
 
-    d_corpusReader = QSharedPointer<CorpusReader>(
-        CorpusReader::newCorpusReader(d_corpusPath));
     d_corpusOpenTimer.start(250);
-    d_corpusOpenFuture = QtConcurrent::run(d_corpusReader.data(), &CorpusReader::open);
-    d_corpusOpenWatcher.setFuture(d_corpusOpenFuture);
+    QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &DactMainWindow::readAndShowFiles, corpusPath);
+    d_corpusOpenWatcher.setFuture(corpusOpenFuture);
+}
+
+bool DactMainWindow::readAndShowFiles(QString const &path)
+{
+    try {
+        d_corpusReader =
+            QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
+        addFiles();
+    } catch (std::runtime_error const &e) {
+        // TODO display a nice error window here
+        return false;
+    }
+
+    return true;
 }
 
 void DactMainWindow::corpusRead(int idx)
 {
     d_corpusOpenTimer.stop();
     d_openProgressDialog->accept();
-
-    addFiles();
 
     if(d_bracketedWindow != 0)
         d_bracketedWindow->switchCorpus(d_corpusReader);
@@ -557,6 +564,35 @@ void DactMainWindow::readSettings()
 
     // Move.
     move(pos);
+}
+
+void DactMainWindow::saveCorpus()
+{
+    QString filename(QFileDialog::getSaveFileName(this, "Save selection",
+                                                  QString(), "*.dbxml"));
+    if (!filename.isNull() && d_corpusReader)
+        try {
+            ac::DbCorpusWriter corpus(filename, true);
+            
+            // TODO this is ugly, selectedItems returns a QList but QListWidget
+            // only allows access to its listitems by index.
+            if(d_ui->fileListWidget->selectedItems().size())
+                foreach (QListWidgetItem* item, d_ui->fileListWidget->selectedItems())
+                {
+                    QString filename(item->data(Qt::UserRole).toString());
+                    corpus.write(filename, d_corpusReader->read(filename));
+                }
+            else
+                for (int idx = 0, end = d_ui->fileListWidget->count(); idx < end; ++idx)
+                {
+                    QString filename(d_ui->fileListWidget->item(idx)->data(Qt::UserRole).toString());
+                    corpus.write(filename, d_corpusReader->read(filename));
+                }
+            
+        } catch (std::runtime_error const &e) {
+            QMessageBox::critical(this, QString("Error in saving corpus"),
+                                  e.what());
+        }
 }
 
 void DactMainWindow::writeSettings()

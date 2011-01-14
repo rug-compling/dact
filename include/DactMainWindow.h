@@ -51,6 +51,8 @@ public:
 	*/
     void readCorpus(QString const &corpusPath);
 
+    bool readAndShowFiles(QString const &path);
+
 public slots:
 	/*!
 	 Hide the main window
@@ -239,7 +241,14 @@ private slots:
 	 Resets the zoom matrix for the tree scene. 1px is 1px again.
 	 */
 	void resetTreeZoom();
-	
+
+    /*!
+     * Save currently opened corpus to DBXML file (filename obtained from
+     * dialog window).
+     * XXX: should save current selection rather than entire corpus.
+     */
+    void saveCorpus();
+
 	/*!
 	 Changes the filter query field used to filter the file list and calls
 	 filterChanged. Used to set the filter from one of the child windows.
@@ -400,12 +409,6 @@ private:
     StatisticsWindow *d_statisticsWindow;
     
 	/*!
-	 Path to the corpus, set by readCorpus. Not really used at the moment.
-	 \sa readCorpus
-	 */
-    QString d_corpusPath;
-	
-	/*!
 	 The XPath query currently used to highlight nodes in the tree scene.
 	 */
     QString d_highlight;
@@ -473,13 +476,6 @@ private:
     QSharedPointer<XPathValidator> d_xpathValidator;
 	
 	/*!
-	 Since opening a large corpus takes some time (especially a directory corpus)
-	 defer it using QConcurrent and store its promise.
-	 \sa readCorpus
-	 */
-    QFuture<bool> d_corpusOpenFuture;
-	
-	/*!
 	 While opening a corpus, we present a progress dialog. This is the
 	 timer used in polling the corpus reader on its progress.
 	 \sa corpusOpenTick
@@ -490,7 +486,7 @@ private:
 	 \sa d_corpusOpenFuture
 	 \sa corpusRead
 	 */
-    QFutureWatcher<bool> d_corpusOpenWatcher;
+    QFutureWatcher<void> d_corpusOpenWatcher;
 	
 	/*!
 	 Currently loaded corpus. Shared between all the windows that might need

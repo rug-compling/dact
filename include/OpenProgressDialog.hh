@@ -11,7 +11,7 @@ namespace Ui {
 class OpenProgressDialog : public QDialog {
     Q_OBJECT
 public:
-    OpenProgressDialog(QWidget *parent = 0);
+    OpenProgressDialog(QWidget *parent);
     ~OpenProgressDialog();
     void setProgress(size_t progress);
 private:
