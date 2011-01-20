@@ -35,6 +35,7 @@ AboutWindow::~AboutWindow()
 
 void AboutWindow::reportBug()
 {
-    QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/issues"));
+    static QUrl const issues("https://github.com/rug-compling/dact/issues");
+    QDesktopServices::openUrl(issues);
 }
 

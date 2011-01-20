@@ -284,7 +284,8 @@ void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 
 void DactMainWindow::help()
 {
-    QDesktopServices::openUrl(QUrl("http://github.com/danieldk/dact/wiki/Usage"));
+    static QUrl const usage("http://rug-compling.github.com/dact/Usage.html");
+    QDesktopServices::openUrl(usage);
 }
 
 void DactMainWindow::keyPressEvent(QKeyEvent *event)
