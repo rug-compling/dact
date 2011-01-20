@@ -580,19 +580,22 @@ void DactMainWindow::saveCorpus()
             if(d_ui->fileListWidget->selectedItems().size())
                 foreach (QListWidgetItem* item, d_ui->fileListWidget->selectedItems())
                 {
-                    QString filename(item->data(Qt::UserRole).toString());
-                    corpus.write(filename, d_corpusReader->read(filename));
+                    QString itemname(item->data(Qt::UserRole).toString());
+                    corpus.write(itemname, d_corpusReader->read(itemname));
                 }
             else
                 for (int idx = 0, end = d_ui->fileListWidget->count(); idx < end; ++idx)
                 {
-                    QString filename(d_ui->fileListWidget->item(idx)->data(Qt::UserRole).toString());
-                    corpus.write(filename, d_corpusReader->read(filename));
+                    QString itemname(d_ui->fileListWidget->item(idx)->data(Qt::UserRole).toString());
+                    corpus.write(itemname, d_corpusReader->read(itemname));
                 }
             
         } catch (std::runtime_error const &e) {
-            QMessageBox::critical(this, QString("Error in saving corpus"),
-                                  e.what());
+            QString const msg(
+                "Export error. Check %1 to see what got exported.\n\n%2"
+            );
+            QMessageBox::critical(this, "Export error",
+                                  msg.arg(filename).arg(e.what()));
         }
 }
 
