@@ -575,16 +575,15 @@ void DactMainWindow::saveCorpus()
         try {
             ac::DbCorpusWriter corpus(filename, true);
             
-            // TODO this is ugly, selectedItems returns a QList but QListWidget
-            // only allows access to its listitems by index.
-            if(d_ui->fileListWidget->selectedItems().size())
-                foreach (QListWidgetItem* item, d_ui->fileListWidget->selectedItems())
+            if (d_ui->fileListWidget->selectedItems().size() == 0)
+                corpus.write(*d_corpusReader);
+            else
+                foreach (QListWidgetItem *item,
+                         d_ui->fileListWidget->selectedItems())
                 {
                     QString itemname(item->data(Qt::UserRole).toString());
                     corpus.write(itemname, d_corpusReader->read(itemname));
                 }
-            else
-                corpus.write(*d_corpusReader);
             
         } catch (ac::OpenError const &e) {
             QString const msg(
