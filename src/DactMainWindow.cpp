@@ -590,10 +590,16 @@ void DactMainWindow::saveCorpus()
                     corpus.write(itemname, d_corpusReader->read(itemname));
                 }
             
-        } catch (std::runtime_error const &e) {
+        } catch (ac::OpenError const &e) {
             QString const msg(
-                "Export error. Check %1 to see what got exported.\n\n%2"
+                "Could not open %1 for exporting:\n\n%2"
             );
+            QMessageBox::critical(this, "Export error",
+                                  msg.arg(filename).arg(e.what()));
+        } catch (std::runtime_error const &e) {
+            QString msg("Could not export to %1:\n\n%2");
+            if (not QFile::remove(filename))
+                msg += QString("\n\nCheck or delete the file %1").arg(filename);
             QMessageBox::critical(this, "Export error",
                                   msg.arg(filename).arg(e.what()));
         }
