@@ -584,11 +584,7 @@ void DactMainWindow::saveCorpus()
                     corpus.write(itemname, d_corpusReader->read(itemname));
                 }
             else
-                for (int idx = 0, end = d_ui->fileListWidget->count(); idx < end; ++idx)
-                {
-                    QString itemname(d_ui->fileListWidget->item(idx)->data(Qt::UserRole).toString());
-                    corpus.write(itemname, d_corpusReader->read(itemname));
-                }
+                corpus.write(*d_corpusReader);
             
         } catch (ac::OpenError const &e) {
             QString const msg(
