@@ -123,7 +123,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>&lt;a href=&quot;http://github.com/danieldk/dact&quot;&gt;http://github.com/danieldk/dact&lt;/a&gt;</string>
+          <string>&lt;a href=&quot;http://rug-compling.github.com/dact&quot;&gt;http://rug-compling.github.com/dact&lt;/a&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
