@@ -120,8 +120,6 @@ Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
 
 QList<DactMacro> DactMacrosModel::readMacros() const
 {
-    qDebug() << "Loading macros";
-    
     QList<DactMacro> macros;
     
     QSettings settings("RUG", "Dact");
