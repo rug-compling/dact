@@ -1,7 +1,6 @@
 #include <QByteArray>
 #include <QString>
 #include <QThread>
-#include <QVector>
 #include <QtDebug>
 
 #include <stdexcept>
@@ -13,6 +12,8 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XPathMapper.hh"
+
+namespace ac = alpinocorpus;
 
 XPathMapper::XPathMapper() {}
 
@@ -41,14 +42,11 @@ void XPathMapper::start(alpinocorpus::CorpusReader *reader, QString query, map_f
 void XPathMapper::run()
 {    
     size_t n = 0, totalEntries = d_reader->size();
-    QVector<QString> corpusEntries(totalEntries);
-    // can't construct QVector from iterator pair, unfortunately
-    std::copy(d_reader->begin(), d_reader->end(), corpusEntries.begin());
 
     emit started(totalEntries);
 
-    for (QVector<QString>::const_iterator i(corpusEntries.constBegin()),
-                                          end(corpusEntries.constEnd());
+    for (ac::CorpusReader::EntryIterator i(d_reader->begin()),
+                                         end(d_reader->end());
         !d_cancel && i != end; ++i) {
         // Parse XML data...
         QString xmlStr(d_reader->read(*i));
