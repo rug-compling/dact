@@ -89,6 +89,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedWindow.cpp
   src/StatisticsWindow.cpp
+  src/DactApplication.cpp
   src/DactListWidget.cpp
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
@@ -107,6 +108,7 @@ SET(dact_SRCS
 
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
+  include/DactApplication.h
   include/DactMainWindow.h
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
@@ -195,6 +197,10 @@ set(DIRS
 
 set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
 set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
+
+set_target_properties(${PROGNAME}
+	PROPERTIES
+	MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
 
 INSTALL(CODE "
   file(WRITE \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt.conf\")
