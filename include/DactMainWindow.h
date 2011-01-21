@@ -8,7 +8,6 @@
 #include <QMutex>
 #include <QSharedPointer>
 #include <QString>
-#include <QTimer>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
@@ -104,12 +103,6 @@ private slots:
 	 \sa currentBracketedEntryChanged
 	*/
     void bracketedEntryActivated();
-	
-	/*!
-	 Attached to a timer to poll the current corpus size while loading a corpus. The
-	 size is used to determine the size of OpenProgressDialog's progress bar.
-	*/
-    void corpusOpenTick();
 	
 	/*!
 	 Listens for the resultReadyAt signal from the corpus reader. When heard, it hides
@@ -362,8 +355,7 @@ private:
     void stopMapper();
 	
 	/*!
-	 Attaches all the signals from the ui, open file timer and mapper to the various
-	 functions.
+	 Attaches all the signals from the ui and mapper to the various functions.
 	 */
     void createActions();
 	
@@ -474,14 +466,7 @@ private:
 	 \sa applyValidityColor
 	 */
     QSharedPointer<XPathValidator> d_xpathValidator;
-	
-	/*!
-	 While opening a corpus, we present a progress dialog. This is the
-	 timer used in polling the corpus reader on its progress.
-	 \sa corpusOpenTick
-	 */
-    QTimer d_corpusOpenTimer;
-	
+		
 	/*!
 	 \sa d_corpusOpenFuture
 	 \sa corpusRead

@@ -217,7 +217,6 @@ void DactMainWindow::showMacrosWindow()
 
 void DactMainWindow::createActions()
 {
-    QObject::connect(&d_corpusOpenTimer, SIGNAL(timeout()), this, SLOT(corpusOpenTick()));
     QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
 
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
@@ -257,11 +256,6 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
     QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
-}
-
-void DactMainWindow::corpusOpenTick()
-{
-    d_openProgressDialog->setProgress(d_corpusReader->size());
 }
 
 void DactMainWindow::entryFound(QString entry)
@@ -519,7 +513,6 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 
     d_openProgressDialog->open();
 
-    d_corpusOpenTimer.start(250);
     QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &DactMainWindow::readAndShowFiles, corpusPath);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
@@ -529,7 +522,7 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader =
             QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
-        addFiles();
+		addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here
         return false;
@@ -540,7 +533,6 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
 
 void DactMainWindow::corpusRead(int idx)
 {
-    d_corpusOpenTimer.stop();
     d_openProgressDialog->accept();
 
     if(d_bracketedWindow != 0)

@@ -13,7 +13,6 @@ class OpenProgressDialog : public QDialog {
 public:
     OpenProgressDialog(QWidget *parent);
     ~OpenProgressDialog();
-    void setProgress(size_t progress);
 private:
     QSharedPointer<Ui::OpenProgressDialog> d_ui;
 };
