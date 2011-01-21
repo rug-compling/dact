@@ -11,19 +11,31 @@ QString BracketedVisibilityDelegate::formatSentence(QString const &sentence) con
 {
     QString result;
     
+    int previousDepth = 0;
     foreach (Chunk chunk, parseSentence(sentence))
     {
-        if (!chunk.depth() || chunk.text().isEmpty())
+        // Indeed, this is copy-pastework from ~20
+        bool skip = false;
+
+        if (chunk.depth() <= previousDepth)
+            skip = true;
+
+        if (chunk.text().isEmpty())
+            skip = true;
+
+        previousDepth = chunk.depth();
+
+        if (skip)
             continue;
         
         // each result on a new line, like they are individual entries.
         if (!result.isEmpty())
-            //result += '\n'; // use this for one line per match (broken)
-            result += ", "; // or this for one line per file
+            result += '\n'; // use this for one line per match (broken)
+            //result += ", "; // or this for one line per file
         
         // note that text() currently does not contain the text of the full match
         // because it could contain submatches, which are separate chunks.
-        result += chunk.text();
+        result += chunk.fullText();
     }
     
     return result;
