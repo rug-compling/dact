@@ -3,6 +3,9 @@
 #include <QtGui/QApplication>
 #include <QtGui/QFont>
 
+#include <cstdlib>
+#include <iostream>
+
 extern "C" {
 #include <libxslt/xslt.h>
 #include <libxml/parser.h>
@@ -12,9 +15,20 @@ extern "C" {
 
 #include "DactMainWindow.h"
 
+namespace {
+    void usage(char const *progname)
+    {
+        std::cerr << "Usage: " << progname << " [file]" << std::endl;
+        std::exit(1);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    if (qApp->arguments().size() > 2)
+        usage(argv[0]);
+
     QSettings settings("RUG", "Dact");
     QVariant fontValue = settings.value("appFont", qApp->font().toString());
     QFont appFont;
