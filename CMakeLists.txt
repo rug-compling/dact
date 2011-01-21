@@ -111,13 +111,13 @@ SET(dact_MOC_HDRS
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
-  include/dactlistwidget.h
+  include/DactListWidget.h
   include/DactMacrosWindow.h
   include/DactMacrosModel.h
   include/DactQueryHistory.hh
   include/OpenProgressDialog.hh
   include/DactTreeScene.h
-  include/dacttreeview.h
+  include/DactTreeView.h
   include/PercentageCellDelegate.h
   include/PreferencesWindow.hh
   include/XPathFilter.hh

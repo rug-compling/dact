@@ -434,7 +434,7 @@
   <customwidget>
    <class>DactTreeView</class>
    <extends>QWidget</extends>
-   <header>dacttreeview.h</header>
+   <header>DactTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources>
