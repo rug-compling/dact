@@ -143,8 +143,6 @@ QList<DactMacro> DactMacrosModel::readMacros() const
 
 void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
 {
-    qDebug() << "Saving macros";
-    
     QSettings settings("RUG", "Dact");
     
     settings.beginWriteArray("macros");
