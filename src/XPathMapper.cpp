@@ -41,7 +41,7 @@ void XPathMapper::start(alpinocorpus::CorpusReader *reader, QString query, map_f
 void XPathMapper::run()
 {    
     size_t n = 0, totalEntries = d_reader->size();
-    QVector<QString> corpusEntries;
+    QVector<QString> corpusEntries(totalEntries);
     // can't construct QVector from iterator pair, unfortunately
     std::copy(d_reader->begin(), d_reader->end(), corpusEntries.begin());
 
