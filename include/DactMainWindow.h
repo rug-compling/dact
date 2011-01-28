@@ -105,6 +105,12 @@ private slots:
 	*/
     void bracketedEntryActivated();
 	
+    /*!
+     Cancels reading the iterator in addFiles. Invoked by the open-file
+     dialog's cancel button.
+     */
+    void cancelReadCorpus();
+    
 	/*!
 	 Listens for the resultReadyAt signal from the corpus reader. When heard, it hides
 	 the OpenProgressDialog, calls addFiles to start loading the file list and changes
@@ -486,6 +492,8 @@ private:
 	 Current tree scene, used to display tree xml as a interactive visual tree.
 	 */
     DactTreeScene *d_treeScene;
+    
+    bool d_addFilesCancelled;
 };
 
 #endif // DACTMAINWINDOW_H

@@ -54,7 +54,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_bracketedWindow(0),
     d_statisticsWindow(0),
     d_macrosWindow(0),
-    d_openProgressDialog(0),
+    d_openProgressDialog(new OpenProgressDialog(this)),
     d_exportProgressDialog(0),
     d_preferencesWindow(0),
     d_treeScene(0),
@@ -98,6 +98,8 @@ void DactMainWindow::addFiles()
 {
     QMutexLocker locker(&d_addFilesMutex);
 
+    d_addFilesCancelled = false;
+    
     stopMapper();
 
     d_ui->fileListWidget->clear();
@@ -110,7 +112,7 @@ void DactMainWindow::addFiles()
 
         for (ac::CorpusReader::EntryIterator i(d_corpusReader->begin()),
                                              end(d_corpusReader->end());
-             i != end; ++i) {
+            !d_addFilesCancelled && i != end; ++i) {
             QListWidgetItem *item = new QListWidgetItem(*i,
                                                         d_ui->fileListWidget);
             item->setData(Qt::UserRole, *i);
@@ -220,6 +222,7 @@ void DactMainWindow::showMacrosWindow()
 void DactMainWindow::createActions()
 {
     QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
+    QObject::connect(d_openProgressDialog, SIGNAL(rejected()), this, SLOT(cancelReadCorpus()));
     
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
@@ -510,11 +513,11 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
         d_corpusOpenWatcher.waitForFinished();
     }
 
-    if (d_openProgressDialog == 0)
-        d_openProgressDialog = new OpenProgressDialog(this);
-
     d_openProgressDialog->open();
 
+    // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
+    d_openProgressDialog->setCancelable(false);
+    
     QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &DactMainWindow::readAndShowFiles, corpusPath);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
@@ -522,8 +525,8 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
 bool DactMainWindow::readAndShowFiles(QString const &path)
 {
     try {
-        d_corpusReader =
-            QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
+        d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
+        d_openProgressDialog->setCancelable(true);
         addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here
@@ -531,6 +534,11 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     }
 
     return true;
+}
+
+void DactMainWindow::cancelReadCorpus()
+{
+    d_addFilesCancelled = true;
 }
 
 void DactMainWindow::corpusRead(int idx)

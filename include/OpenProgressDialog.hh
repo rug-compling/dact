@@ -13,6 +13,7 @@ class OpenProgressDialog : public QDialog {
 public:
     OpenProgressDialog(QWidget *parent);
     ~OpenProgressDialog();
+    void setCancelable(bool cancelable);
 private:
     QSharedPointer<Ui::OpenProgressDialog> d_ui;
 };

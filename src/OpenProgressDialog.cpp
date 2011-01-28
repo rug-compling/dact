@@ -14,3 +14,8 @@ OpenProgressDialog::OpenProgressDialog(QWidget *parent) :
 }
 
 OpenProgressDialog::~OpenProgressDialog() {}
+
+void OpenProgressDialog::setCancelable(bool cancelable)
+{
+    d_ui->buttonBox->setEnabled(cancelable);
+}
