@@ -39,8 +39,6 @@
 			<array>
 				<string>dbxml</string>
 			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>dact-espresso.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>DBXML Corpus</string>
 			<key>CFBundleTypeRole</key>
@@ -51,8 +49,6 @@
 			<array>
 				<string>data.dz</string>
 			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>dact-espresso.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>Compact Corpus</string>
 			<key>CFBundleTypeRole</key>
