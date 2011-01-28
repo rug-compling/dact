@@ -37,6 +37,7 @@
 #include <DactMacrosWindow.h>
 #include <DactQueryHistory.hh>
 #include <OpenProgressDialog.hh>
+#include <ExportProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.h>
@@ -54,11 +55,12 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(0),
+    d_exportProgressDialog(0),
     d_preferencesWindow(0),
     d_treeScene(0),
-	d_queryHistory(0)
+    d_queryHistory(0)
 {
-	d_ui->setupUi(this);
+    d_ui->setupUi(this);
     
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
     
@@ -67,17 +69,17 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-	/*
-	d_queryHistory = QSharedPointer<DactQueryHistory>(new DactQueryHistory());
-	d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
-	d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
+    /*
+    d_queryHistory = QSharedPointer<DactQueryHistory>(new DactQueryHistory());
+    d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
+    d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
     */
     readSettings();
     
-	initSentenceTransformer();
-	
+    initSentenceTransformer();
+    
     initTreeTransformer();
-	
+    
     createActions();    
 }
 
@@ -131,7 +133,7 @@ void DactMainWindow::bracketedEntryActivated()
 void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 {
     showFile(entry);
-	focusFitTree();
+    focusFitTree();
 }
 
 void DactMainWindow::applyValidityColor(QString const &)
@@ -183,7 +185,7 @@ void DactMainWindow::showFilterWindow()
 
     d_bracketedWindow->setFilter(d_filter);
     d_bracketedWindow->show();
-	d_bracketedWindow->raise();
+    d_bracketedWindow->raise();
 }
 
 void DactMainWindow::showStatisticsWindow()
@@ -197,7 +199,7 @@ void DactMainWindow::showStatisticsWindow()
 
     d_statisticsWindow->setFilter(d_filter);
     d_statisticsWindow->show();
-	d_statisticsWindow->raise();
+    d_statisticsWindow->raise();
 }
 
 void DactMainWindow::statisticsEntryActivated(QString const &value, QString const &query)
@@ -212,13 +214,13 @@ void DactMainWindow::showMacrosWindow()
         d_macrosWindow = new DactMacrosWindow(d_macrosModel, this, Qt::Window);
     
     d_macrosWindow->show();
-	d_macrosWindow->raise();
+    d_macrosWindow->raise();
 }
 
 void DactMainWindow::createActions()
 {
     QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
-
+    
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
     
@@ -240,7 +242,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
-    QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(saveCorpus()));
+    QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(exportCorpus()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -348,9 +350,9 @@ void DactMainWindow::filterChanged()
     QMutexLocker locker(&d_filterChangedMutex);
 
     d_filter = d_ui->filterLineEdit->text().trimmed();
-	
-	if (d_queryHistory)
-		d_queryHistory->addToHistory(d_filter);
+    
+    if (d_queryHistory)
+        d_queryHistory->addToHistory(d_filter);
     
     d_ui->highlightLineEdit->setText(d_filter);
     highlightChanged();
@@ -522,7 +524,7 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader =
             QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
-		addFiles();
+        addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here
         return false;
@@ -559,37 +561,67 @@ void DactMainWindow::readSettings()
     move(pos);
 }
 
-void DactMainWindow::saveCorpus()
+void DactMainWindow::exportCorpus()
 {
-    QString filename(QFileDialog::getSaveFileName(this, "Save selection",
-                                                  QString(), "*.dbxml"));
+    QString filename(QFileDialog::getSaveFileName(this,
+        d_ui->fileListWidget->selectedItems().size() ? "Export selection" : "Export corpus",
+        QString(), "*.dbxml"));
+    
     if (!filename.isNull() && d_corpusReader)
-        try {
-            ac::DbCorpusWriter corpus(filename, true);
-            
-            if (d_ui->fileListWidget->selectedItems().size() == 0)
-                corpus.write(*d_corpusReader);
-            else
-                foreach (QListWidgetItem *item,
-                         d_ui->fileListWidget->selectedItems())
-                {
-                    QString itemname(item->data(Qt::UserRole).toString());
-                    corpus.write(itemname, d_corpusReader->read(itemname));
-                }
-            
-        } catch (ac::OpenError const &e) {
-            QString const msg(
-                "Could not open %1 for exporting:\n\n%2"
-            );
-            QMessageBox::critical(this, "Export error",
-                                  msg.arg(filename).arg(e.what()));
-        } catch (std::runtime_error const &e) {
-            QString msg("Could not export to %1:\n\n%2");
-            if (not QFile::remove(filename))
-                msg += QString("\n\nCheck or delete the file %1").arg(filename);
-            QMessageBox::critical(this, "Export error",
-                                  msg.arg(filename).arg(e.what()));
+    {
+        if (d_exportProgressDialog == 0)
+            d_exportProgressDialog = new ExportProgressDialog(this);
+        
+        d_exportProgressDialog->open();
+        
+        // Since we make a copy of the current selection, this action doesn't really need to block
+        // any interaction with the gui as long as the corpusreader supports simultanious reading
+        // and writing.
+        
+        QList<QString> files;
+        
+        if (d_ui->fileListWidget->selectedItems().size())
+        {
+            foreach (QListWidgetItem *item,
+                    d_ui->fileListWidget->selectedItems())
+                files.append(item->data(Qt::UserRole).toString());
         }
+        else
+            std::copy(d_corpusReader->begin(), d_corpusReader->end(), std::back_inserter(files));
+        
+        QtConcurrent::run(this, &DactMainWindow::writeCorpus, filename, files);
+    }
+}
+
+void DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
+{
+    try {
+        ac::DbCorpusWriter corpus(filename, true);
+        
+        d_exportProgressDialog->setMaximum(files.size());
+        int progress = 0;
+            
+        for (QList<QString>::const_iterator itr(files.constBegin()),
+             end(files.constEnd()); itr != end; ++itr)
+        {
+            d_exportProgressDialog->setProgress(++progress);
+            corpus.write(*itr, d_corpusReader->read(*itr));
+        }
+    } catch (ac::OpenError const &e) {
+        QString const msg(
+                          "Could not open %1 for exporting:\n\n%2"
+                          );
+        QMessageBox::critical(this, "Export error",
+                              msg.arg(filename).arg(e.what()));
+    } catch (std::runtime_error const &e) {
+        QString msg("Could not export to %1:\n\n%2");
+        if (not QFile::remove(filename))
+            msg += QString("\n\nCheck or delete the file %1").arg(filename);
+        QMessageBox::critical(this, "Export error",
+                              msg.arg(filename).arg(e.what()));
+    }
+    
+    d_exportProgressDialog->accept();
 }
 
 void DactMainWindow::writeSettings()
@@ -614,8 +646,8 @@ void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> co
 
 void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
 {
-	// @TODO why is the scene recreated for every tree, and not just cleared and reused?
-	// (well, currently because calling parseTree twice will cause a segfault)
+    // @TODO why is the scene recreated for every tree, and not just cleared and reused?
+    // (well, currently because calling parseTree twice will cause a segfault)
     if (d_treeScene)
         delete d_treeScene;
     
@@ -645,10 +677,10 @@ void DactMainWindow::setHighlight(QString const &query)
 void DactMainWindow::highlightChanged()
 {
     d_highlight = d_ui->highlightLineEdit->text().trimmed();
-	
-	if (d_queryHistory)
-		d_queryHistory->addToHistory(d_highlight);
-	
+    
+    if (d_queryHistory)
+        d_queryHistory->addToHistory(d_highlight);
+    
     if (d_ui->fileListWidget->currentItem() != 0)
         showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
 }

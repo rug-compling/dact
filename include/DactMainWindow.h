@@ -30,6 +30,7 @@ class DactMacrosWindow;
 class DactQueryHistory;
 class StatisticsWindow;
 class OpenProgressDialog;
+class ExportProgressDialog;
 class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
@@ -238,9 +239,8 @@ private slots:
     /*!
      * Save currently opened corpus to DBXML file (filename obtained from
      * dialog window).
-     * XXX: should save current selection rather than entire corpus.
      */
-    void saveCorpus();
+    void exportCorpus();
 
 	/*!
 	 Changes the filter query field used to filter the file list and calls
@@ -331,7 +331,7 @@ private slots:
 	 \sa mapperStoppend
 	 */
     void mapperProgressed(int processedEntries, int totalEntries);
-
+	
 protected:
     void changeEvent(QEvent *e);
 	/*!
@@ -382,6 +382,8 @@ private:
 	 */
     void initTreeTransformer();
 	
+	void writeCorpus(QString const &filename, QList<QString> const &files);
+	
 	/*!
 	 Read settings like the main window position and dimensions
 	 */
@@ -397,6 +399,7 @@ private:
     BracketedWindow *d_bracketedWindow;
     DactMacrosWindow *d_macrosWindow;
     OpenProgressDialog *d_openProgressDialog;
+	ExportProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
     StatisticsWindow *d_statisticsWindow;
     
