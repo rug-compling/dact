@@ -112,7 +112,7 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -126,6 +126,13 @@
     <addaction name="preferencesAction"/>
     <addaction name="separator"/>
     <addaction name="quitAction"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="focusFilterAction"/>
+    <addaction name="focusHighlightAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -157,7 +164,8 @@
     <addaction name="helpAction"/>
     <addaction name="aboutAction"/>
    </widget>
-   <addaction name="menu_File"/>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
@@ -201,10 +209,10 @@
     <string>Fit</string>
    </property>
    <property name="toolTip">
-    <string>Fit tree to tree view (Ctrl+F)</string>
+    <string>Fit tree to tree view (Ctrl+0)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+F</string>
+    <string>Ctrl+0</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -255,10 +263,10 @@
     <string>Next node</string>
    </property>
    <property name="toolTip">
-    <string>Next node (Ctrl+])</string>
+    <string>Next node (Ctrl+Right)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+]</string>
+    <string>Ctrl+Right</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -273,10 +281,10 @@
     <string>Previous node</string>
    </property>
    <property name="toolTip">
-    <string>Previous node (Ctrl+[)</string>
+    <string>Previous node (Ctrl+Left)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+[</string>
+    <string>Ctrl+Left</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -326,10 +334,10 @@
     <string>Next</string>
    </property>
    <property name="toolTip">
-    <string>Next sentence/tree (Ctrl+N)</string>
+    <string>Next sentence/tree (Ctrl+Down)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+N</string>
+    <string>Ctrl+Down</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -344,10 +352,10 @@
     <string>Previous</string>
    </property>
    <property name="toolTip">
-    <string>Previous sentence/tree (Ctrl+P)</string>
+    <string>Previous sentence/tree (Ctrl+Up)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+P</string>
+    <string>Ctrl+Up</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -427,6 +435,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="focusFilterAction">
+   <property name="text">
+    <string>Filter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="focusHighlightAction">
+   <property name="text">
+    <string>Highlight</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+H</string>
    </property>
   </action>
  </widget>

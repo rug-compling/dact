@@ -254,13 +254,15 @@ void DactMainWindow::createActions()
       SLOT(preferencesWindow()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
-    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn(bool)));
-    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut(bool)));
-    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusNextTreeNode(bool)));
-    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusPreviousTreeNode(bool)));
+    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn()));
+    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut()));
+    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusNextTreeNode()));
+    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusPreviousTreeNode()));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
     QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
+    QObject::connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)), this, SLOT(focusFilter()));
+    QObject::connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), this, SLOT(focusHighlight()));
 }
 
 void DactMainWindow::entryFound(QString entry)
@@ -391,6 +393,16 @@ void DactMainWindow::focusFitTree()
 void DactMainWindow::resetTreeZoom()
 {
     d_ui->treeGraphicsView->setMatrix(QMatrix());
+}
+
+void DactMainWindow::focusFilter()
+{
+    d_ui->filterLineEdit->setFocus();
+}
+
+void DactMainWindow::focusHighlight()
+{
+    d_ui->highlightLineEdit->setFocus();
 }
 
 void DactMainWindow::initSentenceTransformer()
@@ -693,22 +705,22 @@ void DactMainWindow::highlightChanged()
         showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
 }
 
-void DactMainWindow::treeZoomIn(bool)
+void DactMainWindow::treeZoomIn()
 {
     d_ui->treeGraphicsView->scale(ZOOM_IN_FACTOR, ZOOM_IN_FACTOR);
 }
 
-void DactMainWindow::treeZoomOut(bool)
+void DactMainWindow::treeZoomOut()
 {
     d_ui->treeGraphicsView->scale(ZOOM_OUT_FACTOR, ZOOM_OUT_FACTOR);
 }
 
-void DactMainWindow::focusNextTreeNode(bool)
+void DactMainWindow::focusNextTreeNode()
 {
     focusTreeNode(1);
 }
 
-void DactMainWindow::focusPreviousTreeNode(bool)
+void DactMainWindow::focusPreviousTreeNode()
 {
     focusTreeNode(-1);
 }

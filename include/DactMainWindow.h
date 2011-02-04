@@ -172,15 +172,25 @@ private slots:
 	 \sa focusPreviousTreeNode
 	 \sa focusTreeNode
 	 */
-    void focusNextTreeNode(bool);
+    void focusNextTreeNode();
 	
 	/*!
 	 Focus on the previous matching node. Wraps around.
 	 \sa focusNextTreeNode
 	 \sa focusTreeNode
 	 */
-    void focusPreviousTreeNode(bool);
+    void focusPreviousTreeNode();
 	
+    /*!
+     Focus the filter query entry field
+     */
+    void focusFilter();
+    
+    /*!
+     Focus the highlight query entry field
+     */
+    void focusHighlight();
+    
 	/*!
 	 Opens the wiki in the default webbrowser.
 	 */
@@ -300,7 +310,7 @@ private slots:
 	 \sa resetTreeZoom
 	 \sa focusFitTree
 	*/
-    void treeZoomIn(bool);
+    void treeZoomIn();
 	
 	/*!
 	 Zooms the tree scene out.
@@ -308,8 +318,8 @@ private slots:
 	 \sa resetTreeZoom
 	 \sa focusFitTree
 	 */
-    void treeZoomOut(bool);
-	
+    void treeZoomOut();
+	    
 	/*!
 	 When the mapper (the one used to find files that match the filter query) is
 	 started, this will make the progress bar visible.
