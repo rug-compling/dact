@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 #include <QValidator>
 
-#include "DactMacrosModel.h"
+#include "DactMacrosModel.hh"
 
 /*!
  This class is used by the QLineEdit widgets for xpath queries. It uses

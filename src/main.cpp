@@ -13,8 +13,8 @@ extern "C" {
 #include <libexslt/exslt.h>
 }
 
-#include "DactApplication.h"
-#include "DactMainWindow.h"
+#include "DactApplication.hh"
+#include "DactMainWindow.hh"
 
 namespace {
     void usage(char const *progname)

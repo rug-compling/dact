@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "PercentageCellDelegate.h"
+#include "PercentageCellDelegate.hh"
 
 void PercentageCellDelegate::paint(QPainter *painter,
     const QStyleOptionViewItem &option, const QModelIndex &index) const

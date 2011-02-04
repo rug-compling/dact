@@ -24,8 +24,8 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "StatisticsWindow.hh"
-#include "DactMacrosModel.h"
-#include "PercentageCellDelegate.h"
+#include "DactMacrosModel.hh"
+#include "PercentageCellDelegate.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"

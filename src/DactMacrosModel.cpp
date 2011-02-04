@@ -1,7 +1,7 @@
 #include <QSettings>
 #include <QtDebug>
 
-#include "DactMacrosModel.h"
+#include "DactMacrosModel.hh"
 
 DactMacrosModel::DactMacrosModel(QObject *parent) :
     QAbstractTableModel(parent),

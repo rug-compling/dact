@@ -1,4 +1,4 @@
-#include "DactListWidget.h"
+#include "DactListWidget.hh"
 
 
 void DactListWidget::setItemDelegate(QAbstractItemDelegate* delegate)

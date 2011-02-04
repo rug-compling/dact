@@ -9,7 +9,7 @@
 #include <QWidget>
 #include <Qt>
 
-#include "DactMacrosModel.h"
+#include "DactMacrosModel.hh"
 
 namespace Ui {
 	class DactMacrosWindow;

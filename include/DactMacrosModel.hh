@@ -6,7 +6,7 @@
 #include <QChar>
 #include <QString>
 
-#include "DactMacro.h"
+#include "DactMacro.hh"
 
 // This model is used by the tableview in the macros edit window. It also
 // contains the logic for loading and saving macros from the settings file.

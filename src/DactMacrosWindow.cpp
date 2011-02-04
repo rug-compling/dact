@@ -2,8 +2,8 @@
 #include <QVector>
 #include <QtDebug>
 
-#include "DactMacrosWindow.h"
-#include "DactMacrosModel.h"
+#include "DactMacrosWindow.hh"
+#include "DactMacrosModel.hh"
 #include "ui_DactMacrosWindow.h"
 
 DactMacrosWindow::DactMacrosWindow(QSharedPointer<DactMacrosModel> model, QWidget *parent, Qt::WindowFlags f) :

@@ -31,16 +31,16 @@
 #include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
-#include <DactMainWindow.h>
+#include <DactMainWindow.hh>
 #include <BracketedWindow.hh>
-#include <DactMacrosModel.h>
-#include <DactMacrosWindow.h>
+#include <DactMacrosModel.hh>
+#include <DactMacrosWindow.hh>
 #include <DactQueryHistory.hh>
 #include <OpenProgressDialog.hh>
 #include <ExportProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
-#include <DactTreeScene.h>
+#include <DactTreeScene.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
 #include <ui_DactMainWindow.h>

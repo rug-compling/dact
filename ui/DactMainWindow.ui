@@ -460,7 +460,7 @@
   <customwidget>
    <class>DactTreeView</class>
    <extends>QWidget</extends>
-   <header>DactTreeView.h</header>
+   <header>DactTreeView.hh</header>
   </customwidget>
  </customwidgets>
  <resources>

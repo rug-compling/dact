@@ -1,5 +1,5 @@
-#include "DactApplication.h"
-#include "DactMainWindow.h"
+#include "DactApplication.hh"
+#include "DactMainWindow.hh"
 #include <QFileOpenEvent>
 
 

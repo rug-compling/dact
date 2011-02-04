@@ -1,7 +1,7 @@
 #include <QWheelEvent>
 #include <QtDebug>
 
-#include "DactTreeView.h"
+#include "DactTreeView.hh"
 
 void DactTreeView::wheelEvent(QWheelEvent * event)
 {

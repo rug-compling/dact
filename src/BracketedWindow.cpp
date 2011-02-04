@@ -22,7 +22,7 @@
 
 #include "BracketedDelegates.hh"
 #include "BracketedWindow.hh"
-#include "DactMacrosModel.h"
+#include "DactMacrosModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_BracketedWindow.h"

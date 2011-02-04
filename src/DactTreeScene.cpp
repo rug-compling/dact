@@ -8,7 +8,7 @@
 #include <QStack>
 #include <QtDebug>
 
-#include "DactTreeScene.h"
+#include "DactTreeScene.hh"
 
 DactTreeScene::DactTreeScene(QObject *parent) :
 	QGraphicsScene(parent),

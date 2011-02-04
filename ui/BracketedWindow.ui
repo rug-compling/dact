@@ -51,7 +51,7 @@
   <customwidget>
    <class>DactListWidget</class>
    <extends>QWidget</extends>
-   <header>DactListWidget.h</header>
+   <header>DactListWidget.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -109,20 +109,20 @@ SET(dact_SRCS
 
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
-  include/DactApplication.h
-  include/DactMainWindow.h
+  include/DactApplication.hh
+  include/DactMainWindow.hh
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
-  include/DactListWidget.h
-  include/DactMacrosWindow.h
-  include/DactMacrosModel.h
+  include/DactListWidget.hh
+  include/DactMacrosWindow.hh
+  include/DactMacrosModel.hh
   include/DactQueryHistory.hh
   include/ExportProgressDialog.hh
   include/OpenProgressDialog.hh
-  include/DactTreeScene.h
-  include/DactTreeView.h
-  include/PercentageCellDelegate.h
+  include/DactTreeScene.hh
+  include/DactTreeView.hh
+  include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/XPathFilter.hh
   include/XPathMapper.hh
