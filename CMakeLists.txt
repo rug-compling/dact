@@ -82,6 +82,7 @@ add_custom_command(
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
+  src/DactColorWell.cpp
   src/DactMainWindow.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -110,6 +111,7 @@ SET(dact_SRCS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactApplication.hh
+  include/DactColorWell.hh
   include/DactMainWindow.hh
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
