@@ -236,8 +236,13 @@ void StatisticsWindow::createActions()
 
 void StatisticsWindow::keyPressEvent(QKeyEvent *event)
 {
+    // When pressing Esc, stop with what you where doing
     if (event->key() == Qt::Key_Escape)
         stopMapper();
+    // Cmd + w closes the window in OS X (and in some programs on Windows as well)
+    else if (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+        hide();
+    
     else
         QWidget::keyPressEvent(event);
 }
