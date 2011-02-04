@@ -118,6 +118,7 @@
     </property>
     <addaction name="openAction"/>
     <addaction name="openDirectoryAction"/>
+    <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
