@@ -182,6 +182,7 @@
    </attribute>
    <addaction name="previousAction"/>
    <addaction name="nextAction"/>
+   <addaction name="separator"/>
    <addaction name="zoomInAction"/>
    <addaction name="zoomOutAction"/>
    <addaction name="fitAction"/>
