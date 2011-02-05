@@ -128,16 +128,22 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 		
 		painter->save();
 		
-		painter->setPen(d_contextForeground);
+		painter->setPen(option.state & QStyle::State_Selected
+    				 ? option.palette.highlightedText().color()
+    				 : d_contextForeground);
 		painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
 		
 		QRectF usedSpace;
-		painter->setPen(d_keywordForeground);
+		painter->setPen(option.state & QStyle::State_Selected
+    				 ? option.palette.highlightedText().color()
+    				 : d_keywordForeground);
 		painter->drawText(matchBox, Qt::AlignLeft, chunk.fullText(), &usedSpace);
 		
 		rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
 		
-		painter->setPen(d_contextForeground);
+		painter->setPen(option.state & QStyle::State_Selected
+    				 ? option.palette.highlightedText().color()
+    				 : d_contextForeground);
 		painter->drawText(rightContextBox, Qt::AlignLeft, chunk.remainingRight());
 		
 		painter->restore();
