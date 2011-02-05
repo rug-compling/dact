@@ -116,7 +116,7 @@ The left pane shows a list of corpus entries, where each entry represents a pars
 
 After typing the query, press the *Enter* key, and Dact will start filtering the corpus. If you want to interrupt filtering, press the *Esc* key.
 
-Using *Next* and *Previous* arrows in the top left menu bar, you can walk through each found entry. Or you can use the *Ctrl+n* and *Ctrl+p* shortcuts.
+Using *Next* and *Previous* arrows in the top left menu bar, you can walk through each found entry. Or you can use the *Ctrl+Down* and *Ctrl+Up* shortcuts.
 
 ## Highlighting
 
@@ -128,9 +128,9 @@ Initially, the filter query is copied as the highlight query.
 
 ![Tree highlighted](images/tree-highlighted.png)
 
-Matching nodes will be highlighted in the tree in green. The buttons *Zoom In* and *Zoom Out* can be used to scale the tree. *Previous Node* and *Next Node* will walk you through all the matching nodes. This node will then be marked by a slightly thicker border. When zoomed in, it also focusses on the node, making sure it is visible. You can use *Ctrl+[* and *Ctrl+]* as well.
+Matching nodes will be highlighted in the tree in green. The buttons *Zoom In* and *Zoom Out* can be used to scale the tree. *Previous Node* and *Next Node* will walk you through all the matching nodes. You can use *Ctrl+Left* and *Ctrl+Right* as well. This node will then be marked by a slightly thicker border. When zoomed in, it also focusses on the node, making sure it is visible. Normally, the scroll wheel is used for panning the tree. but when you press *Ctrl*, scrolling will zoom the tree. *Ctrl+=* and *Ctrl+-* can also be used to zoom in and out, and *Ctrl+0* resets the zoom level to show the whole tree.
 
-The leaf nodes actually have tooltips showing more details about the node.
+The leaf nodes have tooltips showing more details about the node.
 
 Below the tree the bracketed sentence is shown, and the parts in the sentence represented by the matching nodes are surrounded by square brackets.
 
@@ -152,6 +152,8 @@ Because we want to know how often the word occurs, we select *word* or *lemma*.
 
 The *result* column shows all the distinct values found, and the *count* column shows how often these values where encountered. The *percentage* column puts this number into perspective by showing how much this is as a percentage of the total count of found values. This total is shown in the bottom right of the window.
 
+You can double-click one of the rows to search for all nodes that together are summed up in that row.
+
 ## Bracketed sentences
 
 To quickly get an impression which part of a sentence matches a query, you can use the *Bracketed sentences* window in the *View* menu. Or by using *Ctrl+b*.
@@ -159,3 +161,9 @@ To quickly get an impression which part of a sentence matches a query, you can u
 ![Bracketed sentences window](images/bracketed-sentences-window.png)
 
 The window shows the part of a sentence which matches the query between brackets for all the sentences in the corpus where at least one matching node is found. Single clicking on one of these sentences will draw its tree in the Main Window. Double clicking a sentence will bring the Main Window with the tree to the front.
+
+You can select alternative display modes using the dropdown menu. Currently three methods are implemented:
+
+ * *Complete Sentence* shows the matching nodes in the sentence on a different background. Nested matches have a more opaque background.
+ * *Only Matches* shows only partial sentences of the nodes that matched. One match or nested match per line. Currently because of the way this view is implemented the matches cannot be sorted.
+ * *Keywords in Context* shows all the matches directly underneath each other and prints the rest of the sentence left and right of the match. The colors can be configured in Dact's preference window.
