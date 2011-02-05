@@ -2,10 +2,32 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPalette>
+#include <QSettings>
 
 #include "BracketedDelegates.hh"
 
 #include <QtDebug>
+
+BracketedKeywordInContextDelegate::BracketedKeywordInContextDelegate(QWidget* parent)
+:
+BracketedDelegate(parent)
+{
+    loadColorSettings();
+}
+
+void BracketedKeywordInContextDelegate::loadColorSettings()
+{
+    QSettings settings("RUG", "Dact");
+    settings.beginGroup("KeywordsInContext");
+    
+    d_keywordForeground = settings.value("keywordForeground", QColor(Qt::black)).value<QColor>();
+    
+    d_keywordBackground = settings.value("keywordBackground", QColor(Qt::white)).value<QColor>();
+    
+    d_contextForeground = settings.value("contextForeground", QColor(Qt::darkGray)).value<QColor>();
+    
+    d_contextBackground = settings.value("contextBackground", QColor(Qt::white)).value<QColor>();
+}
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -106,16 +128,16 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 		
 		painter->save();
 		
-		painter->setPen(QColor(Qt::darkGray)); // @TODO make colors changealbe in preferences
+		painter->setPen(d_contextForeground);
 		painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
 		
 		QRectF usedSpace;
-		painter->setPen(QColor(Qt::black));
+		painter->setPen(d_keywordForeground);
 		painter->drawText(matchBox, Qt::AlignLeft, chunk.fullText(), &usedSpace);
 		
 		rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
 		
-		painter->setPen(QColor(Qt::darkGray));
+		painter->setPen(d_contextForeground);
 		painter->drawText(rightContextBox, Qt::AlignLeft, chunk.remainingRight());
 		
 		painter->restore();

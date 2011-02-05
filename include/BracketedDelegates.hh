@@ -101,9 +101,15 @@ class BracketedKeywordInContextDelegate : public BracketedDelegate
 {
     Q_OBJECT
 public:
-    BracketedKeywordInContextDelegate(QWidget *parent = 0) : BracketedDelegate(parent) {}
+    BracketedKeywordInContextDelegate(QWidget *parent = 0);
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
+private:
+    void loadColorSettings();
+    QColor d_keywordForeground;
+    QColor d_keywordBackground;
+    QColor d_contextForeground;
+    QColor d_contextBackground;
 };
 
 #endif
