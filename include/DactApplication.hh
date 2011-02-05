@@ -9,7 +9,7 @@ class DactApplication: public QApplication
 {
 	Q_OBJECT
 public:
-	DactApplication(int argc, char** argv);
+	DactApplication(int &argc, char** argv);
 	~DactApplication();
 	void init();
 	void openCorpus(QString const &fileName);

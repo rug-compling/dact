@@ -3,7 +3,7 @@
 #include <QFileOpenEvent>
 
 
-DactApplication::DactApplication(int argc, char** argv)
+DactApplication::DactApplication(int &argc, char** argv)
 :
 QApplication(argc, argv),
 d_mainWindow(0)
