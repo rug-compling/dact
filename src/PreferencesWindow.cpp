@@ -92,8 +92,10 @@ void PreferencesWindow::keyPressEvent(QKeyEvent *event)
     // But closing preference windows with ESC isn't uncommon either.
     if (event->key() == Qt::Key_Escape
         || event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+    {
         hide();
-    
+        event->accept();
+    }
     else
         QWidget::keyPressEvent(event);
 }

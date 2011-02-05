@@ -226,11 +226,16 @@ void BracketedWindow::keyPressEvent(QKeyEvent *event)
 {
     // When pressing Esc, stop with what you where doing
     if (event->key() == Qt::Key_Escape)
+    {
         stopMapper();
+        event->accept();
+    }
     // Cmd + w closes the window in OS X (and in some programs on Windows as well)
     else if (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+    {
         hide();
-    
+        event->accept();
+    }
     else
         QWidget::keyPressEvent(event);
 }

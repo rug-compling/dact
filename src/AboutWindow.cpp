@@ -1,5 +1,6 @@
 #include <QDesktopServices>
 #include <QGraphicsScene>
+#include <QKeyEvent>
 #include <QPixmap>
 #include <QSharedPointer>
 #include <QUrl>
@@ -31,6 +32,19 @@ AboutWindow::AboutWindow(QWidget *parent, Qt::WindowFlags f) :
 
 AboutWindow::~AboutWindow()
 {
+}
+
+void AboutWindow::keyPressEvent(QKeyEvent *event)
+{
+    // Close window on ESC and CMD + W.
+    if (event->key() == Qt::Key_Escape
+        || event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+    {
+        hide();
+        event->accept();
+    }
+    else
+        QWidget::keyPressEvent(event);
 }
 
 void AboutWindow::reportBug()
