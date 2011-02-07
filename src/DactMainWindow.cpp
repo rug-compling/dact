@@ -657,7 +657,7 @@ bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &
               emit exportProgress(progress);
         }
     } catch (ac::OpenError const &e) {
-        emit exportError(QString("Could not open %1 for exporting:\n%2").arg(filename).arg(e.what()));
+        emit exportError(e.what());
         return false;
     } catch (std::runtime_error const &e) {
         emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
