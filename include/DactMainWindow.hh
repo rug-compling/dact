@@ -119,6 +119,8 @@ private slots:
 	 \param idx files available so far. Not used by corpusRead.
 	*/
     void corpusRead(int idx);
+
+    void corpusWritten(int idx);
 	
 	/*!
 	 Called when one of the entries in the BracketedWindow is selected. It will
@@ -398,7 +400,7 @@ private:
 	 */
     void initTreeTransformer();
 	
-	void writeCorpus(QString const &filename, QList<QString> const &files);
+	bool writeCorpus(QString const &filename, QList<QString> const &files);
 	
 	/*!
 	 Read settings like the main window position and dimensions
@@ -491,6 +493,12 @@ private:
 	 \sa corpusRead
 	 */
     QFutureWatcher<void> d_corpusOpenWatcher;
+
+	/*!
+	 \sa d_corpusWriteFuture
+	 \sa corpusWritten
+	 */
+    QFutureWatcher<bool> d_corpusWriteWatcher;
 	
 	/*!
 	 Currently loaded corpus. Shared between all the windows that might need
