@@ -204,6 +204,11 @@ void DactMainWindow::showStatisticsWindow()
     d_statisticsWindow->raise();
 }
 
+void DactMainWindow::showWriteCorpusError(QString const &error)
+{
+    QMessageBox::critical(this, "Export error", error);
+}
+
 void DactMainWindow::statisticsEntryActivated(QString const &value, QString const &query)
 {
     d_ui->filterLineEdit->setText(query);
@@ -224,6 +229,7 @@ void DactMainWindow::createActions()
     QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
     QObject::connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusWritten(int)));
     QObject::connect(d_openProgressDialog, SIGNAL(rejected()), this, SLOT(cancelReadCorpus()));
+    QObject::connect(this, SIGNAL(exportError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
     
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
@@ -568,11 +574,6 @@ void DactMainWindow::corpusRead(int idx)
 void DactMainWindow::corpusWritten(int idx)
 {
     d_exportProgressDialog->accept();
-    if (!d_corpusWriteWatcher.future().resultAt(idx)) {
-        QString msg("Could not export to corpus...\n\n");
-        msg += "Check file permissions!";
-        QMessageBox::critical(this, "Export error", msg);
-    }
 }
 
 void DactMainWindow::readSettings()
@@ -656,8 +657,10 @@ bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &
               emit exportProgress(progress);
         }
     } catch (ac::OpenError const &e) {
+        emit exportError(QString("Could not open %1 for exporting:\n%2").arg(filename).arg(e.what()));
         return false;
     } catch (std::runtime_error const &e) {
+        emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
         return false;
     }
     

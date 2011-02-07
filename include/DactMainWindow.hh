@@ -56,6 +56,7 @@ public:
 signals:
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
+    void exportError(QString const &error);
 
 public slots:
 	/*!
@@ -300,6 +301,8 @@ private slots:
 	 \param params key-value pairs used by the stylesheet
 	 */
     void showTree(QString const &xml, QHash<QString, QString> const &params);
+	
+	void showWriteCorpusError(QString const &error);
 	
 	/*!
 	 Listens to the entryActivated event from the statistics window which passes
