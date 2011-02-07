@@ -539,7 +539,6 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
         d_openProgressDialog->setCancelable(true);
-        addFiles();
     } catch (std::runtime_error const &e) {
         // TODO display a nice error window here
         return false;
@@ -555,6 +554,7 @@ void DactMainWindow::cancelReadCorpus()
 
 void DactMainWindow::corpusRead(int idx)
 {
+    addFiles();
     d_openProgressDialog->accept();
 
     if(d_bracketedWindow != 0)
