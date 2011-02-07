@@ -13,7 +13,8 @@ class ExportProgressDialog : public QDialog {
 public:
     ExportProgressDialog(QWidget *parent);
     ~ExportProgressDialog();
-	void open();
+    void open();
+public slots:
     void setMaximum(int maximum);
     void setProgress(int progress);
 private:

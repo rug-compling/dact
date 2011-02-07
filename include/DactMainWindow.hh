@@ -53,6 +53,10 @@ public:
 
     bool readAndShowFiles(QString const &path);
 
+signals:
+    void exportProgressMaximum(int max);
+    void exportProgress(int progress);
+
 public slots:
 	/*!
 	 Hide the main window

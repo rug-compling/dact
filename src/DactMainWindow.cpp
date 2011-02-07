@@ -594,14 +594,25 @@ void DactMainWindow::readSettings()
 
 void DactMainWindow::exportCorpus()
 {
+    if (d_corpusWriteWatcher.isRunning()) {
+        d_corpusWriteWatcher.cancel();
+        d_corpusWriteWatcher.waitForFinished();
+    }
+
     QString filename(QFileDialog::getSaveFileName(this,
         d_ui->fileListWidget->selectedItems().size() ? "Export selection" : "Export corpus",
         QString(), "*.dact"));
     
     if (!filename.isNull() && d_corpusReader)
     {
-        if (d_exportProgressDialog == 0)
+        if (d_exportProgressDialog == 0) {
             d_exportProgressDialog = new ExportProgressDialog(this);
+            connect(this, SIGNAL(exportProgressMaximum(int)),
+                d_exportProgressDialog, SLOT(setMaximum(int)));
+            connect(this, SIGNAL(exportProgress(int)),
+                d_exportProgressDialog, SLOT(setProgress(int)));
+
+        }
         
         d_exportProgressDialog->open();
         
@@ -631,14 +642,18 @@ bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &
     try {
         ac::DbCorpusWriter corpus(filename, true);
         
-        //d_exportProgressDialog->setMaximum(files.size());
+        emit exportProgressMaximum(files.size());
+        emit exportProgress(0);
+        int percent = files.size() / 100;
         int progress = 0;
             
         for (QList<QString>::const_iterator itr(files.constBegin()),
              end(files.constEnd()); itr != end; ++itr)
         {
-            //d_exportProgressDialog->setProgress(++progress);
             corpus.write(*itr, d_corpusReader->read(*itr));
+            ++progress;
+            if (percent == 0 || progress % percent == 0)
+              emit exportProgress(progress);
         }
     } catch (ac::OpenError const &e) {
         return false;
