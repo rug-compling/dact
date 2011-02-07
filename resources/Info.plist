@@ -37,17 +37,17 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>dbxml</string>
+				<string>dact</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>DBXML Corpus</string>
+			<string>Dact DBXML Corpus</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>data.dz</string>
+				<string>dz</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Compact Corpus</string>
