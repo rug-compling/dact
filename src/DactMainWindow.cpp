@@ -701,6 +701,8 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     d_treeScene->parseTree(xml_tree);
     
     d_ui->treeGraphicsView->setScene(d_treeScene);
+    
+    updateTreeNodeButtons();
 }
 
 void DactMainWindow::stopMapper()
@@ -788,4 +790,51 @@ void DactMainWindow::focusTreeNode(int direction)
             break;
         }
     }
+}
+
+void DactMainWindow::updateTreeNodeButtons()
+{
+    // This enables the buttons as soon as there are active nodes in the tree.
+    bool hasActiveNodes = false;
+
+    if (d_treeScene)
+    {
+        foreach(DactTreeNode* node, d_treeScene->nodes())
+        {
+            if (node->isActive())
+            {
+                hasActiveNodes = true;
+                break;
+            }
+        }
+    }
+    
+    d_ui->previousTreeNodeAction->setEnabled(hasActiveNodes);
+    d_ui->nextTreeNodeAction->setEnabled(hasActiveNodes);
+    
+    /*
+    // This code actually looks at the position of the currently focussed
+    // tree node. But this requires that it is called every time the focus
+    // changes, which I can't right now.
+    bool nodesBeforeFocussedNode = false;
+    bool nodesAfterFocussedNode = false;
+    
+    bool focussedNodePassed = false;
+    foreach(DactTreeNode* node, d_treeScene->nodes())
+    {
+        if (node->hasFocus())
+            focussedNodePassed = true;
+        
+        else if (node->isActive())
+        {
+            if (!focussedNodePassed)
+                nodesBeforeFocussedNode = true;
+            else
+                nodesAfterFocussedNode = true;
+        }
+    }
+    
+    d_ui->previousTreeNodeAction->setEnabled(nodesBeforeFocussedNode);
+    d_ui->nextTreeNodeAction->setEnabled(nodesAfterFocussedNode);
+    */
 }

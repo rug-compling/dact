@@ -407,6 +407,8 @@ private:
 	 */
     void initTreeTransformer();
 	
+    void updateTreeNodeButtons();
+	
 	bool writeCorpus(QString const &filename, QList<QString> const &files);
 	
 	/*!

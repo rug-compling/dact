@@ -260,6 +260,9 @@
     <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Next node</string>
    </property>
@@ -277,6 +280,9 @@
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Previous node</string>
