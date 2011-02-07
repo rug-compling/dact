@@ -454,7 +454,7 @@ void DactMainWindow::nextEntry(bool)
 void DactMainWindow::openCorpus()
 {
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        "Dact corpora (*.dbxml *.data.dz)");
+        "Dact corpora (*.dact *.data.dz)");
     if (corpusPath.isNull())
         return;
 
@@ -596,7 +596,7 @@ void DactMainWindow::exportCorpus()
 {
     QString filename(QFileDialog::getSaveFileName(this,
         d_ui->fileListWidget->selectedItems().size() ? "Export selection" : "Export corpus",
-        QString(), "*.dbxml"));
+        QString(), "*.dact"));
     
     if (!filename.isNull() && d_corpusReader)
     {
