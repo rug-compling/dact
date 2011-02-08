@@ -18,6 +18,7 @@ public slots:
     void setCancelable(bool cancelable);
     void setMaximum(int maximum);
     void setProgress(int progress);
+    void setDescription(QString const &description);
 private:
     QSharedPointer<Ui::DactProgressDialog> d_ui;
 };

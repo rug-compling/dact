@@ -38,3 +38,9 @@ void DactProgressDialog::setProgress(int progress)
 {
     d_ui->progressBar->setValue(progress);
 }
+
+void DactProgressDialog::setDescription(QString const &description)
+{
+    d_ui->description->setText(description);
+    d_ui->description->setEnabled(true);
+}

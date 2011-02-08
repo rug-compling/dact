@@ -108,7 +108,7 @@ void DactMainWindow::addFiles()
             d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_filter), &d_entryMap);
             return;
         }
-
+        
         for (ac::CorpusReader::EntryIterator i(d_corpusReader->begin()),
                                              end(d_corpusReader->end());
             !d_addFilesCancelled && i != end; ++i) {
@@ -537,6 +537,8 @@ void DactMainWindow::readCorpus(QString const &corpusPath)
         d_corpusOpenWatcher.waitForFinished();
     }
 
+    d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
+    d_openProgressDialog->setDescription(QString("Opening %1").arg(corpusPath));
     d_openProgressDialog->open();
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
@@ -610,12 +612,18 @@ void DactMainWindow::exportCorpus()
         d_corpusWriteWatcher.waitForFinished();
     }
 
+    bool selectionOnly = d_ui->fileListWidget->selectedItems().size();
+
     QString filename(QFileDialog::getSaveFileName(this,
-        d_ui->fileListWidget->selectedItems().size() ? "Export selection" : "Export corpus",
+        selectionOnly ? "Export selection" : "Export corpus",
         QString(), "*.dact"));
     
     if (!filename.isNull() && d_corpusReader)
     {
+        d_exportProgressDialog->setWindowTitle(selectionOnly ? "Exporting selection" : "Exporting corpus");
+        d_exportProgressDialog->setDescription(QString("Exporting %1 to:\n%2")
+            .arg(selectionOnly ? "selection" : "corpus")
+            .arg(filename));
         d_exportProgressDialog->open();
         
         // Since we make a copy of the current selection, this action doesn't really need to block
@@ -624,10 +632,9 @@ void DactMainWindow::exportCorpus()
         
         QList<QString> files;
         
-        if (d_ui->fileListWidget->selectedItems().size())
+        if (selectionOnly)
         {
-            foreach (QListWidgetItem *item,
-                    d_ui->fileListWidget->selectedItems())
+            foreach (QListWidgetItem *item, d_ui->fileListWidget->selectedItems())
                 files.append(item->data(Qt::UserRole).toString());
         }
         else
