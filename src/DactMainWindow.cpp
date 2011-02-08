@@ -36,8 +36,7 @@
 #include <DactMacrosModel.hh>
 #include <DactMacrosWindow.hh>
 #include <DactQueryHistory.hh>
-#include <OpenProgressDialog.hh>
-#include <ExportProgressDialog.hh>
+#include <DactProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
@@ -54,8 +53,8 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_bracketedWindow(0),
     d_statisticsWindow(0),
     d_macrosWindow(0),
-    d_openProgressDialog(new OpenProgressDialog(this)),
-    d_exportProgressDialog(new ExportProgressDialog(this)),
+    d_openProgressDialog(new DactProgressDialog(this)),
+    d_exportProgressDialog(new DactProgressDialog(this)),
     d_preferencesWindow(0),
     d_treeScene(0),
     d_queryHistory(0)

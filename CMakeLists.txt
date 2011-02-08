@@ -95,8 +95,7 @@ SET(dact_SRCS
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
   src/DactQueryHistory.cpp
-  src/ExportProgressDialog.cpp
-  src/OpenProgressDialog.cpp  
+  src/DactProgressDialog.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/PercentageCellDelegate.cpp
@@ -120,8 +119,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
-  include/ExportProgressDialog.hh
-  include/OpenProgressDialog.hh
+  include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/PercentageCellDelegate.hh
@@ -138,8 +136,7 @@ SET(dact_UI
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/DactMacrosWindow.ui
-  ui/OpenProgressDialog.ui
-  ui/ExportProgressDialog.ui
+  ui/DactProgressDialog.ui
 )
 
 SET(dact_RCS

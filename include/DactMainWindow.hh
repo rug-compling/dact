@@ -29,8 +29,7 @@ class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
 class StatisticsWindow;
-class OpenProgressDialog;
-class ExportProgressDialog;
+class DactProgressDialog;
 class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
@@ -432,8 +431,8 @@ private:
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
     DactMacrosWindow *d_macrosWindow;
-    OpenProgressDialog *d_openProgressDialog;
-	ExportProgressDialog *d_exportProgressDialog;
+    DactProgressDialog *d_openProgressDialog;
+	DactProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
     StatisticsWindow *d_statisticsWindow;
     

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ExportProgressDialog</class>
- <widget class="QDialog" name="ExportProgressDialog">
+ <class>DactProgressDialog</class>
+ <widget class="QDialog" name="DactProgressDialog">
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
@@ -12,9 +12,6 @@
     <width>253</width>
     <height>116</height>
    </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Exporting corpus…</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -53,7 +50,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ExportProgressDialog</receiver>
+   <receiver>DactProgressDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -69,7 +66,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ExportProgressDialog</receiver>
+   <receiver>DactProgressDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
