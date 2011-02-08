@@ -116,6 +116,13 @@ private slots:
      */
     void cancelReadCorpus();
     
+    /*!
+     Cancels the writing loop when exporting files to a corpus.
+     \sa exportCorpus
+     \sa writeCorpus
+     */
+    void cancelWriteCorpus();
+    
 	/*!
 	 Listens for the resultReadyAt signal from the corpus reader. When heard, it hides
 	 the OpenProgressDialog, calls addFiles to start loading the file list and changes
@@ -521,6 +528,8 @@ private:
     DactTreeScene *d_treeScene;
     
     bool d_addFilesCancelled;
+    
+    bool d_writeCorpusCancelled;
 };
 
 #endif // DACTMAINWINDOW_H

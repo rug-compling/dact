@@ -23,7 +23,11 @@ void ExportProgressDialog::open()
     
     QDialog::open();
 }
- 
+
+void ExportProgressDialog::setCancelable(bool cancelable)
+{
+    d_ui->buttonBox->setEnabled(cancelable);
+}
 
 void ExportProgressDialog::setMaximum(int max)
 {

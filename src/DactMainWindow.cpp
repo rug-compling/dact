@@ -55,7 +55,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(new OpenProgressDialog(this)),
-    d_exportProgressDialog(0),
+    d_exportProgressDialog(new ExportProgressDialog(this)),
     d_preferencesWindow(0),
     d_treeScene(0),
     d_queryHistory(0)
@@ -228,8 +228,14 @@ void DactMainWindow::createActions()
 {
     QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
     QObject::connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusWritten(int)));
+    
     QObject::connect(d_openProgressDialog, SIGNAL(rejected()), this, SLOT(cancelReadCorpus()));
     QObject::connect(this, SIGNAL(exportError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
+    
+    QObject::connect(d_exportProgressDialog, SIGNAL(rejected()), this, SLOT(cancelWriteCorpus()));
+    QObject::connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
+    QObject::connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
+    
     
     QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)), this,
         SLOT(entryFound(QString)));
@@ -559,6 +565,11 @@ void DactMainWindow::cancelReadCorpus()
     d_addFilesCancelled = true;
 }
 
+void DactMainWindow::cancelWriteCorpus()
+{
+    d_writeCorpusCancelled = true;
+}
+
 void DactMainWindow::corpusRead(int idx)
 {
     addFiles();
@@ -606,15 +617,6 @@ void DactMainWindow::exportCorpus()
     
     if (!filename.isNull() && d_corpusReader)
     {
-        if (d_exportProgressDialog == 0) {
-            d_exportProgressDialog = new ExportProgressDialog(this);
-            connect(this, SIGNAL(exportProgressMaximum(int)),
-                d_exportProgressDialog, SLOT(setMaximum(int)));
-            connect(this, SIGNAL(exportProgress(int)),
-                d_exportProgressDialog, SLOT(setProgress(int)));
-
-        }
-        
         d_exportProgressDialog->open();
         
         // Since we make a copy of the current selection, this action doesn't really need to block
@@ -631,6 +633,9 @@ void DactMainWindow::exportCorpus()
         }
         else
             std::copy(d_corpusReader->begin(), d_corpusReader->end(), std::back_inserter(files));
+        
+        d_writeCorpusCancelled = false;
+        d_exportProgressDialog->setCancelable(true);
         
         QFuture<bool> corpusWriterFuture =
             QtConcurrent::run(this, &DactMainWindow::writeCorpus, filename, files);
@@ -649,7 +654,8 @@ bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &
         int progress = 0;
             
         for (QList<QString>::const_iterator itr(files.constBegin()),
-             end(files.constEnd()); itr != end; ++itr)
+             end(files.constEnd());
+             !d_writeCorpusCancelled && itr != end; ++itr)
         {
             corpus.write(*itr, d_corpusReader->read(*itr));
             ++progress;

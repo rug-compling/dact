@@ -15,6 +15,7 @@ public:
     ~ExportProgressDialog();
     void open();
 public slots:
+    void setCancelable(bool cancelable);
     void setMaximum(int maximum);
     void setProgress(int progress);
 private:
