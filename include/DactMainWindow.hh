@@ -308,6 +308,10 @@ private slots:
 	 */
     void showTree(QString const &xml, QHash<QString, QString> const &params);
 	
+	/*!
+	 Displays a critical error dialog with the supplied error message.
+	 \sa exportError
+	 */
 	void showWriteCorpusError(QString const &error);
 	
 	/*!
@@ -334,7 +338,12 @@ private slots:
 	 \sa focusFitTree
 	 */
     void treeZoomOut();
-	    
+	
+	/*!
+	 Update the state of the next/previous node buttons in the toolbar.
+	 */
+	void updateTreeNodeButtons();
+	
 	/*!
 	 When the mapper (the one used to find files that match the filter query) is
 	 started, this will make the progress bar visible.
@@ -395,7 +404,7 @@ private:
 	 currently focussed node, and then walks using direction towards the next node
 	 that is active (which means it matched the highlight query) When the last node
 	 is reached, it continues with the first node again. It never walks more than 
-	 one round.
+	 one round. Note that it walks the tree depth-first.
 	 \param direction number that is added to the position each step. -1 is effectively
 	 walk to the left while 1 is walk to the right.
 	 */
@@ -413,9 +422,15 @@ private:
 	 */
     void initTreeTransformer();
 	
-    void updateTreeNodeButtons();
-	
-	bool writeCorpus(QString const &filename, QList<QString> const &files);
+	/*!
+	 Export a set of sentences as a dbxml .dact file to the given location.
+	 This can be run (and is run) on a different thread, and sends signals to
+	 inform the ui-thread of its progress.
+	 \sa exportProgressMaximum
+	 \sa exportProgress
+	 \sa exportError
+	 */
+    bool writeCorpus(QString const &filename, QList<QString> const &files);
 	
 	/*!
 	 Read settings like the main window position and dimensions
@@ -526,8 +541,19 @@ private:
 	 */
     DactTreeScene *d_treeScene;
     
+    /*!
+     Used in the for-loop in addFiles, the openProgressDialog's cancel button
+     can set this to false to stop the loop.
+     \sa addFiles
+     */
     bool d_addFilesCancelled;
     
+    /*!
+     Used in the for-loop in writeCorpus, the exportProgressDialog's cancel
+     button can set this to false to stop the writing of sentences to the 
+     exported corpus.
+     \sa writeCorpus
+     */
     bool d_writeCorpusCancelled;
 };
 

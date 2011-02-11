@@ -704,7 +704,12 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     // @TODO why is the scene recreated for every tree, and not just cleared and reused?
     // (well, currently because calling parseTree twice will cause a segfault)
     if (d_treeScene)
+    {
+        // disconnect or it will send selectionChanged signals while being
+        // destroyed, leading to serious segfaults.
+        d_treeScene->disconnect();
         delete d_treeScene;
+    }
     
     d_treeScene = new DactTreeScene(d_ui->treeGraphicsView);
     
@@ -713,6 +718,9 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     d_treeScene->parseTree(xml_tree);
     
     d_ui->treeGraphicsView->setScene(d_treeScene);
+    
+    // listen to selection changes to update the next/prev node buttons accordingly.
+    QObject::connect(d_treeScene, SIGNAL(selectionChanged()), this, SLOT(updateTreeNodeButtons()));
     
     updateTreeNodeButtons();
 }
@@ -802,51 +810,37 @@ void DactMainWindow::focusTreeNode(int direction)
             break;
         }
     }
+    
+    updateTreeNodeButtons();
 }
 
 void DactMainWindow::updateTreeNodeButtons()
 {
-    // This enables the buttons as soon as there are active nodes in the tree.
-    bool hasActiveNodes = false;
-
+    bool nodesBeforeFocussedNode = false;
+    bool nodesAfterFocussedNode = false;
+    bool focussedNodePassed = false;
+    
     if (d_treeScene)
     {
         foreach(DactTreeNode* node, d_treeScene->nodes())
         {
-            if (node->isActive())
+            if (node->hasFocus())
+                focussedNodePassed = true;
+        
+            else if (node->isActive())
             {
-                hasActiveNodes = true;
-                break;
+                if (!focussedNodePassed)
+                    nodesBeforeFocussedNode = true;
+                else
+                    nodesAfterFocussedNode = true;
             }
         }
     }
     
-    d_ui->previousTreeNodeAction->setEnabled(hasActiveNodes);
-    d_ui->nextTreeNodeAction->setEnabled(hasActiveNodes);
-    
-    /*
-    // This code actually looks at the position of the currently focussed
-    // tree node. But this requires that it is called every time the focus
-    // changes, which I can't right now.
-    bool nodesBeforeFocussedNode = false;
-    bool nodesAfterFocussedNode = false;
-    
-    bool focussedNodePassed = false;
-    foreach(DactTreeNode* node, d_treeScene->nodes())
-    {
-        if (node->hasFocus())
-            focussedNodePassed = true;
-        
-        else if (node->isActive())
-        {
-            if (!focussedNodePassed)
-                nodesBeforeFocussedNode = true;
-            else
-                nodesAfterFocussedNode = true;
-        }
-    }
-    
+    // When focussedNodePassed is false, none of the nodes has focus. Then what
+    // is the "next" node? Therefore use nodesBeforeFocussedUpdate when none of
+    // the nodes is focussed, which will be true if at least one node is active.
     d_ui->previousTreeNodeAction->setEnabled(nodesBeforeFocussedNode);
-    d_ui->nextTreeNodeAction->setEnabled(nodesAfterFocussedNode);
-    */
+    d_ui->nextTreeNodeAction->setEnabled(
+        focussedNodePassed ? nodesAfterFocussedNode : nodesBeforeFocussedNode);
 }
