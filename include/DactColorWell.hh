@@ -2,7 +2,6 @@
 #define DACTCOLORWELL_H
 
 #include <QColor>
-#include <QColorDialog>
 #include <QIcon>
 #include <QPixmap>
 #include <QToolButton>
@@ -27,7 +26,6 @@ private slots:
 
 private:
     QColor d_color;
-    QColorDialog d_dialog;
     QIcon d_icon;
     QPixmap d_swatch;
 };

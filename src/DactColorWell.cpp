@@ -1,5 +1,4 @@
 #include <QColorDialog>
-#include <QPaintEvent>
 
 #include "DactColorWell.hh"
 
@@ -11,9 +10,6 @@ d_swatch(16,16)
     updateSwatch(d_color);
     
     QObject::connect(this, SIGNAL(clicked()), this, SLOT(openColorDialog()));
-    
-    QObject::connect(&d_dialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(updateSwatch(QColor)));
-    QObject::connect(&d_dialog, SIGNAL(colorSelected(QColor)), this, SLOT(updateColor(QColor)));
 }
 
 QColor const &DactColorWell::color() const
@@ -35,7 +31,7 @@ void DactColorWell::updateColor(QColor const &color)
 
 void DactColorWell::openColorDialog()
 {
-    d_dialog.open();
+    updateColor(QColorDialog::getColor(d_color, this));
 }
 
 void DactColorWell::updateSwatch(QColor const &color)
