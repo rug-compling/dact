@@ -41,7 +41,7 @@ void DactMacrosWindow::createActions()
 
 void DactMacrosWindow::readSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     settings.beginGroup("macroswindow");
 
@@ -56,7 +56,7 @@ void DactMacrosWindow::readSettings()
 
 void DactMacrosWindow::writeSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     settings.beginGroup("macroswindow");
     

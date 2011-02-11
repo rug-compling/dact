@@ -43,7 +43,7 @@ void DactQueryHistory::addToHistory(QString const &query)
 
 void DactQueryHistory::readHistory()
 {
-	QSettings settings("RUG", "Dact");
+	QSettings settings;
 	
 	int size = settings.beginReadArray("history");
 
@@ -58,7 +58,7 @@ void DactQueryHistory::readHistory()
 
 void DactQueryHistory::writeHistory()
 {
-	QSettings settings("RUG", "Dact");
+	QSettings settings;
 	
 	settings.beginWriteArray("history");
 	

@@ -122,7 +122,7 @@ QList<DactMacro> DactMacrosModel::readMacros() const
 {
     QList<DactMacro> macros;
     
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     int size = settings.beginReadArray("macros");
     
@@ -143,7 +143,7 @@ QList<DactMacro> DactMacrosModel::readMacros() const
 
 void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     settings.beginWriteArray("macros");
     

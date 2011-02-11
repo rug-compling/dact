@@ -17,16 +17,17 @@ BracketedDelegate(parent)
 
 void BracketedKeywordInContextDelegate::loadColorSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     settings.beginGroup("KeywordsInContext");
     
-    d_keywordForeground = settings.value("keywordForeground", QColor(Qt::black)).value<QColor>();
-    
-    d_keywordBackground = settings.value("keywordBackground", QColor(Qt::white)).value<QColor>();
-    
-    d_contextForeground = settings.value("contextForeground", QColor(Qt::darkGray)).value<QColor>();
-    
-    d_contextBackground = settings.value("contextBackground", QColor(Qt::white)).value<QColor>();
+    d_keywordForeground = settings.value("keywordForeground",
+        QColor(Qt::black)).value<QColor>();
+    d_keywordBackground = settings.value("keywordBackground",
+        QColor(Qt::white)).value<QColor>();
+    d_contextForeground = settings.value("contextForeground",
+        QColor(Qt::darkGray)).value<QColor>();
+    d_contextBackground = settings.value("contextBackground",
+        QColor(Qt::white)).value<QColor>();
 }
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

@@ -267,7 +267,7 @@ void BracketedWindow::closeEvent(QCloseEvent *event)
 
 void BracketedWindow::readSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     // Window geometry.
     QPoint pos = settings.value("filter_pos", QPoint(200, 200)).toPoint();
@@ -283,7 +283,7 @@ void BracketedWindow::readSettings()
 
 void BracketedWindow::writeSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     // Window geometry
     settings.setValue("filter_pos", pos());

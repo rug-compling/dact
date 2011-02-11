@@ -17,7 +17,7 @@ BracketedDelegate(parent)
 
 void BracketedColorDelegate::loadSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     settings.beginGroup("CompleteSentence");
     
     d_backgroundColor = settings.value("background", QColor(Qt::green)).value<QColor>();

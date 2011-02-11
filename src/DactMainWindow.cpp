@@ -590,7 +590,7 @@ void DactMainWindow::corpusWritten(int idx)
 
 void DactMainWindow::readSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     // Window geometry.
     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
@@ -681,7 +681,7 @@ bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &
 
 void DactMainWindow::writeSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     // Window geometry
     settings.setValue("pos", pos());

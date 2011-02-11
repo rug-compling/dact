@@ -60,15 +60,14 @@ void PreferencesWindow::selectAppFont()
 
     qApp->setFont(newFont);
 
-    QSettings settings("RUG", "Dact");
-    settings.setValue("appFont", newFont.toString());
+    QSettings().setValue("appFont", newFont.toString());
 
     applyAppFont();
 }
 
 void PreferencesWindow::loadColors()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     settings.beginGroup("Tree");
     
@@ -108,7 +107,7 @@ void PreferencesWindow::loadColors()
 
 void PreferencesWindow::saveColors()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
     
     settings.beginGroup("Tree");
     settings.setValue("activeNodeForeground", d_ui->treeActiveNodeForegroundColor->color());

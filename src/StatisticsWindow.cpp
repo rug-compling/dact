@@ -391,7 +391,7 @@ void StatisticsWindow::readNodeAttributes()
 
 void StatisticsWindow::readSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     bool show = settings.value("query_show_percentage", false).toBool();
     showPercentage(show);
@@ -407,7 +407,7 @@ void StatisticsWindow::readSettings()
 
 void StatisticsWindow::writeSettings()
 {
-    QSettings settings("RUG", "Dact");
+    QSettings settings;
 
     settings.setValue("query_show_percentage", d_ui->percentageCheckBox->isChecked());
 
