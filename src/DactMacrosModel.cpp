@@ -3,7 +3,8 @@
 
 #include "DactMacrosModel.hh"
 
-DactMacrosModel::DactMacrosModel(QObject *parent) :
+DactMacrosModel::DactMacrosModel(QObject *parent)
+:
     QAbstractTableModel(parent),
     d_macros(readMacros()),
 	d_symbol('%')
@@ -24,15 +25,15 @@ int DactMacrosModel::columnCount(const QModelIndex &parent) const
 
 QVariant DactMacrosModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
-    if(role != Qt::DisplayRole) 
+    if (role != Qt::DisplayRole) 
         return QVariant();
     
-    if(orientation != Qt::Horizontal)
+    if (orientation != Qt::Horizontal)
         return QVariant();
     
-    if(column == 0)
+    if (column == 0)
         return tr("Pattern");
-    else if(column == 1)
+    else if (column == 1)
         return tr("Replacement");
     else
         return QVariant();
@@ -40,13 +41,14 @@ QVariant DactMacrosModel::headerData(int column, Qt::Orientation orientation, in
 
 QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid())
+    if (!index.isValid())
         return QVariant();
     
-    if(index.row() >= d_macros.size() || index.row() < 0)
+    if (index.row() >= d_macros.size() || index.row() < 0)
         return QVariant();
         
-    if(role == Qt::DisplayRole || role == Qt::EditRole) {
+    if (role == Qt::DisplayRole || role == Qt::EditRole)
+    {
         DactMacro macro = d_macros.at(index.row());
         
         if(index.column() == 0)
@@ -62,7 +64,8 @@ bool DactMacrosModel::insertRows(int position, int rows, const QModelIndex &inde
 {
     beginInsertRows(index, position, position + rows - 1);
     
-    for(int row = 0; row < rows; ++row) {
+    for (int row = 0; row < rows; ++row)
+    {
         DactMacro macro;
         macro.pattern = QString();
         macro.replacement = QString();
@@ -78,9 +81,8 @@ bool DactMacrosModel::removeRows(int position, int rows, const QModelIndex &inde
 {
     beginRemoveRows(index, position, position + rows - 1);
     
-    for(int row = 0; row < rows; ++row) {
+    for (int row = 0; row < rows; ++row)
         d_macros.removeAt(position);
-    }
     
     endRemoveRows();
     
@@ -91,19 +93,19 @@ bool DactMacrosModel::removeRows(int position, int rows, const QModelIndex &inde
 
 bool DactMacrosModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(!index.isValid() || role != Qt::EditRole)
+    if (!index.isValid() || role != Qt::EditRole)
         return false;
     
     DactMacro macro = d_macros.at(index.row());
     
-    if(index.column() == 0)
+    if (index.column() == 0)
         macro.pattern = value.toString();
-    else if(index.column() == 1)
+    else if (index.column() == 1)
         macro.replacement = value.toString();
     
     d_macros.replace(index.row(), macro);
     
-    emit(dataChanged(index,index));
+    emit dataChanged(index,index);
     
     writeMacros(d_macros);
     
@@ -112,7 +114,7 @@ bool DactMacrosModel::setData(const QModelIndex &index, const QVariant &value, i
 
 Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
 {
-    if(!index.isValid())
+    if (!index.isValid())
         return Qt::ItemIsEnabled;
     
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
@@ -126,7 +128,8 @@ QList<DactMacro> DactMacrosModel::readMacros() const
     
     int size = settings.beginReadArray("macros");
     
-    for(int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i)
+    {
         settings.setArrayIndex(i);
         
         DactMacro macro;
@@ -147,7 +150,8 @@ void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
     
     settings.beginWriteArray("macros");
     
-    for(int i = 0; i < d_macros.size(); ++i) {
+    for (int i = 0; i < d_macros.size(); ++i)
+    {
         settings.setArrayIndex(i);
         settings.setValue("pattern", d_macros.at(i).pattern);
         settings.setValue("replacement", d_macros.at(i).replacement);
@@ -161,9 +165,8 @@ QString DactMacrosModel::expand(QString const &expression)
 	QString query(expression);
 	DactMacro macro;
 	
-	foreach(macro, d_macros) {
+	foreach (macro, d_macros)
 		query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
-	}
 	
 	return query;
 }

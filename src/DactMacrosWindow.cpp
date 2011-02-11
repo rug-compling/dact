@@ -33,10 +33,13 @@ void DactMacrosWindow::createActions()
     
     // watch the table's selection to update the [remove] button's state.
     QObject::connect(d_ui->macrosTable->selectionModel(), 
-        SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(macrosTableSelectionChanged()));
+        SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+        this, SLOT(macrosTableSelectionChanged()));
     
-    QObject::connect(d_ui->addButton, SIGNAL(clicked(bool)), this, SLOT(addButtonPressed()));
-    QObject::connect(d_ui->removeButton, SIGNAL(clicked(bool)), this, SLOT(removeButtonPressed()));
+    QObject::connect(d_ui->addButton, SIGNAL(clicked(bool)),
+        this, SLOT(addButtonPressed()));
+    QObject::connect(d_ui->removeButton, SIGNAL(clicked(bool)),
+        this, SLOT(removeButtonPressed()));
 }
 
 void DactMacrosWindow::readSettings()
@@ -72,6 +75,17 @@ void DactMacrosWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void DactMacrosWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+    {
+        hide();
+        event->accept();
+    }
+    else
+        QWidget::keyPressEvent(event);
+}
+
 void DactMacrosWindow::addButtonPressed()
 {
     int row = d_model->rowCount(QModelIndex());
@@ -102,8 +116,10 @@ void DactMacrosWindow::removeButtonPressed()
     int n;
     int rowsBeforeRowDeleted;
     
-    foreach(index, selectedIndexes) {
-        for(n = 0, rowsBeforeRowDeleted = 0; n < i; ++n) {
+    foreach(index, selectedIndexes)
+    {
+        for(n = 0, rowsBeforeRowDeleted = 0; n < i; ++n)
+        {
             if(removedRows[n] < index.row())
                 ++rowsBeforeRowDeleted;
         }

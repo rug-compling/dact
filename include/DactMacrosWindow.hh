@@ -28,6 +28,7 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     void createActions();

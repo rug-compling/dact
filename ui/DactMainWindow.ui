@@ -297,23 +297,12 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="showSentencesInFileList">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Sentences</string>
-   </property>
-   <property name="toolTip">
-    <string>Display bracketed sentences instead of file names</string>
-   </property>
-  </action>
   <action name="showMacrosWindow">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Macros…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="showFilterWindow">
