@@ -76,7 +76,7 @@ void PreferencesWindow::loadColors()
         settings.value("activeNodeForeground", QColor(Qt::white)).value<QColor>());
     
     d_ui->treeActiveNodeBackgroundColor->setColor(
-        settings.value("activeNodeBackground", QColor(Qt::green)).value<QColor>());
+        settings.value("activeNodeBackground", QColor(Qt::darkGreen)).value<QColor>());
     
     settings.endGroup();
     

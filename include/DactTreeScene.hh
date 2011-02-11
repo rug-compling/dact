@@ -1,6 +1,7 @@
 #ifndef DACTTREESCENE_H
 #define DACTTREESCENE_H
 
+#include <QColor>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QHash>
@@ -28,10 +29,13 @@ public:
 	DactTreeNode* rootNode();
 private:
 	void layout(QPointF pos, DactTreeNode* node);
+    void loadSettings();
 	void processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*> &list, QStack<DactTreeNode*> &stack);
 	void processXMLAttribute(xmlTextReaderPtr &reader, DactTreeNode* node);
 	QString processXMLString(xmlChar* xmlValue) const;
 	QList<DactTreeNode*> d_nodes;
+    QColor d_activeNodeBackground;
+    QColor d_activeNodeForeground;
 };
 
 class DactTreeNode : public QGraphicsItem
@@ -56,6 +60,8 @@ public:
 	void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
 	QList<QString> const &popupLines() const;
 	void setPopupItem(PopupItem *item);
+    void setActiveNodeBackground(QColor const &color);
+    void setActiveNodeForeground(QColor const &color);
 	QPainterPath shape() const;
 protected:
 	void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
@@ -75,6 +81,8 @@ private:
 	qreal d_leafMinimumWidth;
 	qreal d_leafMinimumHeight;
 	qreal d_leafPadding;
+    QColor d_activeNodeBackground;
+    QColor d_activeNodeForeground;
 };
 
 class PopupItem : public QGraphicsItem
