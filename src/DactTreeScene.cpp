@@ -15,16 +15,6 @@ DactTreeScene::DactTreeScene(QObject *parent) :
     QGraphicsScene(parent),
     d_nodes()
 {
-    loadSettings();
-}
-
-void DactTreeScene::loadSettings()
-{
-    QSettings settings("RUG", "Dact");
-    settings.beginGroup("Tree");
-
-    d_activeNodeForeground = settings.value("activeNodeForeground", QColor(Qt::white)).value<QColor>();
-    d_activeNodeBackground = settings.value("activeNodeBackground", QColor(Qt::darkGreen)).value<QColor>();
 }
 
 void DactTreeScene::parseTree(QString const &xml)
@@ -98,8 +88,6 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*
             if (name == "node")
             {
                 DactTreeNode* node = new DactTreeNode();
-                node->setActiveNodeBackground(d_activeNodeBackground);
-                node->setActiveNodeForeground(d_activeNodeForeground);
                 d_nodes.append(node);
 
                 // When this isn't the root-node, append it to it's parent.
@@ -210,9 +198,7 @@ DactTreeNode::DactTreeNode(QGraphicsItem *parent) :
     d_spaceBetweenNodes(10),
     d_leafMinimumWidth(30),
     d_leafMinimumHeight(30),
-    d_leafPadding(10),
-    d_activeNodeBackground(Qt::darkGreen),
-    d_activeNodeForeground(Qt::white)
+    d_leafPadding(10)
 {
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setAcceptHoverEvents(true);
@@ -392,18 +378,16 @@ QFont DactTreeNode::font() const
     return QFont("verdana", 12);
 }
 
-void DactTreeNode::setActiveNodeBackground(QColor const &color)
-{
-    d_activeNodeBackground = color;
-}
-
-void DactTreeNode::setActiveNodeForeground(QColor const &color)
-{
-    d_activeNodeForeground = color;
-}
-
 void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QSettings settings;
+    settings.beginGroup("Tree");
+
+    QColor activeNodeForeground(settings.value("activeNodeForeground",
+        QColor(Qt::white)).value<QColor>());
+    QColor activeNodeBackground(settings.value("activeNodeBackground",
+        QColor(Qt::darkGreen)).value<QColor>());
+    
     QRectF branch(branchBoundingRect());
     QRectF leaf(leafRect());
     
@@ -417,7 +401,7 @@ void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     
     painter->setRenderHint(QPainter::Antialiasing, true);
     
-    QColor background = isActive() ? d_activeNodeBackground : QColor(Qt::white);
+    QColor background = isActive() ? activeNodeBackground : QColor(Qt::white);
     
     if (isSelected())
         background = background.darker(125);
@@ -428,7 +412,7 @@ void DactTreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->setPen(borderPen);
     painter->drawRect(leaf);
     
-    painter->setPen(isActive() ? d_activeNodeForeground : QColor(Qt::black));
+    painter->setPen(isActive() ? activeNodeForeground : QColor(Qt::black));
     paintLabels(painter, leaf);
 }
 

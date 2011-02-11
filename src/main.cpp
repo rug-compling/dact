@@ -35,9 +35,12 @@ int main(int argc, char *argv[])
     // XPath
     xmlXPathInit();
 
+    QCoreApplication::setOrganizationName("RUG");
+    QCoreApplication::setApplicationName("Dact");
+
 	DactApplication* a = new DactApplication(argc, argv);
     
-	QSettings settings("RUG", "Dact");
+	QSettings settings;
     QVariant fontValue = settings.value("appFont", qApp->font().toString());
     QFont appFont;
     appFont.fromString(fontValue.toString());
