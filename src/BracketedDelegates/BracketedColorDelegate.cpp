@@ -2,10 +2,26 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPalette>
+#include <QSettings>
 
 #include "BracketedDelegates.hh"
 
 #include <QtDebug>
+
+BracketedColorDelegate::BracketedColorDelegate(QWidget* parent)
+:
+BracketedDelegate(parent)
+{
+    loadSettings();
+}
+
+void BracketedColorDelegate::loadSettings()
+{
+    QSettings settings("RUG", "Dact");
+    settings.beginGroup("CompleteSentence");
+    
+    d_backgroundColor = settings.value("background", QColor(Qt::green)).value<QColor>();
+}
 
 QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -21,7 +37,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     QList<Chunk> chunks(parseSentence(sentence));
     QRectF textBox(option.rect);
     QRectF usedSpace;
-    QColor highlightColor(QColor(Qt::darkGreen)); // @TODO make colors defineable in preferences
+    QColor highlightColor(d_backgroundColor);
     
     QBrush brush(option.state & QStyle::State_Selected
         ? option.palette.highlightedText()

@@ -20,19 +20,28 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     d_ui->setupUi(this);
 
     applyAppFont();
-    loadKeywordsInContextColors();
+    loadColors();
 
     QObject::connect(d_ui->appFontPushButton,
         SIGNAL(clicked()), this, SLOT(selectAppFont()));
     
+    
+    QObject::connect(d_ui->treeActiveNodeForegroundColor,
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    QObject::connect(d_ui->treeActiveNodeBackgroundColor,
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    
     QObject::connect(d_ui->keywordsInContextKeywordForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveKeywordsInContextColors()));
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
     QObject::connect(d_ui->keywordsInContextKeywordBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveKeywordsInContextColors()));
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
     QObject::connect(d_ui->keywordsInContextContextForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveKeywordsInContextColors()));
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
     QObject::connect(d_ui->keywordsInContextContextBackgroundColor, 
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveKeywordsInContextColors()));
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+        
+    QObject::connect(d_ui->completeSentencesBackgroundColor,
+        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -57,9 +66,21 @@ void PreferencesWindow::selectAppFont()
     applyAppFont();
 }
 
-void PreferencesWindow::loadKeywordsInContextColors()
+void PreferencesWindow::loadColors()
 {
     QSettings settings("RUG", "Dact");
+    
+    settings.beginGroup("Tree");
+    
+    d_ui->treeActiveNodeForegroundColor->setColor(
+        settings.value("activeNodeForeground", QColor(Qt::white)).value<QColor>());
+    
+    d_ui->treeActiveNodeBackgroundColor->setColor(
+        settings.value("activeNodeBackground", QColor(Qt::green)).value<QColor>());
+    
+    settings.endGroup();
+    
+    
     settings.beginGroup("KeywordsInContext");
     
     d_ui->keywordsInContextKeywordForegroundColor->setColor(
@@ -73,17 +94,37 @@ void PreferencesWindow::loadKeywordsInContextColors()
     
     d_ui->keywordsInContextContextBackgroundColor->setColor(
         settings.value("contextBackground", QColor(Qt::white)).value<QColor>());
+    
+    settings.endGroup();
+    
+    
+    settings.beginGroup("CompleteSentence");
+    
+    d_ui->completeSentencesBackgroundColor->setColor(
+           settings.value("background", QColor(Qt::green)).value<QColor>());
+    
+    settings.endGroup();
 }
 
-void PreferencesWindow::saveKeywordsInContextColors()
+void PreferencesWindow::saveColors()
 {
     QSettings settings("RUG", "Dact");
-    settings.beginGroup("KeywordsInContext");
     
+    settings.beginGroup("Tree");
+    settings.setValue("activeNodeForeground", d_ui->treeActiveNodeForegroundColor->color());
+    settings.setValue("activeNodeBackground", d_ui->treeActiveNodeBackgroundColor->color());
+    settings.endGroup();
+    
+    settings.beginGroup("KeywordsInContext");
     settings.setValue("keywordForeground", d_ui->keywordsInContextKeywordForegroundColor->color());
     settings.setValue("keywordBackground", d_ui->keywordsInContextKeywordBackgroundColor->color());
     settings.setValue("contextForeground", d_ui->keywordsInContextContextForegroundColor->color());
     settings.setValue("contextBackground", d_ui->keywordsInContextContextBackgroundColor->color());
+    settings.endGroup();
+    
+    settings.beginGroup("CompleteSentence");
+    settings.setValue("background", d_ui->completeSentencesBackgroundColor->color());
+    settings.endGroup();
 }
 
 void PreferencesWindow::keyPressEvent(QKeyEvent *event)

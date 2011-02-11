@@ -16,12 +16,12 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 private slots:
-    void saveKeywordsInContextColors();
+    void saveColors();
     void selectAppFont();
     
 private:
     void applyAppFont();
-    void loadKeywordsInContextColors();
+    void loadColors();
     QSharedPointer<Ui::PreferencesWindow> d_ui;
 };
 
