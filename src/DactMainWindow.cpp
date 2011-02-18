@@ -25,6 +25,7 @@
 
 #include <cstdlib>
 #include <stdexcept>
+#include <typeinfo>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <AlpinoCorpus/DbCorpusWriter.hh>
@@ -139,22 +140,19 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 
 void DactMainWindow::applyValidityColor(QString const &)
 {
-    // Hmpf, unfortunately we get text, rather than a sender. Attempt
-    // to determine the sender ourselvers.
-    QObject *sender = this->sender();
+    QObject *senderp = this->sender();
 
-    if (!sender)
-        return;
+    if (senderp) {
+        try {
+            QLineEdit const &sender = dynamic_cast<QLineEdit const &>(*senderp);
 
-    if (!sender->inherits("QLineEdit"))
-        return;
-
-    QLineEdit *widget = reinterpret_cast<QLineEdit *>(sender);
-
-    if (widget->hasAcceptableInput())
-        widget->setStyleSheet("");
-    else
-        widget->setStyleSheet("background-color: salmon");
+            if (sender.hasAcceptableInput())
+                sender.setStyleSheet("");
+            else
+                sender.setStyleSheet("background-color: salmon");
+        } catch (std::bad_cast const &) {
+        }
+    }
 }
 
 void DactMainWindow::changeEvent(QEvent *e)

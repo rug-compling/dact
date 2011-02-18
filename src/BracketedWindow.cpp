@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <typeinfo>
 #include <vector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
@@ -115,22 +116,19 @@ void BracketedWindow::sentenceFound(QString file, QString sentence)
 
 void BracketedWindow::applyValidityColor(QString const &)
 {
-    // Hmpf, unfortunately we get text, rather than a sender. Attempt
-    // to determine the sender ourselvers.
-    QObject *sender = this->sender();
-    
-    if (!sender)
-        return;
+    QObject *senderp = this->sender();
 
-    if (!sender->inherits("QLineEdit"))
-        return;
+    if (senderp) {
+        try {
+            QLineEdit const &sender = dynamic_cast<QLineEdit const &>(*senderp);
 
-    QLineEdit *widget = reinterpret_cast<QLineEdit *>(sender);
-
-    if (widget->hasAcceptableInput())
-        widget->setStyleSheet("");
-    else
-        widget->setStyleSheet("background-color: salmon");
+            if (sender.hasAcceptableInput())
+                sender.setStyleSheet("");
+            else
+                sender.setStyleSheet("background-color: salmon");
+        } catch (std::bad_cast const &) {
+        }
+    }
 }
 
 void BracketedWindow::createActions()

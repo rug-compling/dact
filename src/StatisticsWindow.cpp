@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <typeinfo>
 #include <vector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
@@ -183,25 +184,19 @@ void StatisticsWindow::updateResultsPercentages()
 
 void StatisticsWindow::applyValidityColor(QString const &)
 {
-    // @TODO: maybe we can create a template, mixin or something else to allow
-    // this function to be shared across most of the window classes.
+    QObject *senderp = this->sender();
 
-    // Hmpf, unfortunately we get text, rather than a sender. Attempt
-    // to determine the sender ourselvers.
-    QObject *sender = this->sender();
-    
-    if (!sender)
-        return;
+    if (senderp) {
+        try {
+            QLineEdit const &sender = dynamic_cast<QLineEdit const &>(*senderp);
 
-    if (!sender->inherits("QLineEdit"))
-        return;
-
-    QLineEdit *widget = reinterpret_cast<QLineEdit *>(sender);
-
-    if (widget->hasAcceptableInput())
-        widget->setStyleSheet("");
-    else
-        widget->setStyleSheet("background-color: salmon");
+            if (sender.hasAcceptableInput())
+                sender.setStyleSheet("");
+            else
+                sender.setStyleSheet("background-color: salmon");
+        } catch (std::bad_cast const &) {
+        }
+    }
 }
 
 void StatisticsWindow::createActions()
