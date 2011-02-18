@@ -459,8 +459,10 @@ private:
      Query history. Used to store the last x queries entered. It should come
      with an autocomplete function for the query fields, but it doesn't.. yet.
      */
+#if 0
     QSharedPointer<DactQueryHistory> d_queryHistory;
-    
+#endif
+
     /*!
      XSLTransformer with a stylesheet loaded to transform a corpus xml
      into a plain text sentence.
