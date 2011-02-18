@@ -219,7 +219,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
-    QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
+    QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(exportPDF()));
     QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this, SLOT(preferencesWindow()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
@@ -232,12 +232,6 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
     QObject::connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)), this, SLOT(focusFilter()));
     QObject::connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), this, SLOT(focusHighlight()));
-}
-
-void DactMainWindow::entryFound(QString entry)
-{
-    //QListWidgetItem *item = new QListWidgetItem(entry, d_ui->fileListWidget);
-    //item->setData(Qt::UserRole, entry);
 }
 
 void DactMainWindow::entrySelected(QItemSelection const &current, QItemSelection const &prev)
@@ -333,8 +327,7 @@ void DactMainWindow::filterChanged()
     if (d_queryHistory)
         d_queryHistory->addToHistory(d_filter);
     
-    d_ui->highlightLineEdit->setText(d_filter);
-    highlightChanged();
+    setHighlight(d_filter);
 
     d_model->runQuery(d_macrosModel->expand(d_filter));
 }
@@ -416,11 +409,23 @@ void DactMainWindow::mapperProgressed(int processedEntries, int totalEntries)
     d_ui->filterProgressBar->setValue(processedEntries);
 }
 
+/* Next- and prev entry buttons */
+
 void DactMainWindow::nextEntry(bool)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
-    d_ui->fileListWidget->setCurrentIndex(current.sibling(current.row() + 1, current.column()));
+    d_ui->fileListWidget->setCurrentIndex(
+        current.sibling(current.row() + 1, current.column()));
 }
+
+void DactMainWindow::previousEntry(bool)
+{
+    QModelIndex current(d_ui->fileListWidget->currentIndex());
+    d_ui->fileListWidget->setCurrentIndex(
+        current.sibling(current.row() - 1, current.column()));
+}
+
+/* Open corpus dialogs */
 
 void DactMainWindow::openCorpus()
 {
@@ -442,7 +447,7 @@ void DactMainWindow::openDirectoryCorpus()
     readCorpus(corpusPath);
 }
 
-void DactMainWindow::pdfExport()
+void DactMainWindow::exportPDF()
 {
     QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
     if (pdfFilename.isNull())
@@ -463,17 +468,11 @@ void DactMainWindow::pdfExport()
 
 void DactMainWindow::preferencesWindow()
 {
-  if (d_preferencesWindow == 0)
-    d_preferencesWindow = new PreferencesWindow(this);
-  d_preferencesWindow->show();
-  d_preferencesWindow->raise();
-}
+    if (d_preferencesWindow == 0)
+        d_preferencesWindow = new PreferencesWindow(this);
 
-void DactMainWindow::previousEntry(bool)
-{
-    //int prevRow = d_ui->fileListWidget->currentRow() - 1;
-    //if (prevRow >= 0)
-    //    d_ui->fileListWidget->setCurrentRow(prevRow);
+    d_preferencesWindow->show();
+    d_preferencesWindow->raise();
 }
 
 void DactMainWindow::print()
@@ -700,6 +699,20 @@ void DactMainWindow::setHighlight(QString const &query)
     highlightChanged();
 }
 
+void DactMainWindow::highlightChanged()
+{
+    d_highlight = d_ui->highlightLineEdit->text().trimmed();
+    
+    if (d_queryHistory)
+        d_queryHistory->addToHistory(d_highlight);
+    
+    QModelIndexList selectedRows = d_ui->fileListWidget->selectionModel()->selectedRows();
+    if (selectedRows.size())
+        showFile(selectedRows.at(0).data(Qt::UserRole).toString());
+}
+
+
+
 void DactMainWindow::setModel(DactQueryModel *model)
 {
     d_model = QSharedPointer<DactQueryModel>(model);
@@ -717,16 +730,7 @@ void DactMainWindow::setModel(DactQueryModel *model)
         SLOT(entrySelected(QItemSelection,QItemSelection)));
 }
 
-void DactMainWindow::highlightChanged()
-{
-    d_highlight = d_ui->highlightLineEdit->text().trimmed();
-    
-    if (d_queryHistory)
-        d_queryHistory->addToHistory(d_highlight);
-    
-//    if (d_ui->fileListWidget->currentItem() != 0)
-//        showFile(d_ui->fileListWidget->currentItem()->data(Qt::UserRole).toString());
-}
+
 
 void DactMainWindow::treeZoomIn()
 {
