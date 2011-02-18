@@ -95,6 +95,7 @@ SET(dact_SRCS
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
   src/DactQueryHistory.cpp
+  src/DactQueryModel.cpp
   src/DactProgressDialog.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
@@ -119,6 +120,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactQueryModel.hh
   include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh

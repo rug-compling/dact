@@ -12,7 +12,6 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XPathFilter.hh"
-#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -28,9 +27,11 @@ class BracketedWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
+class DactQueryModel;
 class StatisticsWindow;
 class DactProgressDialog;
 class PreferencesWindow;
+class DactQueryModel;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -441,6 +442,8 @@ private:
 	 Write settings like the main window position and dimensions
 	 */
     void writeSettings();
+    
+    void setModel(DactQueryModel *model);
 	
     QSharedPointer<Ui::DactMainWindow> d_ui;
     AboutWindow *d_aboutWindow;
@@ -494,22 +497,7 @@ private:
 	 */
     QSharedPointer<XSLTransformer> d_treeTransformer;
 	
-	/*!
-	 Callback used by the filter files mapper.
-	 \sa addFiles
-	 \sa d_xpathMapper
-	 */
-	EntryMap d_entryMap;
-	
-	/*!
-	 The mapper that filters corpus xml files when a query is present.
-	 It uses d_entryMap to do the actual testing and signal firing.
-	 \sa d_entryMap
-	 \sa addFiles
-	 */
-    QSharedPointer<XPathMapper> d_xpathMapper;
-	
-    QMutex d_addFilesMutex;
+	QMutex d_addFilesMutex;
     QMutex d_filterChangedMutex;
 	
 	/*!
@@ -555,6 +543,8 @@ private:
      \sa writeCorpus
      */
     bool d_writeCorpusCancelled;
+    
+    QSharedPointer<DactQueryModel> d_model;
 };
 
 #endif // DACTMAINWINDOW_H

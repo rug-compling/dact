@@ -36,7 +36,7 @@ void XPathMapper::start(alpinocorpus::CorpusReader *reader, QString query, map_f
     if(d_xpathQuery.isEmpty())
         throw std::runtime_error("XPathMapper::start: Cannot run without a query");
     
-	QThread::start();
+    QThread::start();
 }
 
 void XPathMapper::run()
