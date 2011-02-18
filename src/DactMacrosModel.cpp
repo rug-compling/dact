@@ -1,5 +1,5 @@
+#include <QDebug>
 #include <QSettings>
-#include <QtDebug>
 
 #include "DactMacrosModel.hh"
 

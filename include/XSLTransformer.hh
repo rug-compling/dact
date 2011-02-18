@@ -1,7 +1,6 @@
 #ifndef XSLTTRANSFORMER_HH
 #define XSLTTRANSFORMER_HH
 
-#include <QByteArray>
 #include <QString>
 #include <QHash>
 

@@ -1,7 +1,6 @@
 #ifndef DACTMAINWINDOW_H
 #define DACTMAINWINDOW_H
 
-#include <QFuture>
 #include <QFutureWatcher>
 #include <QHash>
 #include <QMainWindow>
@@ -11,7 +10,6 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathFilter.hh"
 #include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"

@@ -1,6 +1,5 @@
 #include <QSettings>
 #include <QVector>
-#include <QtDebug>
 
 #include "DactMacrosWindow.hh"
 #include "DactMacrosModel.hh"

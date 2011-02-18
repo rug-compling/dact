@@ -1,6 +1,7 @@
 #ifndef DACTTREESCENE_H
 #define DACTTREESCENE_H
 
+#include <QFont>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QHash>

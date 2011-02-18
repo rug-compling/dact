@@ -2,9 +2,7 @@
 #include <QGraphicsScene>
 #include <QKeyEvent>
 #include <QPixmap>
-#include <QSharedPointer>
 #include <QUrl>
-#include <QWidget>
 
 #include <config.hh>
 

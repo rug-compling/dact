@@ -1,16 +1,12 @@
-#include <QDialog>
 #include <QFont>
 #include <QFontDialog>
 #include <QKeyEvent>
+#include <QObject>
 #include <QSettings>
-#include <QSharedPointer>
-#include <QWidget>
 
 #include <PreferencesWindow.hh>
 
 #include <ui_PreferencesWindow.h>
-
-#include <QtDebug>
 
 PreferencesWindow::PreferencesWindow(QWidget *parent, Qt::WindowFlags f)
 :

@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
+#include <QFuture>
 #include <QGraphicsSvgItem>
 #include <QGraphicsScene>
 #include <QHash>
@@ -15,7 +16,6 @@
 #include <QPrinter>
 #include <QSettings>
 #include <QSize>
-#include <QString>
 #include <QSvgRenderer>
 #include <QTextStream>
 #include <QUrl>
@@ -23,11 +23,11 @@
 #include <QtConcurrentRun>
 #include <QtDebug>
 
-#include <cstdlib>
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
 #include <typeinfo>
 
-#include <AlpinoCorpus/CorpusReader.hh>
 #include <AlpinoCorpus/DbCorpusWriter.hh>
 #include <AlpinoCorpus/Error.hh>
 

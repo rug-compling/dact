@@ -1,28 +1,15 @@
-#include <QFileInfo>
+#include <QDebug>
+#include <QFile>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QList>
-#include <QListWidgetItem>
 #include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
-#include <QSharedPointer>
 #include <QSize>
-#include <QString>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QVector>
-#include <QtDebug>
 
 #include <algorithm>
-#include <cstdlib>
 #include <stdexcept>
-#include <string>
-#include <sstream>
 #include <typeinfo>
-#include <vector>
-
-#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "StatisticsWindow.hh"
 #include "DactMacrosModel.hh"

@@ -1,6 +1,7 @@
 #ifndef PREFERENCES_WINDOW_HH 
 #define PREFERENCES_WINDOW_HH
 
+#include <QSharedPointer>
 #include <QWidget>
 
 namespace Ui {
