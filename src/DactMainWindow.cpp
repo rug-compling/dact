@@ -516,7 +516,7 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
     } catch (std::runtime_error const &e) {
-        d_corpusReader = QSharedPointer<ac::CorpusReader>();
+        d_corpusReader.clear();
         emit openError(e.what());
         return false;
     }
