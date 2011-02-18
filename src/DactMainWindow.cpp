@@ -144,7 +144,7 @@ void DactMainWindow::applyValidityColor(QString const &)
 
     if (senderp) {
         try {
-            QLineEdit const &sender = dynamic_cast<QLineEdit const &>(*senderp);
+            QLineEdit &sender = dynamic_cast<QLineEdit &>(*senderp);
 
             if (sender.hasAcceptableInput())
                 sender.setStyleSheet("");
