@@ -57,6 +57,7 @@ signals:
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
     void exportError(QString const &error);
+    void openError(QString const &error);
 
 public slots:
     /*!

@@ -200,6 +200,9 @@ void DactMainWindow::createActions()
     QObject::connect(d_openProgressDialog, SIGNAL(rejected()), this, SLOT(cancelReadCorpus()));
     QObject::connect(this, SIGNAL(exportError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
     
+    // @TODO don't steal other peoples error dialogs!
+    QObject::connect(this, SIGNAL(openError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
+    
     QObject::connect(d_exportProgressDialog, SIGNAL(rejected()), this, SLOT(cancelWriteCorpus()));
     QObject::connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
     QObject::connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
@@ -513,7 +516,8 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
     } catch (std::runtime_error const &e) {
-        // TODO display a nice error window here
+        d_corpusReader = QSharedPointer<ac::CorpusReader>();
+        emit openError(e.what());
         return false;
     }
 
@@ -532,16 +536,18 @@ void DactMainWindow::cancelWriteCorpus()
 
 void DactMainWindow::corpusRead(int idx)
 {
-    setModel(new DactQueryModel(d_corpusReader));
+    d_openProgressDialog->accept();
     
-    //d_openProgressDialog->setCancelable(true);
+    // If opening the corpus failed, don't do anything.
+    if (!d_corpusReader)
+        return;
+    
+    setModel(new DactQueryModel(d_corpusReader));
     
     // runQuery has to be called explicitly to give you the time to connect to
     // any signals before we start searching.
     d_model->runQuery();
     
-    d_openProgressDialog->accept();
-
     if(d_bracketedWindow != 0)
         d_bracketedWindow->switchCorpus(d_corpusReader);
 
