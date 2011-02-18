@@ -36,7 +36,7 @@ class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
 
-class QListWidgetItem;
+class QItemSelection;
 class QKeyEvent;
 
 class DactMainWindow : public QMainWindow {
@@ -159,7 +159,7 @@ private slots:
 	 \param current currently selected entry
 	 \param previous previous selected entry
 	 */
-    void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
+    void entrySelected(QItemSelection const &current, QItemSelection const &previous);
 	
 	/*!
 	 Called when [enter] is pressed in the filter query field, it copies the query to
@@ -381,20 +381,6 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-	/*!
-	 When no filter query is entered, addFiles copies the vector with entries from
-	 the corpus reader, and fills the file list with these.
-	 When a query is entered, addFiles will start a XPathMapper to search for all
-	 the files that match the current filter query.
-	 */
-    void addFiles();
-	
-	/*!
-	 Kill the find files mapper started by addFiles.
-	 \sa addFiles
-	 */
-    void stopMapper();
-	
 	/*!
 	 Attaches all the signals from the ui and mapper to the various functions.
 	 */

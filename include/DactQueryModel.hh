@@ -19,7 +19,7 @@ public:
     QVariant data(QModelIndex const &index, int role) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     
-    void runQuery(QString const &xpath_query);
+    void runQuery(QString const &xpath_query = "");
     void cancelQuery();
 
 signals:

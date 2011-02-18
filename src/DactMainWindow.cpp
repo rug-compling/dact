@@ -1,11 +1,9 @@
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
-#include <QGraphicsSvgItem>
-#include <QGraphicsScene>
 #include <QHash>
+#include <QItemSelection>
 #include <QLineEdit>
-#include <QListWidgetItem>
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QMutexLocker>
@@ -16,8 +14,6 @@
 #include <QSettings>
 #include <QSize>
 #include <QString>
-#include <QSvgRenderer>
-#include <QTextStream>
 #include <QUrl>
 #include <Qt>
 #include <QtConcurrentRun>
@@ -84,21 +80,20 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
 
 DactMainWindow::~DactMainWindow()
 {
-    stopMapper();
+    delete d_aboutWindow;
+    delete d_bracketedWindow;
+    delete d_statisticsWindow;
+    delete d_macrosWindow;
+    delete d_openProgressDialog;
+    delete d_exportProgressDialog;
+    delete d_preferencesWindow;
+    delete d_treeScene;
 }
 
 void DactMainWindow::aboutDialog()
 {
     d_aboutWindow->show();
     d_aboutWindow->raise();
-}
-
-void DactMainWindow::addFiles()
-{
-    QMutexLocker locker(&d_addFilesMutex);
-
-    if (d_model)
-        d_model->runQuery(d_macrosModel->expand(d_filter));
 }
 
 void DactMainWindow::bracketedEntryActivated()
@@ -209,10 +204,6 @@ void DactMainWindow::createActions()
     QObject::connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
     QObject::connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
     
-    
-    QObject::connect(d_ui->fileListWidget,
-        SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this,
-        SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)), this,
@@ -229,8 +220,7 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(pdfExport()));
-    QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this,
-      SLOT(preferencesWindow()));
+    QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this, SLOT(preferencesWindow()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
     QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn()));
@@ -250,14 +240,16 @@ void DactMainWindow::entryFound(QString entry)
     //item->setData(Qt::UserRole, entry);
 }
 
-void DactMainWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
+void DactMainWindow::entrySelected(QItemSelection const &current, QItemSelection const &prev)
 {
-    if (current == 0) {
+    Q_UNUSED(prev);
+    
+    if (!current.size()) {
         d_ui->treeGraphicsView->setScene(0);
         return;
     }
     
-    showFile(current->data(Qt::UserRole).toString());
+    showFile(current.indexes().at(0).data(Qt::UserRole).toString());
     
     focusFitTree();
 }
@@ -270,8 +262,11 @@ void DactMainWindow::help()
 
 void DactMainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Escape)
-        stopMapper();
+    if (event->key() == Qt::Key_Escape && d_model)
+    {
+        d_model->cancelQuery();
+        event->accept();
+    }
     else
       QMainWindow::keyPressEvent(event);
 }
@@ -341,7 +336,7 @@ void DactMainWindow::filterChanged()
     d_ui->highlightLineEdit->setText(d_filter);
     highlightChanged();
 
-    addFiles();
+    d_model->runQuery(d_macrosModel->expand(d_filter));
 }
 
 
@@ -495,8 +490,9 @@ void DactMainWindow::print()
 
 void DactMainWindow::readCorpus(QString const &corpusPath)
 { 
-    stopMapper();
-
+    if (d_model)
+        d_model->cancelQuery();
+    
     if (d_corpusOpenWatcher.isRunning()) {
         d_corpusOpenWatcher.cancel();
         d_corpusOpenWatcher.waitForFinished();
@@ -527,7 +523,7 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
 
 void DactMainWindow::cancelReadCorpus()
 {
-    d_addFilesCancelled = true;
+    //
 }
 
 void DactMainWindow::cancelWriteCorpus()
@@ -540,7 +536,11 @@ void DactMainWindow::corpusRead(int idx)
     setModel(new DactQueryModel(d_corpusReader));
     
     //d_openProgressDialog->setCancelable(true);
-    addFiles();
+    
+    // runQuery has to be called explicitly to give you the time to connect to
+    // any signals before we start searching.
+    d_model->runQuery();
+    
     d_openProgressDialog->accept();
 
     if(d_bracketedWindow != 0)
@@ -574,13 +574,14 @@ void DactMainWindow::readSettings()
 
 void DactMainWindow::exportCorpus()
 {
-/*
+
     if (d_corpusWriteWatcher.isRunning()) {
         d_corpusWriteWatcher.cancel();
         d_corpusWriteWatcher.waitForFinished();
     }
 
-    bool selectionOnly = d_ui->fileListWidget->selectedItems().size();
+    QItemSelectionModel *selectionModel = d_ui->fileListWidget->selectionModel();
+    bool selectionOnly = selectionModel->selectedRows().size();
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
@@ -602,8 +603,8 @@ void DactMainWindow::exportCorpus()
         
         if (selectionOnly)
         {
-            foreach (QListWidgetItem *item, d_ui->fileListWidget->selectedItems())
-                files.append(item->data(Qt::UserRole).toString());
+            foreach (QModelIndex item, selectionModel->selectedRows())
+                files.append(item.data(Qt::UserRole).toString());
         }
         else
             std::copy(d_corpusReader->begin(), d_corpusReader->end(), std::back_inserter(files));
@@ -615,7 +616,6 @@ void DactMainWindow::exportCorpus()
             QtConcurrent::run(this, &DactMainWindow::writeCorpus, filename, files);
         d_corpusWriteWatcher.setFuture(corpusWriterFuture);
     }
-*/
 }
 
 bool DactMainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
@@ -694,11 +694,6 @@ void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const 
     updateTreeNodeButtons();
 }
 
-void DactMainWindow::stopMapper()
-{
-    //
-}
-
 void DactMainWindow::setHighlight(QString const &query)
 {
     d_ui->highlightLineEdit->setText(query);
@@ -716,6 +711,10 @@ void DactMainWindow::setModel(DactQueryModel *model)
         this, SLOT(mapperStopped(int, int)));
     QObject::connect(model, SIGNAL(queryProgressed(int, int)),
         this, SLOT(mapperProgressed(int,int)));
+    
+    QObject::connect(d_ui->fileListWidget->selectionModel(),
+        SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this,
+        SLOT(entrySelected(QItemSelection,QItemSelection)));
 }
 
 void DactMainWindow::highlightChanged()

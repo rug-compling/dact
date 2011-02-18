@@ -30,7 +30,7 @@ QVariant DactQueryModel::data(QModelIndex const &index, int role) const
     return (index.isValid()
             && index.column() == 0
             && (index.row() < d_results.size() && index.row() >= 0)
-            && role == Qt::DisplayRole)
+            && (role == Qt::DisplayRole || role == Qt::UserRole))
         ? d_results.at(index.row())
         : QVariant();
 }
@@ -69,6 +69,8 @@ void DactQueryModel::mapperStopped(int n, int totalEntries)
 
 void DactQueryModel::runQuery(QString const &query)
 {
+    cancelQuery(); // just in case
+    
     int size = d_results.size();
     d_results.clear();
     
@@ -82,7 +84,11 @@ void DactQueryModel::runQuery(QString const &query)
 
 void DactQueryModel::cancelQuery()
 {
-    d_mapper.cancel();
+    if (d_mapper.isRunning())
+    {
+        d_mapper.cancel();
+        d_mapper.wait();
+    }
 }
 
 void DactQueryModel::getEntries()
