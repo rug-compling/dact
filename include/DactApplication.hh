@@ -2,22 +2,21 @@
 #define DACTAPPLICATION_H
 
 #include <QApplication>
-
-class DactMainWindow;
+#include <QScopedPointer>
+#include "DactMainWindow.hh"
 
 class DactApplication: public QApplication
 {
 	Q_OBJECT
 public:
 	DactApplication(int &argc, char** argv);
-	~DactApplication();
 	void init();
 	void openCorpus(QString const &fileName);
 protected:
 	bool event(QEvent *event);
 
 private:
-	DactMainWindow* d_mainWindow;
+	QScopedPointer<DactMainWindow> d_mainWindow;
 };
 
 #endif

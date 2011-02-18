@@ -3,12 +3,8 @@
 
 #include <QAtomicInt>
 #include <QByteArray>
-#include <QHash>
 #include <QString>
 #include <QThread>
-#include <QVector>
-
-#include <stdexcept>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <libxml/tree.h>

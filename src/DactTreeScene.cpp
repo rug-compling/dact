@@ -1,13 +1,10 @@
 #include <algorithm>
-#include <QFont>
+#include <QDebug>
 #include <QFontMetrics>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
-#include <QHash>
 #include <QPainter>
 #include <QSettings>
-#include <QStack>
-#include <QtDebug>
 
 #include "DactTreeScene.hh"
 

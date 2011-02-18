@@ -1,5 +1,3 @@
-#include <QDialog>
-#include <QSharedPointer>
 #include <QWidget>
 
 #include <DactProgressDialog.hh>

@@ -1,4 +1,5 @@
-#include <QFileInfo>
+#include <QDebug>
+#include <QFile>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
@@ -6,20 +7,11 @@
 #include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
-#include <QSharedPointer>
 #include <QSize>
-#include <QString>
 #include <QVector>
-#include <QtDebug>
 
-#include <cstdlib>
 #include <stdexcept>
-#include <string>
-#include <sstream>
 #include <typeinfo>
-#include <vector>
-
-#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "BracketedDelegates.hh"
 #include "BracketedWindow.hh"

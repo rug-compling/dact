@@ -1,7 +1,8 @@
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
-#include <QHash>
+#include <QFuture>
 #include <QItemSelection>
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -13,17 +14,14 @@
 #include <QPrinter>
 #include <QSettings>
 #include <QSize>
-#include <QString>
 #include <QUrl>
-#include <Qt>
 #include <QtConcurrentRun>
-#include <QtDebug>
 
-#include <cstdlib>
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
 #include <typeinfo>
 
-#include <AlpinoCorpus/CorpusReader.hh>
 #include <AlpinoCorpus/DbCorpusWriter.hh>
 #include <AlpinoCorpus/Error.hh>
 

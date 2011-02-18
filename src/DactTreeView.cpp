@@ -1,5 +1,4 @@
 #include <QWheelEvent>
-#include <QtDebug>
 
 #include "DactTreeView.hh"
 

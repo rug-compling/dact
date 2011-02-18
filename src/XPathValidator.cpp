@@ -1,6 +1,3 @@
-#include <QObject>
-#include <QValidator>
-
 #include <libxml/xpath.h>
 
 #include "XPathValidator.hh"

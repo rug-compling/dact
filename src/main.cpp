@@ -1,7 +1,6 @@
-#include <QtCore/QSettings>
-#include <QtCore/QVariant>
-#include <QtGui/QApplication>
-#include <QtGui/QFont>
+#include <QFont>
+#include <QSettings>
+#include <QVariant>
 
 #include <cstdlib>
 #include <iostream>

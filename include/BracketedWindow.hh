@@ -2,12 +2,10 @@
 #define DACTFILTERWINDOW_H
 
 #include <QCloseEvent>
-#include <QFileInfo>
 #include <QHash>
-#include <QWidget>
 #include <QSharedPointer>
 #include <QString>
-#include <Qt>
+#include <QWidget>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 

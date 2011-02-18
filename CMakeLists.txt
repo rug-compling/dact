@@ -101,7 +101,7 @@ SET(dact_SRCS
   src/DactTreeView.cpp
   src/PercentageCellDelegate.cpp
   src/PreferencesWindow.cpp
-  src/XPathFilter.cpp
+  #src/XPathFilter.cpp
   src/XPathMapper.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
@@ -126,7 +126,7 @@ SET(dact_MOC_HDRS
   include/DactTreeView.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
-  include/XPathFilter.hh
+  #include/XPathFilter.hh
   include/XPathMapper.hh
   include/XPathValidator.hh
 )

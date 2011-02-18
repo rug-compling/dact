@@ -2,14 +2,12 @@
 #define DACTQUERYWINDOW_H
 
 #include <QCloseEvent>
-#include <QFileInfo>
 #include <QHash>
 #include <QWidget>
 #include <QSharedPointer>
 #include <QString>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <Qt>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 

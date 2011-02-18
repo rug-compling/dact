@@ -2,12 +2,8 @@
 #define DACTMACROSWINDOW_H
 
 #include <QCloseEvent>
-#include <QList>
-#include <QPair>
 #include <QSharedPointer>
-#include <QString>
 #include <QWidget>
-#include <Qt>
 
 #include "DactMacrosModel.hh"
 
