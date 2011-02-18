@@ -1,5 +1,4 @@
 #include "DactApplication.hh"
-#include "DactMainWindow.hh"
 #include <QFileOpenEvent>
 
 
@@ -11,16 +10,10 @@ d_mainWindow(0)
 	//d_mainWindow = new DactMainWindow();
 }
 
-DactApplication::~DactApplication()
-{
-	delete d_mainWindow;
-}
-
 void DactApplication::init()
 {
-	d_mainWindow = new DactMainWindow();
-	
-	d_mainWindow->show();
+    d_mainWindow.reset(new DactMainWindow());
+    d_mainWindow->show();
 }
 
 bool DactApplication::event(QEvent *event)
