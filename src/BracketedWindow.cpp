@@ -18,6 +18,7 @@
 #include "DactMacrosModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
+#include "ValidityColor.hh"
 #include "ui_BracketedWindow.h"
 
 BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
@@ -108,19 +109,7 @@ void BracketedWindow::sentenceFound(QString file, QString sentence)
 
 void BracketedWindow::applyValidityColor(QString const &)
 {
-    QObject *senderp = this->sender();
-
-    if (senderp) {
-        try {
-            QLineEdit &sender = dynamic_cast<QLineEdit &>(*senderp);
-
-            if (sender.hasAcceptableInput())
-                sender.setStyleSheet("");
-            else
-                sender.setStyleSheet("background-color: salmon");
-        } catch (std::bad_cast const &) {
-        }
-    }
+    ::applyValidityColor(sender());
 }
 
 void BracketedWindow::createActions()

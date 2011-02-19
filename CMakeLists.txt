@@ -105,6 +105,7 @@ SET(dact_SRCS
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/main.cpp
+  src/validityColor.cpp
 )
 
 SET(dact_MOC_HDRS

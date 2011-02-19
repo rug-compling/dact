@@ -14,6 +14,7 @@
 #include "StatisticsWindow.hh"
 #include "DactMacrosModel.hh"
 #include "PercentageCellDelegate.hh"
+#include "ValidityColor.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"
@@ -171,19 +172,7 @@ void StatisticsWindow::updateResultsPercentages()
 
 void StatisticsWindow::applyValidityColor(QString const &)
 {
-    QObject *senderp = this->sender();
-
-    if (senderp) {
-        try {
-            QLineEdit &sender = dynamic_cast<QLineEdit &>(*senderp);
-
-            if (sender.hasAcceptableInput())
-                sender.setStyleSheet("");
-            else
-                sender.setStyleSheet("background-color: salmon");
-        } catch (std::bad_cast const &) {
-        }
-    }
+    ::applyValidityColor(sender());
 }
 
 void StatisticsWindow::createActions()
