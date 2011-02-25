@@ -17,7 +17,6 @@
 #include <QSize>
 #include <QTextStream>
 #include <QUrl>
-#include <Qt>
 #include <QtConcurrentRun>
 
 #include <algorithm>
@@ -324,7 +323,7 @@ void DactMainWindow::filterChanged()
         d_queryHistory->addToHistory(d_filter);
 #endif
 
-	setHighlight(d_filter);
+    setHighlight(d_filter);
 
     d_model->runQuery(d_macrosModel->expand(d_filter));
 }
@@ -510,7 +509,7 @@ bool DactMainWindow::readAndShowFiles(QString const &path)
     try {
         d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
     } catch (std::runtime_error const &e) {
-        d_corpusReader = QSharedPointer<ac::CorpusReader>();
+        d_corpusReader.clear();
         emit openError(e.what());
         return false;
     }
