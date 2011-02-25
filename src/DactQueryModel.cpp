@@ -1,6 +1,10 @@
+#include <QDebug>
+#include <QtConcurrentRun>
+
+#include <algorithm>
+
+#include <alpinocorpus/Error.hh>
 #include "DactQueryModel.hh"
-#include <AlpinoCorpus/CorpusReader.hh>
-#include <QtDebug>
 
 DactQueryModel::DactQueryModel(CorpusPtr corpus, QObject *parent)
 :
@@ -51,6 +55,9 @@ QVariant DactQueryModel::headerData(int column, Qt::Orientation orientation, int
 
 void DactQueryModel::mapperEntryFound(QString entry)
 {
+    if (d_results.contains(entry))
+        return;
+    
     int row = d_results.size();
     d_results.append(entry);
     
@@ -82,13 +89,14 @@ void DactQueryModel::runQuery(QString const &query)
     emit dataChanged(index(0, 0), index(size, 0));
     
     if (!query.isEmpty())
-        getEntriesWithQuery(query);
+        QtConcurrent::run(this, &DactQueryModel::getEntriesWithQuery, query);
     else
-        getEntries();
+        QtConcurrent::run(this, &DactQueryModel::getEntries);
 }
 
 void DactQueryModel::cancelQuery()
 {
+    // @TODO this does not cancel the other methods
     if (d_mapper.isRunning())
     {
         d_mapper.cancel();
@@ -96,15 +104,31 @@ void DactQueryModel::cancelQuery()
     }
 }
 
+// run async
 void DactQueryModel::getEntries()
 {
-    // @TODO make this async
+    // @TODO make this stoppable
     for (alpinocorpus::CorpusReader::EntryIterator itr(d_corpus->begin()), end(d_corpus->end());
          itr != end; itr++)
         mapperEntryFound(*itr);
 }
 
+// run async
 void DactQueryModel::getEntriesWithQuery(QString const &query)
 {
-    d_mapper.start(d_corpus.data(), query, &d_entryMap);
+	try {
+        mapperStarted(0); // we don't know how many entries will be found
+		
+		std::for_each(
+		    d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
+			d_corpus->end(),
+			std::bind1st(std::mem_fun(&DactQueryModel::mapperEntryFound), this)
+		);
+			
+        mapperStopped(d_results.size(), d_results.size());
+	} catch (alpinocorpus::NotImplemented const &e) {
+		d_mapper.start(d_corpus.data(), query, &d_entryMap);
+	} catch (alpinocorpus::Error const &e) {
+		qDebug() << "Error performing query: " << e.what();
+	}
 }
