@@ -20,6 +20,11 @@ QAbstractListModel(parent)
         this, SLOT(mapperStopped(int, int)));
 }
 
+DactQueryModel::~DactQueryModel()
+{
+	cancelQuery();
+}
+
 int DactQueryModel::rowCount(QModelIndex const &index) const
 {
     return d_results.size();
