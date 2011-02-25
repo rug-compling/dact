@@ -1,15 +1,8 @@
-#include <QByteArray>
-#include <QString>
-#include <QThread>
-#include <QtDebug>
+#include <QDebug>
 
 #include <stdexcept>
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-
-#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XPathMapper.hh"
 

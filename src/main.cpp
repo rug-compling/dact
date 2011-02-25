@@ -1,10 +1,10 @@
-#include <QtCore/QSettings>
-#include <QtCore/QVariant>
-#include <QtGui/QApplication>
-#include <QtGui/QFont>
+#include <QFont>
+#include <QSettings>
+#include <QVariant>
 
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -35,34 +35,40 @@ int main(int argc, char *argv[])
     // XPath
     xmlXPathInit();
 
-    QCoreApplication::setOrganizationName("RUG");
-    QCoreApplication::setApplicationName("Dact");
+    int r = 0;
 
-	DactApplication* a = new DactApplication(argc, argv);
-    
-	QSettings settings;
-    QVariant fontValue = settings.value("appFont", qApp->font().toString());
-    QFont appFont;
-    appFont.fromString(fontValue.toString());
-    a->setFont(appFont);
-	
-	a->init();
-    
-	if (a->arguments().size() > 2)
-        usage(argv[0]);
-    
-	if (a->arguments().size() == 2)
-        a->openCorpus(a->arguments().at(1));
+    try {
+        QCoreApplication::setOrganizationName("RUG");
+        QCoreApplication::setApplicationName("Dact");
 
-    int r = a->exec();
+        QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
+    
+        QSettings settings;
+        QVariant fontValue = settings.value("appFont", qApp->font().toString());
+        QFont appFont;
+        appFont.fromString(fontValue.toString());
+        a->setFont(appFont);
 
-	// Delete the main window explicitly to force-stop all transformers and other
-	// xml operations. Otherwise commencing xml and xslt cleanup while they are
-	// still in use causes errors.
-	delete a;
-	
+        a->init();
+    
+        if (a->arguments().size() > 2)
+            usage(argv[0]);
+    
+        if (a->arguments().size() == 2)
+            a->openCorpus(a->arguments().at(1));
+
+        r = a->exec();
+    } catch (std::logic_error const &e) {
+        std::cerr << "dact: internal logic error: please report at\n"
+                     "      https://github.com/rug-compling/dact/issues, citing"
+                  << e.what()
+                  << std::endl;
+        r = 1;
+    }
+
+    // must be called after the DactApplication is deleted
     xsltCleanupGlobals();
     xmlCleanupParser();
-	
+
     return r;
 }

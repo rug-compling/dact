@@ -1,6 +1,8 @@
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
+#include <QFuture>
 #include <QHash>
 #include <QItemSelection>
 #include <QLineEdit>
@@ -13,17 +15,16 @@
 #include <QPrinter>
 #include <QSettings>
 #include <QSize>
-#include <QString>
+#include <QTextStream>
 #include <QUrl>
 #include <Qt>
 #include <QtConcurrentRun>
-#include <QtDebug>
 
-#include <cstdlib>
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
 #include <typeinfo>
 
-#include <AlpinoCorpus/CorpusReader.hh>
 #include <AlpinoCorpus/DbCorpusWriter.hh>
 #include <AlpinoCorpus/Error.hh>
 
@@ -32,7 +33,7 @@
 #include <BracketedWindow.hh>
 #include <DactMacrosModel.hh>
 #include <DactMacrosWindow.hh>
-#include <DactQueryHistory.hh>
+//#include <DactQueryHistory.hh>
 #include <DactQueryModel.hh>
 #include <DactProgressDialog.hh>
 #include <PreferencesWindow.hh>
@@ -40,6 +41,7 @@
 #include <DactTreeScene.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
+#include "ValidityColor.hh"
 #include <ui_DactMainWindow.h>
 
 namespace ac = alpinocorpus;
@@ -54,8 +56,10 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_openProgressDialog(new DactProgressDialog(this)),
     d_exportProgressDialog(new DactProgressDialog(this)),
     d_preferencesWindow(0),
-    d_treeScene(0),
+    d_treeScene(0)
+#if 0
     d_queryHistory(0)
+#endif
 {
     d_ui->setupUi(this);
     
@@ -64,11 +68,11 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-    /*
+#if 0
     d_queryHistory = QSharedPointer<DactQueryHistory>(new DactQueryHistory());
     d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
     d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
-    */
+#endif
     readSettings();
     
     initSentenceTransformer();
@@ -111,19 +115,7 @@ void DactMainWindow::currentBracketedEntryChanged(const QString &entry)
 
 void DactMainWindow::applyValidityColor(QString const &)
 {
-    QObject *senderp = this->sender();
-
-    if (senderp) {
-        try {
-            QLineEdit &sender = dynamic_cast<QLineEdit &>(*senderp);
-
-            if (sender.hasAcceptableInput())
-                sender.setStyleSheet("");
-            else
-                sender.setStyleSheet("background-color: salmon");
-        } catch (std::bad_cast const &) {
-        }
-    }
+    ::applyValidityColor(sender());
 }
 
 void DactMainWindow::changeEvent(QEvent *e)
@@ -326,11 +318,13 @@ void DactMainWindow::filterChanged()
     QMutexLocker locker(&d_filterChangedMutex);
 
     d_filter = d_ui->filterLineEdit->text().trimmed();
-    
+
+#if 0
     if (d_queryHistory)
         d_queryHistory->addToHistory(d_filter);
-    
-    setHighlight(d_filter);
+#endif
+
+	setHighlight(d_filter);
 
     d_model->runQuery(d_macrosModel->expand(d_filter));
 }
@@ -708,10 +702,12 @@ void DactMainWindow::setHighlight(QString const &query)
 void DactMainWindow::highlightChanged()
 {
     d_highlight = d_ui->highlightLineEdit->text().trimmed();
-    
+
+#if 0
     if (d_queryHistory)
         d_queryHistory->addToHistory(d_highlight);
-    
+#endif
+
     QModelIndexList selectedRows = d_ui->fileListWidget->selectionModel()->selectedRows();
     if (selectedRows.size())
         showFile(selectedRows.at(0).data(Qt::UserRole).toString());

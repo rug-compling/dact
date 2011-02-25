@@ -1,9 +1,5 @@
 #include <QByteArray>
-#include <QHash>
-#include <QString>
 
-#include <cstdlib>
-#include <cstring>
 #include <stdexcept>
 
 extern "C" {
@@ -11,7 +7,6 @@ extern "C" {
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxslt/xslt.h>
-#include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 }

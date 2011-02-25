@@ -6,8 +6,6 @@
 #include <QString>
 #include <QVector>
 
-#include <stdexcept>
-
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>

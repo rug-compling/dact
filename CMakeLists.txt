@@ -94,18 +94,19 @@ SET(dact_SRCS
   src/DactListWidget.cpp
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
-  src/DactQueryHistory.cpp
+  #src/DactQueryHistory.cpp
   src/DactQueryModel.cpp
   src/DactProgressDialog.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/PercentageCellDelegate.cpp
   src/PreferencesWindow.cpp
-  src/XPathFilter.cpp
+  #src/XPathFilter.cpp
   src/XPathMapper.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/main.cpp
+  src/validityColor.cpp
 )
 
 SET(dact_MOC_HDRS
@@ -119,14 +120,14 @@ SET(dact_MOC_HDRS
   include/DactListWidget.hh
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
-  include/DactQueryHistory.hh
+  #include/DactQueryHistory.hh
   include/DactQueryModel.hh
   include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
-  include/XPathFilter.hh
+  #include/XPathFilter.hh
   include/XPathMapper.hh
   include/XPathValidator.hh
 )

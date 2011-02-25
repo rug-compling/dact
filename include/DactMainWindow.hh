@@ -1,7 +1,6 @@
 #ifndef DACTMAINWINDOW_H
 #define DACTMAINWINDOW_H
 
-#include <QFuture>
 #include <QFutureWatcher>
 #include <QHash>
 #include <QMainWindow>
@@ -11,7 +10,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathFilter.hh"
+#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -456,18 +455,20 @@ private:
      The macros model. Used to store and apply macros to XPath queries.
      */
     QSharedPointer<DactMacrosModel> d_macrosModel;
-    
-    /*!
-     Query history. Used to store the last x queries entered. It should come
-     with an autocomplete function for the query fields, but it doesn't.. yet.
-     */
-    QSharedPointer<DactQueryHistory> d_queryHistory;
-    
-    /*!
-     XSLTransformer with a stylesheet loaded to transform a corpus xml
-     into a plain text sentence.
-     \sa showSentence
-     */
+
+	/*!
+	 Query history. Used to store the last x queries entered. It should come
+	 with an autocomplete function for the query fields, but it doesn't.. yet.
+	 */
+#if 0
+	QSharedPointer<DactQueryHistory> d_queryHistory;
+#endif
+
+	/*!
+	 XSLTransformer with a stylesheet loaded to transform a corpus xml
+	 into a plain text sentence.
+	 \sa showSentence
+	 */
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     
     /*!
