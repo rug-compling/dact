@@ -10,19 +10,7 @@ DactQueryModel::DactQueryModel(CorpusPtr corpus, QObject *parent)
 :
 d_corpus(corpus),
 QAbstractListModel(parent)
-{
-    QObject::connect(&d_entryMap, SIGNAL(entryFound(QString)),
-        this, SLOT(mapperEntryFound(QString)));
-    
-    QObject::connect(&d_mapper, SIGNAL(started(int)),
-        this, SLOT(mapperStarted(int)));
-    
-    QObject::connect(&d_mapper, SIGNAL(progress(int, int)),
-        this, SLOT(mapperProgressed(int, int)));
-    
-    QObject::connect(&d_mapper, SIGNAL(stopped(int, int)),
-        this, SLOT(mapperStopped(int, int)));
-}
+{}
 
 DactQueryModel::~DactQueryModel()
 {
@@ -91,43 +79,37 @@ void DactQueryModel::runQuery(QString const &query)
     if (!query.isEmpty())
         QtConcurrent::run(this, &DactQueryModel::getEntriesWithQuery, query);
     else
-        QtConcurrent::run(this, &DactQueryModel::getEntries);
+        QtConcurrent::run(this, &DactQueryModel::getEntries,
+            d_corpus->begin(),
+            d_corpus->end());
 }
 
 void DactQueryModel::cancelQuery()
 {
-    // @TODO this does not cancel the other methods
-    if (d_mapper.isRunning())
-    {
-        d_mapper.cancel();
-        d_mapper.wait();
-    }
+    d_cancelled = true;
 }
 
-// run async
-void DactQueryModel::getEntries()
-{
-    // @TODO make this stoppable
-    for (alpinocorpus::CorpusReader::EntryIterator itr(d_corpus->begin()), end(d_corpus->end());
-         itr != end; itr++)
-        mapperEntryFound(*itr);
-}
-
-// run async
+// run async, because query() starts searching immediately
 void DactQueryModel::getEntriesWithQuery(QString const &query)
+{
+    DactQueryModel::getEntries(
+        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
+        d_corpus->end());
+}
+
+// run async
+void DactQueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
 	try {
         mapperStarted(0); // we don't know how many entries will be found
 		
-		std::for_each(
-		    d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
-			d_corpus->end(),
-			std::bind1st(std::mem_fun(&DactQueryModel::mapperEntryFound), this)
-		);
+        d_cancelled = false;
+		
+        for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
+            mapperEntryFound(*itr);
+            // @TODO could we implement something a la mapperProgressed(end - itr)?
 			
         mapperStopped(d_results.size(), d_results.size());
-	} catch (alpinocorpus::NotImplemented const &e) {
-		d_mapper.start(d_corpus.data(), query, &d_entryMap);
 	} catch (alpinocorpus::Error const &e) {
 		qDebug() << "Error performing query: " << e.what();
 	}

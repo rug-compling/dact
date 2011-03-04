@@ -12,6 +12,7 @@ class DactQueryModel : public QAbstractListModel
     Q_OBJECT
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
+    typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
     
 public:
     DactQueryModel(CorpusPtr corpus, QObject *parent = 0);
@@ -29,7 +30,7 @@ signals:
     void queryStopped(int n, int totalEntries);
     
 private:
-    void getEntries();
+    void getEntries(EntryIterator const &begin, EntryIterator const &end);
     void getEntriesWithQuery(QString const &query);
     
 private slots:
@@ -39,10 +40,10 @@ private slots:
     void mapperStopped(int n, int totalEntries);
     
 private:
+    bool d_cancelled;
     CorpusPtr d_corpus;
-    EntryMap d_entryMap;
     QList<QString> d_results;
-    XPathMapper d_mapper;
+    
 };
 
 #endif
