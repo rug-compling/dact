@@ -76,23 +76,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="resultsTableWidget">
-     <column>
-      <property name="text">
-       <string>result</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>count</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>percentage</string>
-      </property>
-     </column>
-    </widget>
+    <widget class="QTableView" name="resultsTable"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -154,7 +138,7 @@
   <tabstop>filterLineEdit</tabstop>
   <tabstop>attributeComboBox</tabstop>
   <tabstop>startPushButton</tabstop>
-  <tabstop>resultsTableWidget</tabstop>
+  <tabstop>resultsTable</tabstop>
   <tabstop>percentageCheckBox</tabstop>
  </tabstops>
  <resources/>

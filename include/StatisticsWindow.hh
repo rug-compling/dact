@@ -20,6 +20,7 @@ namespace Ui {
 }
 
 class DactMacrosModel;
+class DactStatisticsModel;
 
 class StatisticsWindowResultsRow;
 
@@ -42,13 +43,14 @@ signals:
 
 private slots:
     void applyValidityColor(QString const &text);
-    void attributeFound(QString value);
+//    void attributeFound(QString value);
     void startQuery();
     void progressStarted(int total);
     void progressChanged(int n, int total);
     void progressStopped(int n, int total);
     void showPercentageChanged();
     void itemActivated(QTableWidgetItem* item);
+    void updateResultsTotalCount();
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
@@ -57,36 +59,30 @@ protected:
 private:
     QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;
     QString generateQuery(QTableWidgetItem *item) const;
-    void updateResults();
-    void updateResultsPercentages();
-    void updateResultsTotalCount();
+//    void updateResults();
+//    void updateResultsPercentages();
+//    void updateResultsTotalCount();
     void createActions();
-    QSharedPointer<StatisticsWindowResultsRow> createResultsRow(QString const &value);
     void readNodeAttributes();
-    void startMapper();
-    void stopMapper();
+//    void startMapper();
+//    void stopMapper();
     void readSettings();
     void writeSettings();
-
-    AttributeMap *d_attrMap;
-    QSharedPointer<Ui::StatisticsWindow> d_ui;
-    QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<XPathMapper> d_xpathMapper;
-    QSharedPointer<XPathValidator> d_xpathValidator;
-    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+    void setModel(DactStatisticsModel *model);
     
-    // combination of <attribute value, hits count>
-    // @TODO This one could be re-used for exporting functions. It's "finished"
-    // when d_xpathMapper.data() emits it's 'stopped' signal.
-    QHash<QString,int> d_results;
-    QHash<QString,QSharedPointer<StatisticsWindowResultsRow> > d_resultsTable;
-    int d_totalHits;
+    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+    QString d_filter;
+    QSharedPointer<DactMacrosModel> d_macrosModel;
+    QSharedPointer<DactStatisticsModel> d_model;
+    QSharedPointer<Ui::StatisticsWindow> d_ui;
+    QSharedPointer<XPathValidator> d_xpathValidator;
 };
 
 // Main purpose of this object is to keep the three cells and their update functions
 // together, so I can keep track of them through a hashtable. Because I don't trust
 // that QTableWidget thingy with its numerical rows. They change! I tell you! I saw
 // them change!
+/*
 class StatisticsWindowResultsRow : public QObject
 {
 public:
@@ -103,5 +99,5 @@ private:
     QTableWidgetItem *d_countItem;
     QTableWidgetItem *d_percentageItem;
 };
-
+*/
 #endif // DACTQUERYWINDOW_H

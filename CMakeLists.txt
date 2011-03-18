@@ -97,6 +97,7 @@ SET(dact_SRCS
   #src/DactQueryHistory.cpp
   src/DactQueryModel.cpp
   src/DactProgressDialog.cpp
+  src/DactStatisticsModel.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/PercentageCellDelegate.cpp
@@ -125,6 +126,7 @@ SET(dact_MOC_HDRS
   include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
+  include/DactStatisticsModel.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   #include/XPathFilter.hh

@@ -13,6 +13,7 @@
 
 #include "StatisticsWindow.hh"
 #include "DactMacrosModel.hh"
+#include "DactStatisticsModel.hh"
 #include "PercentageCellDelegate.hh"
 #include "ValidityColor.hh"
 #include "XPathValidator.hh"
@@ -28,13 +29,12 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
-    d_corpusReader(corpusReader),
     d_macrosModel(macrosModel),
-    d_attrMap(NULL),
-    d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
     d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
 {
     d_ui->setupUi(this);
+ 
+    switchCorpus(corpusReader);
     
     createActions();
     readNodeAttributes();
@@ -48,44 +48,18 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
 
 StatisticsWindow::~StatisticsWindow()
 {
-    stopMapper();
-}
 
-void StatisticsWindow::startMapper()
-{
-    if(d_xpathMapper->isRunning()) {
-    	qWarning() << "StatisticsWindow::startMapper: Trying to start mapper while it is running? This should not happen. Terminating running mapper anyway.";
-    	stopMapper();
-    }
-    
-    d_attrMap = new AttributeMap(d_ui->attributeComboBox->currentText());
-    	
-    QObject::connect(d_attrMap, SIGNAL(attributeFound(QString)), this, SLOT(attributeFound(QString)));
-    
-    // When I am released, does d_xpathMapper crash because the pointer that points to d_attrMap points to released space?
-    // And when so, would a destructor which makes sure this thread is destroyed before d_attrMap gets freed fix this?
-    d_xpathMapper->start(d_corpusReader.data(), d_macrosModel->expand(d_ui->filterLineEdit->text()), d_attrMap);
-}
-
-void StatisticsWindow::stopMapper()
-{
-    if(d_xpathMapper->isRunning()) {
-    	d_xpathMapper->cancel();
-    	d_xpathMapper->wait();
-    }
 }
 
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
-    stopMapper();
-    
     d_corpusReader = corpusReader;
-    
-    updateResults();
+    setModel(new DactStatisticsModel(corpusReader));
 }
 
 void StatisticsWindow::setFilter(QString const &filter)
 {
+    d_filter = filter;
     d_ui->filterLineEdit->setText(filter);
 }
 
@@ -95,79 +69,18 @@ void StatisticsWindow::setAggregateAttribute(QString const &detail)
     // to reflect the current (changed) state of the window.
 }
 
-void StatisticsWindow::updateResults()
+void StatisticsWindow::setModel(DactStatisticsModel *model)
 {
-    // @TODO: allow the user to copy and/or export this table.
-    try {
-    	if (d_corpusReader.isNull())
-    		return;
-    	
-    	if (d_ui->filterLineEdit->text().trimmed().isEmpty() || !d_ui->filterLineEdit->hasAcceptableInput())
-    		return;
-    	
-    	stopMapper();
-    	
-    	d_results.clear();
-    	d_totalHits = 0;
-    	
-    	d_ui->resultsTableWidget->setRowCount(0);
-    	d_resultsTable.clear(); // @TODO should I release each row? Since they are dynamically allocated...
-    	updateResultsTotalCount();
-    	
-    	startMapper();
-    	
-    	return;
-    } catch (std::runtime_error const &e) {
-    	QMessageBox::critical(this, QString("Error calculating"),
-    	    QString("Could not start searching: %1").arg(e.what()));
-    }
-}
-
-QSharedPointer<StatisticsWindowResultsRow> StatisticsWindow::createResultsRow(QString const &value)
-{
-    QSharedPointer<StatisticsWindowResultsRow> row = QSharedPointer<StatisticsWindowResultsRow>(new StatisticsWindowResultsRow());
-    row->setText(value);
-    row->insertIntoTable(d_ui->resultsTableWidget);
-    d_resultsTable[value] = row;
-    return row;
-}
-
-void StatisticsWindow::attributeFound(QString value)
-{
-    QSharedPointer<StatisticsWindowResultsRow> row;
+    d_model = QSharedPointer<DactStatisticsModel>(model);
+    d_ui->resultsTable->setModel(d_model.data());
     
-    int hits = ++d_results[value];
-    ++d_totalHits;
-    
-    try {
-    	if (d_resultsTable.contains(value)) {
-    		row = d_resultsTable[value];
-    	} else {
-    		row = createResultsRow(value);
-    	}
-
-    	row->setValue(hits);
-    	
-    	updateResultsTotalCount();		
-    } catch (std::runtime_error const &e) {
-    	qWarning() << QString("StatisticsWindow::attributeFound: Could not add result to table: %1").arg(e.what());
-    }
+    connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
+            this, SLOT(updateResultsTotalCount()));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
 {
-    d_ui->totalHitsLabel->setText(QString("%1").arg(d_totalHits));
-    
-    //updateResultsPercentages();
-}
-
-void StatisticsWindow::updateResultsPercentages()
-{
-    for (QHash<QString,QSharedPointer<StatisticsWindowResultsRow> >::const_iterator iter = d_resultsTable.constBegin();
-    	 iter != d_resultsTable.constEnd(); ++iter)
-    {
-    	iter.value()->setMax(d_totalHits);
-    }
+    d_ui->totalHitsLabel->setText(QString("%1").arg(d_model->totalHits()));
 }
 
 void StatisticsWindow::applyValidityColor(QString const &)
@@ -178,21 +91,18 @@ void StatisticsWindow::applyValidityColor(QString const &)
 void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
-    d_ui->resultsTableWidget->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
-    d_ui->resultsTableWidget->verticalHeader()->hide();
-    d_ui->resultsTableWidget->setShowGrid(false);
-    d_ui->resultsTableWidget->setSortingEnabled(true);
-    d_ui->resultsTableWidget->sortByColumn(1, Qt::DescendingOrder);
-    d_ui->resultsTableWidget->setItemDelegateForColumn(2, new PercentageCellDelegate());
+    
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    d_ui->resultsTable->verticalHeader()->hide();
+    d_ui->resultsTable->setShowGrid(false);
+    d_ui->resultsTable->setSortingEnabled(true);
+    d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
+    d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
+    
     // As long as copying etc. from the columns isn't supported, I think this is the most expected behavior.
-    d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    //d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    
-    QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int,int)), this, SLOT(progressChanged(int,int)));
-    
-    QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(progressStarted(int)));
-    QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int,int)), this, SLOT(progressStopped(int,int)));
     
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         this, SLOT(applyValidityColor(QString const &))); 
@@ -200,7 +110,7 @@ void StatisticsWindow::createActions()
         SLOT(startQuery()));
     QObject::connect(d_ui->startPushButton, SIGNAL(clicked()),
         this, SLOT(startQuery()));
-    QObject::connect(d_ui->resultsTableWidget, SIGNAL(itemActivated(QTableWidgetItem*)), this, SLOT(itemActivated(QTableWidgetItem*)));
+    QObject::connect(d_ui->resultsTable, SIGNAL(itemActivated(QTableWidgetItem*)), this, SLOT(itemActivated(QTableWidgetItem*)));
     
     QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
 }
@@ -210,7 +120,7 @@ void StatisticsWindow::keyPressEvent(QKeyEvent *event)
     // When pressing Esc, stop with what you where doing
     if (event->key() == Qt::Key_Escape)
     {
-        stopMapper();
+        d_model->cancelQuery();
         event->accept();
     }
     // Cmd + w closes the window in OS X (and in some programs on Windows as well)
@@ -263,7 +173,7 @@ void StatisticsWindow::itemActivated(QTableWidgetItem* item)
 void StatisticsWindow::showPercentage(bool show)
 {
    //d_ui->resultsTableWidget->setColumnHidden(1, show);
-   d_ui->resultsTableWidget->setColumnHidden(2, !show);
+   d_ui->resultsTable->setColumnHidden(2, !show);
     
    d_ui->percentageCheckBox->setChecked(show);
 }
@@ -274,7 +184,9 @@ void StatisticsWindow::startQuery()
     
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
     
-    updateResults();
+    d_model->runQuery(QString("%1/@%2")
+        .arg(d_filter)
+        .arg(d_ui->attributeComboBox->currentText()));
 }
 
 void StatisticsWindow::showPercentageChanged()
@@ -301,7 +213,7 @@ void StatisticsWindow::progressStopped(int n, int total)
     // even implemented yet.)
     d_ui->filterProgress->setVisible(false);
 
-	updateResultsPercentages();
+	//updateResultsPercentages();
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
@@ -386,7 +298,7 @@ void StatisticsWindow::writeSettings()
     settings.setValue("query_pos", pos());
     settings.setValue("query_size", size());
 }
-
+/*
 StatisticsWindowResultsRow::StatisticsWindowResultsRow() :
     d_hits(0),
     d_labelItem(new QTableWidgetItem()),
@@ -435,3 +347,4 @@ void StatisticsWindowResultsRow::setMax(int totalHits)
 {
     d_percentageItem->setData(Qt::DisplayRole, ((float) d_hits / totalHits) * 100.0);
 }
+*/
