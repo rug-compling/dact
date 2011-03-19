@@ -68,12 +68,12 @@ private:
     void readSettings();
     void writeSettings();
 
-    AttributeMap *d_attrMap;
     QSharedPointer<Ui::StatisticsWindow> d_ui;
+	QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
+	AttributeMap *d_attrMap;
     QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
-    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     
     // combination of <attribute value, hits count>
     // @TODO This one could be re-used for exporting functions. It's "finished"

@@ -143,15 +143,15 @@ private:
 	static QStyledItemDelegate* visibilityDelegateFactory();
 	static QStyledItemDelegate* keywordInContextDelegateFactory();
 
-    EntryMapAndTransform *d_entryMap;
     QString d_filter;
 	QList<QStyledItemDelegate*(*)()>d_listDelegateFactories;
     QSharedPointer<Ui::BracketedWindow> d_ui;
+	QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+	EntryMapAndTransform *d_entryMap;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
-    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
 };
 
 class EntryMapAndTransform : public EntryMap
@@ -167,9 +167,9 @@ signals:
     void sentenceFound(QString file, QString sentence);
     
 private:
-    QString d_query;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-    QSharedPointer<XSLTransformer> d_xslTransformer;
+	QSharedPointer<XSLTransformer> d_xslTransformer;
+    QString d_query;
 };
 
 #endif // DACTFILTERWINDOW_H

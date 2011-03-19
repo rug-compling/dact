@@ -146,7 +146,7 @@ void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     
     emit currentEntryChanged(current->data(Qt::UserRole).toString());
     
-    // Raises this window again when using cursor keys after using\
+    // Raises this window again when using cursor keys after using
     // [enter] to raise the main window.
     raise();
 }

@@ -443,11 +443,11 @@ private:
     QSharedPointer<Ui::DactMainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
+	StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
     DactProgressDialog *d_openProgressDialog;
 	DactProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
-    StatisticsWindow *d_statisticsWindow;
     
 	/*!
 	 The XPath query currently used to highlight nodes in the tree scene.

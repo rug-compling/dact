@@ -30,9 +30,9 @@ private:
     void createActions();
     void readSettings();
     void writeSettings();
-    
+	
+    QSharedPointer<Ui::DactMacrosWindow> d_ui;    
     QSharedPointer<DactMacrosModel> d_model;
-    QSharedPointer<Ui::DactMacrosWindow> d_ui;
 };
 
 #endif // DACTMACROSWINDOW_H

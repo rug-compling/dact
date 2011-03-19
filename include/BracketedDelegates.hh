@@ -16,8 +16,8 @@ protected:
 		int d_depth;
 		QString d_left;
 		QString d_text;
-		QString d_right;
 		QString d_fullText;
+		QString d_right;
 		QString d_remainingRight;
 		
 	public:
