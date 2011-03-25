@@ -102,17 +102,30 @@ void StatisticsWindow::createActions()
     // As long as copying etc. from the columns isn't supported, I think this is the most expected behavior.
     //d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     
+    // Only allow valid xpath queries to be submitted
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     
+    // This colors the query input if it doesn't contain a valid xpath query
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
-        this, SLOT(applyValidityColor(QString const &))); 
+        this, SLOT(applyValidityColor(QString const &)));
+    
+    // Start searching when [enter] is pressed in the query field
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this,
         SLOT(startQuery()));
+    
+    // Or start searching when the [search] button is pressed
     QObject::connect(d_ui->startPushButton, SIGNAL(clicked()),
         this, SLOT(startQuery()));
-    QObject::connect(d_ui->resultsTable, SIGNAL(itemActivated(QTableWidgetItem*)), this, SLOT(itemActivated(QTableWidgetItem*)));
     
-    QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(showPercentageChanged()));
+    // When a row is activated, generate a query to be used in the main window to
+    // filter all the results so only the results which are accumulated in this
+    // row will be shown.
+    QObject::connect(d_ui->resultsTable, SIGNAL(activated(QModelIndex const &)),
+        this, SLOT(generateQuery(QModelIndex const &)));
+    
+    // Toggle percentage column checkbox (is this needed?)
+    QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
+        this, SLOT(showPercentageChanged()));
 }
 
 void StatisticsWindow::keyPressEvent(QKeyEvent *event)
@@ -140,7 +153,7 @@ QString StatisticsWindow::generateQuery(QString const &base, QString const &attr
     if (!subSelectionPos)
         return QString();
     
-    qWarning() << base.mid(subSelectionPos);
+    //qWarning() << base.mid(subSelectionPos);
     
     int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
     
@@ -155,24 +168,18 @@ QString StatisticsWindow::generateQuery(QString const &base, QString const &attr
             base.mid(subSelectionPos + closingBracketPos));
 }
 
-/*
-QString StatisticsWindow::generateQuery(QTableWidgetItem *item) const
+
+void StatisticsWindow::generateQuery(QModelIndex const &index)
 {
-    return generateQuery(
+    QString data = index.data(Qt::UserRole).toString();
+    
+    QString query = generateQuery(
         d_ui->filterLineEdit->text(),
         d_ui->attributeComboBox->currentText(),
-        item->data(Qt::UserRole).toString());
+        data);
+    
+    emit entryActivated(data, query);
 }
-*/
-
-/*
-void StatisticsWindow::itemActivated(QTableWidgetItem* item)
-{
-    emit entryActivated(
-        item->text(),
-        generateQuery(item));
-}
-*/
 
 void StatisticsWindow::showPercentage(bool show)
 {

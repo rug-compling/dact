@@ -39,13 +39,13 @@ signals:
 
 private slots:
     void applyValidityColor(QString const &text);
+    void generateQuery(QModelIndex const &index);
 //    void attributeFound(QString value);
     void startQuery();
     void progressStarted(int total);
     void progressChanged(int n, int total);
     void progressStopped(int n, int total);
     void showPercentageChanged();
-//    void itemActivated(QTableWidgetItem* item);
     void updateResultsTotalCount();
 
 protected:
@@ -54,7 +54,6 @@ protected:
 
 private:
     QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;
-//    QString generateQuery(QTableWidgetItem *item) const;
 //    void updateResults();
 //    void updateResultsPercentages();
 //    void updateResultsTotalCount();
