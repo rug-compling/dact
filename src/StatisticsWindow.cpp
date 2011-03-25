@@ -155,6 +155,7 @@ QString StatisticsWindow::generateQuery(QString const &base, QString const &attr
             base.mid(subSelectionPos + closingBracketPos));
 }
 
+/*
 QString StatisticsWindow::generateQuery(QTableWidgetItem *item) const
 {
     return generateQuery(
@@ -162,13 +163,16 @@ QString StatisticsWindow::generateQuery(QTableWidgetItem *item) const
         d_ui->attributeComboBox->currentText(),
         item->data(Qt::UserRole).toString());
 }
+*/
 
+/*
 void StatisticsWindow::itemActivated(QTableWidgetItem* item)
 {
     emit entryActivated(
         item->text(),
         generateQuery(item));
 }
+*/
 
 void StatisticsWindow::showPercentage(bool show)
 {

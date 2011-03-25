@@ -6,14 +6,10 @@
 #include <QWidget>
 #include <QSharedPointer>
 #include <QString>
-#include <QTableWidget>
-#include <QTableWidgetItem>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathMapper.hh"
 #include "XPathValidator.hh"
-#include "XSLTransformer.hh"
 
 namespace Ui {
     class StatisticsWindow;
@@ -49,7 +45,7 @@ private slots:
     void progressChanged(int n, int total);
     void progressStopped(int n, int total);
     void showPercentageChanged();
-    void itemActivated(QTableWidgetItem* item);
+//    void itemActivated(QTableWidgetItem* item);
     void updateResultsTotalCount();
 
 protected:
@@ -58,7 +54,7 @@ protected:
 
 private:
     QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;
-    QString generateQuery(QTableWidgetItem *item) const;
+//    QString generateQuery(QTableWidgetItem *item) const;
 //    void updateResults();
 //    void updateResultsPercentages();
 //    void updateResultsTotalCount();

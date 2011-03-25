@@ -71,8 +71,8 @@ private:
 	QList<QString> d_labels;
 	QList<QString> d_popupLines;
 	PopupItem *d_popupItem;
-	qreal d_spaceBetweenNodes;
 	qreal d_spaceBetweenLayers;
+	qreal d_spaceBetweenNodes;
 	qreal d_leafMinimumWidth;
 	qreal d_leafMinimumHeight;
 	qreal d_leafPadding;
