@@ -40,7 +40,6 @@ signals:
 private slots:
     void applyValidityColor(QString const &text);
     void generateQuery(QModelIndex const &index);
-//    void attributeFound(QString value);
     void startQuery();
     void progressStarted(int total);
     void progressChanged(int n, int total);
@@ -54,13 +53,8 @@ protected:
 
 private:
     QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;
-//    void updateResults();
-//    void updateResultsPercentages();
-//    void updateResultsTotalCount();
     void createActions();
     void readNodeAttributes();
-//    void startMapper();
-//    void stopMapper();
     void readSettings();
     void writeSettings();
     void setModel(DactStatisticsModel *model);
@@ -73,26 +67,4 @@ private:
     QSharedPointer<XPathValidator> d_xpathValidator;
 };
 
-// Main purpose of this object is to keep the three cells and their update functions
-// together, so I can keep track of them through a hashtable. Because I don't trust
-// that QTableWidget thingy with its numerical rows. They change! I tell you! I saw
-// them change!
-/*
-class StatisticsWindowResultsRow : public QObject
-{
-public:
-    StatisticsWindowResultsRow();
-    ~StatisticsWindowResultsRow();
-    void setText(QString const &);
-    void setValue(int);
-    void setMax(int);
-    int insertIntoTable(QTableWidget *table);
-    
-private:
-    int d_hits;
-    QTableWidgetItem *d_labelItem;
-    QTableWidgetItem *d_countItem;
-    QTableWidgetItem *d_percentageItem;
-};
-*/
 #endif // DACTQUERYWINDOW_H

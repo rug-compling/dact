@@ -75,7 +75,16 @@ void StatisticsWindow::setModel(DactStatisticsModel *model)
     d_ui->resultsTable->setModel(d_model.data());
     
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
-            this, SLOT(updateResultsTotalCount()));
+        this, SLOT(updateResultsTotalCount()));
+    
+    connect(d_model.data(), SIGNAL(queryStarted(int)),
+        this, SLOT(progressStarted(int)));
+    
+    connect(d_model.data(), SIGNAL(queryProgressed(int, int)),
+        this, SLOT(progressChanged(int, int)));
+    
+    connect(d_model.data(), SIGNAL(queryStopped(int, int)),
+        this, SLOT(progressStopped(int, int)));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
@@ -94,13 +103,8 @@ void StatisticsWindow::createActions()
     
     d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTable->verticalHeader()->hide();
-    d_ui->resultsTable->setShowGrid(false);
-    d_ui->resultsTable->setSortingEnabled(true);
     d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
     d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
-    
-    // As long as copying etc. from the columns isn't supported, I think this is the most expected behavior.
-    //d_ui->resultsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     
     // Only allow valid xpath queries to be submitted
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
@@ -304,53 +308,3 @@ void StatisticsWindow::writeSettings()
     settings.setValue("query_pos", pos());
     settings.setValue("query_size", size());
 }
-/*
-StatisticsWindowResultsRow::StatisticsWindowResultsRow() :
-    d_hits(0),
-    d_labelItem(new QTableWidgetItem()),
-    d_countItem(new QTableWidgetItem()),
-    d_percentageItem(new QTableWidgetItem())
-{
-    d_labelItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    
-    d_percentageItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    d_percentageItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
-    
-    d_countItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    d_countItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);        
-}
-
-int StatisticsWindowResultsRow::insertIntoTable(QTableWidget *table)
-{
-    int row = table->rowCount();
-    table->insertRow(row);
-    
-    table->setItem(row, 0, d_labelItem);
-    table->setItem(row, 1, d_countItem);
-    table->setItem(row, 2, d_percentageItem);
-    
-    return row;
-}
-
-StatisticsWindowResultsRow::~StatisticsWindowResultsRow()
-{}
-
-void StatisticsWindowResultsRow::setText(QString const &text)
-{
-    d_labelItem->setText(text);
-    d_labelItem->setData(Qt::UserRole, text);
-    d_percentageItem->setData(Qt::UserRole, text);
-    d_countItem->setData(Qt::UserRole, text);
-}
-
-void StatisticsWindowResultsRow::setValue(int n)
-{
-    d_hits = n;
-    d_countItem->setData(Qt::DisplayRole, n);
-}
-
-void StatisticsWindowResultsRow::setMax(int totalHits)
-{
-    d_percentageItem->setData(Qt::DisplayRole, ((float) d_hits / totalHits) * 100.0);
-}
-*/
