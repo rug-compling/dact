@@ -4,7 +4,8 @@
 void PercentageCellDelegate::paint(QPainter *painter,
     const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    double progress = index.data().toDouble();
+    // Data supplied to this type of column should be in the range of 0..1
+    double progress = index.data().toDouble() * 100;
 
     QStyleOptionProgressBar progressBarOption;
     progressBarOption.rect = option.rect;

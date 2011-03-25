@@ -47,7 +47,8 @@ QVariant DactStatisticsModel::data(QModelIndex const &index, int role) const
         case 1:
             return d_results[index.row()].second;
         case 2:
-            return 0;
+            return static_cast<double>(d_results[index.row()].second)
+                 / static_cast<double>(d_totalHits);
         default:
             return QVariant();
     }

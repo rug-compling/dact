@@ -212,12 +212,7 @@ void StatisticsWindow::progressChanged(int n, int total)
 
 void StatisticsWindow::progressStopped(int n, int total)
 {
-    // @TODO maybe indicate some way when n != total that it's not busy anymore
-    // but also not finished. (e.g. it was cancelled by pressing [esc], which isn't
-    // even implemented yet.)
     d_ui->filterProgress->setVisible(false);
-
-	//updateResultsPercentages();
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
