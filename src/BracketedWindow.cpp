@@ -3,7 +3,6 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
-#include <QListWidgetItem>
 #include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
@@ -16,6 +15,7 @@
 #include "BracketedDelegates.hh"
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.hh"
+#include "DactQueryModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ValidityColor.hh"
@@ -25,32 +25,23 @@ BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow)),
-    d_corpusReader(corpusReader),
-    d_entryMap(0),
     d_macrosModel(macrosModel),
-    d_xpathMapper(QSharedPointer<XPathMapper>(new XPathMapper)),
     d_xpathValidator(new XPathValidator(d_macrosModel))
 {
     d_ui->setupUi(this);
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-	initListDelegates();
+    
+    switchCorpus(corpusReader);
+    
+    initListDelegates();
     initSentenceTransformer();
     createActions();
     readSettings();
 }
 
-BracketedWindow::~BracketedWindow()
-{
-    stopMapper();
-}
-
 void BracketedWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
-    stopMapper();
-
     d_corpusReader = corpusReader;
-    
-    updateResults();
+    setModel(new DactQueryModel(corpusReader));
 }
 
 void BracketedWindow::setFilter(QString const &filter)
@@ -62,49 +53,38 @@ void BracketedWindow::setFilter(QString const &filter)
         d_filter = QString();
     else
         d_filter = filter.trimmed();
-
-    updateResults();
 }
 
-void BracketedWindow::stopMapper()
+void BracketedWindow::setModel(DactQueryModel *model)
 {
-    	if(d_xpathMapper->isRunning()) {
-    		d_xpathMapper->cancel();
-    		d_xpathMapper->wait();
-    	}
-}
-
-void BracketedWindow::updateResults()
-{
-    if(!d_corpusReader || d_filter.isEmpty())
-    	return;
+    d_model = QSharedPointer<DactQueryModel>(model);
+    d_ui->resultsList->setModel(d_model.data());
     
-    try {
-        stopMapper();
-    	
-    	d_ui->resultsListWidget->clear();
-    	
-    	if(d_entryMap)
-    		delete d_entryMap;
-    	
-    	QString xpathExpression = d_macrosModel->expand(d_filter);
-    	
-    	d_entryMap = new EntryMapAndTransform(d_corpusReader, d_sentenceTransformer, xpathExpression);
-    	QObject::connect(d_entryMap, SIGNAL(sentenceFound(QString, QString)), this, SLOT(sentenceFound(QString, QString)));
-    	
-    	d_xpathMapper->start(d_corpusReader.data(), xpathExpression, d_entryMap);
-    } catch (std::runtime_error const &e) {
-    	QMessageBox::critical(this, QString("Error reading corpus"),
-    	    QString("Could not read corpus: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
-    }
+    /*
+    connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
+        this, SLOT(updateResultsTotalCount()));
+    */
     
-    return;
+    connect(d_model.data(), SIGNAL(queryStarted(int)),
+        this, SLOT(progressStarted(int)));
+    
+    connect(d_model.data(), SIGNAL(queryProgressed(int, int)),
+        this, SLOT(progressChanged(int, int)));
+    
+    connect(d_model.data(), SIGNAL(queryStopped(int, int)),
+        this, SLOT(progressStopped(int, int)));
 }
 
-void BracketedWindow::sentenceFound(QString file, QString sentence)
+void BracketedWindow::startQuery()
 {
-    QListWidgetItem *item(new QListWidgetItem(sentence, d_ui->resultsListWidget));
-    item->setData(Qt::UserRole, file);
+    setFilter(d_ui->filterLineEdit->text());
+    
+    d_model->runQuery(d_macrosModel->expand(d_filter));
+}
+
+void BracketedWindow::stopQuery()
+{
+    d_model->cancelQuery();
 }
 
 void BracketedWindow::applyValidityColor(QString const &)
@@ -114,6 +94,7 @@ void BracketedWindow::applyValidityColor(QString const &)
 
 void BracketedWindow::createActions()
 {
+    /*
     QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
     QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
     QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
@@ -130,15 +111,20 @@ void BracketedWindow::createActions()
         SIGNAL(itemActivated(QListWidgetItem*)),
         this,
         SLOT(entryActivated(QListWidgetItem*)));
-
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
-        SLOT(applyValidityColor(QString const &)));
+    */
     
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
+    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
+        this, SLOT(applyValidityColor(QString const &)));
     
-	QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(listDelegateChanged(int)));
+    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
+        this, SLOT(startQuery()));
+    
+	QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)),
+	    this, SLOT(listDelegateChanged(int)));
 }
 
+/*
 void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 {
     if (current == 0)
@@ -150,16 +136,14 @@ void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
     // [enter] to raise the main window.
     raise();
 }
+*/
 
+/*
 void BracketedWindow::entryActivated(QListWidgetItem *item)
 {
     emit entryActivated();
 }
-
-void BracketedWindow::filterChanged()
-{
-    setFilter(d_ui->filterLineEdit->text());
-}
+*/
 
 void BracketedWindow::addListDelegate(QString const &name, QStyledItemDelegate*(*factory)())
 {
@@ -179,8 +163,8 @@ void BracketedWindow::listDelegateChanged(int index)
 		return;
 	}
 	
-	QAbstractItemDelegate* prevItemDelegate = d_ui->resultsListWidget->itemDelegate();
-	d_ui->resultsListWidget->setItemDelegate(d_listDelegateFactories[delegateIndex]());
+	QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegate();
+	d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex]());
 	delete prevItemDelegate;
 }
 
@@ -206,7 +190,7 @@ void BracketedWindow::keyPressEvent(QKeyEvent *event)
     // When pressing Esc, stop with what you where doing
     if (event->key() == Qt::Key_Escape)
     {
-        stopMapper();
+        d_model->cancelQuery();
         event->accept();
     }
     // Cmd + w closes the window in OS X (and in some programs on Windows as well)
@@ -219,7 +203,7 @@ void BracketedWindow::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
 }
 
-void BracketedWindow::mapperStarted(int totalEntries)
+void BracketedWindow::progressStarted(int totalEntries)
 {
     d_ui->filterProgressBar->setMinimum(0);
     d_ui->filterProgressBar->setMaximum(totalEntries);
@@ -227,16 +211,15 @@ void BracketedWindow::mapperStarted(int totalEntries)
     d_ui->filterProgressBar->setVisible(true);
 }
 
-void BracketedWindow::mapperStopped(int processedEntries, int totalEntries)
-{
-    d_ui->filterProgressBar->setVisible(false);
-}
-
-void BracketedWindow::mapperProgressed(int processedEntries, int totalEntries)
+void BracketedWindow::progressChanged(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setValue(processedEntries);
 }
 
+void BracketedWindow::progressStopped(int processedEntries, int totalEntries)
+{
+    d_ui->filterProgressBar->setVisible(false);
+}
 
 void BracketedWindow::closeEvent(QCloseEvent *event)
 {
@@ -285,42 +268,4 @@ QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory()
 QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory()
 {
 	return new BracketedKeywordInContextDelegate();
-}
-
-EntryMapAndTransform::EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> corpusReader, QSharedPointer<XSLTransformer> xslTransformer, QString const &query) :
-    d_corpusReader(corpusReader),
-    d_xslTransformer(xslTransformer),
-    d_query(query)
-{}
-
-void EntryMapAndTransform::operator()(QString const &entry, xmlXPathObjectPtr xpathObj)
-{
-    if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr > 0)
-    {
-    	emit sentenceFound(entry, transform(entry));
-    }
-}
-
-QString EntryMapAndTransform::transform(QString const &file)
-{
-    // Read XML data.
-    if (!d_corpusReader)
-        throw std::runtime_error(
-                "EntryMapAndTransform::transform CorpusReader not available");
-    
-    QString xml = d_corpusReader->read(file);
-    
-    if (xml.size() == 0)
-        throw std::runtime_error(
-                "EntryMapAndTransform::transform: empty XML data");
-    
-    // Parameters
-    QString valStr = d_query.trimmed().isEmpty()
-    	? "'/..'"
-    	: QString("'") + d_query + QString("'");
-    
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-    
-    return d_xslTransformer->transform(xml, params).trimmed();	
 }

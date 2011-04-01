@@ -20,9 +20,9 @@ namespace Ui {
 class QKeyEvent;
 
 class DactMacrosModel;
+class DactQueryModel;
 class QListWidgetItem;
 class QStyledItemDelegate;
-class EntryMapAndTransform;
 
 /*!
  It is still called the bracketed window because it showed the sentences with brackets
@@ -46,8 +46,6 @@ public:
     BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	
-    ~BracketedWindow();
-	
     /*!
 	 When a new treebank is loaded into the main window, the corpus is switched and the
 	 results will be updated.
@@ -64,7 +62,7 @@ public:
 	
 	/*!
 	 Return the current active filter. Used by the main window to highlight the nodes
-	 when one of BracketedWindow's results is activated.
+	 when one of BracketedWindow's results is activated.::progress
 	 */
     inline QString const &filter() const { return d_filter; };
 
@@ -85,38 +83,30 @@ signals:
     
 private slots:
     void applyValidityColor(QString const &text);
+    /*
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
     void entryActivated(QListWidgetItem *subject);
-    void filterChanged();
-	
-	/*!
-	 Catches the EntryMapAndTransform's sentenceFound signal. Currently the transformed
-	 xml that is returned is parsed by the BracketedDelegate when it is displayed, but
-	 it is human readable.
-	 \param file corpus internal path to the xml file.
-	 \param sentence the transformed xml.
-	 */
-    void sentenceFound(QString file, QString sentence);
-	
+    */
+    
 	/*!
 	 Called when the search mapper started. Shows progress bar.
 	 \param totalEntries number of entries to search thru.
 	 */
-    void mapperStarted(int totalEntries);
-	
-	/*!
-	 Called when the search mapper progresssed. Updates the progress bar.
-	 \param processedEntries number of entries searched so far.
-	 \param totalEntries number of entries to search thru.
-	 */
-    void mapperStopped(int processedEntries, int totalEntries);
+    void progressStarted(int totalEntries);
 	
 	/*!
 	 Called when the search mapper is done or cancelled. Hides the progress bar.
 	 \param processedEntries number of entries it has processed.
 	 \param totalEntries number of entries it could have processed.
 	 */
-    void mapperProgressed(int processedEntries, int totalEntries);
+    void progressChanged(int processedEntries, int totalEntries);
+	
+	/*!
+	 Called when the search mapper progresssed. Updates the progress bar.
+	 \param processedEntries number of entries searched so far.
+	 \param totalEntries number of entries to search thru.
+	 */
+    void progressStopped(int processedEntries, int totalEntries);
 	
 	/*!
 	 Called when another delegate is selected in the dropdown menu
@@ -124,6 +114,9 @@ private slots:
 	 \param index index of the delegate in the dropdown menu.
 	 */
 	void listDelegateChanged(int index);
+	
+	void startQuery();
+    void stopQuery();
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
@@ -135,9 +128,9 @@ private:
     void createActions();
 	void initListDelegates();
     void initSentenceTransformer();
+    void setModel(DactQueryModel* model);
     void readSettings();
     void writeSettings();
-    void stopMapper();
 	
 	static QStyledItemDelegate* colorDelegateFactory();
 	static QStyledItemDelegate* visibilityDelegateFactory();
@@ -147,29 +140,10 @@ private:
 	QList<QStyledItemDelegate*(*)()>d_listDelegateFactories;
     QSharedPointer<Ui::BracketedWindow> d_ui;
 	QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-	EntryMapAndTransform *d_entryMap;
     QSharedPointer<DactMacrosModel> d_macrosModel;
+    QSharedPointer<DactQueryModel> d_model;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
-    QSharedPointer<XPathMapper> d_xpathMapper;
     QSharedPointer<XPathValidator> d_xpathValidator;
-};
-
-class EntryMapAndTransform : public EntryMap
-{
-    Q_OBJECT
-public:
-    EntryMapAndTransform(QSharedPointer<alpinocorpus::CorpusReader> reader, QSharedPointer<XSLTransformer> transformer, QString const &query);
-    void operator()(QString const &entry, xmlXPathObjectPtr xpathObj);
-private:
-    QString transform(QString const &file);
-
-signals:
-    void sentenceFound(QString file, QString sentence);
-    
-private:
-    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-	QSharedPointer<XSLTransformer> d_xslTransformer;
-    QString d_query;
 };
 
 #endif // DACTFILTERWINDOW_H
