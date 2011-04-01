@@ -6,17 +6,20 @@
 #include <QAbstractListModel>
 #include <QFuture>
 #include <QList>
+#include <QPair>
 
-class DactQueryModel : public QAbstractListModel
+class DactQueryModel : public QAbstractTableModel
 {
     Q_OBJECT
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
+    typedef QPair<QString,int> value_type;
     
 public:
     DactQueryModel(CorpusPtr corpus, QObject *parent = 0);
 	~DactQueryModel();
+	int columnCount(QModelIndex const &index) const;
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
@@ -42,8 +45,7 @@ private slots:
 private:
     bool d_cancelled;
     CorpusPtr d_corpus;
-    QList<QString> d_results;
-    
+    QList<value_type> d_results;
 };
 
 #endif
