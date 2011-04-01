@@ -8,9 +8,9 @@
 
 #include <QtDebug>
 
-BracketedKeywordInContextDelegate::BracketedKeywordInContextDelegate(QWidget* parent)
+BracketedKeywordInContextDelegate::BracketedKeywordInContextDelegate(CorpusReaderPtr corpus)
 :
-BracketedDelegate(parent)
+    BracketedDelegate(corpus)
 {
     loadColorSettings();
 }

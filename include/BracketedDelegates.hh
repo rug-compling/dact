@@ -2,14 +2,20 @@
 #define STARDELEGATE_H
 
 #include <QList>
+#include <QSharedPointer>
 #include <QStyledItemDelegate>
+#include <AlpinoCorpus/CorpusReader.hh>
 
 class BracketedDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
-public:
-    BracketedDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
 
+protected:
+    typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
+    
+public:
+    BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent = 0);
+    
 protected:
 	class Chunk
 	{
@@ -68,19 +74,33 @@ protected:
 		QString sentence() const;
 	};
 	
-	/*!
+    /*!
+    Access the corpusreader provided to the constructor.
+    */
+    alpinocorpus::CorpusReader const &reader() const;
+    
+    /*!
 	Parses a bracketed sentence into chunks. Chunks are textparts separated by
 	open and closing brackets.
 	\param sentence the brackets containing sentence to be parsed
 	*/
     QList<Chunk> parseSentence(QString const &sentence) const;
+
+private:
+    CorpusReaderPtr d_corpus;
+
 };
+
+inline alpinocorpus::CorpusReader const &BracketedDelegate::reader() const
+{
+    return *d_corpus.data();
+}
 
 class BracketedColorDelegate : public BracketedDelegate
 {
     Q_OBJECT
 public:
-    BracketedColorDelegate(QWidget *parent = 0);
+    BracketedColorDelegate(CorpusReaderPtr);
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:
@@ -92,7 +112,7 @@ class BracketedVisibilityDelegate : public BracketedDelegate
 {
     Q_OBJECT
 public:
-    BracketedVisibilityDelegate(QWidget *parent = 0) : BracketedDelegate(parent) {}
+    BracketedVisibilityDelegate(CorpusReaderPtr);
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:
@@ -103,7 +123,7 @@ class BracketedKeywordInContextDelegate : public BracketedDelegate
 {
     Q_OBJECT
 public:
-    BracketedKeywordInContextDelegate(QWidget *parent = 0);
+    BracketedKeywordInContextDelegate(CorpusReaderPtr);
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:

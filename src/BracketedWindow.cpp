@@ -21,7 +21,9 @@
 #include "ValidityColor.hh"
 #include "ui_BracketedWindow.h"
 
-BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+namespace ac = alpinocorpus;
+
+BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow)),
@@ -33,12 +35,11 @@ BracketedWindow::BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corp
     switchCorpus(corpusReader);
     
     initListDelegates();
-    initSentenceTransformer();
     createActions();
     readSettings();
 }
 
-void BracketedWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
+void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
     setModel(new DactQueryModel(corpusReader));
@@ -145,7 +146,7 @@ void BracketedWindow::entryActivated(QListWidgetItem *item)
 }
 */
 
-void BracketedWindow::addListDelegate(QString const &name, QStyledItemDelegate*(*factory)())
+void BracketedWindow::addListDelegate(QString const &name, DelegateFactory factory)
 {
 	d_ui->listDelegateComboBox->addItem(name, d_listDelegateFactories.size());
 	d_listDelegateFactories.append(factory);
@@ -164,7 +165,7 @@ void BracketedWindow::listDelegateChanged(int index)
 	}
 	
 	QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegate();
-	d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex]());
+	d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex](d_corpusReader));
 	delete prevItemDelegate;
 }
 
@@ -173,16 +174,6 @@ void BracketedWindow::initListDelegates()
     addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
 	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
 	addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);	
-}
-
-void BracketedWindow::initSentenceTransformer()
-{
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&xslFile);
-    QString xsl(xslStream.readAll());
-    d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
 void BracketedWindow::keyPressEvent(QKeyEvent *event)
@@ -255,17 +246,17 @@ void BracketedWindow::writeSettings()
 	settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
 }
 
-QStyledItemDelegate* BracketedWindow::colorDelegateFactory()
+QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedColorDelegate();
+	return new BracketedColorDelegate(reader);
 }
 
-QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory()
+QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedVisibilityDelegate();
+	return new BracketedVisibilityDelegate(reader);
 }
 
-QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory()
+QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedKeywordInContextDelegate();
+	return new BracketedKeywordInContextDelegate(reader);
 }

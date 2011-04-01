@@ -1,5 +1,11 @@
 #include "BracketedDelegates.hh"
 
+BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
+:
+    d_corpus(corpus),
+    QStyledItemDelegate(parent)
+{ }
+
 QList<BracketedDelegate::Chunk> BracketedDelegate::parseSentence(QString const &sentence) const
 {
     QList<Chunk> chunks;

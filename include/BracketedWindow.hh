@@ -35,6 +35,10 @@ class QStyledItemDelegate;
  */
 class BracketedWindow : public QWidget {
     Q_OBJECT
+    
+    typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
+    typedef QStyledItemDelegate*(*DelegateFactory)(CorpusReaderPtr);
+    
 public:
 	/*
 	 Constructor
@@ -43,7 +47,7 @@ public:
 	 \param parent
 	 \param f
 	*/
-    BracketedWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+    BracketedWindow(CorpusReaderPtr corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	
     /*!
@@ -51,7 +55,7 @@ public:
 	 results will be updated.
 	 \param corpusReader the new corpus reader
 	 */
-    void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
+    void switchCorpus(CorpusReaderPtr corpusReader);
 	
 	/*!
 	 Set the query filter. Used by the main window to copy the current filter query
@@ -123,21 +127,20 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-	void addListDelegate(QString const &name, QStyledItemDelegate*(*factory)());
+	void addListDelegate(QString const &name, DelegateFactory);
 	void updateResults();
     void createActions();
 	void initListDelegates();
-    void initSentenceTransformer();
     void setModel(DactQueryModel* model);
     void readSettings();
     void writeSettings();
 	
-	static QStyledItemDelegate* colorDelegateFactory();
-	static QStyledItemDelegate* visibilityDelegateFactory();
-	static QStyledItemDelegate* keywordInContextDelegateFactory();
+	static QStyledItemDelegate* colorDelegateFactory(CorpusReaderPtr);
+	static QStyledItemDelegate* visibilityDelegateFactory(CorpusReaderPtr);
+	static QStyledItemDelegate* keywordInContextDelegateFactory(CorpusReaderPtr);
 
     QString d_filter;
-	QList<QStyledItemDelegate*(*)()>d_listDelegateFactories;
+	QList<DelegateFactory>d_listDelegateFactories;
     QSharedPointer<Ui::BracketedWindow> d_ui;
 	QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;

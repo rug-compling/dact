@@ -7,6 +7,11 @@
 
 #include <QtDebug>
 
+BracketedVisibilityDelegate::BracketedVisibilityDelegate(CorpusReaderPtr corpus)
+:
+    BracketedDelegate(corpus)
+{}
+
 QString BracketedVisibilityDelegate::formatSentence(QString const &sentence) const
 {
     QString result;

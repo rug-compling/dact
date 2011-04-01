@@ -8,9 +8,9 @@
 
 #include <QtDebug>
 
-BracketedColorDelegate::BracketedColorDelegate(QWidget* parent)
+BracketedColorDelegate::BracketedColorDelegate(CorpusReaderPtr corpus)
 :
-BracketedDelegate(parent)
+    BracketedDelegate(corpus)
 {
     loadSettings();
 }
