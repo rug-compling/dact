@@ -1,7 +1,6 @@
 #ifndef DACTQUERYMODEL_HH
 #define DACTQUERYMODEL_HH
 
-#include "XPathMapper.hh"
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <QAbstractListModel>
 #include <QFuture>

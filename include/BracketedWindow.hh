@@ -9,7 +9,6 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "XPathMapper.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 

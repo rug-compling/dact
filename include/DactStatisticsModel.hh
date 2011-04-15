@@ -1,7 +1,6 @@
 #ifndef DACTSTATISTICSMODEL_HH
 #define DACTSTATISTICSMODEL_HH
 
-#include "XPathMapper.hh"
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <QAbstractTableModel>
 #include <QFuture>
