@@ -47,18 +47,30 @@ QString BracketedColorDelegate::transformXML(QString const &xml, QString const &
     return d_transformer->transform(xml, params);
 }
 
+QString const &BracketedColorDelegate::transformedCorpusXML(QModelIndex const &index) const
+{
+    QString filename(index.data(Qt::UserRole).toString());
+    
+    if (!d_cache.contains(filename))
+    {
+        DactQueryModel const *model = dynamic_cast<DactQueryModel const *>(index.model());
+        
+        d_cache.insert(filename, new QString(transformXML(
+            reader().read(filename),
+            model != 0 ? model->lastQuery() : ""
+        )));
+    }
+        
+    return *d_cache[filename];
+}
+
 void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     try {
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
     
-        DactQueryModel const *model = dynamic_cast<DactQueryModel const *>(index.model());
-    
-        QString sentence(transformXML(
-            reader().read(index.data(Qt::UserRole).toString()),
-            model != 0 ? model->lastQuery() : ""
-        ));
+        QString sentence(transformedCorpusXML(index));
     
         QList<Chunk> chunks(parseSentence(sentence));
         QRectF textBox(option.rect);

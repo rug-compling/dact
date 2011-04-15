@@ -1,8 +1,10 @@
 #ifndef STARDELEGATE_H
 #define STARDELEGATE_H
 
+#include <QCache>
 #include <QFile>
 #include <QList>
+#include <QModelIndex>
 #include <QSharedPointer>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
@@ -108,8 +110,10 @@ public:
 private:
     void loadSettings();
     QString transformXML(QString const &xml, QString const &query) const;
+    QString const &transformedCorpusXML(QModelIndex const &index) const;
     
     QColor d_backgroundColor;
+    mutable QCache<QString,QString> d_cache;
     QFile d_stylesheet;
     QSharedPointer<XSLTransformer> d_transformer;
 };
