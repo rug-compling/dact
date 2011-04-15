@@ -32,43 +32,10 @@ void BracketedKeywordInContextDelegate::loadColorSettings()
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QList<Chunk> chunks(parseChunks(index));
-	QSize lineBox;
-	
-	int previousDepth = 0;
-	
-	foreach (Chunk chunk, chunks)
-	{
-		bool skip = false;
-		
-		// if this chunk comes after a submatch (a chunk at a deeper level)
-		// than we can ignore this chunk because we already printed it at
-		// the start. (@TODO we did, did we?)
-		if (chunk.depth() <= previousDepth)
-			skip = true;
-		
-		// If it is empty, there is no real use printing it.
-		// (It's only empty in cases like the chunk between the first and
-		// second opening bracket in "I [[love]] peanutbutter".
-		if (chunk.text().isEmpty())
-			skip = true;
-		
-		previousDepth = chunk.depth();
-		
-		if (skip)
-			continue;
-		
-		previousDepth = chunk.depth();
-		
-		QSize textBox = option.fontMetrics.size(Qt::TextSingleLine, chunk.text() + chunk.right());
-		lineBox.setHeight(lineBox.height() + textBox.height());
-		if (textBox.width() > lineBox.width())
-			lineBox.setWidth(textBox.width());
-	}
-	
-	lineBox.setWidth(lineBox.width() + 400);
-	
-    return lineBox;
+    return QSize(
+        1200,
+        option.fontMetrics.height() * index.sibling(index.row(), 1).data().toInt()
+    );
 }
 
 void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
