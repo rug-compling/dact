@@ -48,9 +48,10 @@ QString BracketedVisibilityDelegate::formatSentence(QModelIndex const &index) co
 
 QSize BracketedVisibilityDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
-    QString result(formatSentence(index));
-    
-    return option.fontMetrics.size(0, result);
+    return QSize(
+        2400, // @TODO yes, this number is completely random. Please please find a way to calculate a sane guess.
+        option.fontMetrics.height() * index.sibling(index.row(), 1).data().toInt()
+    );
 }
 
 void BracketedVisibilityDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const

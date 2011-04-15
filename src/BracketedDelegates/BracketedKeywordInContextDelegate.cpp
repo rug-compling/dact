@@ -33,7 +33,7 @@ void BracketedKeywordInContextDelegate::loadColorSettings()
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(
-        1200,
+        2400, // @TODO yes, this number is completely random. Please please find a way to calculate a sane guess.
         option.fontMetrics.height() * index.sibling(index.row(), 1).data().toInt()
     );
 }
