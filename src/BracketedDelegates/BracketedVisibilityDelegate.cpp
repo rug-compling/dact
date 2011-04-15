@@ -12,12 +12,12 @@ BracketedVisibilityDelegate::BracketedVisibilityDelegate(CorpusReaderPtr corpus)
     BracketedDelegate(corpus)
 {}
 
-QString BracketedVisibilityDelegate::formatSentence(QString const &sentence) const
+QString BracketedVisibilityDelegate::formatSentence(QModelIndex const &index) const
 {
     QString result;
     
     int previousDepth = 0;
-    foreach (Chunk chunk, parseSentence(sentence))
+    foreach (Chunk chunk, parseChunks(index))
     {
         // Indeed, this is copy-pastework from ~20
         bool skip = false;
@@ -48,7 +48,7 @@ QString BracketedVisibilityDelegate::formatSentence(QString const &sentence) con
 
 QSize BracketedVisibilityDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
-    QString result(formatSentence(index.data().toString()));
+    QString result(formatSentence(index));
     
     return option.fontMetrics.size(0, result);
 }
@@ -58,7 +58,7 @@ void BracketedVisibilityDelegate::paint(QPainter *painter, QStyleOptionViewItem 
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    QString result(formatSentence(index.data().toString()));
+    QString result(formatSentence(index));
     
     QBrush brush = option.state & QStyle::State_Selected
         ? option.palette.highlightedText()

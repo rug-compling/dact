@@ -77,27 +77,23 @@ protected:
 		QString sentence() const;
 	};
 	
-    /*!
-    Access the corpusreader provided to the constructor.
-    */
-    alpinocorpus::CorpusReader const &reader() const;
-    
+protected:    
     /*!
 	Parses a bracketed sentence into chunks. Chunks are textparts separated by
 	open and closing brackets.
 	\param sentence the brackets containing sentence to be parsed
 	*/
-    QList<Chunk> parseSentence(QString const &sentence) const;
-
+	QList<Chunk> parseChunks(QModelIndex const &index) const;
+    
 private:
+    QList<Chunk> *parseSentence(QString const &sentence) const;
+    QString transformXML(QString const &xml, QString const &query) const;
+    
+    mutable QCache<QString,QList<Chunk> > d_cache;
     CorpusReaderPtr d_corpus;
-
+    QFile d_stylesheet;
+    XSLTransformer d_transformer;
 };
-
-inline alpinocorpus::CorpusReader const &BracketedDelegate::reader() const
-{
-    return *d_corpus.data();
-}
 
 class BracketedColorDelegate : public BracketedDelegate
 {
@@ -108,13 +104,8 @@ public:
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:
     void loadSettings();
-    QString transformXML(QString const &xml, QString const &query) const;
-    QString const &transformedCorpusXML(QModelIndex const &index) const;
     
     QColor d_backgroundColor;
-    mutable QCache<QString,QString> d_cache;
-    QFile d_stylesheet;
-    XSLTransformer d_transformer;
 };
 
 class BracketedVisibilityDelegate : public BracketedDelegate
@@ -125,7 +116,7 @@ public:
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:
-    QString formatSentence(QString const &sentence) const;
+    QString formatSentence(QModelIndex const &index) const;
 };
 
 class BracketedKeywordInContextDelegate : public BracketedDelegate

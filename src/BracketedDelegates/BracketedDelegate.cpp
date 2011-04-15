@@ -1,14 +1,39 @@
 #include "BracketedDelegates.hh"
+#include "DactQueryModel.hh"
+#include "XSLTransformer.hh"
 
 BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
 :
     d_corpus(corpus),
+    d_stylesheet(":/stylesheets/bracketed-sentence.xsl"),
+    d_transformer(d_stylesheet),
     QStyledItemDelegate(parent)
 { }
 
-QList<BracketedDelegate::Chunk> BracketedDelegate::parseSentence(QString const &sentence) const
+QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
 {
-    QList<Chunk> chunks;
+    QString filename(index.data(Qt::UserRole).toString());
+    
+    if (!d_cache.contains(filename))
+    {
+        DactQueryModel const *model = dynamic_cast<DactQueryModel const *>(index.model());
+        
+        QString bracketed_sentence(transformXML(
+            d_corpus->read(filename),
+            model != 0 ? model->lastQuery() : ""
+        ));
+        
+        QList<Chunk> *chunks = parseSentence(bracketed_sentence);
+        
+        d_cache.insert(filename, chunks);
+    }
+        
+    return *d_cache[filename];
+}
+
+QList<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString const &sentence) const
+{
+    QList<Chunk> *chunks = new QList<Chunk>;
     QRegExp brackets("\\[|\\]");
 	
     int depth = 0, pos = -1, readTill = 0;
@@ -74,7 +99,7 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseSentence(QString const &
 		}
 		
 		
-		chunks.append(Chunk(depth,
+		chunks->append(Chunk(depth,
 			sentence.left(readTill == 0 ? readTill : readTill - 1),
 			sentence.mid(readTill, pos - readTill),
 			sentence.mid(openingBracketPos + 1, closingBracketPos - openingBracketPos - 1), // -1 to omit the closing bracket
@@ -90,9 +115,21 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseSentence(QString const &
             --depth;
     }
     
-    chunks.append(Chunk(depth, sentence.left(readTill), sentence.mid(readTill), "", "", ""));
+    chunks->append(Chunk(depth, sentence.left(readTill), sentence.mid(readTill), "", "", ""));
     
 	return chunks;
+}
+
+QString BracketedDelegate::transformXML(QString const &xml, QString const &query) const
+{
+    QString valStr = query.trimmed().isEmpty()
+        ? "'/..'"
+        : QString("'%1'").arg(query);
+
+    QHash<QString, QString> params;
+    params["expr"] = valStr;
+    
+    return d_transformer.transform(xml, params);
 }
 
 BracketedDelegate::Chunk::Chunk(int depth, QString const &left, QString const &text, QString const &fullText, QString const &right, QString const &remainingRight)

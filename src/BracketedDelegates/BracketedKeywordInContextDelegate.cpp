@@ -32,7 +32,7 @@ void BracketedKeywordInContextDelegate::loadColorSettings()
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QList<Chunk> chunks(parseSentence(index.data().toString()));
+    QList<Chunk> chunks(parseChunks(index));
 	QSize lineBox;
 	
 	int previousDepth = 0;
@@ -76,7 +76,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    QList<Chunk> chunks(parseSentence(index.data().toString()));
+    QList<Chunk> chunks(parseChunks(index));
     QRectF textBox(option.rect);
     
 	QBrush brush(option.state & QStyle::State_Selected

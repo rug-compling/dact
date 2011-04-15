@@ -7,16 +7,12 @@
 #include <QHash>
 
 #include "BracketedDelegates.hh"
-#include "DactQueryModel.hh"
-#include "XSLTransformer.hh"
 
 #include <QtDebug>
 
 BracketedColorDelegate::BracketedColorDelegate(CorpusReaderPtr corpus)
 :
-    BracketedDelegate(corpus),
-    d_stylesheet(":/stylesheets/bracketed-sentence.xsl"),
-    d_transformer(d_stylesheet)
+    BracketedDelegate(corpus)
 {
     loadSettings();
 }
@@ -34,45 +30,13 @@ QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const
     return option.fontMetrics.size(Qt::TextSingleLine, index.data().toString());
 }
 
-QString BracketedColorDelegate::transformXML(QString const &xml, QString const &query) const
-{
-    // Parameters
-    QString valStr = query.trimmed().isEmpty()
-        ? "'/..'"
-        : QString("'%1'").arg(query);
-
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-    
-    return d_transformer.transform(xml, params);
-}
-
-QString const &BracketedColorDelegate::transformedCorpusXML(QModelIndex const &index) const
-{
-    QString filename(index.data(Qt::UserRole).toString());
-    
-    if (!d_cache.contains(filename))
-    {
-        DactQueryModel const *model = dynamic_cast<DactQueryModel const *>(index.model());
-        
-        d_cache.insert(filename, new QString(transformXML(
-            reader().read(filename),
-            model != 0 ? model->lastQuery() : ""
-        )));
-    }
-        
-    return *d_cache[filename];
-}
-
 void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     try {
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
     
-        QString sentence(transformedCorpusXML(index));
-    
-        QList<Chunk> chunks(parseSentence(sentence));
+        QList<Chunk> chunks(parseChunks(index));
         QRectF textBox(option.rect);
         QRectF usedSpace;
         QColor highlightColor(d_backgroundColor);
