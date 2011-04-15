@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QFile>
 
 extern "C" {
 #include <libxslt/xsltInternals.h>
@@ -11,12 +12,14 @@ extern "C" {
 class XSLTransformer
 {
 public:
+    XSLTransformer(QFile &xslt);
     XSLTransformer(QString const &xslt);
     ~XSLTransformer();
     QString transform(QString const &xml, QHash<QString, QString> const &params);
 private:
     XSLTransformer(XSLTransformer const &other);
     XSLTransformer &operator=(XSLTransformer const &other);
+    void initWithStylesheet(QString const &xslt);
 
     xsltStylesheetPtr d_xslPtr;
 };

@@ -264,45 +264,52 @@ void DactMainWindow::showFile(QString const &filename)
     // Read XML data.
     if (d_corpusReader.isNull())
         return;
-
-    QString xml = d_corpusReader->read(filename);
-
-    if (xml.size() == 0) {
-        qWarning() << "DactMainWindow::writeSettings: empty XML data!";
-        d_ui->treeGraphicsView->setScene(0);
-        return;
-    }
-
-    // Parameters
-    QString valStr = d_highlight.trimmed().isEmpty() ? "'/..'" :
-                     QString("'") + d_macrosModel->expand(d_highlight) + QString("'");
-    QHash<QString, QString> params;
-    params["expr"] = valStr;
-
+    
     try {
-        showTree(xml, params);
-        showSentence(xml, params);
-        
-        // I try to find my file back in the file list to keep the list
-        // in sync with the treegraph since showFile can be called from
-        // the child dialogs.
-        
-        // TODO: disabled this for now because it messes up the selection
-        // when deselecting files by ctrl/cmd-clicking on them.
-        /*
-        QListWidgetItem *item;
-        for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
-            item = d_ui->fileListWidget->item(i);
-            if(item->data(Qt::UserRole).toString() == filename) {
-                d_ui->fileListWidget->setCurrentItem(item);
-                break;
-            }
+        QString xml = d_corpusReader->read(filename);
+    
+        if (xml.size() == 0) {
+            qWarning() << "DactMainWindow::writeSettings: empty XML data!";
+            d_ui->treeGraphicsView->setScene(0);
+            return;
         }
-        */
+
+        // Parameters
+        QString valStr = d_highlight.trimmed().isEmpty() ? "'/..'" :
+                         QString("'") + d_macrosModel->expand(d_highlight) + QString("'");
+        QHash<QString, QString> params;
+        params["expr"] = valStr;
+
+        try {
+            showTree(xml, params);
+            showSentence(xml, params);
         
-    } catch (std::runtime_error const &e) {
-        QMessageBox::critical(this, QString("Tranformation error"),
-            QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+            // I try to find my file back in the file list to keep the list
+            // in sync with the treegraph since showFile can be called from
+            // the child dialogs.
+        
+            // TODO: disabled this for now because it messes up the selection
+            // when deselecting files by ctrl/cmd-clicking on them.
+            /*
+            QListWidgetItem *item;
+            for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
+                item = d_ui->fileListWidget->item(i);
+                if(item->data(Qt::UserRole).toString() == filename) {
+                    d_ui->fileListWidget->setCurrentItem(item);
+                    break;
+                }
+            }
+            */
+        
+        } catch (std::runtime_error const &e) {
+            QMessageBox::critical(this, QString("Tranformation error"),
+                QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));
+        }
+    }
+    catch(std::runtime_error const &e)
+    {
+        QMessageBox::critical(this, QString("Read error"),
+            QString("An error occured while trying to read a corpus file: %1").arg(e.what()));
     }
 }
 

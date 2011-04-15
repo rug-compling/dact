@@ -1,10 +1,12 @@
 #ifndef STARDELEGATE_H
 #define STARDELEGATE_H
 
+#include <QFile>
 #include <QList>
 #include <QSharedPointer>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
+#include "XSLTransformer.hh"
 
 class BracketedDelegate : public QStyledItemDelegate
 {
@@ -105,7 +107,11 @@ public:
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 private:
     void loadSettings();
+    QString transformXML(QString const &xml, QString const &query) const;
+    
     QColor d_backgroundColor;
+    QFile d_stylesheet;
+    QSharedPointer<XSLTransformer> d_transformer;
 };
 
 class BracketedVisibilityDelegate : public BracketedDelegate

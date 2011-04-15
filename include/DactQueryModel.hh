@@ -26,6 +26,7 @@ public:
     
     void runQuery(QString const &xpath_query = "");
     void cancelQuery();
+    QString const &lastQuery() const;
 
 signals:
     void queryStarted(int totalEntries);
@@ -46,6 +47,7 @@ private:
     bool d_cancelled;
     CorpusPtr d_corpus;
     QList<value_type> d_results;
+    QString d_query;
 };
 
 #endif

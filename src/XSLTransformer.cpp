@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QTextStream>
 
 #include <stdexcept>
 
@@ -12,17 +13,30 @@ extern "C" {
 }
 
 #include "XSLTransformer.hh"
+#include <QtDebug>
+
+XSLTransformer::XSLTransformer(QFile &file)
+{
+    file.open(QIODevice::ReadOnly);
+    QTextStream xslStream(&file);
+    initWithStylesheet(xslStream.readAll());
+}
 
 XSLTransformer::XSLTransformer(QString const &xsl)
 {
-    QByteArray xslData(xsl.toUtf8());
-    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
-    d_xslPtr = xsltParseStylesheetDoc(xslDoc);
+    initWithStylesheet(xsl);
 }
 
 XSLTransformer::~XSLTransformer()
 {
     xsltFreeStylesheet(d_xslPtr);
+}
+
+void XSLTransformer::initWithStylesheet(QString const &xsl)
+{
+    QByteArray xslData(xsl.toUtf8());
+    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
+    d_xslPtr = xsltParseStylesheetDoc(xslDoc);
 }
 
 QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> const &params)

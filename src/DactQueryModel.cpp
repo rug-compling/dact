@@ -38,7 +38,7 @@ QVariant DactQueryModel::data(QModelIndex const &index, int role) const
     switch (index.column())
     {
         case 0:
-            return d_results.at(index.row()).first;
+            return d_results.at(index.row()).first;            
         case 1:
             return d_results.at(index.row()).second;
         default:
@@ -114,12 +114,19 @@ void DactQueryModel::runQuery(QString const &query)
     
     emit dataChanged(index(0, 0), index(size, 0));
     
-    if (!query.isEmpty())
-        QtConcurrent::run(this, &DactQueryModel::getEntriesWithQuery, query);
+    d_query = query;
+    
+    if (!d_query.isEmpty())
+        QtConcurrent::run(this, &DactQueryModel::getEntriesWithQuery, d_query);
     else
         QtConcurrent::run(this, &DactQueryModel::getEntries,
             d_corpus->begin(),
             d_corpus->end());
+}
+
+QString const &DactQueryModel::lastQuery() const
+{
+    return d_query;
 }
 
 void DactQueryModel::cancelQuery()
