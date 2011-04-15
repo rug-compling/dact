@@ -1,7 +1,7 @@
-#include "DactListWidget.hh"
+#include "DactListView.hh"
 
 
-void DactListWidget::setItemDelegate(QAbstractItemDelegate* delegate)
+void DactListView::setItemDelegate(QAbstractItemDelegate* delegate)
 {
 	QAbstractItemView::setItemDelegate(delegate);
 	

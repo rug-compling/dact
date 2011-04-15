@@ -91,7 +91,7 @@ SET(dact_SRCS
   src/BracketedWindow.cpp
   src/StatisticsWindow.cpp
   src/DactApplication.cpp
-  src/DactListWidget.cpp
+  src/DactListView.cpp
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
   #src/DactQueryHistory.cpp
@@ -118,7 +118,7 @@ SET(dact_MOC_HDRS
   include/BracketedDelegates.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
-  include/DactListWidget.hh
+  include/DactListView.hh
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
   #include/DactQueryHistory.hh

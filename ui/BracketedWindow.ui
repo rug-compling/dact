@@ -35,8 +35,7 @@
     </layout>
    </item>
    <item>
-    <!-- <widget class="DactListWidget" name="resultsListWidget" native="true"/> -->
-    <widget class="QListView" name="resultsList" native="true"/>
+    <widget class="DactListView" name="resultsList" native="true"/>
    </item>
    <item>
     <widget class="QProgressBar" name="filterProgressBar">
@@ -48,15 +47,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <!--
  <customwidgets>
   <customwidget>
-   <class>DactListWidget</class>
+   <class>DactListView</class>
    <extends>QWidget</extends>
-   <header>DactListWidget.hh</header>
+   <header>DactListView.hh</header>
   </customwidget>
  </customwidgets>
- -->
  <resources/>
  <connections/>
 </ui>

@@ -1,15 +1,15 @@
-#ifndef DACTLISTWIDGET_HH
-#define DACTLISTWIDGET_HH
+#ifndef DACTLISTVIEW_HH
+#define DACTLISTVIEW_HH
 
-#include <QListWidget>
+#include <QListView>
 
 class QAbstractItemDelegate;
 
-class DactListWidget : public QListWidget
+class DactListView : public QListView
 {
 	Q_OBJECT
 public:
-	DactListWidget(QWidget *parent = 0) : QListWidget(parent) {};
+	DactListView(QWidget *parent = 0) : QListView(parent) {};
 	
 	// Overrides QListWidget::setItemDelegate to call dataChanged() afterwards.
 	void setItemDelegate(QAbstractItemDelegate* delegate);
