@@ -31,6 +31,7 @@ signals:
     void queryStarted(int totalEntries);
     void queryProgressed(int n, int totalEntries);
     void queryStopped(int n, int totalEntries);
+    void entryFound(QString entry);
     
 private:
     void getEntries(EntryIterator const &begin, EntryIterator const &end);
@@ -38,9 +39,6 @@ private:
     
 private slots:
     void mapperEntryFound(QString entry);
-    void mapperStarted(int totalEntries);
-    void mapperProgressed(int n, int totalEntries);
-    void mapperStopped(int n, int totalEntries);
     
 private:
     bool d_cancelled;

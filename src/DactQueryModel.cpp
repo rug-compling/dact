@@ -10,7 +10,10 @@ DactQueryModel::DactQueryModel(CorpusPtr corpus, QObject *parent)
 :
 d_corpus(corpus),
 QAbstractTableModel(parent)
-{}
+{
+    connect(this, SIGNAL(entryFound(QString)),
+        this, SLOT(mapperEntryFound(QString)));
+}
 
 DactQueryModel::~DactQueryModel()
 {
@@ -90,21 +93,6 @@ void DactQueryModel::mapperEntryFound(QString entry)
     emit dataChanged(index(row, 0), index(row + 1, 0));
 }
 
-void DactQueryModel::mapperStarted(int totalEntries)
-{
-    emit queryStarted(totalEntries);
-}
-
-void DactQueryModel::mapperProgressed(int n, int totalEntries)
-{
-    emit queryProgressed(n, totalEntries);
-}
-
-void DactQueryModel::mapperStopped(int n, int totalEntries)
-{
-    emit queryStopped(n, totalEntries);
-}
-
 void DactQueryModel::runQuery(QString const &query)
 {
     cancelQuery(); // just in case
@@ -146,15 +134,19 @@ void DactQueryModel::getEntriesWithQuery(QString const &query)
 void DactQueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
 	try {
-        mapperStarted(0); // we don't know how many entries will be found
+        emit queryStarted(0); // we don't know how many entries will be found
 		
         d_cancelled = false;
 		
+        int hits = 0;
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
-            mapperEntryFound(*itr);
+        {
+            emit queryProgressed(++hits, 0);
+            emit entryFound(*itr);
             // @TODO could we implement something a la mapperProgressed(end - itr)?
+        }
 			
-        mapperStopped(d_results.size(), d_results.size());
+        emit queryStopped(d_results.size(), d_results.size());
 	} catch (alpinocorpus::Error const &e) {
 		qDebug() << "Error performing query: " << e.what();
 	}
