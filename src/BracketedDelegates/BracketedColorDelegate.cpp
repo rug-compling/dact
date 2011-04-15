@@ -16,7 +16,7 @@ BracketedColorDelegate::BracketedColorDelegate(CorpusReaderPtr corpus)
 :
     BracketedDelegate(corpus),
     d_stylesheet(":/stylesheets/bracketed-sentence.xsl"),
-    d_transformer(new XSLTransformer(d_stylesheet))
+    d_transformer(d_stylesheet)
 {
     loadSettings();
 }
@@ -44,7 +44,7 @@ QString BracketedColorDelegate::transformXML(QString const &xml, QString const &
     QHash<QString, QString> params;
     params["expr"] = valStr;
     
-    return d_transformer->transform(xml, params);
+    return d_transformer.transform(xml, params);
 }
 
 QString const &BracketedColorDelegate::transformedCorpusXML(QModelIndex const &index) const

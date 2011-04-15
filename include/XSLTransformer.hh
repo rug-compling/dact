@@ -15,7 +15,7 @@ public:
     XSLTransformer(QFile &xslt);
     XSLTransformer(QString const &xslt);
     ~XSLTransformer();
-    QString transform(QString const &xml, QHash<QString, QString> const &params);
+    QString transform(QString const &xml, QHash<QString, QString> const &params) const;
 private:
     XSLTransformer(XSLTransformer const &other);
     XSLTransformer &operator=(XSLTransformer const &other);

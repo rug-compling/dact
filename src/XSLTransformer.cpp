@@ -39,7 +39,7 @@ void XSLTransformer::initWithStylesheet(QString const &xsl)
     d_xslPtr = xsltParseStylesheetDoc(xslDoc);
 }
 
-QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> const &params)
+QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> const &params) const
 {
     // Read XML data intro an xmlDoc.
     QByteArray xmlData(xml.toUtf8());
