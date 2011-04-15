@@ -71,13 +71,27 @@
         <xsl:if test = "@index and (@cat|@pt)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <xsl:value-of select="@cat|@pt"/>
+        <xsl:value-of select="@cat|@pt|@pos"/>
       </line>
       <line>
-        <xsl:value-of select="@lemma"/>
+        <xsl:choose>
+          <xsl:when test="@lemma">
+            <xsl:value-of select="@lemma"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@root"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </line>
       <hoverLine>
-        <xsl:value-of select="@postag" />
+        <xsl:choose>
+          <xsl:when test="@postag">
+            <xsl:value-of select="@postag"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@pos"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </hoverLine>
     </node>
   </xsl:template>
