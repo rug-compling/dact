@@ -41,7 +41,7 @@ private slots:
     void mapperEntryFound(QString entry);
     
 private:
-    bool d_cancelled;
+    bool volatile d_cancelled;
     CorpusPtr d_corpus;
     
     QHash<QString, int> d_index;
