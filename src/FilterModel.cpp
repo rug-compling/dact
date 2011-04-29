@@ -68,16 +68,25 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
 
 void FilterModel::mapperEntryFound(QString entry)
 {
-    // WARNING: This assumes all the hits per result only occur right after
-    // each other, never shuffled. Otherwise we might want to change to QHash
-    // or QMap for fast lookup.
+    /*
+     * WARNING: This assumes all the hits per result only occur right after
+     * each other, never shuffled. Otherwise we might want to change to QHash
+     * or QMap for fast lookup.
+     */
     
     // @TODO make this more robust so no assumption is required.
     
     int row = d_results.size() - 1;
     
+    // Just update the hits counter if this file was already in the list
     if (row >= 0 && d_results[row].first == entry)
+    {
         ++d_results[row].second;
+        
+        // only update the second (hits) column
+        emit dataChanged(index(row, 1), index(row + 1, 1));
+    }
+    // Add found file to the list
     else
     {
         /*
@@ -88,9 +97,8 @@ void FilterModel::mapperEntryFound(QString entry)
         */
         ++row;
         d_results.append(value_type(entry, 1));
+        emit dataChanged(index(row, 0), index(row + 1, 1));
     }
-    
-    emit dataChanged(index(row, 0), index(row + 1, 0));
 }
 
 void FilterModel::runQuery(QString const &query)
