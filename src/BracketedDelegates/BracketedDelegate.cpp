@@ -21,7 +21,7 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
         QString bracketed_sentence(transformXML(
             d_corpus->read(filename),
             model != 0 ? model->lastQuery() : ""
-        ));
+        ).trimmed());
         
         QList<Chunk> *chunks = parseSentence(bracketed_sentence);
         
