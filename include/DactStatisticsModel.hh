@@ -17,7 +17,7 @@ class DactStatisticsModel : public QAbstractTableModel
     
 public:
     DactStatisticsModel(CorpusPtr corpus, QObject *parent = 0);
-	~DactStatisticsModel();
+    ~DactStatisticsModel();
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;

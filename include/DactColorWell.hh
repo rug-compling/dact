@@ -9,8 +9,8 @@
 
 class DactColorWell : public QToolButton
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
 public:
     DactColorWell(QWidget *parent = 0);
     void setColor(QColor const &color);

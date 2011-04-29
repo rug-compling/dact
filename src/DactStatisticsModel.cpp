@@ -17,7 +17,7 @@ d_corpus(corpus)
 
 DactStatisticsModel::~DactStatisticsModel()
 {
-	cancelQuery();
+    cancelQuery();
 }
 
 int DactStatisticsModel::columnCount(QModelIndex const &index) const
@@ -130,16 +130,16 @@ void DactStatisticsModel::getEntriesWithQuery(QString const &query)
 // run async
 void DactStatisticsModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
-	try {
+    try {
         queryStarted(0);
-		
+        
         d_cancelled = false;
-		
+        
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
             emit queryEntryFound(itr.contents(*d_corpus));
-			
+            
         queryStopped(d_results.size(), d_results.size());
-	} catch (alpinocorpus::Error const &e) {
-		qDebug() << "Error performing query: " << e.what();
-	}
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Error performing query: " << e.what();
+    }
 }

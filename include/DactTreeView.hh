@@ -5,13 +5,13 @@
 
 class DactTreeView : public QGraphicsView
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+    
 public:
-	DactTreeView(QWidget *parent = 0) : QGraphicsView(parent) {};
-	
+    DactTreeView(QWidget *parent = 0) : QGraphicsView(parent) {};
+    
 protected:
-	void wheelEvent(QWheelEvent * event);
+    void wheelEvent(QWheelEvent * event);
 };
 
 #endif

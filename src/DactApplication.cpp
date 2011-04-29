@@ -7,7 +7,7 @@ DactApplication::DactApplication(int &argc, char** argv)
 QApplication(argc, argv),
 d_mainWindow(0)
 {
-	//d_mainWindow = new DactMainWindow();
+    //d_mainWindow = new DactMainWindow();
 }
 
 void DactApplication::init()
@@ -18,14 +18,14 @@ void DactApplication::init()
 
 bool DactApplication::event(QEvent *event)
 {
-	switch (event->type())
-	{
+    switch (event->type())
+    {
         case QEvent::FileOpen:
             openCorpus(static_cast<QFileOpenEvent *>(event)->file());
             return true;
         default:
             return QApplication::event(event);
-	}
+    }
 }
 
 void DactApplication::openCorpus(QString const &fileName)

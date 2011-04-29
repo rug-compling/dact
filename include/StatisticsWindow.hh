@@ -17,9 +17,7 @@ namespace Ui {
 
 class DactMacrosModel;
 class DactStatisticsModel;
-
 class StatisticsWindowResultsRow;
-
 class QKeyEvent;
 
 class StatisticsWindow : public QWidget {

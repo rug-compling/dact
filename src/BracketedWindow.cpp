@@ -121,8 +121,8 @@ void BracketedWindow::createActions()
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
         this, SLOT(startQuery()));
     
-	QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)),
-	    this, SLOT(listDelegateChanged(int)));
+    QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(listDelegateChanged(int)));
 }
 
 /*
@@ -148,32 +148,32 @@ void BracketedWindow::entryActivated(QListWidgetItem *item)
 
 void BracketedWindow::addListDelegate(QString const &name, DelegateFactory factory)
 {
-	d_ui->listDelegateComboBox->addItem(name, d_listDelegateFactories.size());
-	d_listDelegateFactories.append(factory);
+    d_ui->listDelegateComboBox->addItem(name, d_listDelegateFactories.size());
+    d_listDelegateFactories.append(factory);
 }
 
 void BracketedWindow::listDelegateChanged(int index)
 {
-	int delegateIndex = d_ui->listDelegateComboBox->itemData(index, Qt::UserRole).toInt();
-	
-	if (delegateIndex >= d_listDelegateFactories.size())
-	{
-		qWarning() << QString("Trying to select a list delegate (%1) beyond the boundary "
-							  "of the d_listDelegateFactories list (%2)")
-							 .arg(delegateIndex).arg(d_listDelegateFactories.size());
-		return;
-	}
-	
-	QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegate();
-	d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex](d_corpusReader));
-	delete prevItemDelegate;
+    int delegateIndex = d_ui->listDelegateComboBox->itemData(index, Qt::UserRole).toInt();
+    
+    if (delegateIndex >= d_listDelegateFactories.size())
+    {
+        qWarning() << QString("Trying to select a list delegate (%1) beyond the boundary "
+                              "of the d_listDelegateFactories list (%2)")
+                             .arg(delegateIndex).arg(d_listDelegateFactories.size());
+        return;
+    }
+    
+    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegate();
+    d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex](d_corpusReader));
+    delete prevItemDelegate;
 }
 
 void BracketedWindow::initListDelegates()
 {
     addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
-	addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
-	addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);	
+    addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
+    addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);   
 }
 
 void BracketedWindow::keyPressEvent(QKeyEvent *event)
@@ -225,13 +225,13 @@ void BracketedWindow::readSettings()
     // Window geometry.
     QPoint pos = settings.value("filter_pos", QPoint(200, 200)).toPoint();
     QSize size = settings.value("filter_size", QSize(350, 400)).toSize();
-	resize(size);
-	move(pos);
-	
-	// restore last selected display method
-	int delegateIndex = settings.value("filter_list_delegate", 0).toInt();
-	listDelegateChanged(delegateIndex);
-	d_ui->listDelegateComboBox->setCurrentIndex(delegateIndex);
+    resize(size);
+    move(pos);
+    
+    // restore last selected display method
+    int delegateIndex = settings.value("filter_list_delegate", 0).toInt();
+    listDelegateChanged(delegateIndex);
+    d_ui->listDelegateComboBox->setCurrentIndex(delegateIndex);
 }
 
 void BracketedWindow::writeSettings()
@@ -241,22 +241,22 @@ void BracketedWindow::writeSettings()
     // Window geometry
     settings.setValue("filter_pos", pos());
     settings.setValue("filter_size", size());
-	
-	// display method
-	settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
+    
+    // display method
+    settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
 }
 
 QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedColorDelegate(reader);
+    return new BracketedColorDelegate(reader);
 }
 
 QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedVisibilityDelegate(reader);
+    return new BracketedVisibilityDelegate(reader);
 }
 
 QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory(CorpusReaderPtr reader)
 {
-	return new BracketedKeywordInContextDelegate(reader);
+    return new BracketedKeywordInContextDelegate(reader);
 }

@@ -45,7 +45,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         QBrush brush(option.state & QStyle::State_Selected
             ? option.palette.highlightedText()
             : option.palette.text());
-	
+    
         foreach (Chunk chunk, chunks)
         {
             if (chunk.text().isEmpty())
@@ -54,7 +54,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             QRectF chunkBox(textBox);
             chunkBox.setWidth(option.fontMetrics.width(chunk.text()));
         
-    		// if the depth is greater than 0, it must be part of a matching node.
+            // if the depth is greater than 0, it must be part of a matching node.
             if (chunk.depth() > 0)
             {
                 highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(), 255));
@@ -68,9 +68,9 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             }
         
             painter->drawText(chunkBox, Qt::AlignLeft, chunk.text());
-		
-    		// move the left border of the box to the right to start drawing
-    		// right next to the just drawn chunk of text.
+        
+            // move the left border of the box to the right to start drawing
+            // right next to the just drawn chunk of text.
             textBox.setLeft(textBox.left() + chunkBox.width());
         }
     }

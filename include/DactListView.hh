@@ -7,12 +7,12 @@ class QAbstractItemDelegate;
 
 class DactListView : public QListView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	DactListView(QWidget *parent = 0) : QListView(parent) {};
-	
-	// Overrides QListWidget::setItemDelegate to call dataChanged() afterwards.
-	void setItemDelegate(QAbstractItemDelegate* delegate);
+    DactListView(QWidget *parent = 0) : QListView(parent) {};
+    
+    // Overrides QListWidget::setItemDelegate to call dataChanged() afterwards.
+    void setItemDelegate(QAbstractItemDelegate* delegate);
 };
 
 #endif

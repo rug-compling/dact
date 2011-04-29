@@ -8,7 +8,7 @@
 #include "DactMacrosModel.hh"
 
 namespace Ui {
-	class DactMacrosWindow;
+    class DactMacrosWindow;
 }
 
 class DactMacrosWindow : public QWidget {
@@ -30,7 +30,7 @@ private:
     void createActions();
     void readSettings();
     void writeSettings();
-	
+    
     QSharedPointer<Ui::DactMacrosWindow> d_ui;    
     QSharedPointer<DactMacrosModel> d_model;
 };

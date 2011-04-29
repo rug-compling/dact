@@ -34,14 +34,14 @@ public:
     bool removeRows(int position, int rows, const QModelIndex &index);
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-	QString expand(QString const &query);
-	
+    QString expand(QString const &query);
+    
 private:
     QList<DactMacro> readMacros() const;
     void writeMacros(const QList<DactMacro> &macros) const;
 
     QList<DactMacro> d_macros;
-	QChar d_symbol;
+    QChar d_symbol;
 };
 
 #endif

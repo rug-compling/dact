@@ -17,7 +17,7 @@ d_corpus(corpus)
 
 DactQueryModel::~DactQueryModel()
 {
-	cancelQuery();
+    cancelQuery();
 }
 
 int DactQueryModel::columnCount(QModelIndex const &index) const
@@ -133,11 +133,11 @@ void DactQueryModel::getEntriesWithQuery(QString const &query)
 // run async
 void DactQueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
-	try {
+    try {
         emit queryStarted(0); // we don't know how many entries will be found
-		
+        
         d_cancelled = false;
-		
+        
         int hits = 0;
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
         {
@@ -145,9 +145,9 @@ void DactQueryModel::getEntries(EntryIterator const &begin, EntryIterator const 
             emit entryFound(*itr);
             // @TODO could we implement something a la mapperProgressed(end - itr)?
         }
-			
+            
         emit queryStopped(d_results.size(), d_results.size());
-	} catch (alpinocorpus::Error const &e) {
-		qDebug() << "Error performing query: " << e.what();
-	}
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Error performing query: " << e.what();
+    }
 }

@@ -7,7 +7,7 @@ DactMacrosModel::DactMacrosModel(QObject *parent)
 :
     QAbstractTableModel(parent),
     d_macros(readMacros()),
-	d_symbol('%')
+    d_symbol('%')
 {
 }
     
@@ -162,11 +162,11 @@ void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
 
 QString DactMacrosModel::expand(QString const &expression)
 {
-	QString query(expression);
-	DactMacro macro;
-	
-	foreach (macro, d_macros)
-		query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
-	
-	return query;
+    QString query(expression);
+    DactMacro macro;
+    
+    foreach (macro, d_macros)
+        query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
+    
+    return query;
 }

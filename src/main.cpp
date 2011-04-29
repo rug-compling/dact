@@ -26,7 +26,7 @@ namespace {
 
 int main(int argc, char *argv[])
 {
-	xmlInitMemory();
+    xmlInitMemory();
     xmlInitParser();
 
     // EXSLT extensions

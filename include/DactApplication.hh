@@ -7,16 +7,16 @@
 
 class DactApplication: public QApplication
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	DactApplication(int &argc, char** argv);
-	void init();
-	void openCorpus(QString const &fileName);
+    DactApplication(int &argc, char** argv);
+    void init();
+    void openCorpus(QString const &fileName);
 protected:
-	bool event(QEvent *event);
+    bool event(QEvent *event);
 
 private:
-	QScopedPointer<DactMainWindow> d_mainWindow;
+    QScopedPointer<DactMainWindow> d_mainWindow;
 };
 
 #endif

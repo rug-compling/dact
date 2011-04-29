@@ -5,8 +5,8 @@
 #include <ui_DactProgressDialog.h>
 
 DactProgressDialog::DactProgressDialog(QWidget *parent) :
-        QDialog(parent),
-        d_ui(QSharedPointer<Ui::DactProgressDialog>(new Ui::DactProgressDialog))
+    QDialog(parent),
+    d_ui(QSharedPointer<Ui::DactProgressDialog>(new Ui::DactProgressDialog))
 {
     d_ui->setupUi(this);
 }

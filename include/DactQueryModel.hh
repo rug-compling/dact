@@ -17,8 +17,8 @@ class DactQueryModel : public QAbstractTableModel
     
 public:
     DactQueryModel(CorpusPtr corpus, QObject *parent = 0);
-	~DactQueryModel();
-	int columnCount(QModelIndex const &index) const;
+    ~DactQueryModel();
+    int columnCount(QModelIndex const &index) const;
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;

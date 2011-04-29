@@ -24,12 +24,12 @@ struct filter_function {
 class XPathFilter
 {
 public:
-	XPathFilter(QString const &xpathQuery);
+    XPathFilter(QString const &xpathQuery);
     template <typename T>
     T fold(alpinocorpus::CorpusReader *reader,
         filter_function<T*, QString const &, xmlXPathObjectPtr, void> *fun);
 private:
-	QByteArray d_xpathQuery;
+    QByteArray d_xpathQuery;
 };
 
 class EntryFun : public QObject, public filter_function<QVector<QString> *, QString const &, xmlXPathObjectPtr, void>
