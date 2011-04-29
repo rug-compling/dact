@@ -35,7 +35,11 @@
     </layout>
    </item>
    <item>
-    <widget class="DactListView" name="resultsList" native="true"/>
+    <widget class="DactListView" name="resultsList" native="true">
+     <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QProgressBar" name="filterProgressBar">
