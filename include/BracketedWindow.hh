@@ -9,17 +9,13 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "DactMacrosModel.hh"
+#include "DactQueryModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
-
-namespace Ui {
-    class BracketedWindow;
-}
+#include "ui_BracketedWindow.h"
 
 class QKeyEvent;
-
-class DactMacrosModel;
-class DactQueryModel;
 class QListWidgetItem;
 class QStyledItemDelegate;
 

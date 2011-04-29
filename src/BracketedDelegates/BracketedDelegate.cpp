@@ -4,10 +4,10 @@
 
 BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
 :
+    QStyledItemDelegate(parent),
     d_corpus(corpus),
     d_stylesheet(":/stylesheets/bracketed-sentence.xsl"),
-    d_transformer(d_stylesheet),
-    QStyledItemDelegate(parent)
+    d_transformer(d_stylesheet)
 { }
 
 QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const

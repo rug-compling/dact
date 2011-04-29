@@ -36,7 +36,7 @@ void AboutWindow::keyPressEvent(QKeyEvent *event)
 {
     // Close window on ESC and CMD + W.
     if (event->key() == Qt::Key_Escape
-        || event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+        || (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier))
     {
         hide();
         event->accept();

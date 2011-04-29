@@ -3,13 +3,13 @@
 
 #include <algorithm>
 
-#include <alpinocorpus/Error.hh>
+#include <AlpinoCorpus/Error.hh>
 #include "DactQueryModel.hh"
 
 DactQueryModel::DactQueryModel(CorpusPtr corpus, QObject *parent)
 :
-d_corpus(corpus),
-QAbstractTableModel(parent)
+QAbstractTableModel(parent),
+d_corpus(corpus)
 {
     connect(this, SIGNAL(entryFound(QString)),
         this, SLOT(mapperEntryFound(QString)));

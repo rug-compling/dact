@@ -3,13 +3,13 @@
 
 #include <algorithm>
 
-#include <alpinocorpus/Error.hh>
+#include <AlpinoCorpus/Error.hh>
 #include "DactStatisticsModel.hh"
 
 DactStatisticsModel::DactStatisticsModel(CorpusPtr corpus, QObject *parent)
 :
-d_corpus(corpus),
-QAbstractTableModel(parent)
+QAbstractTableModel(parent),
+d_corpus(corpus)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
             this, SLOT(mapperEntryFound(QString))); 
@@ -98,7 +98,7 @@ void DactStatisticsModel::runQuery(QString const &query)
     cancelQuery(); // just in case
     
     // clean results cache and notify the table of the loss of rows
-    int size = d_results.size();
+    //int size = d_results.size();
     d_results.clear();
     emit layoutChanged();
     

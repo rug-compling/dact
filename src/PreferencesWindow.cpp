@@ -127,7 +127,7 @@ void PreferencesWindow::keyPressEvent(QKeyEvent *event)
     // Cmd + w closes the window in OS X (and in some programs on Windows as well)
     // But closing preference windows with ESC isn't uncommon either.
     if (event->key() == Qt::Key_Escape
-        || event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
+        || (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier))
     {
         hide();
         event->accept();

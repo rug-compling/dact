@@ -28,8 +28,8 @@
 StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
     d_macrosModel(macrosModel),
+    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
     d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
 {
     d_ui->setupUi(this);
