@@ -12,7 +12,10 @@
 #include <stdexcept>
 #include <typeinfo>
 
-#include "BracketedDelegates.hh"
+#include "BracketedDelegate.hh"
+#include "BracketedColorDelegate.hh"
+#include "BracketedKeywordInContextDelegate.hh"
+#include "BracketedVisibilityDelegate.hh"
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"

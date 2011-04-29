@@ -1,4 +1,4 @@
-#include "BracketedDelegates.hh"
+#include "BracketedDelegate.hh"
 #include "FilterModel.hh"
 #include "XSLTransformer.hh"
 

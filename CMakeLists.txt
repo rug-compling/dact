@@ -113,7 +113,10 @@ SET(dact_MOC_HDRS
   include/DactApplication.hh
   include/DactColorWell.hh
   include/DactMainWindow.hh
-  include/BracketedDelegates.hh
+  include/BracketedDelegate.hh
+  include/BracketedColorDelegate.hh
+  include/BracketedKeywordInContextDelegate.hh
+  include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh
   include/DactListView.hh

@@ -4,7 +4,7 @@
 #include <QPalette>
 #include <QSettings>
 
-#include "BracketedDelegates.hh"
+#include "BracketedKeywordInContextDelegate.hh"
 
 #include <QtDebug>
 

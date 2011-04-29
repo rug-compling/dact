@@ -3,7 +3,7 @@
 #include <QFontMetrics>
 #include <QPalette>
 
-#include "BracketedDelegates.hh"
+#include "BracketedVisibilityDelegate.hh"
 
 #include <QtDebug>
 

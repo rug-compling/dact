@@ -6,7 +6,7 @@
 #include <QSettings>
 #include <QHash>
 
-#include "BracketedDelegates.hh"
+#include "BracketedColorDelegate.hh"
 
 #include <QtDebug>
 
