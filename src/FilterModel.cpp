@@ -4,9 +4,9 @@
 #include <algorithm>
 
 #include <AlpinoCorpus/Error.hh>
-#include "DactQueryModel.hh"
+#include "FilterModel.hh"
 
-DactQueryModel::DactQueryModel(CorpusPtr corpus, QObject *parent)
+FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
 :
 QAbstractTableModel(parent),
 d_corpus(corpus)
@@ -15,22 +15,22 @@ d_corpus(corpus)
         this, SLOT(mapperEntryFound(QString)));
 }
 
-DactQueryModel::~DactQueryModel()
+FilterModel::~FilterModel()
 {
     cancelQuery();
 }
 
-int DactQueryModel::columnCount(QModelIndex const &index) const
+int FilterModel::columnCount(QModelIndex const &index) const
 {
     return 2;
 }
 
-int DactQueryModel::rowCount(QModelIndex const &index) const
+int FilterModel::rowCount(QModelIndex const &index) const
 {
     return d_results.size();
 }
 
-QVariant DactQueryModel::data(QModelIndex const &index, int role) const
+QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
     if (!index.isValid()
         || index.row() >= d_results.size()
@@ -49,7 +49,7 @@ QVariant DactQueryModel::data(QModelIndex const &index, int role) const
     }
 }
 
-QVariant DactQueryModel::headerData(int column, Qt::Orientation orientation, int role) const
+QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal
         || role != Qt::DisplayRole)
@@ -66,7 +66,7 @@ QVariant DactQueryModel::headerData(int column, Qt::Orientation orientation, int
     }
 }
 
-void DactQueryModel::mapperEntryFound(QString entry)
+void FilterModel::mapperEntryFound(QString entry)
 {
     // WARNING: This assumes all the hits per result only occur right after
     // each other, never shuffled. Otherwise we might want to change to QHash
@@ -93,7 +93,7 @@ void DactQueryModel::mapperEntryFound(QString entry)
     emit dataChanged(index(row, 0), index(row + 1, 0));
 }
 
-void DactQueryModel::runQuery(QString const &query)
+void FilterModel::runQuery(QString const &query)
 {
     cancelQuery(); // just in case
     
@@ -105,33 +105,33 @@ void DactQueryModel::runQuery(QString const &query)
     d_query = query;
     
     if (!d_query.isEmpty())
-        QtConcurrent::run(this, &DactQueryModel::getEntriesWithQuery, d_query);
+        QtConcurrent::run(this, &FilterModel::getEntriesWithQuery, d_query);
     else
-        QtConcurrent::run(this, &DactQueryModel::getEntries,
+        QtConcurrent::run(this, &FilterModel::getEntries,
             d_corpus->begin(),
             d_corpus->end());
 }
 
-QString const &DactQueryModel::lastQuery() const
+QString const &FilterModel::lastQuery() const
 {
     return d_query;
 }
 
-void DactQueryModel::cancelQuery()
+void FilterModel::cancelQuery()
 {
     d_cancelled = true;
 }
 
 // run async, because query() starts searching immediately
-void DactQueryModel::getEntriesWithQuery(QString const &query)
+void FilterModel::getEntriesWithQuery(QString const &query)
 {
-    DactQueryModel::getEntries(
+    FilterModel::getEntries(
         d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
         d_corpus->end());
 }
 
 // run async
-void DactQueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
+void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
     try {
         emit queryStarted(0); // we don't know how many entries will be found

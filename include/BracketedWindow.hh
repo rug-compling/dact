@@ -10,7 +10,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "DactMacrosModel.hh"
-#include "DactQueryModel.hh"
+#include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_BracketedWindow.h"
@@ -126,7 +126,7 @@ private:
     void updateResults();
     void createActions();
     void initListDelegates();
-    void setModel(DactQueryModel* model);
+    void setModel(FilterModel* model);
     void readSettings();
     void writeSettings();
     
@@ -139,7 +139,7 @@ private:
     QSharedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<DactQueryModel> d_model;
+    QSharedPointer<FilterModel> d_model;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
     QSharedPointer<XPathValidator> d_xpathValidator;
 };

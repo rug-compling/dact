@@ -13,7 +13,7 @@
 
 #include "StatisticsWindow.hh"
 #include "DactMacrosModel.hh"
-#include "DactStatisticsModel.hh"
+#include "QueryModel.hh"
 #include "PercentageCellDelegate.hh"
 #include "ValidityColor.hh"
 #include "XPathValidator.hh"
@@ -54,7 +54,7 @@ StatisticsWindow::~StatisticsWindow()
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
-    setModel(new DactStatisticsModel(corpusReader));
+    setModel(new QueryModel(corpusReader));
 }
 
 void StatisticsWindow::setFilter(QString const &filter)
@@ -69,9 +69,9 @@ void StatisticsWindow::setAggregateAttribute(QString const &detail)
     // to reflect the current (changed) state of the window.
 }
 
-void StatisticsWindow::setModel(DactStatisticsModel *model)
+void StatisticsWindow::setModel(QueryModel *model)
 {
-    d_model = QSharedPointer<DactStatisticsModel>(model);
+    d_model = QSharedPointer<QueryModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
     
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),

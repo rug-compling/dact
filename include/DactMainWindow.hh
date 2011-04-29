@@ -25,11 +25,11 @@ class BracketedWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
-class DactQueryModel;
+class FilterModel;
 class StatisticsWindow;
 class DactProgressDialog;
 class PreferencesWindow;
-class DactQueryModel;
+class FilterModel;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -421,7 +421,7 @@ private:
      */
     void writeSettings();
     
-    void setModel(DactQueryModel *model);
+    void setModel(FilterModel *model);
     
     QSharedPointer<Ui::DactMainWindow> d_ui;
     AboutWindow *d_aboutWindow;
@@ -524,7 +524,7 @@ private:
      */
     bool d_writeCorpusCancelled;
     
-    QSharedPointer<DactQueryModel> d_model;
+    QSharedPointer<FilterModel> d_model;
 };
 
 #endif // DACTMAINWINDOW_H

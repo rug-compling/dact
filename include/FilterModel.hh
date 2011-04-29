@@ -1,5 +1,5 @@
-#ifndef DACTQUERYMODEL_HH
-#define DACTQUERYMODEL_HH
+#ifndef FILTERMODEL_HH
+#define FILTERMODEL_HH
 
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <QAbstractListModel>
@@ -7,7 +7,7 @@
 #include <QList>
 #include <QPair>
 
-class DactQueryModel : public QAbstractTableModel
+class FilterModel : public QAbstractTableModel
 {
     Q_OBJECT
     
@@ -16,8 +16,8 @@ class DactQueryModel : public QAbstractTableModel
     typedef QPair<QString,int> value_type;
     
 public:
-    DactQueryModel(CorpusPtr corpus, QObject *parent = 0);
-    ~DactQueryModel();
+    FilterModel(CorpusPtr corpus, QObject *parent = 0);
+    ~FilterModel();
     int columnCount(QModelIndex const &index) const;
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;

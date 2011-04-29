@@ -15,7 +15,7 @@
 #include "BracketedDelegates.hh"
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.hh"
-#include "DactQueryModel.hh"
+#include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ValidityColor.hh"
@@ -42,7 +42,7 @@ BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
-    setModel(new DactQueryModel(corpusReader));
+    setModel(new FilterModel(corpusReader));
 }
 
 void BracketedWindow::setFilter(QString const &filter)
@@ -56,9 +56,9 @@ void BracketedWindow::setFilter(QString const &filter)
         d_filter = filter.trimmed();
 }
 
-void BracketedWindow::setModel(DactQueryModel *model)
+void BracketedWindow::setModel(FilterModel *model)
 {
-    d_model = QSharedPointer<DactQueryModel>(model);
+    d_model = QSharedPointer<FilterModel>(model);
     d_ui->resultsList->setModel(d_model.data());
     
     /*

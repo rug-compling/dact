@@ -95,11 +95,11 @@ SET(dact_SRCS
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
   #src/DactQueryHistory.cpp
-  src/DactQueryModel.cpp
   src/DactProgressDialog.cpp
-  src/DactStatisticsModel.cpp
+  src/QueryModel.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
+  src/FilterModel.cpp
   src/PercentageCellDelegate.cpp
   src/PreferencesWindow.cpp
   src/XPathValidator.cpp
@@ -120,11 +120,11 @@ SET(dact_MOC_HDRS
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
   #include/DactQueryHistory.hh
-  include/DactQueryModel.hh
   include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
-  include/DactStatisticsModel.hh
+  include/QueryModel.hh
+  include/FilterModel.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/XPathValidator.hh

@@ -1,5 +1,5 @@
-#ifndef DACTSTATISTICSMODEL_HH
-#define DACTSTATISTICSMODEL_HH
+#ifndef QUERYMODEL_HH
+#define QUERYMODEL_HH
 
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <QAbstractTableModel>
@@ -8,7 +8,7 @@
 #include <QList>
 #include <QPair>
 
-class DactStatisticsModel : public QAbstractTableModel
+class QueryModel : public QAbstractTableModel
 {
     Q_OBJECT
     
@@ -16,8 +16,8 @@ class DactStatisticsModel : public QAbstractTableModel
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
     
 public:
-    DactStatisticsModel(CorpusPtr corpus, QObject *parent = 0);
-    ~DactStatisticsModel();
+    QueryModel(CorpusPtr corpus, QObject *parent = 0);
+    ~QueryModel();
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;

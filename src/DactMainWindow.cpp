@@ -33,7 +33,7 @@
 #include <DactMacrosModel.hh>
 #include <DactMacrosWindow.hh>
 //#include <DactQueryHistory.hh>
-#include <DactQueryModel.hh>
+#include <FilterModel.hh>
 #include <DactProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
@@ -542,7 +542,7 @@ void DactMainWindow::corpusRead(int idx)
     if (!d_corpusReader)
         return;
     
-    setModel(new DactQueryModel(d_corpusReader));
+    setModel(new FilterModel(d_corpusReader));
     
     // runQuery has to be called explicitly to give you the time to connect to
     // any signals before we start searching.
@@ -721,9 +721,9 @@ void DactMainWindow::highlightChanged()
 
 
 
-void DactMainWindow::setModel(DactQueryModel *model)
+void DactMainWindow::setModel(FilterModel *model)
 {
-    d_model = QSharedPointer<DactQueryModel>(model);
+    d_model = QSharedPointer<FilterModel>(model);
     d_ui->fileListWidget->setModel(d_model.data());
     
     QObject::connect(model, SIGNAL(queryStarted(int)),

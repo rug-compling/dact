@@ -4,9 +4,9 @@
 #include <algorithm>
 
 #include <AlpinoCorpus/Error.hh>
-#include "DactStatisticsModel.hh"
+#include "QueryModel.hh"
 
-DactStatisticsModel::DactStatisticsModel(CorpusPtr corpus, QObject *parent)
+QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 :
 QAbstractTableModel(parent),
 d_corpus(corpus)
@@ -15,22 +15,22 @@ d_corpus(corpus)
             this, SLOT(mapperEntryFound(QString))); 
 }
 
-DactStatisticsModel::~DactStatisticsModel()
+QueryModel::~QueryModel()
 {
     cancelQuery();
 }
 
-int DactStatisticsModel::columnCount(QModelIndex const &index) const
+int QueryModel::columnCount(QModelIndex const &index) const
 {
     return 3;
 }
 
-int DactStatisticsModel::rowCount(QModelIndex const &index) const
+int QueryModel::rowCount(QModelIndex const &index) const
 {
     return d_results.size();
 }
 
-QVariant DactStatisticsModel::data(QModelIndex const &index, int role) const
+QVariant QueryModel::data(QModelIndex const &index, int role) const
 {
     if (!index.isValid()
         || (role != Qt::DisplayRole && role != Qt::UserRole)
@@ -54,7 +54,7 @@ QVariant DactStatisticsModel::data(QModelIndex const &index, int role) const
     }
 }
 
-QVariant DactStatisticsModel::headerData(int column, Qt::Orientation orientation, int role) const
+QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
     switch (column)
     {
@@ -69,7 +69,7 @@ QVariant DactStatisticsModel::headerData(int column, Qt::Orientation orientation
     }
 }
 
-void DactStatisticsModel::mapperEntryFound(QString entry)
+void QueryModel::mapperEntryFound(QString entry)
 {
     if (d_cancelled)
         return;
@@ -93,7 +93,7 @@ void DactStatisticsModel::mapperEntryFound(QString entry)
     emit dataChanged(index(idx, 0), index(idx + 1, 2));
 }
 
-void DactStatisticsModel::runQuery(QString const &query)
+void QueryModel::runQuery(QString const &query)
 {
     cancelQuery(); // just in case
     
@@ -107,28 +107,28 @@ void DactStatisticsModel::runQuery(QString const &query)
     d_totalHits = 0;
     
     if (!query.isEmpty())
-        QtConcurrent::run(this, &DactStatisticsModel::getEntriesWithQuery, query);
+        QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
     else
-        QtConcurrent::run(this, &DactStatisticsModel::getEntries,
+        QtConcurrent::run(this, &QueryModel::getEntries,
             d_corpus->begin(),
             d_corpus->end());
 }
 
-void DactStatisticsModel::cancelQuery()
+void QueryModel::cancelQuery()
 {
     d_cancelled = true;
 }
 
 // run async, because query() starts searching immediately
-void DactStatisticsModel::getEntriesWithQuery(QString const &query)
+void QueryModel::getEntriesWithQuery(QString const &query)
 {
-    DactStatisticsModel::getEntries(
+    QueryModel::getEntries(
         d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
         d_corpus->end());
 }
 
 // run async
-void DactStatisticsModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
+void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
 {
     try {
         queryStarted(0);

@@ -1,5 +1,5 @@
 #include "BracketedDelegates.hh"
-#include "DactQueryModel.hh"
+#include "FilterModel.hh"
 #include "XSLTransformer.hh"
 
 BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
@@ -16,7 +16,7 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     
     if (!d_cache.contains(filename))
     {
-        DactQueryModel const *model = dynamic_cast<DactQueryModel const *>(index.model());
+        FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
         
         QString bracketed_sentence(transformXML(
             d_corpus->read(filename),

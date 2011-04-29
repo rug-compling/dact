@@ -16,7 +16,7 @@ namespace Ui {
 }
 
 class DactMacrosModel;
-class DactStatisticsModel;
+class QueryModel;
 class StatisticsWindowResultsRow;
 class QKeyEvent;
 
@@ -55,12 +55,12 @@ private:
     void readNodeAttributes();
     void readSettings();
     void writeSettings();
-    void setModel(DactStatisticsModel *model);
+    void setModel(QueryModel *model);
     
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QString d_filter;
     QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<DactStatisticsModel> d_model;
+    QSharedPointer<QueryModel> d_model;
     QSharedPointer<Ui::StatisticsWindow> d_ui;
     QSharedPointer<XPathValidator> d_xpathValidator;
 };
