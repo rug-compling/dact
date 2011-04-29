@@ -20,13 +20,9 @@
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"
 
-#include <libxml/hash.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xmlIO.h>
-
 StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
-        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
+        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f)
+:
     QWidget(parent, f),
     d_macrosModel(macrosModel),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
@@ -48,7 +44,6 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
 
 StatisticsWindow::~StatisticsWindow()
 {
-
 }
 
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
