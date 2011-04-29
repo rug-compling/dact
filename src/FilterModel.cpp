@@ -8,8 +8,8 @@
 
 FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
 :
-QAbstractTableModel(parent),
-d_corpus(corpus)
+    QAbstractTableModel(parent),
+    d_corpus(corpus)
 {
     connect(this, SIGNAL(entryFound(QString)),
         this, SLOT(mapperEntryFound(QString)));
@@ -125,9 +125,13 @@ void FilterModel::cancelQuery()
 // run async, because query() starts searching immediately
 void FilterModel::getEntriesWithQuery(QString const &query)
 {
-    FilterModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
-        d_corpus->end());
+    try {
+        FilterModel::getEntries(
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
+            d_corpus->end());
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Error in FilterModel::getEntriesWithQuery: " << e.what();
+    }
 }
 
 // run async
@@ -148,6 +152,6 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
             
         emit queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {
-        qDebug() << "Error performing query: " << e.what();
+        qDebug() << "Error in FilterModel::getEntries: " << e.what();
     }
 }
