@@ -65,6 +65,76 @@ void DactTreeView::fitTree()
         fitInView(scene()->rootNode()->boundingRect(), Qt::KeepAspectRatio);
 }
 
+void DactTreeView::focusTreeNode(int direction)
+{
+    if (scene())
+    {
+        QList<DactTreeNode*> nodes = scene()->nodes();
+        int offset = 0;
+        int nodeCount = nodes.length();
+        
+        // Find the currently focussed node
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            if (nodes[i]->hasFocus())
+            {
+                offset = i + direction;
+                break;
+            }
+        }
+    
+        // then find the next node that's active
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            // nodeCount + offset + direction * i is positive for [0..nodeCount]
+            // whichever the direction, and modulo nodeCount makes shure it wraps around.
+            DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
+        
+            if (node.isActive())
+            {
+                node.setFocus();
+                
+                // cause a selectionChanged signal
+                node.setSelected(false);
+                node.setSelected(true);
+                
+                // reset the matrix to undo the scale operation done by fitTree.
+                // I don't like this yet, because it always resets the zoom.
+                //d_ui->treeGraphicsView->setMatrix(QMatrix());
+            
+                // move the focus to the center of the focussed leaf
+                centerOn(node.mapToScene(node.leafRect().center()));
+                break;
+            }
+        }
+    }
+}
+
+void DactTreeView::zoomIn()
+{
+    scale(ZOOM_IN_FACTOR, ZOOM_IN_FACTOR);
+}
+
+void DactTreeView::zoomOut()
+{
+    scale(ZOOM_OUT_FACTOR, ZOOM_OUT_FACTOR);
+}
+
+void DactTreeView::resetZoom()
+{
+    setMatrix(QMatrix());
+}
+
+void DactTreeView::focusNextTreeNode()
+{
+    focusTreeNode(1);
+}
+
+void DactTreeView::focusPreviousTreeNode()
+{
+    focusTreeNode(-1);
+}
+
 void DactTreeView::wheelEvent(QWheelEvent * event)
 {
     // If the control modifier key isn't pressed, handle this wheel

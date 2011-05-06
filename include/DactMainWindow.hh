@@ -17,9 +17,6 @@ namespace Ui {
     class DactMainWindow;
 }
 
-double const ZOOM_OUT_FACTOR = 0.8;
-double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
-
 class AboutWindow;
 class BracketedWindow;
 class DactMacrosModel;
@@ -139,7 +136,6 @@ private slots:
      because you can then use the cursor keys to scan thru the results and see
      the tree for the currently selected result in the background. Calls fitTree.
      \sa showFile
-     \sa fitTree
     */
     void currentBracketedEntryChanged(QString const &entry);
     
@@ -172,32 +168,12 @@ private slots:
      \sa addFiles
      */
     void filterChanged();
-    
-    /*!
-     Zooms the tree scene just enough to fit the complete tree.
-     \sa focusFitTree
-    */
-    void fitTree();
-    
+        
     /*!
      Focusses on the first node and zooms in on that node.
      \sa forcusTreeNode
      */
     void focusFitTree();
-    
-    /*!
-     Focus on the next matching node. Wraps around.
-     \sa focusPreviousTreeNode
-     \sa focusTreeNode
-     */
-    void focusNextTreeNode();
-    
-    /*!
-     Focus on the previous matching node. Wraps around.
-     \sa focusNextTreeNode
-     \sa focusTreeNode
-     */
-    void focusPreviousTreeNode();
     
     /*!
      Focus the filter query entry field
@@ -260,11 +236,6 @@ private slots:
     void print();
     
     /*!
-     Resets the zoom matrix for the tree scene. 1px is 1px again.
-     */
-    void resetTreeZoom();
-
-    /*!
      Changes the filter query field used to filter the file list and calls
      filterChanged. Used to set the filter from one of the child windows.
      Currently the statistics window uses it to display all the entries
@@ -321,22 +292,6 @@ private slots:
      Add the selection listener to the new scene.
     */
     void treeChanged(DactTreeScene *scene);
-    
-    /*!
-     Magnifies the tree scene
-     \sa treeZoomOut
-     \sa resetTreeZoom
-     \sa focusFitTree
-    */
-    void treeZoomIn();
-    
-    /*!
-     Zooms the tree scene out.
-     \sa treeZoomIn
-     \sa resetTreeZoom
-     \sa focusFitTree
-     */
-    void treeZoomOut();
     
     /*!
      Update the state of the next/previous node buttons in the toolbar.

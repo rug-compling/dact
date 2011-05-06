@@ -210,17 +210,17 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
     QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(exportCorpus()));
-    QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), this, SLOT(fitTree()));
+    QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
     QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(exportPDF()));
     QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this, SLOT(preferencesWindow()));
     QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
     QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
-    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomIn()));
-    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(treeZoomOut()));
-    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusNextTreeNode()));
-    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), this, SLOT(focusPreviousTreeNode()));
+    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(zoomIn()));
+    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(zoomOut()));
+    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(focusNextTreeNode()));
+    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(focusPreviousTreeNode()));
     QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
     QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
     QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
@@ -335,27 +335,16 @@ void DactMainWindow::filterChanged()
     d_model->runQuery(d_macrosModel->expand(d_filter));
 }
 
-
-void DactMainWindow::fitTree()
-{
-    d_ui->treeGraphicsView->fitTree();
-}
-
 void DactMainWindow::focusFitTree()
 {
     if (d_ui->treeGraphicsView->scene()
         && d_ui->treeGraphicsView->scene()->activeNodes().length())
     {
-        resetTreeZoom();
-        focusTreeNode(1);
+        d_ui->treeGraphicsView->resetZoom();
+        d_ui->treeGraphicsView->focusTreeNode(1);
     }
     else
-        fitTree();
-}
-
-void DactMainWindow::resetTreeZoom()
-{
-    d_ui->treeGraphicsView->setMatrix(QMatrix());
+        d_ui->treeGraphicsView->fitTree();
 }
 
 void DactMainWindow::focusFilter()
@@ -696,71 +685,6 @@ void DactMainWindow::treeChanged(DactTreeScene *scene)
     if (scene) // might be null-pointer if the scene is cleared
         QObject::connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateTreeNodeButtons()));
-    
-    updateTreeNodeButtons();
-}
-
-void DactMainWindow::treeZoomIn()
-{
-    d_ui->treeGraphicsView->scale(ZOOM_IN_FACTOR, ZOOM_IN_FACTOR);
-}
-
-void DactMainWindow::treeZoomOut()
-{
-    d_ui->treeGraphicsView->scale(ZOOM_OUT_FACTOR, ZOOM_OUT_FACTOR);
-}
-
-void DactMainWindow::focusNextTreeNode()
-{
-    focusTreeNode(1);
-}
-
-void DactMainWindow::focusPreviousTreeNode()
-{
-    focusTreeNode(-1);
-}
-
-void DactMainWindow::focusTreeNode(int direction)
-{
-    DactTreeScene *tree = d_ui->treeGraphicsView->scene();
-    
-    if (tree)
-    {
-        QList<DactTreeNode*> nodes = tree->nodes();
-        int offset = 0;
-        int nodeCount = nodes.length();
-        
-        // Find the currently focussed node
-        for (int i = 0; i < nodeCount; ++i)
-        {
-            if (nodes[i]->hasFocus())
-            {
-                offset = i + direction;
-                break;
-            }
-        }
-    
-        // then find the next node that's active
-        for (int i = 0; i < nodeCount; ++i)
-        {
-            // nodeCount + offset + direction * i is positive for [0..nodeCount]
-            // whichever the direction, and modulo nodeCount makes shure it wraps around.
-            DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
-        
-            if (node.isActive())
-            {
-                node.setFocus();
-            
-                // reset the matrix to undo the scale operation done by fitTree.
-                // I don't like this yet, because it always resets the zoom.
-                //d_ui->treeGraphicsView->setMatrix(QMatrix());
-            
-                // move the focus to the center of the focussed leaf
-                d_ui->treeGraphicsView->centerOn(node.mapToScene(node.leafRect().center()));
-                break;
-            }
-        }
-    }
     
     updateTreeNodeButtons();
 }

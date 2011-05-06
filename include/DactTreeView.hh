@@ -5,6 +5,9 @@
 #include <QSharedPointer>
 #include "XSLTransformer.hh"
 
+double const ZOOM_OUT_FACTOR = 0.8;
+double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
+
 class DactTreeScene;
 
 class DactTreeView : public QGraphicsView
@@ -21,7 +24,15 @@ public:
     void setScene(DactTreeScene *scene);
     
     void showTree(QString const &xml);
+    void focusTreeNode(int direction);
+    
+public slots:
     void fitTree();
+    void focusNextTreeNode();
+    void focusPreviousTreeNode();
+    void zoomIn();
+    void zoomOut();
+    void resetZoom();
 
 signals:
     void sceneChanged(DactTreeScene* scene);
