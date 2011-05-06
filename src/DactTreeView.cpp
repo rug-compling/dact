@@ -8,7 +8,7 @@ DactTreeView::DactTreeView(QWidget* parent)
     QGraphicsView(parent)
 {
     QFile stylesheet(":/stylesheets/tree.xsl");
-    d_transformer.reset(new XSLTransformer(stylesheet));
+    d_transformer = QSharedPointer<XSLTransformer>(new XSLTransformer(stylesheet));
 }
 
 void DactTreeView::showTree(QString const &xml)
