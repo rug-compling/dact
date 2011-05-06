@@ -170,7 +170,8 @@ QString StatisticsWindow::generateQuery(QString const &base, QString const &attr
 
 void StatisticsWindow::generateQuery(QModelIndex const &index)
 {
-    QString data = index.data(Qt::UserRole).toString();
+    // Get the text from the first column, that is the found value
+    QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
     
     QString query = generateQuery(
         d_ui->filterLineEdit->text(),
