@@ -591,7 +591,7 @@ void DactMainWindow::exportCorpus()
     }
 
     QItemSelectionModel *selectionModel = d_ui->fileListWidget->selectionModel();
-    bool selectionOnly = selectionModel->selectedIndexes().size();
+    bool selectionOnly = selectionModel->selectedIndexes().size() > 1;
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
