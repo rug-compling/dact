@@ -54,7 +54,7 @@ void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
 
 void StatisticsWindow::setFilter(QString const &filter)
 {
-    d_filter = filter;
+    d_filter = d_macrosModel->expand(filter);
     d_ui->filterLineEdit->setText(filter);
 }
 
@@ -174,7 +174,7 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
     
     QString query = generateQuery(
-        d_ui->filterLineEdit->text(),
+        d_filter,
         d_ui->attributeComboBox->currentText(),
         data);
     
