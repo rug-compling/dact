@@ -14,6 +14,15 @@ class QueryModel : public QAbstractTableModel
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
+
+private:
+    class HitsCompare
+    {
+        QueryModel const &d_parent;
+    public:
+        HitsCompare(QueryModel const &parent);
+        bool operator()(int, int);
+    };
     
 public:
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
@@ -26,7 +35,7 @@ public:
     
     void runQuery(QString const &xpath_query = "");
     void cancelQuery();
-
+    
 signals:
     void queryStarted(int totalEntries);
     void queryProgressed(int n, int totalEntries);
@@ -44,7 +53,8 @@ private:
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
     
-    QHash<QString, int> d_index;
+    QHash<QString, int> d_valueIndex;
+    QList<int> d_hitsIndex;
     QList< QPair<QString, int> > d_results;
     int d_totalHits;
     

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <QDebug>
 #include <QtConcurrentRun>
 
@@ -5,6 +6,20 @@
 
 #include <AlpinoCorpus/Error.hh>
 #include "QueryModel.hh"
+
+QueryModel::HitsCompare::HitsCompare(QueryModel const &parent)
+:
+    d_parent(parent)
+{}
+
+inline bool QueryModel::HitsCompare::operator()(int one_idx, int other_idx)
+{
+    //qDebug() << "Comparing" << one_idx << "(" << d_parent.d_results[one_idx].second << ")"
+    //    << "with" << other_idx << "(" << d_parent.d_results[other_idx].second << ")";
+    
+    // greater than instead of lesser than since our d_hitsIndex is ordered in descending order.
+    return d_parent.d_results[one_idx].second > d_parent.d_results[other_idx].second;
+}
 
 QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 :
@@ -43,11 +58,12 @@ QVariant QueryModel::data(QModelIndex const &index, int role) const
     switch (index.column())
     {
         case 0:
-            return d_results[index.row()].first;
+            // map positions of the hits index to the positions in d_results
+            return d_results[d_hitsIndex[index.row()]].first;
         case 1:
-            return d_results[index.row()].second;
+            return d_results[d_hitsIndex[index.row()]].second;
         case 2:
-            return static_cast<double>(d_results[index.row()].second)
+            return static_cast<double>(d_results[d_hitsIndex[index.row()]].second)
                  / static_cast<double>(d_totalHits);
         default:
             return QVariant();
@@ -74,18 +90,50 @@ void QueryModel::mapperEntryFound(QString entry)
     if (d_cancelled)
         return;
     
-    int idx = d_index.value(entry, -1);
+    // find position in d_results using the word index
+    int idx = d_valueIndex.value(entry, -1);
     
     if (idx == -1)
     {
-        d_index[entry] = d_results.size();
+        idx = d_results.size();
         d_results.append(QPair<QString,int>(entry, 1));
+        d_valueIndex[entry] = idx;
+        d_hitsIndex.append(idx);
         
         emit layoutChanged(); // notify tableview that we have new rows
     }
     else
     {
-        ++d_results[idx].second;
+        int hits = d_results[idx].second;
+        d_results[idx].second = hits + 1;
+        
+        /* Update hits index */
+        
+        HitsCompare compare(*this);
+        
+        // Find the current position to remove
+        
+        // Binary search: does not work? Why not? :(
+        //QList<int>::iterator current_pos = qBinaryFind(
+        //    d_hitsIndex.begin(), d_hitsIndex.end(), idx,
+        //    compare);
+        
+        // This does not scale. absolutely not.
+        QList<int>::iterator current_pos = qFind(
+            d_hitsIndex.begin(), d_hitsIndex.end(), idx);
+        
+        // It is already in the words index, it has to be in the hits index as well!
+        assert(current_pos != d_hitsIndex.end());
+        
+        // remove from current position in the index
+        d_hitsIndex.erase(current_pos);
+        
+        // find new position, just above the result with less hits.
+        QList<int>::iterator insert_pos = qLowerBound(
+            d_hitsIndex.begin(), d_hitsIndex.end(), idx, compare);
+        
+        // insert at new position
+        d_hitsIndex.insert(insert_pos, idx);
     }
     
     ++d_totalHits;
@@ -100,10 +148,11 @@ void QueryModel::runQuery(QString const &query)
     // clean results cache and notify the table of the loss of rows
     //int size = d_results.size();
     d_results.clear();
+    d_hitsIndex.clear();
     emit layoutChanged();
     
     // clear cache and counter
-    d_index.clear();
+    d_valueIndex.clear();
     d_totalHits = 0;
     
     if (!query.isEmpty())
