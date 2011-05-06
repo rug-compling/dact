@@ -28,7 +28,9 @@ public:
     QList<DactTreeNode*> activeNodes() const;
     DactTreeNode* rootNode();
 private:
+    void freeNodes();
     void layout(QPointF pos, DactTreeNode* node);
+    void parseXML(QString const &xml);
     void processXMLNode(xmlTextReaderPtr &reader, QList<DactTreeNode*> &list, QStack<DactTreeNode*> &stack);
     void processXMLAttribute(xmlTextReaderPtr &reader, DactTreeNode* node);
     QString processXMLString(xmlChar* xmlValue) const;

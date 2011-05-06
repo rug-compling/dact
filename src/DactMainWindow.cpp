@@ -55,7 +55,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_openProgressDialog(new DactProgressDialog(this)),
     d_exportProgressDialog(new DactProgressDialog(this)),
     d_preferencesWindow(0),
-    d_treeScene(0)
+    d_treeScene(new DactTreeScene())
 #if 0
     d_queryHistory(0)
 #endif
@@ -204,6 +204,11 @@ void DactMainWindow::createActions()
         SLOT(applyValidityColor(QString const &)));
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     QObject::connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()), this, SLOT(highlightChanged()));
+
+    // Tree scene
+    d_ui->treeGraphicsView->setScene(d_treeScene);
+    // listen to selection changes to update the next/prev node buttons accordingly.
+    QObject::connect(d_treeScene, SIGNAL(selectionChanged()), this, SLOT(updateTreeNodeButtons()));
 
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
@@ -586,7 +591,7 @@ void DactMainWindow::exportCorpus()
     }
 
     QItemSelectionModel *selectionModel = d_ui->fileListWidget->selectionModel();
-    bool selectionOnly = selectionModel->selectedRows().size();
+    bool selectionOnly = selectionModel->selectedIndexes().size();
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
@@ -608,7 +613,7 @@ void DactMainWindow::exportCorpus()
         
         if (selectionOnly)
         {
-            foreach (QModelIndex item, selectionModel->selectedRows())
+            foreach (QModelIndex item, selectionModel->selectedIndexes())
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
@@ -675,26 +680,9 @@ void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> co
 
 void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
 {
-    // @TODO why is the scene recreated for every tree, and not just cleared and reused?
-    // (well, currently because calling parseTree twice will cause a segfault)
-    if (d_treeScene)
-    {
-        // disconnect or it will send selectionChanged signals while being
-        // destroyed, leading to serious segfaults.
-        d_treeScene->disconnect();
-        delete d_treeScene;
-    }
-    
-    d_treeScene = new DactTreeScene(d_ui->treeGraphicsView);
-    
     QString xml_tree = d_treeTransformer->transform(xml, params);
     
     d_treeScene->parseTree(xml_tree);
-    
-    d_ui->treeGraphicsView->setScene(d_treeScene);
-    
-    // listen to selection changes to update the next/prev node buttons accordingly.
-    QObject::connect(d_treeScene, SIGNAL(selectionChanged()), this, SLOT(updateTreeNodeButtons()));
     
     updateTreeNodeButtons();
 }
@@ -714,9 +702,9 @@ void DactMainWindow::highlightChanged()
         d_queryHistory->addToHistory(d_highlight);
 #endif
 
-    QModelIndexList selectedRows = d_ui->fileListWidget->selectionModel()->selectedRows();
+    QModelIndexList selectedRows = d_ui->fileListWidget->selectionModel()->selectedIndexes();
     if (selectedRows.size())
-        showFile(selectedRows.at(0).data(Qt::UserRole).toString());
+        showFile(selectedRows.at(selectedRows.size() - 1).data(Qt::UserRole).toString());
 }
 
 

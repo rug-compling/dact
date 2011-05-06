@@ -16,16 +16,36 @@ DactTreeScene::DactTreeScene(QObject *parent) :
 
 void DactTreeScene::parseTree(QString const &xml)
 {
+    // If there was a previous parse, clean up first.
+    if (rootNode())
+    {
+        removeItem(rootNode());
+        freeNodes();
+    }
+    
+    parseXML(xml);
+    
+    // If parsing was successful enough to create a root node,
+    // add it to the scene
+    if (rootNode())
+    {
+        addItem(rootNode());
+        rootNode()->layout();
+    }
+    else
+    {
+        qWarning() << "No root node was found";
+    }
+}
+
+void DactTreeScene::parseXML(QString const &xml)
+{
     QByteArray xmlData(xml.toUtf8());
-    xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.constData(), xmlData.size(),
-                                NULL, NULL, XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA);
+    xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.constData(),
+        xmlData.size(), NULL, NULL, XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA);
     
-    foreach (DactTreeNode* node, d_nodes)
-        delete node;
-    
-    d_nodes.clear(); // memory leak? Who's gonna free the nodes?
+    // Process every node 
     QStack<DactTreeNode*> stack;
-    
     while (true)
     {
         if (!xmlTextReaderRead(reader))
@@ -34,16 +54,18 @@ void DactTreeScene::parseTree(QString const &xml)
         processXMLNode(reader, d_nodes, stack);
     }
     
-    if (stack.size() > 1)
-        qWarning() << "Tree XML Read error: Stack not empty at the end";
-    
     xmlFreeTextReader(reader);
     
-    //qWarning() << d_nodes[0]->asString();
-    
-    addItem(d_nodes[0]);
-    
-    d_nodes[0]->layout();
+    if (stack.size() > 1)
+        qWarning() << "Tree XML Read error: Stack not empty at the end";
+}
+
+void DactTreeScene::freeNodes()
+{
+    delete rootNode();
+    d_nodes.clear();
+    // because all have rootNode as parent/ancestor
+    // they will have been deleted automatically.
 }
 
 QList<DactTreeNode*> const &DactTreeScene::nodes() const
@@ -184,6 +206,8 @@ QString DactTreeScene::processXMLString(xmlChar* xmlValue) const
     xmlFree(xmlValue);
     return value;
 }
+
+
 
 DactTreeNode::DactTreeNode(QGraphicsItem *parent) :
     QGraphicsItem(parent),
