@@ -11,7 +11,12 @@
 DactTreeScene::DactTreeScene(QObject *parent) :
     QGraphicsScene(parent),
     d_nodes()
+{}
+
+DactTreeScene::~DactTreeScene()
 {
+    if (rootNode())
+        freeNodes();
 }
 
 void DactTreeScene::parseTree(QString const &xml)

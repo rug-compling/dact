@@ -54,8 +54,7 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     d_macrosWindow(0),
     d_openProgressDialog(new DactProgressDialog(this)),
     d_exportProgressDialog(new DactProgressDialog(this)),
-    d_preferencesWindow(0),
-    d_treeScene(new DactTreeScene())
+    d_preferencesWindow(0)
 #if 0
     d_queryHistory(0)
 #endif
@@ -76,8 +75,6 @@ DactMainWindow::DactMainWindow(QWidget *parent) :
     
     initSentenceTransformer();
     
-    initTreeTransformer();
-    
     createActions();    
 }
 
@@ -90,7 +87,6 @@ DactMainWindow::~DactMainWindow()
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
-    delete d_treeScene;
 }
 
 void DactMainWindow::aboutDialog()
@@ -205,10 +201,9 @@ void DactMainWindow::createActions()
     QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
     QObject::connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()), this, SLOT(highlightChanged()));
 
-    // Tree scene
-    d_ui->treeGraphicsView->setScene(d_treeScene);
     // listen to selection changes to update the next/prev node buttons accordingly.
-    QObject::connect(d_treeScene, SIGNAL(selectionChanged()), this, SLOT(updateTreeNodeButtons()));
+    QObject::connect(d_ui->treeGraphicsView, SIGNAL(sceneChanged(DactTreeScene*)),
+        this, SLOT(treeChanged(DactTreeScene*)));
 
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
@@ -286,7 +281,7 @@ void DactMainWindow::showFile(QString const &filename)
         params["expr"] = valStr;
 
         try {
-            showTree(xml, params);
+            showTree(xml);
             showSentence(xml, params);
         
             // I try to find my file back in the file list to keep the list
@@ -343,19 +338,13 @@ void DactMainWindow::filterChanged()
 
 void DactMainWindow::fitTree()
 {
-    if (!d_treeScene)
-        return;
-   
-    if (d_treeScene->rootNode() != 0)
-      d_ui->treeGraphicsView->fitInView(d_treeScene->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+    d_ui->treeGraphicsView->fitTree();
 }
 
 void DactMainWindow::focusFitTree()
 {
-    if (!d_treeScene)
-        return;
-    
-    if (d_treeScene->activeNodes().length())
+    if (d_ui->treeGraphicsView->scene()
+        && d_ui->treeGraphicsView->scene()->activeNodes().length())
     {
         resetTreeZoom();
         focusTreeNode(1);
@@ -387,16 +376,6 @@ void DactMainWindow::initSentenceTransformer()
     QTextStream xslStream(&xslFile);
     QString xsl(xslStream.readAll());
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
-}
-
-void DactMainWindow::initTreeTransformer()
-{
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/tree.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&xslFile);
-    QString xsl(xslStream.readAll());
-    d_treeTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
 void DactMainWindow::mapperStarted(int totalEntries)
@@ -678,36 +657,22 @@ void DactMainWindow::showSentence(QString const &xml, QHash<QString, QString> co
     d_ui->sentenceLineEdit->setCursorPosition(0);
 }
 
-void DactMainWindow::showTree(QString const &xml, QHash<QString, QString> const &params)
+void DactMainWindow::showTree(QString const &xml)
 {
-    QString xml_tree = d_treeTransformer->transform(xml, params);
-    
-    d_treeScene->parseTree(xml_tree);
-    
-    updateTreeNodeButtons();
+    d_ui->treeGraphicsView->showTree(xml);
 }
 
 void DactMainWindow::setHighlight(QString const &query)
 {
+    d_highlight = query;
     d_ui->highlightLineEdit->setText(query);
-    highlightChanged();
+    d_ui->treeGraphicsView->setHighlightQuery(d_macrosModel->expand(query));
 }
 
 void DactMainWindow::highlightChanged()
 {
-    d_highlight = d_ui->highlightLineEdit->text().trimmed();
-
-#if 0
-    if (d_queryHistory)
-        d_queryHistory->addToHistory(d_highlight);
-#endif
-
-    QModelIndexList selectedRows = d_ui->fileListWidget->selectionModel()->selectedIndexes();
-    if (selectedRows.size())
-        showFile(selectedRows.at(selectedRows.size() - 1).data(Qt::UserRole).toString());
+    setHighlight(d_ui->highlightLineEdit->text().trimmed());
 }
-
-
 
 void DactMainWindow::setModel(FilterModel *model)
 {
@@ -726,7 +691,14 @@ void DactMainWindow::setModel(FilterModel *model)
         SLOT(entrySelected(QItemSelection,QItemSelection)));
 }
 
-
+void DactMainWindow::treeChanged(DactTreeScene *scene)
+{
+    if (scene) // might be null-pointer if the scene is cleared
+        QObject::connect(scene, SIGNAL(selectionChanged()),
+            this, SLOT(updateTreeNodeButtons()));
+    
+    updateTreeNodeButtons();
+}
 
 void DactMainWindow::treeZoomIn()
 {
@@ -750,42 +722,43 @@ void DactMainWindow::focusPreviousTreeNode()
 
 void DactMainWindow::focusTreeNode(int direction)
 {
-    if (!d_treeScene)
-        return;
+    DactTreeScene *tree = d_ui->treeGraphicsView->scene();
     
-    QList<DactTreeNode*> nodes = d_treeScene->nodes();
-    
-    int offset = 0;
-    int nodeCount = nodes.length();
-    
-    // Find the currently focussed node
-    for (int i = 0; i < nodeCount; ++i)
+    if (tree)
     {
-        if (nodes[i]->hasFocus())
-        {
-            offset = i + direction;
-            break;
-        }
-    }
-    
-    // then find the next node that's active
-    for (int i = 0; i < nodeCount; ++i)
-    {
-        // nodeCount + offset + direction * i is positive for [0..nodeCount]
-        // whichever the direction, and modulo nodeCount makes shure it wraps around.
-        DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
+        QList<DactTreeNode*> nodes = tree->nodes();
+        int offset = 0;
+        int nodeCount = nodes.length();
         
-        if (node.isActive())
+        // Find the currently focussed node
+        for (int i = 0; i < nodeCount; ++i)
         {
-            node.setFocus();
+            if (nodes[i]->hasFocus())
+            {
+                offset = i + direction;
+                break;
+            }
+        }
+    
+        // then find the next node that's active
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            // nodeCount + offset + direction * i is positive for [0..nodeCount]
+            // whichever the direction, and modulo nodeCount makes shure it wraps around.
+            DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
+        
+            if (node.isActive())
+            {
+                node.setFocus();
             
-            // reset the matrix to undo the scale operation done by fitTree.
-            // I don't like this yet, because it always resets the zoom.
-            //d_ui->treeGraphicsView->setMatrix(QMatrix());
+                // reset the matrix to undo the scale operation done by fitTree.
+                // I don't like this yet, because it always resets the zoom.
+                //d_ui->treeGraphicsView->setMatrix(QMatrix());
             
-            // move the focus to the center of the focussed leaf
-            d_ui->treeGraphicsView->centerOn(node.mapToScene(node.leafRect().center()));
-            break;
+                // move the focus to the center of the focussed leaf
+                d_ui->treeGraphicsView->centerOn(node.mapToScene(node.leafRect().center()));
+                break;
+            }
         }
     }
     
@@ -798,13 +771,12 @@ void DactMainWindow::updateTreeNodeButtons()
     bool nodesAfterFocussedNode = false;
     bool focussedNodePassed = false;
     
-    if (d_treeScene)
-    {
-        foreach(DactTreeNode* node, d_treeScene->nodes())
+    if (d_ui->treeGraphicsView->scene())
+        foreach(DactTreeNode* node, d_ui->treeGraphicsView->scene()->nodes())
         {
             if (node->hasFocus())
                 focussedNodePassed = true;
-        
+    
             else if (node->isActive())
             {
                 if (!focussedNodePassed)
@@ -813,7 +785,6 @@ void DactMainWindow::updateTreeNodeButtons()
                     nodesAfterFocussedNode = true;
             }
         }
-    }
     
     // When focussedNodePassed is false, none of the nodes has focus. Then what
     // is the "next" node? Therefore use nodesBeforeFocussedUpdate when none of

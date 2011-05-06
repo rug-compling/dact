@@ -23,10 +23,12 @@ class DactTreeScene : public QGraphicsScene
     Q_OBJECT
 public: 
     DactTreeScene(QObject *parent = 0);
+    ~DactTreeScene();
     void parseTree(QString const &xml);
     QList<DactTreeNode*> const &nodes() const;
     QList<DactTreeNode*> activeNodes() const;
     DactTreeNode* rootNode();
+
 private:
     void freeNodes();
     void layout(QPointF pos, DactTreeNode* node);

@@ -1,6 +1,69 @@
 #include <QWheelEvent>
 
 #include "DactTreeView.hh"
+#include "DactTreeScene.hh"
+
+DactTreeView::DactTreeView(QWidget* parent)
+:
+    QGraphicsView(parent)
+{
+    QFile stylesheet(":/stylesheets/tree.xsl");
+    d_transformer = QSharedPointer<XSLTransformer>(new XSLTransformer(stylesheet));
+}
+
+void DactTreeView::showTree(QString const &xml)
+{
+    d_xml = xml;
+    QString tree_xml = transformParseToTree(xml);
+    
+    DactTreeScene *scene = new DactTreeScene(this);
+    scene->parseTree(tree_xml);
+    setScene(scene);
+}
+
+QString DactTreeView::transformParseToTree(QString const &xml) const
+{   
+    QHash<QString, QString> params;
+    params["expr"] = d_query.trimmed().isEmpty()
+        ? "'/..'"
+        : QString("'%1'").arg(d_query);
+    
+    return d_transformer->transform(xml, params);
+}
+
+void DactTreeView::setHighlightQuery(QString const &query)
+{
+    d_query = query;
+    
+    // Only update the tree if there is a tree already
+    if (scene())
+        showTree(d_xml);
+}
+
+QString const &DactTreeView::highlightQuery() const
+{
+    return d_query;
+}
+
+void DactTreeView::setScene(DactTreeScene *scene)
+{
+    QGraphicsView::setScene(scene);
+    emit sceneChanged(scene);
+}
+
+DactTreeScene* DactTreeView::scene() const
+{
+    return reinterpret_cast<DactTreeScene*>(QGraphicsView::scene());
+}
+
+void DactTreeView::fitTree()
+{
+    if (!scene())
+        return;
+    
+    if (scene()->rootNode() != 0)
+        fitInView(scene()->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+}
 
 void DactTreeView::wheelEvent(QWheelEvent * event)
 {

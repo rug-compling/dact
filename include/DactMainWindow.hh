@@ -299,7 +299,7 @@ private slots:
      \param xml the contents of the xml file form the corpus
      \param params key-value pairs used by the stylesheet
      */
-    void showTree(QString const &xml, QHash<QString, QString> const &params);
+    void showTree(QString const &xml);
     
     /*!
      Displays a critical error dialog with the supplied error message.
@@ -315,6 +315,12 @@ private slots:
      represent the row.
      */
     void statisticsEntryActivated(QString const &value, QString const &query);
+    
+    /*!
+     When the tree scene changes because of a new tree (or new highlight query)
+     Add the selection listener to the new scene.
+    */
+    void treeChanged(DactTreeScene *scene);
     
     /*!
      Magnifies the tree scene
@@ -394,13 +400,7 @@ private:
      \sa sentenceForFile
      */
     void initSentenceTransformer();
-    
-    /*!
-     Initialize and load the stylesheet for the tree xsl transformer
-     \sa showTree
-     */
-    void initTreeTransformer();
-    
+        
     /*!
      Export a set of sentences as a dbxml .dact file to the given location.
      This can be run (and is run) on a different thread, and sends signals to
@@ -469,13 +469,6 @@ private:
      \sa showSentence
      */
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
-    
-    /*!
-     XSLTransformer with a stylesheet to turn corpus xml into simple xml
-     used by the DactTreeScene.
-     \sa showTree
-     */
-    QSharedPointer<XSLTransformer> d_treeTransformer;
     
     QMutex d_addFilesMutex;
     QMutex d_filterChangedMutex;
