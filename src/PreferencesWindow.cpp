@@ -15,12 +15,16 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 {
     d_ui->setupUi(this);
 
+#ifndef __APPLE__
     applyAppFont();
-    loadColors();
-
-    QObject::connect(d_ui->appFontPushButton,
-        SIGNAL(clicked()), this, SLOT(selectAppFont()));
     
+    QObject::connect(d_ui->appFontPushButton,
+                     SIGNAL(clicked()), this, SLOT(selectAppFont()));
+#else
+    d_ui->tabWidget->removeTab(0);
+#endif
+    
+    loadColors();    
     
     QObject::connect(d_ui->treeActiveNodeForegroundColor,
         SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));

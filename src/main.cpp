@@ -45,9 +45,12 @@ int main(int argc, char *argv[])
     
         QSettings settings;
         QVariant fontValue = settings.value("appFont", qApp->font().toString());
+        
+#ifndef __APPLE__
         QFont appFont;
         appFont.fromString(fontValue.toString());
         a->setFont(appFont);
+#endif
 
         a->init();
     
