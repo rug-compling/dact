@@ -1,4 +1,0 @@
-Dact manual
------------
-
-include::intro.txt[]

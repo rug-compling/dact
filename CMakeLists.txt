@@ -66,19 +66,6 @@ endif()
 find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
-# Documentation
-find_program(QHELP_GENERATOR_COMMAND NAMES qhelpgenerator)
-find_program(QCOLLECTION_GENERATOR_COMMAND NAMES qcollectiongenerator)
-
-add_custom_command(
-  DEPENDS
-  ${DACT_SOURCE_DIR}/doc/index.html
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DACT_SOURCE_DIR}/resource/doc
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${DACT_SOURCE_DIR}/resources/doc
-  COMMAND ${CMAKE_COMMAND} -E copy ${DACT_SOURCE_DIR}/doc/index.html ${DACT_SOURCE_DIR}/resources/doc/index.html
-  OUTPUT ${DACT_SOURCE_DIR}/resources/doc/index.html
-)
-
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp

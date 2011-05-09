@@ -1,6 +1,0 @@
-Introduction
-~~~~~~~~~~~~
-
-Dact is a program for browsing Alpino corpora. Corpora can be queried
-to find dependency trees that conform to certain characteristics. Relevant
-parts of trees can also be highlighted.
