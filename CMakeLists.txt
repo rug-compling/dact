@@ -189,31 +189,33 @@ install(TARGETS ${PROGNAME}
 # OS X bundle creation
 if(APPLE)
 
-get_filename_component(ALPINOCORPUS_LIBRARY_DIR
-  ${ALPINOCORPUS_LIBRARIES} PATH)
+  set(APP ${CMAKE_INSTALL_PREFIX}/${PROGNAME}.app)
 
-set(DIRS
-  ${QT_LIBRARY_DIR}
-  ${ALPINOCORPUS_LIBRARY_DIR})
+  get_filename_component(ALPINOCORPUS_LIBRARY_DIR
+    ${ALPINOCORPUS_LIBRARIES} PATH)
 
-set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
-set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
+  set(DIRS
+    ${QT_LIBRARY_DIR}
+    ${ALPINOCORPUS_LIBRARY_DIR})
 
-set_target_properties(${PROGNAME}
-	PROPERTIES
-	MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
+  set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+  set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
-INSTALL(CODE "
-  file(WRITE \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt.conf\")
-  file(MAKE_DIRECTORY \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt_menu.nib\")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
-    \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
-    \"${DACT_BINARY_DIR}/${PROGNAME}.app/Contents/Resources/qt_menu.nib\")
-  include(BundleUtilities)
-  fixup_bundle(\"${DACT_BINARY_DIR}/${PROGNAME}.app\" \"\" \"${DIRS}\")
-" COMPONENT Runtime)
+  set_target_properties(${PROGNAME}
+    PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
 
-set(CPACK_BINARY_DRAGNDROP ON)
-include(CPack)
+  INSTALL(CODE "
+    file(WRITE \"${APP}/Contents/Resources/qt.conf\")
+    file(MAKE_DIRECTORY \"${APP}/Contents/Resources/qt_menu.nib\")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+      \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
+      \"${APP}/Contents/Resources/qt_menu.nib\")
+    include(BundleUtilities)
+    fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
+  " COMPONENT Runtime)
+
+  set(CPACK_BINARY_DRAGNDROP ON)
+  include(CPack)
 
 endif(APPLE)
