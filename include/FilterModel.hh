@@ -45,6 +45,7 @@ private:
     CorpusPtr d_corpus;
     QList<value_type> d_results;
     QString d_query;
+    QFuture<void> d_entriesFuture;
 };
 
 #endif
