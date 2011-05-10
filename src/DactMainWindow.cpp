@@ -321,6 +321,9 @@ void DactMainWindow::setFilter(QString const &query)
 
 void DactMainWindow::filterChanged()
 {
+    if (!d_model)
+      return;
+
     QMutexLocker locker(&d_filterChangedMutex);
 
     d_filter = d_ui->filterLineEdit->text().trimmed();
