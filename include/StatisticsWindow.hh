@@ -57,12 +57,12 @@ private:
     void writeSettings();
     void setModel(QueryModel *model);
     
-    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QString d_filter;
     QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<QueryModel> d_model;
     QSharedPointer<Ui::StatisticsWindow> d_ui;
     QSharedPointer<XPathValidator> d_xpathValidator;
+    QSharedPointer<QueryModel> d_model;
+    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
 };
 
 #endif // DACTQUERYWINDOW_H

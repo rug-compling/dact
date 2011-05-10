@@ -156,9 +156,9 @@ void QueryModel::runQuery(QString const &query)
     d_totalHits = 0;
     
     if (!query.isEmpty())
-        QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
+        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
     else
-        QtConcurrent::run(this, &QueryModel::getEntries,
+        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntries,
             d_corpus->begin(),
             d_corpus->end());
 }
@@ -166,6 +166,7 @@ void QueryModel::runQuery(QString const &query)
 void QueryModel::cancelQuery()
 {
     d_cancelled = true;
+    d_entriesFuture.waitForFinished();
 }
 
 // run async, because query() starts searching immediately

@@ -57,6 +57,7 @@ private:
     QList<int> d_hitsIndex;
     QList< QPair<QString, int> > d_results;
     int d_totalHits;
+    QFuture<void> d_entriesFuture;
     
 };
 
