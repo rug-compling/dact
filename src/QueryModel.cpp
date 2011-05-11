@@ -14,11 +14,14 @@ QueryModel::HitsCompare::HitsCompare(QueryModel const &parent)
 
 inline bool QueryModel::HitsCompare::operator()(int one_idx, int other_idx)
 {
-    //qDebug() << "Comparing" << one_idx << "(" << d_parent.d_results[one_idx].second << ")"
-    //    << "with" << other_idx << "(" << d_parent.d_results[other_idx].second << ")";
+    int oneHits = d_parent.d_results[one_idx].second;
+    int twoHits = d_parent.d_results[other_idx].second;
     
-    // greater than instead of lesser than since our d_hitsIndex is ordered in descending order.
-    return d_parent.d_results[one_idx].second > d_parent.d_results[other_idx].second;
+    if (oneHits == twoHits)
+        return d_parent.d_results[one_idx].first <
+            d_parent.d_results[other_idx].first;
+    else
+        return oneHits > twoHits;
 }
 
 QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
@@ -92,35 +95,34 @@ void QueryModel::mapperEntryFound(QString entry)
     
     // find position in d_results using the word index
     int idx = d_valueIndex.value(entry, -1);
-    
+        
     if (idx == -1)
     {
         idx = d_results.size();
         d_results.append(QPair<QString,int>(entry, 1));
         d_valueIndex[entry] = idx;
-        d_hitsIndex.append(idx);
+
+        HitsCompare compare(*this);
+        
+        // find new position, just above the result with less hits.
+        QList<int>::iterator insertPos = qLowerBound(
+            d_hitsIndex.begin(), d_hitsIndex.end(), idx, compare);
+        
+        // insert at new position
+        d_hitsIndex.insert(insertPos, idx);
         
         emit layoutChanged(); // notify tableview that we have new rows
     }
     else
     {
-        int hits = d_results[idx].second;
-        d_results[idx].second = hits + 1;
-        
-        /* Update hits index */
-        
         HitsCompare compare(*this);
         
         // Find the current position to remove
         
         // Binary search: does not work? Why not? :(
-        //QList<int>::iterator current_pos = qBinaryFind(
-        //    d_hitsIndex.begin(), d_hitsIndex.end(), idx,
-        //    compare);
-        
-        // This does not scale. absolutely not.
-        QList<int>::iterator current_pos = qFind(
-            d_hitsIndex.begin(), d_hitsIndex.end(), idx);
+        QList<int>::iterator current_pos = qBinaryFind(
+            d_hitsIndex.begin(), d_hitsIndex.end(), idx,
+            compare);
         
         // It is already in the words index, it has to be in the hits index as well!
         assert(current_pos != d_hitsIndex.end());
@@ -128,12 +130,16 @@ void QueryModel::mapperEntryFound(QString entry)
         // remove from current position in the index
         d_hitsIndex.erase(current_pos);
         
+        // Update hits index
+        int hits = d_results[idx].second;
+        d_results[idx].second = hits + 1;
+        
         // find new position, just above the result with less hits.
-        QList<int>::iterator insert_pos = qLowerBound(
+        QList<int>::iterator insertPos = qLowerBound(
             d_hitsIndex.begin(), d_hitsIndex.end(), idx, compare);
         
         // insert at new position
-        d_hitsIndex.insert(insert_pos, idx);
+        d_hitsIndex.insert(insertPos, idx);
     }
     
     ++d_totalHits;
