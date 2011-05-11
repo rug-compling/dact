@@ -584,7 +584,7 @@ void MainWindow::exportCorpus()
         
         if (selectionOnly)
         {
-            foreach (QModelIndex item, selectionModel->selectedIndexes())
+            foreach (QModelIndex item, selectionModel->selectedRows())
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
