@@ -95,6 +95,35 @@ SET(dact_SRCS
   src/validityColor.cpp
 )
 
+SET(dact_HDRS
+  include/AboutWindow.hh
+  include/BracketedColorDelegate.hh
+  include/BracketedDelegate.hh
+  include/BracketedKeywordInContextDelegate.hh
+  include/BracketedVisibilityDelegate.hh
+  include/BracketedWindow.hh
+  include/config.hh
+  include/DactApplication.hh
+  include/DactColorWell.hh
+  include/DactListView.hh
+  include/DactMacro.hh
+  include/DactMacrosModel.hh
+  include/DactMacrosWindow.hh
+  include/DactMainWindow.hh
+  include/DactProgressDialog.hh
+  include/DactQueryHistory.hh
+  include/DactTreeScene.hh
+  include/DactTreeView.hh
+  include/FilterModel.hh
+  include/PercentageCellDelegate.hh
+  include/PreferencesWindow.hh
+  include/QueryModel.hh
+  include/StatisticsWindow.hh
+  include/ValidityColor.hh
+  include/XPathValidator.hh
+  include/XSLTransformer.hh
+)  
+
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactApplication.hh
@@ -154,10 +183,11 @@ qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
 add_executable(${PROGNAME} MACOSX_BUNDLE WIN32
-	${dact_SRCS}
-	${dact_MOC_SRCS}
-	${dact_UI_HDRS}
-	${dact_MACOSX_RESOURCE_FILES})
+  ${dact_SRCS}
+  ${dact_HDRS}
+  ${dact_MOC_SRCS}
+  ${dact_UI_HDRS}
+  ${dact_MACOSX_RESOURCE_FILES})
 target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(${PROGNAME} ${DBXML_LIBRARY})
