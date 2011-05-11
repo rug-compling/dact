@@ -14,7 +14,6 @@ extern "C" {
 }
 
 #include "DactApplication.hh"
-#include "DactMainWindow.hh"
 
 namespace {
     void usage(char const *progname)

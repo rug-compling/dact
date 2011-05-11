@@ -12,7 +12,7 @@ d_mainWindow(0)
 
 void DactApplication::init()
 {
-    d_mainWindow.reset(new DactMainWindow());
+    d_mainWindow.reset(new MainWindow());
     d_mainWindow->show();
 }
 

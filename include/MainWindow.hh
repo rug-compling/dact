@@ -1,5 +1,5 @@
-#ifndef DACTMAINWINDOW_H
-#define DACTMAINWINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QFutureWatcher>
 #include <QHash>
@@ -14,7 +14,7 @@
 #include "XSLTransformer.hh"
 
 namespace Ui {
-    class DactMainWindow;
+    class MainWindow;
 }
 
 class AboutWindow;
@@ -34,11 +34,11 @@ class DactTreeScene;
 class QItemSelection;
 class QKeyEvent;
 
-class DactMainWindow : public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    DactMainWindow(QWidget *parent = 0);
-    ~DactMainWindow();
+    MainWindow(QWidget *parent = 0);
+    ~MainWindow();
     
     /*!
      Start loading a corpus
@@ -378,7 +378,7 @@ private:
     
     void setModel(FilterModel *model);
     
-    QSharedPointer<Ui::DactMainWindow> d_ui;
+    QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
     StatisticsWindow *d_statisticsWindow;
@@ -475,4 +475,4 @@ private:
     QSharedPointer<FilterModel> d_model;
 };
 
-#endif // DACTMAINWINDOW_H
+#endif // MAINWINDOW_H

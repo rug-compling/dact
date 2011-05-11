@@ -70,7 +70,6 @@ INCLUDE(${QT_USE_FILE})
 SET(dact_SRCS
   src/AboutWindow.cpp
   src/DactColorWell.cpp
-  src/DactMainWindow.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
@@ -87,6 +86,7 @@ SET(dact_SRCS
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
+  src/MainWindow.cpp
   src/PercentageCellDelegate.cpp
   src/PreferencesWindow.cpp
   src/XPathValidator.cpp
@@ -109,12 +109,12 @@ SET(dact_HDRS
   include/DactMacro.hh
   include/DactMacrosModel.hh
   include/DactMacrosWindow.hh
-  include/DactMainWindow.hh
   include/DactProgressDialog.hh
   include/DactQueryHistory.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/FilterModel.hh
+  include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/QueryModel.hh
@@ -128,7 +128,6 @@ SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/DactApplication.hh
   include/DactColorWell.hh
-  include/DactMainWindow.hh
   include/BracketedDelegate.hh
   include/BracketedColorDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -144,6 +143,7 @@ SET(dact_MOC_HDRS
   include/DactTreeView.hh
   include/QueryModel.hh
   include/FilterModel.hh
+  include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/XPathValidator.hh
@@ -151,8 +151,8 @@ SET(dact_MOC_HDRS
 
 SET(dact_UI
   ui/AboutWindow.ui
-  ui/DactMainWindow.ui
   ui/BracketedWindow.ui
+  ui/MainWindow.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/DactMacrosWindow.ui

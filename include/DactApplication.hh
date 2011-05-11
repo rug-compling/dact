@@ -3,7 +3,7 @@
 
 #include <QApplication>
 #include <QScopedPointer>
-#include "DactMainWindow.hh"
+#include "MainWindow.hh"
 
 class DactApplication: public QApplication
 {
@@ -16,7 +16,7 @@ protected:
     bool event(QEvent *event);
 
 private:
-    QScopedPointer<DactMainWindow> d_mainWindow;
+    QScopedPointer<MainWindow> d_mainWindow;
 };
 
 #endif
