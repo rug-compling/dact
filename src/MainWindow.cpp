@@ -675,8 +675,9 @@ void MainWindow::setModel(FilterModel *model)
         this, SLOT(mapperStarted(int)));
     QObject::connect(model, SIGNAL(queryStopped(int, int)),
         this, SLOT(mapperStopped(int, int)));
-    QObject::connect(model, SIGNAL(queryProgressed(int, int)),
-        this, SLOT(mapperProgressed(int,int)));
+    // This absolutely kills performance in remote X.
+    // QObject::connect(model, SIGNAL(queryProgressed(int, int)),
+    //     this, SLOT(mapperProgressed(int,int)));
     
     QObject::connect(d_ui->fileListWidget->selectionModel(),
         SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this,
