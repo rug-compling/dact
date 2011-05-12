@@ -71,6 +71,11 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
     d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
 #endif
+    
+    d_ui->hitsDescLabel->hide();
+    d_ui->hitsLabel->hide();
+    d_ui->statisticsLayout->setVerticalSpacing(0);
+    
     readSettings();
     
     initSentenceTransformer();
@@ -228,6 +233,13 @@ void MainWindow::createActions()
     QObject::connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), this, SLOT(focusHighlight()));
 }
 
+void MainWindow::entryFound(QString) {
+    int entries = d_model->rowCount(QModelIndex());
+    int hits = d_model->hits();
+    d_ui->entriesLabel->setText(QString::number(entries));
+    d_ui->hitsLabel->setText(QString::number(hits));
+}
+
 void MainWindow::entrySelected(QItemSelection const &current, QItemSelection const &prev)
 {
     Q_UNUSED(prev);
@@ -333,6 +345,17 @@ void MainWindow::filterChanged()
         d_queryHistory->addToHistory(d_filter);
 #endif
 
+    
+    if (d_filter.isEmpty()) {
+        d_ui->hitsDescLabel->hide();
+        d_ui->hitsLabel->hide();
+        d_ui->statisticsLayout->setVerticalSpacing(0);
+    } else {
+        d_ui->statisticsLayout->setVerticalSpacing(-1);
+        d_ui->hitsDescLabel->show();
+        d_ui->hitsLabel->show();
+    }
+    
     setHighlight(d_filter);
 
     d_model->runQuery(d_macrosModel->expand(d_filter));
@@ -675,6 +698,8 @@ void MainWindow::setModel(FilterModel *model)
         this, SLOT(mapperStarted(int)));
     QObject::connect(model, SIGNAL(queryStopped(int, int)),
         this, SLOT(mapperStopped(int, int)));
+    QObject::connect(model, SIGNAL(entryFound(QString)),
+        this, SLOT(entryFound(QString)));
     // This absolutely kills performance in remote X.
     // QObject::connect(model, SIGNAL(queryProgressed(int, int)),
     //     this, SLOT(mapperProgressed(int,int)));

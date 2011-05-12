@@ -9,7 +9,8 @@
 FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
 :
     QAbstractTableModel(parent),
-    d_corpus(corpus)
+    d_corpus(corpus),
+    d_hits(0)
 {
     connect(this, SIGNAL(entryFound(QString)),
         this, SLOT(mapperEntryFound(QString)));
@@ -151,10 +152,10 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         
         d_cancelled = false;
         
-        int hits = 0;
+        d_hits = 0;
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
         {
-            emit queryProgressed(++hits, 0);
+            emit queryProgressed(++d_hits, 0);
             emit entryFound(*itr);
             // @TODO could we implement something a la mapperProgressed(end - itr)?
         }

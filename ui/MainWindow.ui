@@ -14,46 +14,102 @@
    <string>Dact</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Files</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Filter:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="filterLineEdit"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QListView" name="fileListWidget">
-          <property name="selectionMode">
-           <enum>QAbstractItemView::ExtendedSelection</enum>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Files</string>
           </property>
-          <property name="uniformItemSizes">
-           <bool>true</bool>
-          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Filter:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="filterLineEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QListView" name="fileListWidget">
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
+             <property name="uniformItemSizes">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="filterProgressBar">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QProgressBar" name="filterProgressBar">
-          <property name="visible">
-           <bool>false</bool>
+         <widget class="QGroupBox" name="statisticsGroupBox">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
+          <property name="title">
+           <string>Statistics</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QFormLayout" name="statisticsLayout">
+             <property name="fieldGrowthPolicy">
+              <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <item row="1" column="0">
+              <widget class="QLabel" name="hitsDescLabel">
+               <property name="text">
+                <string>Hits:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="hitsLabel">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="entriesLabel">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Entries:</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -259,12 +315,12 @@
    </property>
   </action>
   <action name="nextTreeNodeAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
    </property>
    <property name="text">
     <string>Next node</string>
@@ -280,12 +336,12 @@
    </property>
   </action>
   <action name="previousTreeNodeAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
      <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
    </property>
    <property name="text">
     <string>Previous node</string>

@@ -22,6 +22,7 @@ public:
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
+    int hits() const;
     
     void runQuery(QString const &xpath_query = "");
     void cancelQuery();
@@ -46,6 +47,12 @@ private:
     QList<value_type> d_results;
     QString d_query;
     QFuture<void> d_entriesFuture;
+    int d_hits;
 };
+
+inline int FilterModel::hits() const
+{
+    return d_hits;
+}
 
 #endif

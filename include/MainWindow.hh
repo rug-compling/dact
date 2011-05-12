@@ -140,6 +140,11 @@ private slots:
     void currentBracketedEntryChanged(QString const &entry);
     
     /*!
+     Called when an entry was added to the model.
+     */
+    void entryFound(QString entry);
+    
+    /*!
      Called when a file in the file list is selected (or the selection is removed.)
      It loads the selected file (if any) and focusses on the first matching node.
      \sa showFile
