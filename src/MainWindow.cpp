@@ -395,6 +395,9 @@ void MainWindow::initSentenceTransformer()
 
 void MainWindow::mapperStarted(int totalEntries)
 {
+    d_ui->entriesLabel->setText(QString::number(0));
+    d_ui->hitsLabel->setText(QString::number(0));
+
     d_ui->filterProgressBar->setMinimum(0);
     d_ui->filterProgressBar->setMaximum(totalEntries);
     d_ui->filterProgressBar->setValue(0);
