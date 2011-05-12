@@ -25,7 +25,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Files</string>
+           <string>Entries</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
