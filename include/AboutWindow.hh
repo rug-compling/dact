@@ -1,5 +1,5 @@
 #ifndef ABOUTWINDOW_H
-#define DACTWINDOW_H
+#define ABOUTWINDOW_H
 
 #include <QSharedPointer>
 #include <QWidget>
