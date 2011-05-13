@@ -151,9 +151,13 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         emit queryStarted(0); // we don't know how many entries will be found
         
         d_cancelled = false;
+        d_hits = 0;
         
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
+        {
+            ++d_hits;
             emit entryFound(*itr);
+        }
             
         emit queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {
