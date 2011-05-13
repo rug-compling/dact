@@ -10,6 +10,7 @@ class TreeNode : public QGraphicsItem
 {
 public:
     TreeNode(QGraphicsItem *parent = 0);
+    QHash<QString, QString> const &attributes() const;
     void setAttribute(QString const &name, QString const &value);
     void appendChild(TreeNode *node);
     void appendLabel(QString const &label);
@@ -48,6 +49,11 @@ private:
     qreal d_leafMinimumHeight;
     qreal d_leafPadding;
 };
+
+inline QHash<QString, QString> const &TreeNode::attributes() const
+{
+    return d_attributes;
+}
 
 inline QList<QString> const &TreeNode::popupLines() const
 {

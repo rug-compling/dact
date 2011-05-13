@@ -732,9 +732,13 @@ void MainWindow::setModel(FilterModel *model)
 void MainWindow::treeChanged(DactTreeScene *scene)
 {
     if (scene) // might be null-pointer if the scene is cleared
+    {
         QObject::connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateTreeNodeButtons()));
-    
+        
+        QObject::connect(scene, SIGNAL(selectionChanged(TreeNode const *)),
+            d_ui->inspector, SLOT(inspect(TreeNode const *)));
+    }
     updateTreeNodeButtons();
 }
 

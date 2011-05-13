@@ -17,7 +17,10 @@ class TreeNodeInspector : public QDockWidget
     Q_OBJECT
 public:
     TreeNodeInspector(QWidget *parent = 0);
-    void inspect(TreeNode const &node);
+
+public slots:
+    void inspect(TreeNode const *);
+
 private:
     QSharedPointer<Ui::TreeNodeInspector> d_ui;
 };

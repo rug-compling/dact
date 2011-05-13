@@ -29,6 +29,12 @@ public:
     QList<TreeNode*> activeNodes() const;
     TreeNode* rootNode();
 
+signals:
+    void selectionChanged(TreeNode const *);
+
+private slots:
+    void emitSelectionChange();
+
 private:
     void freeNodes();
     void layout(QPointF pos, TreeNode* node);

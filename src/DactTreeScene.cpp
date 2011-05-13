@@ -13,12 +13,20 @@
 DactTreeScene::DactTreeScene(QObject *parent) :
     QGraphicsScene(parent),
     d_nodes()
-{}
+{
+    connect(this, SIGNAL(selectionChanged()),
+        this, SLOT(emitSelectionChange()));
+}
 
 DactTreeScene::~DactTreeScene()
 {
     if (rootNode())
         freeNodes();
+}
+
+void DactTreeScene::emitSelectionChange()
+{
+    emit selectionChanged(reinterpret_cast<TreeNode*>(focusItem()));
 }
 
 void DactTreeScene::parseTree(QString const &xml)
