@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QGroupBox" name="groupBox">
@@ -152,7 +152,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="sentenceLineEdit"/>
+           <widget class="BracketedSentenceWidget" name="sentenceWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>200</horstretch>
+              <verstretch>24</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -521,6 +528,12 @@
    <class>DactTreeView</class>
    <extends>QWidget</extends>
    <header>DactTreeView.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>BracketedSentenceWidget</class>
+   <extends>QFrame</extends>
+   <header>BracketedSentenceWidget.hh</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

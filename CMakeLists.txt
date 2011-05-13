@@ -74,6 +74,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedColorDelegate.cpp
   src/BracketedDelegates/BracketedVisibilityDelegate.cpp
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
+  src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
   src/StatisticsWindow.cpp
   src/DactApplication.cpp
@@ -100,6 +101,7 @@ SET(dact_HDRS
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
+  include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
   include/config.hh
@@ -131,6 +133,7 @@ SET(dact_MOC_HDRS
   include/BracketedDelegate.hh
   include/BracketedColorDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
+  include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
   include/StatisticsWindow.hh

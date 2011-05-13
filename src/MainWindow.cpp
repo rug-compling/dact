@@ -690,10 +690,7 @@ void MainWindow::writeSettings()
 
 void MainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
 {
-    QString sentence = d_sentenceTransformer->transform(xml, params).trimmed();
-
-    d_ui->sentenceLineEdit->setText(sentence);
-    d_ui->sentenceLineEdit->setCursorPosition(0);
+    d_ui->sentenceWidget->setParse(xml);
 }
 
 void MainWindow::showTree(QString const &xml)
@@ -705,6 +702,7 @@ void MainWindow::setHighlight(QString const &query)
 {
     d_highlight = query;
     d_ui->highlightLineEdit->setText(query);
+    d_ui->sentenceWidget->setQuery(query);
     d_ui->treeGraphicsView->setHighlightQuery(d_macrosModel->expand(query));
 }
 
