@@ -104,7 +104,7 @@ private slots:
      highlight query with the query from the BracketedWindow.
      \sa currentBracketedEntryChanged
     */
-    void bracketedEntryActivated();
+    void bracketedEntryActivated(QString const &file);
     
     /*!
      Cancels reading the iterator in addFiles. Invoked by the open-file
@@ -129,15 +129,6 @@ private slots:
     void corpusRead(int idx);
 
     void corpusWritten(int idx);
-    
-    /*!
-     Called when one of the entries in the BracketedWindow is selected. It will
-     load the matching file in the tree scene, but it won't raise the window. This
-     because you can then use the cursor keys to scan thru the results and see
-     the tree for the currently selected result in the background. Calls fitTree.
-     \sa showFile
-    */
-    void currentBracketedEntryChanged(QString const &entry);
     
     /*!
      Called when an entry was added to the model.

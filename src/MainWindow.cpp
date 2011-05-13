@@ -100,17 +100,14 @@ void MainWindow::aboutDialog()
     d_aboutWindow->raise();
 }
 
-void MainWindow::bracketedEntryActivated()
-{
-    setHighlight(d_bracketedWindow->filter());
-    raise();
-    activateWindow();
-}
-
-void MainWindow::currentBracketedEntryChanged(const QString &entry)
+void MainWindow::bracketedEntryActivated(const QString &entry)
 {
     showFile(entry);
     focusFitTree();
+    
+    setHighlight(d_bracketedWindow->filter());
+    raise();
+    activateWindow();
 }
 
 void MainWindow::applyValidityColor(QString const &)
@@ -141,8 +138,7 @@ void MainWindow::showFilterWindow()
     if (d_bracketedWindow == 0)
     {
         d_bracketedWindow = new BracketedWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-        QObject::connect(d_bracketedWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
-        QObject::connect(d_bracketedWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
+        QObject::connect(d_bracketedWindow, SIGNAL(entryActivated(QString)), this, SLOT(bracketedEntryActivated(QString)));
     }
 
     d_bracketedWindow->setFilter(d_filter);

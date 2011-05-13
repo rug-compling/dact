@@ -102,20 +102,23 @@ void BracketedWindow::createActions()
     QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
     QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
     QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
+    */
     
+    /*
     QObject::connect(d_ui->resultsListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
         this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
-    QObject::connect(d_ui->resultsListWidget, 
+    */
+    
+    QObject::connect(d_ui->resultsList, 
         // itemActivated is triggered by a single click on some systems
         // where this is the configured behavior: it can be annoying.
         // But it also enables using [enter] to raise the main window
         // which is the expected/preferred behavior.
-        SIGNAL(itemActivated(QListWidgetItem*)),
+        SIGNAL(activated(QModelIndex const &)),
         this,
-        SLOT(entryActivated(QListWidgetItem*)));
-    */
+        SLOT(entryActivated(QModelIndex const &)));
     
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
@@ -142,12 +145,12 @@ void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 }
 */
 
-/*
-void BracketedWindow::entryActivated(QListWidgetItem *item)
+
+void BracketedWindow::entryActivated(QModelIndex const &index)
 {
-    emit entryActivated();
+    emit entryActivated(index.data(Qt::UserRole).toString());
 }
-*/
+
 
 void BracketedWindow::addListDelegate(QString const &name, DelegateFactory factory)
 {

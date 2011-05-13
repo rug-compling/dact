@@ -16,7 +16,7 @@
 #include "ui_BracketedWindow.h"
 
 class QKeyEvent;
-class QListWidgetItem;
+class QModelIndex;
 class QStyledItemDelegate;
 
 /*!
@@ -67,25 +67,20 @@ public:
 
 signals:
     /*!
-     Fired when a new entry in the list is selected.
-     Used by DactMainWindow to keep its current file in sync with the results of
-     this window.
-     \param entry corpus internal path to the xml file.
-     */
-    void currentEntryChanged(QString const &entry);
-    
-    /*!
      Fired when a entry is activated (by doubleclicking or pressing the enter key)
-     Used by DactMainWindow to raise its window
+     Used by DactMainWindow to raise its window and show the tree
      */
-    void entryActivated();
+    void entryActivated(QString file);
     
 private slots:
     void applyValidityColor(QString const &text);
     /*
     void entrySelected(QListWidgetItem *current, QListWidgetItem *previous);
-    void entryActivated(QListWidgetItem *subject);
     */
+    /*!
+     * Called when an item in the results list is activated
+     */
+    void entryActivated(QModelIndex const &index);
     
     /*!
      Called when the search mapper started. Shows progress bar.
