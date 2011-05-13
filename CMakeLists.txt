@@ -89,7 +89,9 @@ SET(dact_SRCS
   src/FilterModel.cpp
   src/MainWindow.cpp
   src/PercentageCellDelegate.cpp
+  src/PopupItem.cpp
   src/PreferencesWindow.cpp
+  src/TreeNode.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/main.cpp
@@ -118,9 +120,11 @@ SET(dact_HDRS
   include/FilterModel.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
+  include/PopupItem.hh
   include/PreferencesWindow.hh
   include/QueryModel.hh
   include/StatisticsWindow.hh
+  include/TreeNode.hh
   include/ValidityColor.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh

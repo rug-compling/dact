@@ -2,6 +2,7 @@
 
 #include "DactTreeView.hh"
 #include "DactTreeScene.hh"
+#include "TreeNode.hh"
 
 DactTreeView::DactTreeView(QWidget* parent)
 :
@@ -69,7 +70,7 @@ void DactTreeView::focusTreeNode(int direction)
 {
     if (scene())
     {
-        QList<DactTreeNode*> nodes = scene()->nodes();
+        QList<TreeNode*> nodes = scene()->nodes();
         int offset = 0;
         int nodeCount = nodes.length();
         
@@ -88,7 +89,7 @@ void DactTreeView::focusTreeNode(int direction)
         {
             // nodeCount + offset + direction * i is positive for [0..nodeCount]
             // whichever the direction, and modulo nodeCount makes shure it wraps around.
-            DactTreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
+            TreeNode &node = *nodes[(nodeCount + offset + direction * i) % nodeCount];
         
             if (node.isActive())
             {

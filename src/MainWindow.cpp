@@ -38,6 +38,7 @@
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
+#include "TreeNode.hh"
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
 #include "ValidityColor.hh"
@@ -744,7 +745,7 @@ void MainWindow::updateTreeNodeButtons()
     bool focussedNodePassed = false;
     
     if (d_ui->treeGraphicsView->scene())
-        foreach(DactTreeNode* node, d_ui->treeGraphicsView->scene()->nodes())
+        foreach(TreeNode* node, d_ui->treeGraphicsView->scene()->nodes())
         {
             if (node->hasFocus())
                 focussedNodePassed = true;
