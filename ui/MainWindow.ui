@@ -216,6 +216,7 @@
     <addaction name="nextTreeNodeAction"/>
     <addaction name="separator"/>
     <addaction name="showFilterWindow"/>
+    <addaction name="inspectorAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -257,6 +258,11 @@
    <addaction name="nextTreeNodeAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="TreeNodeInspector" name="inspector">
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
   <action name="quitAction">
    <property name="text">
     <string>&amp;Quit</string>
@@ -521,6 +527,20 @@
     <string>Ctrl+Shift+H</string>
    </property>
   </action>
+  <action name="inspectorAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Inspector</string>
+   </property>
+   <property name="toolTip">
+    <string>Show node inspector</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -533,6 +553,12 @@
    <class>BracketedSentenceWidget</class>
    <extends>QFrame</extends>
    <header>BracketedSentenceWidget.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TreeNodeInspector</class>
+   <extends>QDockWidget</extends>
+   <header>TreeNodeInspector.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -553,6 +579,38 @@
     <hint type="destinationlabel">
      <x>394</x>
      <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>inspector</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>inspectorAction</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>749</x>
+     <y>360</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>inspectorAction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>inspector</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>749</x>
+     <y>360</y>
     </hint>
    </hints>
   </connection>

@@ -92,6 +92,7 @@ SET(dact_SRCS
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
   src/TreeNode.cpp
+  src/TreeNodeInspector.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/main.cpp
@@ -125,6 +126,7 @@ SET(dact_HDRS
   include/QueryModel.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
+  include/TreeNodeInspector.hh
   include/ValidityColor.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh
@@ -153,6 +155,7 @@ SET(dact_MOC_HDRS
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
+  include/TreeNodeInspector.hh
   include/XPathValidator.hh
 )
 
@@ -162,6 +165,7 @@ SET(dact_UI
   ui/MainWindow.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
+  ui/TreeNodeInspector.ui
   ui/DactMacrosWindow.ui
   ui/DactProgressDialog.ui
 )
