@@ -152,13 +152,8 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         
         d_cancelled = false;
         
-        d_hits = 0;
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
-        {
-            emit queryProgressed(++d_hits, 0);
             emit entryFound(*itr);
-            // @TODO could we implement something a la mapperProgressed(end - itr)?
-        }
             
         emit queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {

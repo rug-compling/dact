@@ -406,11 +406,6 @@ void MainWindow::mapperStopped(int processedEntries, int totalEntries)
     d_ui->filterProgressBar->setVisible(false);
 }
 
-void MainWindow::mapperProgressed(int processedEntries, int totalEntries)
-{
-    d_ui->filterProgressBar->setValue(processedEntries);
-}
-
 /* Next- and prev entry buttons */
 
 void MainWindow::nextEntry(bool)
@@ -729,9 +724,6 @@ void MainWindow::setModel(FilterModel *model)
         this, SLOT(mapperStopped(int, int)));
     QObject::connect(model, SIGNAL(entryFound(QString)),
         this, SLOT(entryFound(QString)));
-    // This absolutely kills performance in remote X.
-    // QObject::connect(model, SIGNAL(queryProgressed(int, int)),
-    //     this, SLOT(mapperProgressed(int,int)));
     
     QObject::connect(d_ui->fileListWidget->selectionModel(),
         SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this,

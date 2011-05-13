@@ -72,9 +72,6 @@ void BracketedWindow::setModel(FilterModel *model)
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         this, SLOT(progressStarted(int)));
     
-    connect(d_model.data(), SIGNAL(queryProgressed(int, int)),
-        this, SLOT(progressChanged(int, int)));
-    
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         this, SLOT(progressStopped(int, int)));
 }
@@ -98,12 +95,6 @@ void BracketedWindow::applyValidityColor(QString const &)
 
 void BracketedWindow::createActions()
 {
-    /*
-    QObject::connect(d_xpathMapper.data(), SIGNAL(started(int)), this, SLOT(mapperStarted(int)));
-    QObject::connect(d_xpathMapper.data(), SIGNAL(stopped(int, int)), this, SLOT(mapperStopped(int, int)));
-    QObject::connect(d_xpathMapper.data(), SIGNAL(progress(int, int)), this, SLOT(mapperProgressed(int,int)));
-    */
-    
     /*
     QObject::connect(d_ui->resultsListWidget,
         SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),

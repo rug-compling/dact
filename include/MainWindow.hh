@@ -318,15 +318,6 @@ private slots:
      */
     void mapperStopped(int processedEntries, int totalEntries);
     
-    /*!
-     Updates the file search progress bar.
-     \param processedEntries number of entries searched.
-     \param totalEntries number of entries in the corpus
-     \sa mapperStarted
-     \sa mapperStoppend
-     */
-    void mapperProgressed(int processedEntries, int totalEntries);
-    
 protected:
     void changeEvent(QEvent *e);
     /*!

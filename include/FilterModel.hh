@@ -30,7 +30,6 @@ public:
 
 signals:
     void queryStarted(int totalEntries);
-    void queryProgressed(int n, int totalEntries);
     void queryStopped(int n, int totalEntries);
     void entryFound(QString entry);
     

@@ -75,9 +75,6 @@ void StatisticsWindow::setModel(QueryModel *model)
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         this, SLOT(progressStarted(int)));
     
-    connect(d_model.data(), SIGNAL(queryProgressed(int, int)),
-        this, SLOT(progressChanged(int, int)));
-    
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         this, SLOT(progressStopped(int, int)));
 }
