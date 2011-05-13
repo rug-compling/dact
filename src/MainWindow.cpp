@@ -106,7 +106,6 @@ void MainWindow::bracketedEntryActivated(const QString &entry)
     focusFitTree();
     
     setHighlight(d_bracketedWindow->filter());
-    raise();
     activateWindow();
 }
 
@@ -169,6 +168,7 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
 {
     d_ui->filterLineEdit->setText(query);
     filterChanged();
+    activateWindow();
 }
 
 void MainWindow::showMacrosWindow()
