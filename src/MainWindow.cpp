@@ -215,6 +215,7 @@ void MainWindow::createActions()
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
     QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(exportCorpus()));
+    QObject::connect(d_ui->xmlExportAction, SIGNAL(triggered(bool)), this, SLOT(exportXML()));
     QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(fitTree()));
     QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
     QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
@@ -653,6 +654,35 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
     }
     
     return true;
+}
+
+void MainWindow::exportXML()
+{
+    if (d_ui->fileListWidget->selectionModel()->selectedIndexes().size() < 1)
+        return;
+    
+    QModelIndex index(d_ui->fileListWidget->selectionModel()->selectedIndexes()[0]);
+    QString file(index.data(Qt::UserRole).toString());
+    
+    QString targetName(QFileDialog::getSaveFileName(this,
+        QString("Export %1").arg(file),
+        file, "*.xml"));
+    
+    if (targetName.isNull())
+        return;
+    
+    QFile target(targetName);
+    
+    if (!target.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(this,
+            QString("Failed exporting %1").arg(target.fileName()),
+            "Could not open file for writing");
+        return;
+    }
+    
+    target.write(d_corpusReader->read(file).toUtf8());
+    target.close();
 }
 
 void MainWindow::writeSettings()

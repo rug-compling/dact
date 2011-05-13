@@ -155,7 +155,7 @@ private slots:
     void entrySelected(QItemSelection const &current, QItemSelection const &previous);
     
     /*!
-     * Save currently opened corpus to DBXML file (filename obtained from
+     * Save currently selected sentences to DBXML file (filename obtained from
      * dialog window).
      */
     void exportCorpus();
@@ -165,6 +165,11 @@ private slots:
      that destination.
     */
     void exportPDF();
+    
+    /*!
+     *  Write the currently selected sentences to a directory
+     */
+    void exportXML();
     
     /*!
      Called when [enter] is pressed in the filter query field, it copies the query to

@@ -179,6 +179,7 @@
     <addaction name="openDirectoryAction"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
+    <addaction name="xmlExportAction"/>
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
     <addaction name="separator"/>
@@ -441,6 +442,11 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="xmlExportAction">
+   <property name="text">
+    <string>Export to XML…</string>
    </property>
   </action>
   <action name="pdfExportAction">
