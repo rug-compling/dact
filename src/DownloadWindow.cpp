@@ -28,6 +28,8 @@
 
 #include <ui_DownloadWindow.h>
 
+QString const DOWNLOAD_EXTENSION(".dact.gz");
+
 DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
@@ -90,7 +92,7 @@ void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
         
         box.exec();
 
-	reply->deleteLater();
+        reply->deleteLater();
 
         return;
     }
@@ -110,9 +112,8 @@ void DownloadWindow::download()
     if (item == 0)
         return;
     
-    QString corpusName = item->text(0);
-    QString finalCorpusName(corpusName);
-    finalCorpusName.remove(QRegExp("\\.gz$"));
+    QString corpusName = item->text(0) + DOWNLOAD_EXTENSION;
+    QString finalCorpusName = item->text(0) + ".dact";
     
     QString filename(QFileDialog::getSaveFileName(this,
         "Download corpus", finalCorpusName, "*.dact"));
@@ -255,12 +256,11 @@ void DownloadWindow::listReplyFinished(QNetworkReply *reply)
         
         box.exec();
 
-	reply->deleteLater();
+        reply->deleteLater();
         
         return;
     }
 
-    
     QTextStream replyStream(reply);
 
     d_ui->archiveTreeWidget->clear();
@@ -274,12 +274,20 @@ void DownloadWindow::listReplyFinished(QNetworkReply *reply)
         
         QStringList lineParts = line.trimmed().split(QChar('|'),
             QString::SkipEmptyParts);
+
+        // Only accept dact.gz entries.
+        QString name(lineParts[0]);
+        if (!name.endsWith(DOWNLOAD_EXTENSION))
+            continue;
+        
+        // Chop the extension, we do not want to bother users.
+        name.chop(DOWNLOAD_EXTENSION.length());
         
         size_t fileSize = lineParts[2].toULong();
         double fileSizeMB = fileSize / (1024 * 1024);
         
         QStringList cols;
-        cols.push_back(lineParts[0]);
+        cols.push_back(name);
         cols.push_back(QString("%1 MB").arg(QString::number(fileSizeMB, 'f', 1)));
         cols.push_back(lineParts[1]);
         cols.push_back(lineParts[3]);
