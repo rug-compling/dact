@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>361</height>
+    <width>800</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,9 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTreeWidget" name="archiveTreeWidget">
+        <property name="rootIsDecorated">
+         <bool>false</bool>
+        </property>
         <column>
          <property name="text">
           <string>Name</string>

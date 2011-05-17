@@ -288,6 +288,9 @@ void DownloadWindow::listReplyFinished(QNetworkReply *reply)
     }
     
     d_ui->archiveTreeWidget->addTopLevelItems(items);
+    
+    d_ui->archiveTreeWidget->resizeColumnToContents(0);
+    d_ui->archiveTreeWidget->resizeColumnToContents(1);
 
     reply->deleteLater();
 }
