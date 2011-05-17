@@ -28,6 +28,7 @@
 #include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
+#include <DownloadWindow.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <DactMacrosModel.hh>
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_bracketedWindow(0),
+    d_downloadWindow(0),
     d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(new DactProgressDialog(this)),
@@ -87,6 +89,7 @@ MainWindow::~MainWindow()
 {
     delete d_aboutWindow;
     delete d_bracketedWindow;
+    delete d_downloadWindow;
     delete d_statisticsWindow;
     delete d_macrosWindow;
     delete d_openProgressDialog;
@@ -134,6 +137,15 @@ void MainWindow::close()
 {
     writeSettings();
     QMainWindow::close();
+}
+
+void MainWindow::showDownloadWindow()
+{
+    if (d_downloadWindow == 0)
+        d_downloadWindow = new DownloadWindow(this, Qt::Window);
+    
+    d_downloadWindow->show();
+    d_downloadWindow->raise();
 }
 
 void MainWindow::showFilterWindow()
@@ -212,6 +224,7 @@ void MainWindow::createActions()
 
     // Actions
     QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
+    QObject::connect(d_ui->downloadAction, SIGNAL(triggered(bool)), this, SLOT(showDownloadWindow()));
     QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
     QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
     QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(exportCorpus()));

@@ -5,6 +5,7 @@
 #include <QSettings>
 
 #include <PreferencesWindow.hh>
+#include <config.hh>
 
 #include <ui_PreferencesWindow.h>
 
@@ -42,6 +43,12 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
         
     QObject::connect(d_ui->completeSentencesBackgroundColor,
         SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    
+    QSettings settings;
+    d_ui->archiveBaseUrlLineEdit->setText(
+        settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+    connect(d_ui->archiveBaseUrlLineEdit, SIGNAL(editingFinished()),
+        SLOT(saveArchiveBaseUrl()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -103,6 +110,12 @@ void PreferencesWindow::loadColors()
            settings.value("background", QColor(Qt::green)).value<QColor>());
     
     settings.endGroup();
+}
+
+void PreferencesWindow::saveArchiveBaseUrl()
+{
+    QSettings settings;
+    settings.setValue(ARCHIVE_BASEURL_KEY, d_ui->archiveBaseUrlLineEdit->text());
 }
 
 void PreferencesWindow::saveColors()

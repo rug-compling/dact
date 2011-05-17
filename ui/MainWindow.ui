@@ -20,7 +20,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QGroupBox" name="groupBox">
@@ -215,6 +215,7 @@
     </property>
     <addaction name="showMacrosWindow"/>
     <addaction name="showStatisticsWindow"/>
+    <addaction name="downloadAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -506,6 +507,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+H</string>
+   </property>
+  </action>
+  <action name="downloadAction">
+   <property name="text">
+    <string>Download corpus...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

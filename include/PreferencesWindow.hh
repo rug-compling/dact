@@ -17,6 +17,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 private slots:
+    void saveArchiveBaseUrl();
     void saveColors();
     void selectAppFont();
     
