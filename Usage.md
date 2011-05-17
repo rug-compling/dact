@@ -5,14 +5,17 @@ title: Usage
 
 ## Introduction
 
-If Dact could be started correctly, you can open a corpus in Dact. There
-are two kinds of corpora:
+If Dact could be started correctly, you can open a corpus in Dact. Dact
+supports three kinds of corpora:
 
+ * Dact corpora (recognizable by the *.dact* extension). Use of this corpus
+   format is strongly recommended, because it has superior performance in
+   query processing.
  * Compact corpora, consisting of a data and index file (recognizable by
    the *.data.dz* and *.index* extensions.
  * Directory corpora, which are directories that contain parses.
 
-Compact corpora can be opened using the *Ctrl+o* keyboard shortcut,
+Dact and compact corpora can be opened using the *Ctrl+o* keyboard shortcut,
 directory corpora using the *Ctrl+d* shortcut (on OS X, use Cmd instead
 of Ctrl). This will show a dialog that allows you to open the corpus. If you
 prefer, you can use the *File - Open...* and *File - Open Directory...*
