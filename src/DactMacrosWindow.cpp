@@ -31,14 +31,14 @@ void DactMacrosWindow::createActions()
     macrosTableSelectionChanged();
     
     // watch the table's selection to update the [remove] button's state.
-    QObject::connect(d_ui->macrosTable->selectionModel(), 
+    connect(d_ui->macrosTable->selectionModel(), 
         SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-        this, SLOT(macrosTableSelectionChanged()));
+        SLOT(macrosTableSelectionChanged()));
     
-    QObject::connect(d_ui->addButton, SIGNAL(clicked(bool)),
-        this, SLOT(addButtonPressed()));
-    QObject::connect(d_ui->removeButton, SIGNAL(clicked(bool)),
-        this, SLOT(removeButtonPressed()));
+    connect(d_ui->addButton, SIGNAL(clicked(bool)),
+        SLOT(addButtonPressed()));
+    connect(d_ui->removeButton, SIGNAL(clicked(bool)),
+        SLOT(removeButtonPressed()));
 }
 
 void DactMacrosWindow::readSettings()

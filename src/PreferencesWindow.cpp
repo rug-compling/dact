@@ -19,30 +19,30 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 #ifndef __APPLE__
     applyAppFont();
     
-    QObject::connect(d_ui->appFontPushButton,
-                     SIGNAL(clicked()), this, SLOT(selectAppFont()));
+    connect(d_ui->appFontPushButton, SIGNAL(clicked()),
+        SLOT(selectAppFont()));
 #else
     d_ui->tabWidget->removeTab(0);
 #endif
     
     loadColors();    
     
-    QObject::connect(d_ui->treeActiveNodeForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->treeActiveNodeBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->treeActiveNodeBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
     
-    QObject::connect(d_ui->keywordsInContextKeywordForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextKeywordBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextContextForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextContextBackgroundColor, 
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextContextForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextContextBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
         
-    QObject::connect(d_ui->completeSentencesBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->completeSentencesBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
     
     QSettings settings;
     d_ui->archiveBaseUrlLineEdit->setText(

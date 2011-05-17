@@ -153,8 +153,10 @@ void MainWindow::showFilterWindow()
     if (d_bracketedWindow == 0)
     {
         d_bracketedWindow = new BracketedWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-        QObject::connect(d_bracketedWindow, SIGNAL(entryActivated()), this, SLOT(bracketedEntryActivated()));
-        QObject::connect(d_bracketedWindow, SIGNAL(currentEntryChanged(QString)), this, SLOT(currentBracketedEntryChanged(QString)));
+        connect(d_bracketedWindow, SIGNAL(entryActivated()),
+            SLOT(bracketedEntryActivated()));
+        connect(d_bracketedWindow, SIGNAL(currentEntryChanged(QString)),
+            SLOT(currentBracketedEntryChanged(QString)));
     }
 
     d_bracketedWindow->setFilter(d_filter);
@@ -167,8 +169,8 @@ void MainWindow::showStatisticsWindow()
     if (d_statisticsWindow == 0)
     {
         d_statisticsWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-        QObject::connect(d_statisticsWindow, SIGNAL(entryActivated(QString, QString)),
-            this, SLOT(statisticsEntryActivated(QString const &, QString const &)));
+        connect(d_statisticsWindow, SIGNAL(entryActivated(QString, QString)),
+            SLOT(statisticsEntryActivated(QString const &, QString const &)));
     }
 
     d_statisticsWindow->setFilter(d_filter);
@@ -198,52 +200,81 @@ void MainWindow::showMacrosWindow()
 
 void MainWindow::createActions()
 {
-    QObject::connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusRead(int)));
-    QObject::connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)), this, SLOT(corpusWritten(int)));
+    connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)),
+        SLOT(corpusRead(int)));
+    connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
+        SLOT(corpusWritten(int)));
     
-    QObject::connect(d_openProgressDialog, SIGNAL(rejected()), this, SLOT(cancelReadCorpus()));
-    QObject::connect(this, SIGNAL(exportError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
+    connect(d_openProgressDialog, SIGNAL(rejected()),
+        SLOT(cancelReadCorpus()));
+    connect(this, SIGNAL(exportError(QString const &)),
+        SLOT(showWriteCorpusError(QString const &)));
     
     // @TODO don't steal other peoples error dialogs!
-    QObject::connect(this, SIGNAL(openError(QString const &)), this, SLOT(showWriteCorpusError(QString const &)));
+    connect(this, SIGNAL(openError(QString const &)),
+        SLOT(showWriteCorpusError(QString const &)));
     
-    QObject::connect(d_exportProgressDialog, SIGNAL(rejected()), this, SLOT(cancelWriteCorpus()));
-    QObject::connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
-    QObject::connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
+    connect(d_exportProgressDialog, SIGNAL(rejected()),
+        SLOT(cancelWriteCorpus()));
+    connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
+    connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
     
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)), this,
+    connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-    QObject::connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)), this,
+    connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this, SLOT(filterChanged()));
-    QObject::connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()), this, SLOT(highlightChanged()));
+    connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
+        SLOT(filterChanged()));
+    connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()),
+        SLOT(highlightChanged()));
 
     // listen to selection changes to update the next/prev node buttons accordingly.
-    QObject::connect(d_ui->treeGraphicsView, SIGNAL(sceneChanged(DactTreeScene*)),
-        this, SLOT(treeChanged(DactTreeScene*)));
+    connect(d_ui->treeGraphicsView, SIGNAL(sceneChanged(DactTreeScene*)),
+        SLOT(treeChanged(DactTreeScene*)));
 
     // Actions
-    QObject::connect(d_ui->aboutAction, SIGNAL(triggered(bool)), this, SLOT(aboutDialog()));
-    QObject::connect(d_ui->downloadAction, SIGNAL(triggered(bool)), this, SLOT(showDownloadWindow()));
-    QObject::connect(d_ui->openAction, SIGNAL(triggered(bool)), this, SLOT(openCorpus()));
-    QObject::connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(openDirectoryCorpus()));
-    QObject::connect(d_ui->saveCorpus, SIGNAL(triggered(bool)), this, SLOT(exportCorpus()));
-    QObject::connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(fitTree()));
-    QObject::connect(d_ui->helpAction, SIGNAL(triggered(bool)), this, SLOT(help()));
-    QObject::connect(d_ui->nextAction, SIGNAL(triggered(bool)), this, SLOT(nextEntry(bool)));
-    QObject::connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)), this, SLOT(exportPDF()));
-    QObject::connect(d_ui->preferencesAction, SIGNAL(triggered(bool)), this, SLOT(preferencesWindow()));
-    QObject::connect(d_ui->previousAction, SIGNAL(triggered(bool)), this, SLOT(previousEntry(bool)));
-    QObject::connect(d_ui->printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
-    QObject::connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(zoomIn()));
-    QObject::connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(zoomOut()));
-    QObject::connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(focusNextTreeNode()));
-    QObject::connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView, SLOT(focusPreviousTreeNode()));
-    QObject::connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)), this, SLOT(showFilterWindow()));
-    QObject::connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)), this, SLOT(showStatisticsWindow()));
-    QObject::connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)), this, SLOT(showMacrosWindow()));
-    QObject::connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)), this, SLOT(focusFilter()));
-    QObject::connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), this, SLOT(focusHighlight()));
+    connect(d_ui->aboutAction, SIGNAL(triggered(bool)),
+        SLOT(aboutDialog()));
+    connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
+        SLOT(showDownloadWindow()));
+    connect(d_ui->openAction, SIGNAL(triggered(bool)),
+        SLOT(openCorpus()));
+    connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
+        SLOT(openDirectoryCorpus()));
+    connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
+        SLOT(exportCorpus()));
+    connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
+        SLOT(fitTree()));
+    connect(d_ui->helpAction, SIGNAL(triggered(bool)),
+        SLOT(help()));
+    connect(d_ui->nextAction, SIGNAL(triggered(bool)),
+        SLOT(nextEntry(bool)));
+    connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)),
+        SLOT(exportPDF()));
+    connect(d_ui->preferencesAction, SIGNAL(triggered(bool)),
+        SLOT(preferencesWindow()));
+    connect(d_ui->previousAction, SIGNAL(triggered(bool)),
+        SLOT(previousEntry(bool)));
+    connect(d_ui->printAction, SIGNAL(triggered(bool)),
+        SLOT(print()));
+    connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
+        SLOT(zoomIn()));
+    connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
+        SLOT(zoomOut()));
+    connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
+        SLOT(focusNextTreeNode()));
+    connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
+        SLOT(focusPreviousTreeNode()));
+    connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)),
+        SLOT(showFilterWindow()));
+    connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)),
+        SLOT(showStatisticsWindow()));
+    connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)),
+        SLOT(showMacrosWindow()));
+    connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
+        SLOT(focusFilter()));
+    connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)),
+        SLOT(focusHighlight()));
 }
 
 void MainWindow::entryFound(QString) {
@@ -710,26 +741,26 @@ void MainWindow::setModel(FilterModel *model)
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->fileListWidget->setModel(d_model.data());
     
-    QObject::connect(model, SIGNAL(queryStarted(int)),
-        this, SLOT(mapperStarted(int)));
-    QObject::connect(model, SIGNAL(queryStopped(int, int)),
-        this, SLOT(mapperStopped(int, int)));
-    QObject::connect(model, SIGNAL(entryFound(QString)),
-        this, SLOT(entryFound(QString)));
+    connect(model, SIGNAL(queryStarted(int)),
+        SLOT(mapperStarted(int)));
+    connect(model, SIGNAL(queryStopped(int, int)),
+        SLOT(mapperStopped(int, int)));
+    connect(model, SIGNAL(entryFound(QString)),
+        SLOT(entryFound(QString)));
     // This absolutely kills performance in remote X.
-    // QObject::connect(model, SIGNAL(queryProgressed(int, int)),
+    // connect(model, SIGNAL(queryProgressed(int, int)),
     //     this, SLOT(mapperProgressed(int,int)));
     
-    QObject::connect(d_ui->fileListWidget->selectionModel(),
-        SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this,
+    connect(d_ui->fileListWidget->selectionModel(),
+        SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
         SLOT(entrySelected(QItemSelection,QItemSelection)));
 }
 
 void MainWindow::treeChanged(DactTreeScene *scene)
 {
     if (scene) // might be null-pointer if the scene is cleared
-        QObject::connect(scene, SIGNAL(selectionChanged()),
-            this, SLOT(updateTreeNodeButtons()));
+        connect(scene, SIGNAL(selectionChanged()),
+            SLOT(updateTreeNodeButtons()));
     
     updateTreeNodeButtons();
 }
