@@ -5,10 +5,8 @@ title: Installation
 
 ## Windows
 
-Recent Windows versions can handle zip-archives. In such case, double-click
-the Dact archive, and drag the folder to you preferred location. If your Windows
-installation cannot open zip-archives, you can download a freely available
-archiver such as [7-Zip](http://www.7-zip.org/).
+Windows binaries are provided as a self-extracting archive. Double-click the
+Dact archive, and select the preferred location to install Dact.
 
 ### Notes
 
@@ -32,9 +30,9 @@ downloading, open the image by double-clicking, and drag Dact to the
 **Warning:** if you are not familiar with compiling C/C++ programs,
 downloading a pre-built Dact version is highly recommended.
 
-Dact and its dependencies (*qdictzip*, *alpinocorpus*) can be compiled
-using [cmake](http://www.cmake.org/). For each source distribution,
-execute the following commands:
+The [AlpinoCorpus](http://github.com/rug-compling/alpinocorpus) library and
+Dact can be compiled using [cmake](http://www.cmake.org/). For each source
+distribution, execute the following commands:
 
     cmake .
     make
