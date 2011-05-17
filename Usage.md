@@ -12,7 +12,7 @@ supports three kinds of corpora:
    format is strongly recommended, because it has superior performance in
    query processing.
  * Compact corpora, consisting of a data and index file (recognizable by
-   the *.data.dz* and *.index* extensions.
+   the *.data.dz* and *.index* extensions).
  * Directory corpora, which are directories that contain parses.
 
 Dact and compact corpora can be opened using the *Ctrl+o* keyboard shortcut,
