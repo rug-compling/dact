@@ -12,15 +12,13 @@
 #include <QProgressDialog>
 #include <QRegExp>
 #include <QString>
-#include <QStringList>
 #include <QTextStream>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
 #include <QUrl>
 #include <QtCore>
 
 #include <QtDebug>
 
+#include <ArchiveModel.hh>
 #include <DownloadWindow.hh>
 #include <DactProgressDialog.hh>
 #include <QtIOCompressor.hh>
@@ -33,12 +31,14 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
-    d_accessManager(new QNetworkAccessManager),
+    d_archiveModel(new ArchiveModel),
     d_corpusAccessManager(new QNetworkAccessManager),
     d_downloadProgressDialog(new QProgressDialog(this)),
     d_inflateProgressDialog(new QProgressDialog(this))
 {
     d_ui->setupUi(this);
+
+    d_ui->archiveTreeView->setModel(d_archiveModel.data());
     
     // We only enable the download button when a corpus is selected.
     d_ui->downloadPushButton->setEnabled(false);
@@ -51,12 +51,15 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_inflateProgressDialog->setWindowTitle("Decompressing corpus");
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
     d_inflateProgressDialog->setRange(0, 100);
-        
-    connect(d_ui->archiveTreeWidget,
-        SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
-        SLOT(itemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
-        SLOT(listReplyFinished(QNetworkReply*)));
+    
+    connect(d_archiveModel.data(),
+        SIGNAL(networkError(QString)),
+        SLOT(archiveNetworkError(QString)));
+    connect(d_ui->archiveTreeView->selectionModel(),
+        SIGNAL(currentRowChanged(QModelIndex const &, QModelIndex const &)),
+        SLOT(rowChanged(QModelIndex const &, QModelIndex const &)));
+    connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
+            SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
     connect(d_ui->refreshPushButton, SIGNAL(clicked()),
@@ -75,6 +78,22 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
 
 DownloadWindow::~DownloadWindow()
 {
+}
+
+void DownloadWindow::archiveNetworkError(QString error)
+{
+    QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
+        QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
+        QMessageBox::Ok);
+    
+    box.exec();
+}
+
+void DownloadWindow::archiveRetrieved()
+{
+    d_ui->archiveTreeView->resizeColumnToContents(0);
+    d_ui->archiveTreeView->resizeColumnToContents(1);
+    d_ui->archiveTreeView->resizeColumnToContents(2);
 }
 
 void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
@@ -106,14 +125,20 @@ void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
 
 void DownloadWindow::download()
 {
-    QTreeWidgetItem *item = d_ui->archiveTreeWidget->currentItem();
+    QItemSelectionModel *selectionModel =
+      d_ui->archiveTreeView->selectionModel();
+
+    if (selectionModel->selectedRows().size() == 0)
+      return;
+
+    int row = selectionModel->selectedRows().at(0).row();
+
+    QString name = d_archiveModel->data(d_archiveModel->index(row, 0)).toString();
+    QString hash = d_archiveModel->data(d_archiveModel->index(row, 3),
+        Qt::UserRole).toString();
     
-    // Safety check.
-    if (item == 0)
-        return;
-    
-    QString corpusName = item->text(0) + DOWNLOAD_EXTENSION;
-    QString finalCorpusName = item->text(0) + ".dact";
+    QString corpusName = name + DOWNLOAD_EXTENSION;
+    QString finalCorpusName = name + ".dact";
     
     QString filename(QFileDialog::getSaveFileName(this,
         "Download corpus", finalCorpusName, "*.dact"));
@@ -122,7 +147,7 @@ void DownloadWindow::download()
         return;
     else {
         d_filename = filename;
-        d_hash = item->text(3);        
+        d_hash = hash;
     }
     
     d_downloadProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
@@ -178,7 +203,7 @@ void DownloadWindow::inflate(QIODevice *dev)
     }
     
     /*
-    Decryption state checking should be covered by the SHA-1 check that follows.
+    Decompression state checking should be covered by the SHA-1 check that follows.
      
     if (!data.errorString().isNull()) {
         delete dev;
@@ -211,15 +236,6 @@ void DownloadWindow::inflateHandleError(QString error)
     box.exec();
 }
 
-void DownloadWindow::itemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    if (current == 0)
-        d_ui->downloadPushButton->setEnabled(false);
-    else
-        d_ui->downloadPushButton->setEnabled(true);
-}
-
-
 void DownloadWindow::keyPressEvent(QKeyEvent *event)
 {
     // Close window on ESC and CMD + W.
@@ -237,70 +253,18 @@ void DownloadWindow::refreshCorpusList()
 {
     QSettings settings;
     d_baseUrl = settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString();
-
-    QString indexUrl = QString("%1/index").arg(d_baseUrl);
-    QNetworkRequest request(indexUrl);    
-    d_accessManager->get(request);
+    
+    d_archiveModel->setUrl(QUrl(QString("%1/index").arg(d_baseUrl)));
 }
 
-void DownloadWindow::listReplyFinished(QNetworkReply *reply)
+void DownloadWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
-    QNetworkReply::NetworkError error = reply->error();
-    if (error != QNetworkReply::NoError)
-    {
-        QString errorValue(networkErrorToString(error));
-        
-        QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
-                        QString("Could not fetch the list of corpora, failed with error: %1").arg(errorValue),
-                        QMessageBox::Ok);
-        
-        box.exec();
-
-        reply->deleteLater();
-        
-        return;
-    }
-
-    QTextStream replyStream(reply);
-
-    d_ui->archiveTreeWidget->clear();
+    Q_UNUSED(previous);
     
-    QList<QTreeWidgetItem *> items;
-    QString line;
-    while (true) {
-        line = replyStream.readLine();
-        if (line.isNull())
-            break;
-        
-        QStringList lineParts = line.trimmed().split(QChar('|'),
-            QString::SkipEmptyParts);
-
-        // Only accept dact.gz entries.
-        QString name(lineParts[0]);
-        if (!name.endsWith(DOWNLOAD_EXTENSION))
-            continue;
-        
-        // Chop the extension, we do not want to bother users.
-        name.chop(DOWNLOAD_EXTENSION.length());
-        
-        size_t fileSize = lineParts[2].toULong();
-        double fileSizeMB = fileSize / (1024 * 1024);
-        
-        QStringList cols;
-        cols.push_back(name);
-        cols.push_back(QString("%1 MB").arg(QString::number(fileSizeMB, 'f', 1)));
-        cols.push_back(lineParts[1]);
-        cols.push_back(lineParts[3]);
-
-        items.append(new QTreeWidgetItem(cols));        
-    }
-    
-    d_ui->archiveTreeWidget->addTopLevelItems(items);
-    
-    d_ui->archiveTreeWidget->resizeColumnToContents(0);
-    d_ui->archiveTreeWidget->resizeColumnToContents(1);
-
-    reply->deleteLater();
+    if (current.isValid())
+        d_ui->downloadPushButton->setEnabled(true);
+    else
+        d_ui->downloadPushButton->setEnabled(false);
 }
 
 QString DownloadWindow::networkErrorToString(QNetworkReply::NetworkError error)

@@ -74,6 +74,7 @@ INCLUDE(${QT_USE_FILE})
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
+  src/ArchiveModel.cpp
   src/DactColorWell.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -104,6 +105,7 @@ SET(dact_SRCS
 
 SET(dact_HDRS
   include/AboutWindow.hh
+  include/ArchiveModel.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -135,6 +137,7 @@ SET(dact_HDRS
 
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
+  include/ArchiveModel.hh
   include/DactApplication.hh
   include/DactColorWell.hh
   include/BracketedDelegate.hh

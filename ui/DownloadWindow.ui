@@ -21,25 +21,19 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QTreeWidget" name="archiveTreeWidget">
+       <widget class="QTreeView" name="archiveTreeView">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
         <property name="rootIsDecorated">
          <bool>false</bool>
         </property>
-        <column>
-         <property name="text">
-          <string>Name</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Size</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Description</string>
-         </property>
-        </column>
        </widget>
       </item>
      </layout>

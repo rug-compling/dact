@@ -1,15 +1,21 @@
 #ifndef DOWNLOADWINDOW_H
 #define DOWNLOADWINDOW_H
 
+#include <QAbstractTableModel>
 #include <QNetworkReply>
+#include <QModelIndex>
 #include <QSharedPointer>
 #include <QString>
+#include <QUrl>
+#include <QVariant>
+#include <QVector>
 #include <QWidget>
 
 namespace Ui {
     class DownloadWindow;
 }
 
+class ArchiveModel;
 class QIODevice;
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -29,14 +35,15 @@ signals:
     void inflateProgressed(int value);
 
 private slots:
+    void archiveNetworkError(QString error);
+    void archiveRetrieved();
     void corpusReplyFinished(QNetworkReply *reply);
     void inflate(QIODevice *dev);
     void inflateHandleError(QString error);
     void download();
     void downloadProgress(qint64 progress, qint64 maximum);
-    void itemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void listReplyFinished(QNetworkReply *reply);
     void refreshCorpusList();
+    void rowChanged(QModelIndex const &current, QModelIndex const &previous);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -45,7 +52,7 @@ private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
     
     QSharedPointer<Ui::DownloadWindow> d_ui;
-    QSharedPointer<QNetworkAccessManager> d_accessManager;
+    QSharedPointer<ArchiveModel> d_archiveModel;
     QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;
     QSharedPointer<QProgressDialog> d_downloadProgressDialog;
     QSharedPointer<QProgressDialog> d_inflateProgressDialog;
