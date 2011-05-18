@@ -60,6 +60,15 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             default:
                 return QVariant();
         }
+    else if (role == Qt::TextAlignmentRole)
+        // Left-align all but the corpus size.
+        switch (index.column())
+        {
+            case 1:
+                return Qt::AlignRight;
+            default:
+                return Qt::AlignLeft;
+        }
     else if (role == Qt::UserRole)
         switch (index.column())
         {
