@@ -42,6 +42,7 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     
     // We only enable the download button when a corpus is selected.
     d_ui->downloadPushButton->setEnabled(false);
+    d_ui->informationGroupBox->setEnabled(false);
 
     d_downloadProgressDialog->setCancelButton(0);
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
@@ -144,9 +145,10 @@ void DownloadWindow::download()
 
     int row = selectionModel->selectedRows().at(0).row();
 
-    QString name = d_archiveModel->data(d_archiveModel->index(row, 0)).toString();
-    QString hash = d_archiveModel->data(d_archiveModel->index(row, 3),
-        Qt::UserRole).toString();
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
+    
+    QString name = entry.name;
+    QString hash = entry.checksum;
     
     QString corpusName = name + DOWNLOAD_EXTENSION;
     QString finalCorpusName = name + ".dact";
@@ -272,10 +274,28 @@ void DownloadWindow::rowChanged(QModelIndex const &current, QModelIndex const &p
 {
     Q_UNUSED(previous);
     
-    if (current.isValid())
+    if (current.isValid()) {
         d_ui->downloadPushButton->setEnabled(true);
-    else
+        d_ui->informationGroupBox->setEnabled(true);
+        
+        // Retrieve the active entry.
+        int row = current.row();
+        ArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
+        
+        // Show detailed information.
+        if (entry.sentences == 0)
+            d_ui->sentenceCountLabel->setText("unknown");
+        else
+            d_ui->sentenceCountLabel->setText(QString("%L1").arg(entry.sentences));
+        d_ui->descriptionTextBrowser->setText(entry.longDescription);
+    }
+    else {
         d_ui->downloadPushButton->setEnabled(false);
+        d_ui->informationGroupBox->setEnabled(false);
+        
+        d_ui->sentenceCountLabel->clear();
+        d_ui->descriptionTextBrowser->clear();
+    }
 }
 
 QString DownloadWindow::networkErrorToString(QNetworkReply::NetworkError error)

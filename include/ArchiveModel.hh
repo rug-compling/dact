@@ -11,6 +11,15 @@
 #include <QVariant>
 #include <QVector>
 
+struct ArchiveEntry {
+    QString name;
+    size_t sentences;
+    double size;
+    QString description;
+    QString longDescription;
+    QString checksum;
+};
+
 class ArchiveModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -19,6 +28,7 @@ public:
     ArchiveModel(QUrl const &archiveUrl, QObject *parent = 0);
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     int columnCount(QModelIndex const &parent = QModelIndex()) const;
+    ArchiveEntry const &entryAtRow(int row);
     QVariant headerData(int column, Qt::Orientation orientation,
         int role) const;
     void refresh();
@@ -32,19 +42,18 @@ signals:
     void processingError(QString error);
     void retrievalFinished();
     
-private:
-    struct ArchiveEntry {
-        QString name;
-        double size;
-        QString description;
-        QString checksum;
-    };
-    
+private:    
     QString networkErrorToString(QNetworkReply::NetworkError error);
     
     QUrl d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     QVector<ArchiveEntry> d_corpora;
 };
+
+inline ArchiveEntry const &ArchiveModel::entryAtRow(int row)
+{
+    return d_corpora.at(row);
+}
+
 
 #endif // DOWNLOADWINDOW_H

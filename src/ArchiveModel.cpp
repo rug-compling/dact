@@ -203,8 +203,10 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         
         ArchiveEntry corpus;
         corpus.name = name;
+        corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
         corpus.size = fileSizeMB;
         corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
+        corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
         corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
         
         d_corpora.push_back(corpus);        
