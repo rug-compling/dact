@@ -52,9 +52,11 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
     d_inflateProgressDialog->setRange(0, 100);
     
-    connect(d_archiveModel.data(),
-        SIGNAL(networkError(QString)),
+    connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
         SLOT(archiveNetworkError(QString)));
+    connect(d_archiveModel.data(), SIGNAL(processingError(QString)),
+        SLOT(archiveProcessingError(QString)));
+        
     connect(d_ui->archiveTreeView->selectionModel(),
         SIGNAL(currentRowChanged(QModelIndex const &, QModelIndex const &)),
         SLOT(rowChanged(QModelIndex const &, QModelIndex const &)));
@@ -85,6 +87,15 @@ void DownloadWindow::archiveNetworkError(QString error)
     QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
         QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
         QMessageBox::Ok);
+    
+    box.exec();
+}
+
+void DownloadWindow::archiveProcessingError(QString error)
+{
+    QMessageBox box(QMessageBox::Warning, "Could not process archive index",
+                    QString("Could not process the index of the archive: %1").arg(error),
+                    QMessageBox::Ok);
     
     box.exec();
 }
@@ -254,7 +265,7 @@ void DownloadWindow::refreshCorpusList()
     QSettings settings;
     d_baseUrl = settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString();
     
-    d_archiveModel->setUrl(QUrl(QString("%1/index").arg(d_baseUrl)));
+    d_archiveModel->setUrl(QUrl(QString("%1/index.xml").arg(d_baseUrl)));
 }
 
 void DownloadWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)

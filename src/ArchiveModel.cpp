@@ -1,3 +1,5 @@
+#include <QByteArray>
+#include <QIODevice>
 #include <QMetaEnum>
 #include <QMetaObject>
 #include <QModelIndex>
@@ -8,6 +10,10 @@
 #include <QStringList>
 #include <QUrl>
 #include <QVariant>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
 
 #include <QtDebug>
 
@@ -115,6 +121,26 @@ QString ArchiveModel::networkErrorToString(QNetworkReply::NetworkError error)
     return errorValue;
 }
 
+namespace {
+    
+QString childValue(xmlDocPtr doc, xmlNodePtr children, xmlChar const *name) {
+    for (xmlNodePtr child = children; child != 0; child = child->next) {
+        if (xmlStrcmp(child->name, name) == 0) {
+            // Retrieve value as a QString.
+            xmlChar *str = xmlNodeListGetString(doc, child->children, 1);
+            QString value = QString::fromUtf8(reinterpret_cast<char const *>(str));
+            xmlFree(str);
+
+            return value;
+        }
+    }
+    
+    return QString();
+}
+    
+}
+
+
 void ArchiveModel::replyFinished(QNetworkReply *reply)
 {
     d_corpora.clear();
@@ -132,35 +158,56 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         return;
     }
     
-    QTextStream replyStream(reply);
+    QByteArray xmlData(reply->readAll());
+    xmlDocPtr xmlDoc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
+    if (xmlDoc == 0) {
+        emit processingError("could not parse the corpus archive index.");
+        return;
+    }
     
-    QString line;
-    while (true) {
-        line = replyStream.readLine();
-        if (line.isNull())
-            break;
+    xmlNodePtr root = xmlDocGetRootElement(xmlDoc);
+    if (QString::fromUtf8(reinterpret_cast<char const *>(root->name)) !=
+        QString("corpusarchive")) {
+        xmlFreeDoc(xmlDoc);
+        emit processingError("the corpus archive index has an incorrect root node.");
+        return;
+    }
+    
+    for (xmlNodePtr child = root->children; child != 0; child = child->next)
+    {
+        if (QString::fromUtf8(reinterpret_cast<char const *>(child->name)) !=
+            QString("corpus"))
+            continue;
         
-        QStringList lineParts = line.trimmed().split(QChar('|'),
-             QString::SkipEmptyParts);
-        
+        QString name(childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filename")));
+
         // Only accept dact.gz entries.
-        QString name(lineParts[0]);
-        if (!name.endsWith(DOWNLOAD_EXTENSION))
+        if (name.isNull() || !name.endsWith(DOWNLOAD_EXTENSION))
             continue;
         
         // Chop the extension, we do not want to bother users.
         name.chop(DOWNLOAD_EXTENSION.length());
         
-        size_t fileSize = lineParts[2].toULong();
+        // Retrieve and verify file size.
+        QString fileSizeStr = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filesize"));
+        if (fileSizeStr.isNull())
+            continue;
+
+        // Attempt to convert the size to a number.
+        bool ok = true;
+        size_t fileSize = fileSizeStr.toULong(&ok);
+        if (!ok)
+            continue;
+        
         double fileSizeMB = fileSize / (1024 * 1024);
-    
+        
         ArchiveEntry corpus;
         corpus.name = name;
         corpus.size = fileSizeMB;
-        corpus.description = lineParts[1];
-        corpus.checksum = lineParts[3];
-
-        d_corpora.push_back(corpus);
+        corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
+        corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
+        
+        d_corpora.push_back(corpus);        
     }
 
     emit layoutChanged();

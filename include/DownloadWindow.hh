@@ -36,6 +36,7 @@ signals:
 
 private slots:
     void archiveNetworkError(QString error);
+    void archiveProcessingError(QString error);
     void archiveRetrieved();
     void corpusReplyFinished(QNetworkReply *reply);
     void inflate(QIODevice *dev);

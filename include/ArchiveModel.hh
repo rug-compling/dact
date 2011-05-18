@@ -29,6 +29,7 @@ public:
 
 signals:
     void networkError(QString error);
+    void processingError(QString error);
     void retrievalFinished();
     
 private:
