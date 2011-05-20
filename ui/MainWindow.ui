@@ -215,7 +215,6 @@
     <addaction name="previousTreeNodeAction"/>
     <addaction name="nextTreeNodeAction"/>
     <addaction name="separator"/>
-    <addaction name="showFilterWindow"/>
     <addaction name="inspectorAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
@@ -223,7 +222,10 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="showMacrosWindow"/>
+    <addaction name="separator"/>
     <addaction name="showStatisticsWindow"/>
+    <addaction name="showFilterWindow"/>
+    <addaction name="separator"/>
     <addaction name="downloadAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
