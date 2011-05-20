@@ -582,6 +582,10 @@ void MainWindow::readSettings()
 
     // Move.
     move(pos);
+    
+    // Inspector
+    d_ui->inspector->setVisible(
+        settings.value("inspectorVisible").toBool());
 }
 
 void MainWindow::exportCorpus()
@@ -699,6 +703,9 @@ void MainWindow::writeSettings()
 
     // Splitter
     settings.setValue("splitterSizes", d_ui->splitter->saveState());
+    
+    // Inspector
+    settings.setValue("inspectorVisible", d_ui->inspector->isVisible());
 }
 
 void MainWindow::showSentence(QString const &xml, QHash<QString, QString> const &params)
