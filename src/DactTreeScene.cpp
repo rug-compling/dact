@@ -208,8 +208,16 @@ void DactTreeScene::processXMLAttribute(xmlTextReaderPtr &reader, TreeNode* node
     
     QString name = processXMLString(xmlTextReaderName(reader));
     QString value = processXMLString(xmlTextReaderValue(reader));
-        
-    node->setAttribute(name, value);
+    
+    // active is a special attribute, as it describes which node matched the
+    // query. It is not an attribute of the original node in the parse tree and
+    // therefore we do not treat it as an 'attribute'. We don't want this to
+    // show up in the inspector now do we? Some poor soul might try to use it in
+    // a query... >:)
+    if (name == "active")
+        node->setActive(!value.isEmpty());
+    else
+        node->setAttribute(name, value);
 }
 
 QString DactTreeScene::processXMLString(xmlChar* xmlValue) const

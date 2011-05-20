@@ -8,6 +8,7 @@
 
 TreeNode::TreeNode(QGraphicsItem *parent) :
     QGraphicsItem(parent),
+    d_active(false),
     d_attributes(),
     d_childNodes(),
     d_labels(),
@@ -25,11 +26,6 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
 bool TreeNode::isLeaf() const
 {
     return d_childNodes.length() == 0;
-}
-
-bool TreeNode::isActive() const
-{
-    return d_attributes.contains("active") && !d_attributes["active"].isEmpty();
 }
 
 void TreeNode::appendChild(TreeNode *child)

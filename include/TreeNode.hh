@@ -28,6 +28,7 @@ public:
     void layout();
     void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
     QList<QString> const &popupLines() const;
+    void setActive(bool active);
     void setPopupItem(PopupItem *item);
     QPainterPath shape() const;
 protected:
@@ -38,6 +39,7 @@ private:
     void paintLabels(QPainter *painter, QRectF const &leaf);
     void paintEdges(QPainter *painter, QRectF const &leaf);
     QFont font() const;
+    bool d_active;
     QHash<QString,QString> d_attributes;
     QList<TreeNode*> d_childNodes;
     QList<QString> d_labels;
@@ -68,6 +70,16 @@ inline void TreeNode::appendPopupLine(QString const &line)
 inline void TreeNode::setPopupItem(PopupItem *item)
 {
     d_popupItem = item;
+}
+
+inline void TreeNode::setActive(bool active)
+{
+    d_active = active;
+}
+
+inline bool TreeNode::isActive() const
+{
+    return d_active;
 }
 
 
