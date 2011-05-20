@@ -13,7 +13,7 @@ FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
     d_hits(0)
 {
     connect(this, SIGNAL(entryFound(QString)),
-        this, SLOT(mapperEntryFound(QString)));
+        SLOT(mapperEntryFound(QString)));
 }
 
 FilterModel::~FilterModel()

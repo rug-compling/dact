@@ -30,7 +30,7 @@ QAbstractTableModel(parent),
 d_corpus(corpus)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
-            this, SLOT(mapperEntryFound(QString))); 
+            SLOT(mapperEntryFound(QString))); 
 }
 
 QueryModel::~QueryModel()

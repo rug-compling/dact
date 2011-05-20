@@ -70,13 +70,13 @@ void StatisticsWindow::setModel(QueryModel *model)
     d_ui->resultsTable->setModel(d_model.data());
     
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
-        this, SLOT(updateResultsTotalCount()));
+        SLOT(updateResultsTotalCount()));
     
     connect(d_model.data(), SIGNAL(queryStarted(int)),
-        this, SLOT(progressStarted(int)));
+        SLOT(progressStarted(int)));
     
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
-        this, SLOT(progressStopped(int, int)));
+        SLOT(progressStopped(int, int)));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
@@ -102,26 +102,26 @@ void StatisticsWindow::createActions()
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
     
     // This colors the query input if it doesn't contain a valid xpath query
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
-        this, SLOT(applyValidityColor(QString const &)));
+    connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
+        SLOT(applyValidityColor(QString const &)));
     
     // Start searching when [enter] is pressed in the query field
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()), this,
+    connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
         SLOT(startQuery()));
     
     // Or start searching when the [search] button is pressed
-    QObject::connect(d_ui->startPushButton, SIGNAL(clicked()),
-        this, SLOT(startQuery()));
+    connect(d_ui->startPushButton, SIGNAL(clicked()),
+        SLOT(startQuery()));
     
     // When a row is activated, generate a query to be used in the main window to
     // filter all the results so only the results which are accumulated in this
     // row will be shown.
-    QObject::connect(d_ui->resultsTable, SIGNAL(activated(QModelIndex const &)),
-        this, SLOT(generateQuery(QModelIndex const &)));
+    connect(d_ui->resultsTable, SIGNAL(activated(QModelIndex const &)),
+        SLOT(generateQuery(QModelIndex const &)));
     
     // Toggle percentage column checkbox (is this needed?)
-    QObject::connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
-        this, SLOT(showPercentageChanged()));
+    connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
+        SLOT(showPercentageChanged()));
 }
 
 void StatisticsWindow::keyPressEvent(QKeyEvent *event)

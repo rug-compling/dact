@@ -19,6 +19,7 @@ namespace Ui {
 
 class AboutWindow;
 class BracketedWindow;
+class DownloadWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
@@ -59,6 +60,11 @@ public slots:
      Hide the main window
     */
     void close();
+    
+    /*!
+     Instantiate (if not already instantiated) and raise the download window.
+     */
+    void showDownloadWindow();
     
     /*!
      Instantiate (if not already instantiated) and raise the filter window, BracketedWindow.
@@ -379,6 +385,7 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
+    DownloadWindow *d_downloadWindow;
     StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
     DactProgressDialog *d_openProgressDialog;

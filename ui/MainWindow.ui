@@ -224,6 +224,7 @@
     </property>
     <addaction name="showMacrosWindow"/>
     <addaction name="showStatisticsWindow"/>
+    <addaction name="downloadAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -548,8 +549,16 @@
     </iconset>
    </property>
    <property name="iconVisibleInMenu">
-     <bool>false</bool>
-    </property>
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="downloadAction">
+   <property name="text">
+    <string>Download corpus...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -5,6 +5,7 @@
 #include <QSettings>
 
 #include <PreferencesWindow.hh>
+#include <config.hh>
 
 #include <ui_PreferencesWindow.h>
 
@@ -18,30 +19,36 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 #ifndef __APPLE__
     applyAppFont();
     
-    QObject::connect(d_ui->appFontPushButton,
-                     SIGNAL(clicked()), this, SLOT(selectAppFont()));
+    connect(d_ui->appFontPushButton, SIGNAL(clicked()),
+        SLOT(selectAppFont()));
 #else
     d_ui->tabWidget->removeTab(0);
 #endif
     
     loadColors();    
     
-    QObject::connect(d_ui->treeActiveNodeForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->treeActiveNodeBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->treeActiveNodeBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
     
-    QObject::connect(d_ui->keywordsInContextKeywordForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextKeywordBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextContextForegroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
-    QObject::connect(d_ui->keywordsInContextContextBackgroundColor, 
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextContextForegroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    connect(d_ui->keywordsInContextContextBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
         
-    QObject::connect(d_ui->completeSentencesBackgroundColor,
-        SIGNAL(colorSelected(QColor)), this, SLOT(saveColors()));
+    connect(d_ui->completeSentencesBackgroundColor, SIGNAL(colorSelected(QColor)),
+        SLOT(saveColors()));
+    
+    QSettings settings;
+    d_ui->archiveBaseUrlLineEdit->setText(
+        settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+    connect(d_ui->archiveBaseUrlLineEdit, SIGNAL(editingFinished()),
+        SLOT(saveArchiveBaseUrl()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -103,6 +110,12 @@ void PreferencesWindow::loadColors()
            settings.value("background", QColor(Qt::green)).value<QColor>());
     
     settings.endGroup();
+}
+
+void PreferencesWindow::saveArchiveBaseUrl()
+{
+    QSettings settings;
+    settings.setValue(ARCHIVE_BASEURL_KEY, d_ui->archiveBaseUrlLineEdit->text());
 }
 
 void PreferencesWindow::saveColors()

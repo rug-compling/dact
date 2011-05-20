@@ -9,7 +9,7 @@ d_swatch(16,16)
 {
     updateSwatch(d_color);
     
-    QObject::connect(this, SIGNAL(clicked()), this, SLOT(openColorDialog()));
+    connect(this, SIGNAL(clicked()), SLOT(openColorDialog()));
 }
 
 QColor const &DactColorWell::color() const

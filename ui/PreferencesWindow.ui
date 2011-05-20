@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>474</width>
-    <height>221</height>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
        <item>
         <layout class="QGridLayout">
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label_8">
            <property name="text">
             <string>Application font:</string>
            </property>
@@ -68,177 +68,156 @@
       <attribute name="title">
        <string>Colors</string>
       </attribute>
-      <layout class="QVBoxLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <widget class="QLabel" name="treeHeading">
-         <property name="text">
-          <string>Tree:</string>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Tree</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Active Node Text:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_1">
+              <property name="text">
+               <string>Active Node Background:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="DactColorWell" name="treeActiveNodeForegroundColor"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="DactColorWell" name="treeActiveNodeBackgroundColor"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout">
-         <item row="0" column="0" rowspan="2">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Active Node Text:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Active Node Background:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="DactColorWell" name="treeActiveNodeForegroundColor"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="DactColorWell" name="treeActiveNodeBackgroundColor"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer> 
-       </item>
-       <item>
-        <widget class="QLabel" name="headingKeywordsInContext">
-         <property name="text">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
           <string>Keywords-in-Context view:</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Keyword Text:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Keyword Background:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Context Text:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Context Background:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="DactColorWell" name="keywordsInContextKeywordForegroundColor"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="DactColorWell" name="keywordsInContextKeywordBackgroundColor">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="DactColorWell" name="keywordsInContextContextForegroundColor"/>
+            </item>
+            <item row="3" column="1">
+             <widget class="DactColorWell" name="keywordsInContextContextBackgroundColor">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout">
-         <item row="0" column="0" rowspan="4">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Keyword Text:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Keyword Background:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Context Text:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Context Background:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="DactColorWell" name="keywordsInContextKeywordForegroundColor"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="DactColorWell" name="keywordsInContextKeywordBackgroundColor">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="DactColorWell" name="keywordsInContextContextForegroundColor"/>
-         </item>
-         <item row="3" column="2">
-          <widget class="DactColorWell" name="keywordsInContextContextBackgroundColor">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer> 
-       </item>
-       <item>
-        <widget class="QLabel" name="headingCompleteSentencesView">
-         <property name="text">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
           <string>Complete-sentences view:</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <layout class="QGridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Keyword Background:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="DactColorWell" name="completeSentencesBackgroundColor"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="networkTab">
+      <attribute name="title">
+       <string>Network</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <layout class="QGridLayout">
-         <item row="0" column="0" rowspan="1">
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel">
-           <property name="text">
-            <string>Keyword Background:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="DactColorWell" name="completeSentencesBackgroundColor"/>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Corpus archive</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::ExpandingFieldsGrow</enum>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>URL:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="archiveBaseUrlLineEdit"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>

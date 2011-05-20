@@ -24,8 +24,8 @@ AboutWindow::AboutWindow(QWidget *parent, Qt::WindowFlags f) :
 
     d_ui->aboutGraphicsView->setScene(scene);
 
-    QObject::connect(d_ui->bugPushButton, SIGNAL(clicked()),
-        this, SLOT(reportBug()));
+    connect(d_ui->bugPushButton, SIGNAL(clicked()),
+        SLOT(reportBug()));
 }
 
 AboutWindow::~AboutWindow()

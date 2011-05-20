@@ -68,7 +68,7 @@
       </line>
       <line>
         <xsl:value-of select="@index"/>
-        <xsl:if test = "@index and (@cat|@pt)">
+        <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
         <xsl:value-of select="@cat|@pt|@pos"/>

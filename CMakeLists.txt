@@ -38,6 +38,11 @@ if(ALPINOCORPUS_FOUND)
 	INCLUDE_DIRECTORIES(${ALPINOCORPUS_INCLUDE_DIR})
 endif(ALPINOCORPUS_FOUND)
 
+find_package(ZLIB REQUIRED)
+if(ZLIB_FOUND)
+  include_directories(${ZLIB_INCLUDE_DIRS})
+endif()
+
 find_package(DBXML REQUIRED)
 if (DBXML_FOUND)
   include_directories(${DBXML_INCLUDE_DIR})
@@ -63,12 +68,13 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtSvg REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork QtSvg REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
+  src/ArchiveModel.cpp
   src/DactColorWell.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -76,6 +82,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
+  src/DownloadWindow.cpp
   src/StatisticsWindow.cpp
   src/DactApplication.cpp
   src/DactListView.cpp
@@ -84,6 +91,7 @@ SET(dact_SRCS
   #src/DactQueryHistory.cpp
   src/DactProgressDialog.cpp
   src/QueryModel.cpp
+  src/QtIOCompressor.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
@@ -101,12 +109,14 @@ SET(dact_SRCS
 
 SET(dact_HDRS
   include/AboutWindow.hh
+  include/ArchiveModel.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/DownloadWindow.hh
   include/config.hh
   include/DactApplication.hh
   include/DactColorWell.hh
@@ -123,6 +133,7 @@ SET(dact_HDRS
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
   include/PreferencesWindow.hh
+  include/QtIOCompressor.hh
   include/QueryModel.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
@@ -134,6 +145,7 @@ SET(dact_HDRS
 
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
+  include/ArchiveModel.hh
   include/DactApplication.hh
   include/DactColorWell.hh
   include/BracketedDelegate.hh
@@ -142,6 +154,7 @@ SET(dact_MOC_HDRS
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/DownloadWindow.hh
   include/StatisticsWindow.hh
   include/DactListView.hh
   include/DactMacrosWindow.hh
@@ -150,6 +163,7 @@ SET(dact_MOC_HDRS
   include/DactProgressDialog.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
+  include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
   include/MainWindow.hh
@@ -162,6 +176,7 @@ SET(dact_MOC_HDRS
 SET(dact_UI
   ui/AboutWindow.ui
   ui/BracketedWindow.ui
+  ui/DownloadWindow.ui
   ui/MainWindow.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
@@ -202,6 +217,7 @@ add_executable(${PROGNAME} MACOSX_BUNDLE WIN32
 target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(${PROGNAME} ${DBXML_LIBRARY})
+target_link_libraries(${PROGNAME} ${ZLIB_LIBRARIES})
 #target_link_libraries(${PROGNAME} ${DBCXX_LIBRARY})
 #target_link_libraries(${PROGNAME} ${XQILLA_LIBRARY})
 #target_link_libraries(${PROGNAME} ${XERCES_LIBRARY})
