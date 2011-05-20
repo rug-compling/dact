@@ -5,7 +5,7 @@
 
 TreeNodeInspector::TreeNodeInspector(QWidget *parent)
 :
-    QDockWidget("Inspector", parent),
+    QDockWidget(parent),
     d_ui(QSharedPointer<Ui::TreeNodeInspector>(new Ui::TreeNodeInspector))
 {
     d_ui->setupUi(this);

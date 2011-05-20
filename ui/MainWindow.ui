@@ -242,6 +242,9 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Toolbar</string>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
@@ -262,6 +265,9 @@
    <addaction name="inspectorAction"/>
   </widget>
   <widget class="TreeNodeInspector" name="inspector">
+   <property name="windowTitle">
+    <string>Inspector</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
