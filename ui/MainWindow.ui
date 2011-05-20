@@ -261,7 +261,6 @@
    <addaction name="nextTreeNodeAction"/>
    <addaction name="inspectorAction"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="TreeNodeInspector" name="inspector">
    <attribute name="dockWidgetArea">
     <number>2</number>
