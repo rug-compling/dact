@@ -113,6 +113,10 @@ void FilterModel::runQuery(QString const &query)
     
     d_query = query;
     
+    // Do nothing if this is a dummy filter model with a stupid null pointer
+    if (!d_corpus)
+        return;
+    
     if (!d_query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntriesWithQuery, d_query);
     else

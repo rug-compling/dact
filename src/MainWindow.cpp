@@ -641,6 +641,9 @@ void MainWindow::exportCorpus()
         d_corpusWriteWatcher.waitForFinished();
     }
 
+    if (!d_corpusReader)
+        return;
+
     QItemSelectionModel *selectionModel = d_ui->fileListWidget->selectionModel();
     bool selectionOnly = selectionModel->selectedIndexes().size() > 1;
 
@@ -648,7 +651,7 @@ void MainWindow::exportCorpus()
         selectionOnly ? "Export selection" : "Export corpus",
         QString(), "*.dact"));
     
-    if (!filename.isNull() && d_corpusReader)
+    if (!filename.isNull())
     {
         d_exportProgressDialog->setWindowTitle(selectionOnly ? "Exporting selection" : "Exporting corpus");
         d_exportProgressDialog->setDescription(QString("Exporting %1 to:\n%2")
@@ -711,7 +714,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
 
 void MainWindow::exportXML()
 {
-    if (d_ui->fileListWidget->selectionModel()->selectedIndexes().size() < 1)
+    if (!d_corpusReader || d_ui->fileListWidget->selectionModel()->selectedIndexes().size() < 1)
         return;
     
     QModelIndex index(d_ui->fileListWidget->selectionModel()->selectedIndexes()[0]);

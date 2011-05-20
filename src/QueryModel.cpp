@@ -161,6 +161,10 @@ void QueryModel::runQuery(QString const &query)
     d_valueIndex.clear();
     d_totalHits = 0;
     
+    // Do nothing if we where given a null-pointer
+    if (!d_corpus)
+        return;
+    
     if (!query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
     else
