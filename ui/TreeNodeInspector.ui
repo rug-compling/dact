@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Inspector</string>
   </property>
-  <widget class="QTableWidget" name="attributesTable">
+  <widget class="QTreeWidget" name="attributesTree">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -21,6 +21,12 @@
      <width>250</width>
      <height>374</height>
     </rect>
+   </property>
+   <property name="indentation">
+    <number>0</number>
+   </property>
+   <property name="columnCount">
+    <number>2</number>
    </property>
    <column>
     <property name="text">

@@ -9,26 +9,32 @@ TreeNodeInspector::TreeNodeInspector(QWidget *parent)
     d_ui(QSharedPointer<Ui::TreeNodeInspector>(new Ui::TreeNodeInspector))
 {
     d_ui->setupUi(this);
+    d_ui->attributesTree->sortByColumn(0, Qt::AscendingOrder);
 }
 
 void TreeNodeInspector::inspect(TreeNode const *node)
 {
     // Clear the table
-    d_ui->attributesTable->clearContents();
-    qDebug() << "Cleared";
+    d_ui->attributesTree->clear();
     
     // If there is no new node selected, stop.
     if (!node)
         return;
     
+    // Disable sorting for performance reasons
+    d_ui->attributesTree->setSortingEnabled(false);
+    
     // Add key-value pairs of attributes to the cleared table
-    int row = 0;
     for (QHash<QString, QString>::const_iterator itr = node->attributes().constBegin(),
         end = node->attributes().constEnd(); itr != end; itr++)
     {
-        d_ui->attributesTable->setItem(row, 0, new QTableWidgetItem(itr.key()));
-        d_ui->attributesTable->setItem(row, 1, new QTableWidgetItem(itr.value()));
-        qDebug() << row << itr.key() << ":" << itr.value();
-        ++row;
+        QTreeWidgetItem *line = new QTreeWidgetItem(d_ui->attributesTree);
+        
+        line->setText(0, itr.key());
+        line->setText(1, itr.value());
+        
+        d_ui->attributesTree->addTopLevelItem(line);
     }
+    
+    d_ui->attributesTree->setSortingEnabled(true);
 }
