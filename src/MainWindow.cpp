@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     d_queryHistory(0)
 #endif
 {
-    d_ui->setupUi(this);
+    setupUi();
     
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
     
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
     initSentenceTransformer();
     
-    createActions();    
+    createActions();
 }
 
 MainWindow::~MainWindow()
@@ -179,6 +179,18 @@ void MainWindow::showMacrosWindow()
     
     d_macrosWindow->show();
     d_macrosWindow->raise();
+}
+
+void MainWindow::setupUi()
+{
+    d_ui->setupUi(this);
+    
+    // Move a spacer between the buttons and the inspector action button
+    // This will align the inspection action button to the right
+    QWidget *spacer = new QWidget(d_ui->mainToolBar);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    d_ui->mainToolBar->addWidget(spacer);
+    d_ui->mainToolBar->addAction(d_ui->inspectorAction);
 }
 
 void MainWindow::createActions()

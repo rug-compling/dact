@@ -370,6 +370,12 @@ private:
     
     void setModel(FilterModel *model);
     
+    /*!
+     * Finishes the ui loading. Its main purpose is to align the toolbar
+     * correctly. If this could be done in the ui file itself...
+     */
+    void setupUi();
+    
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;

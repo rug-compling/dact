@@ -14,5 +14,6 @@
         <file>icons/next.png</file>
         <file>icons/pdf.png</file>
         <file>icons/previous.png</file>
+        <file>icons/documentinfo.png</file>
     </qresource>
 </RCC>

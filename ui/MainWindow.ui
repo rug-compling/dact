@@ -256,6 +256,7 @@
    <addaction name="fitAction"/>
    <addaction name="previousTreeNodeAction"/>
    <addaction name="nextTreeNodeAction"/>
+   <addaction name="inspectorAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="TreeNodeInspector" name="inspector">
@@ -540,6 +541,15 @@
    <property name="shortcut">
     <string>Ctrl+I</string>
    </property>
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/documentinfo.png</normaloff>
+     :/icons/documentinfo.png
+    </iconset>
+   </property>
+   <property name="iconVisibleInMenu">
+     <bool>false</bool>
+    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
