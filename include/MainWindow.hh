@@ -304,11 +304,22 @@ private slots:
      Update the state of the next/previous node buttons in the toolbar.
      */
     void updateTreeNodeButtons();
+
+    /*!
+     When the mapper failed (e.g. due to an error in the corpus reader), hide
+     the progress bar and display an error.
+     \param error error message 
+     \sa mapperStarted
+     \sa mapperProgressed
+     \sa mapperStopped
+     */
+    void mapperFailed(QString error);
     
     /*!
      When the mapper (the one used to find files that match the filter query) is
      started, this will make the progress bar visible.
      \param totalEntries number of entries in the corpus that will be searched
+     \sa mapperFailed
      \sa mapperStopped
      \sa mapperProgressed
      */
@@ -319,6 +330,7 @@ private slots:
      progress bar.
      \param processedEntries number of entries searched
      \param totalEntries number of entries in the corpus
+     \sa mapperFailed
      \sa mapperStarted
      \sa mapperProgressed
      */

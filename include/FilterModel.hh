@@ -29,6 +29,7 @@ public:
     QString const &lastQuery() const;
 
 signals:
+    void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
     void entryFound(QString entry);

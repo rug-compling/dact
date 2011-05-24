@@ -459,6 +459,14 @@ void MainWindow::mapperStarted(int totalEntries)
     d_ui->filterProgressBar->setVisible(true);
 }
 
+void MainWindow::mapperFailed(QString error)
+{
+    d_ui->filterProgressBar->setVisible(false);
+    QMessageBox::critical(this, tr("Error processing query"),
+        tr("Could not process query: ") + error,
+        QMessageBox::Ok);
+}
+
 void MainWindow::mapperStopped(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setVisible(false);
@@ -783,7 +791,9 @@ void MainWindow::setModel(FilterModel *model)
 {
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->fileListWidget->setModel(d_model.data());
-    
+   
+    connect(model, SIGNAL(queryFailed(QString)),
+        SLOT(mapperFailed(QString)));
     connect(model, SIGNAL(queryStarted(int)),
         SLOT(mapperStarted(int)));
     connect(model, SIGNAL(queryStopped(int, int)),

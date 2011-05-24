@@ -145,6 +145,7 @@ void FilterModel::getEntriesWithQuery(QString const &query)
             d_corpus->end());
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntriesWithQuery: " << e.what();
+        emit queryFailed(e.what());
     }
 }
 
@@ -166,5 +167,6 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         emit queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
     }
 }
