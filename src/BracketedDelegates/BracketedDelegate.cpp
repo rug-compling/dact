@@ -2,6 +2,8 @@
 #include "FilterModel.hh"
 #include "XSLTransformer.hh"
 
+namespace ac = alpinocorpus;
+
 BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
 :
     QStyledItemDelegate(parent),
@@ -18,10 +20,16 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     {
         FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
         
+        QList<ac::CorpusReader::MarkerQuery> queries;
+        
+        if (model)
+        {
+            ac::CorpusReader::MarkerQuery query(model->lastQuery(), "active", "1");
+            queries << query;
+        }
+        
         QString bracketed_sentence(transformXML(
-            d_corpus->read(filename),
-            model != 0 ? model->lastQuery() : ""
-        ).trimmed());
+            d_corpus->readMarkQueries(filename, queries)).trimmed());
         
         QList<Chunk> *chunks = parseSentence(bracketed_sentence);
         
@@ -120,15 +128,9 @@ QList<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString const 
     return chunks;
 }
 
-QString BracketedDelegate::transformXML(QString const &xml, QString const &query) const
+QString BracketedDelegate::transformXML(QString const &xml) const
 {
-    QString valStr = query.trimmed().isEmpty()
-        ? "'/..'"
-        : QString("'%1'").arg(query);
-
     QHash<QString, QString> params;
-    params["expr"] = valStr;
-    
     return d_transformer.transform(xml, params);
 }
 
