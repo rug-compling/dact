@@ -175,7 +175,9 @@ private slots:
      \sa addFiles
      */
     void filterChanged();
-        
+    
+    void filterOnInspectorSelection();
+    
     /*!
      Focusses on the first node and zooms in on that node.
      \sa forcusTreeNode

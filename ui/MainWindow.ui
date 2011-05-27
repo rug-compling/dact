@@ -277,6 +277,10 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
+   <addaction name="filterOnAttributeAction"/>
   </widget>
   <action name="quitAction">
    <property name="text">
@@ -569,6 +573,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="filterOnAttributeAction">
+   <property name="text">
+    <string>Filter on attribute</string>
    </property>
   </action>
  </widget>
