@@ -45,7 +45,12 @@ BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+    
     d_xpathValidator->setCorpusReader(d_corpusReader);
+    QString query = d_ui->filterLineEdit->text();
+    d_ui->filterLineEdit->clear();
+    d_ui->filterLineEdit->insert(query);
+
     setModel(new FilterModel(corpusReader));
 }
 

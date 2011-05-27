@@ -620,16 +620,12 @@ void MainWindow::corpusRead(int idx)
     
     // XXX - There seems to be no way to revalidate a QLineEdit
     QString query = d_ui->filterLineEdit->text();
-    if (d_ui->filterLineEdit->hasAcceptableInput()) {
-        d_ui->filterLineEdit->clear();
-        d_ui->filterLineEdit->insert(query);
-    }
+    d_ui->filterLineEdit->clear();
+    d_ui->filterLineEdit->insert(query);
     
     query = d_ui->highlightLineEdit->text();
-    if (d_ui->highlightLineEdit->hasAcceptableInput()) {
-        d_ui->highlightLineEdit->clear();
-        d_ui->highlightLineEdit->insert(query);
-    }
+    d_ui->highlightLineEdit->clear();
+    d_ui->highlightLineEdit->insert(query);
     
     setModel(new FilterModel(d_corpusReader));
     
