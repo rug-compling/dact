@@ -26,7 +26,7 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
     QWidget(parent, f),
     d_macrosModel(macrosModel),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
-    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
+    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel, 0, corpusReader)))
 {
     d_ui->setupUi(this);
  
@@ -49,6 +49,7 @@ StatisticsWindow::~StatisticsWindow()
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+    d_xpathValidator->setCorpusReader(d_corpusReader);
     setModel(new QueryModel(corpusReader));
 }
 

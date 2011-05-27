@@ -1,21 +1,31 @@
+#include <QSharedPointer>
+
 #include <libxml/xpath.h>
 
+#include <AlpinoCorpus/CorpusReader.hh>
+
 #include "XPathValidator.hh"
+
+namespace ac = alpinocorpus;
 
 void ignoreStructuredError(void *userdata, xmlErrorPtr err)
 {
 }
 
-XPathValidator::XPathValidator(QObject *parent, bool variables) :
+XPathValidator::XPathValidator(QObject *parent, bool variables,
+    QSharedPointer<ac::CorpusReader> corpusReader) :
     QValidator(parent),
-    d_variables(variables)
+    d_variables(variables),
+    d_corpusReader(corpusReader)
 {
 }
 
-XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent, bool variables) :
+XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent, bool variables,
+    QSharedPointer<ac::CorpusReader> corpusReader) :
     QValidator(parent),
     d_variables(variables),
-    d_macrosModel(macrosModel)
+    d_macrosModel(macrosModel),
+    d_corpusReader(corpusReader)
 {
 }
 

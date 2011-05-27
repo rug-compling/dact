@@ -19,8 +19,10 @@ class XPathValidator : public QValidator
 {
     Q_OBJECT
 public:
-    XPathValidator(QObject *parent = 0, bool variables = false);
-    XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent = 0, bool variables = false);
+    XPathValidator(QObject *parent = 0, bool variables = false,
+        QSharedPointer<ac::CorpusReader> corpusReader = QSharedPointer<ac::CorpusReader>());
+    XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent = 0, bool variables = false,
+        QSharedPointer<ac::CorpusReader> corpusReader = QSharedPointer<ac::CorpusReader>());
     void setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader);
     State validate(QString &exprStr, int &pos) const;
 private:
