@@ -32,15 +32,14 @@ XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObj
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
+    // Consistent quoting
+    exprStr.replace('\'', '"');
+
     if (d_corpusReader.isNull())
         return XPathValidator::Intermediate;
     
     if (exprStr.trimmed().isEmpty())
         return XPathValidator::Acceptable;
-
-    // Consistent quoting
-    exprStr.replace('\'', '"');
-
     
     QString expandedExpr = d_macrosModel.isNull()
         ? exprStr
