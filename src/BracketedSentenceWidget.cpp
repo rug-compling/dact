@@ -17,29 +17,17 @@ void BracketedSentenceWidget::setParse(QString const &parse)
     updateText();
 }
 
-void BracketedSentenceWidget::setQuery(QString const &query)
-{
-    d_query = query;
-    updateText();
-}
-
 void BracketedSentenceWidget::updateText()
 {
     if (!d_parse.isEmpty())
     {
-        QString sentence = transformXML(d_parse, d_query);
+        QString sentence = transformXML(d_parse);
         setText(sentence.trimmed());
     }
 }
 
-QString BracketedSentenceWidget::transformXML(QString const &xml, QString const &query) const
+QString BracketedSentenceWidget::transformXML(QString const &xml) const
 {
-    QString valStr = query.trimmed().isEmpty()
-        ? "'/..'"
-        : QString("'%1'").arg(query);
-
     QHash<QString, QString> params;
-    params["expr"] = valStr;
-    
     return d_transformer.transform(xml, params);
 }

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:dyn="http://exslt.org/dynamic"
   xmlns:str="http://exslt.org/strings"
   xmlns:exsl="http://exslt.org/common"
-  extension-element-prefixes="dyn str exsl">
+  extension-element-prefixes="str exsl">
 
   <!-- 
        Print een sentence met de gematchte onderdelen tussen brackets.
@@ -13,27 +12,9 @@
 
   <xsl:output method="text" encoding="UTF-8"/>
 
-  <xsl:param name='expr'/>
   <xsl:param name='filename'/>
 
-    <xsl:variable name="newexpr">
-    <!-- 
-         Wanneer de expr parameter niet tot een nodeset evalueert,
-         moeten we zorgen dat de expressie die gebruikt wordt om te
-         kijken of er gehighlight moet worden evalueert tot een lege
-         nodeset.
-     -->
-    <xsl:choose>
-      <xsl:when test="exsl:object-type(dyn:evaluate($expr)) = 'node-set'">
-        <xsl:value-of select="$expr"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:text>/..</xsl:text>
-      </xsl:otherwise>
-    </xsl:choose>    
-  </xsl:variable>
-
-  <xsl:variable name="selectedNodes" select="dyn:evaluate($newexpr)"/>
+  <xsl:variable name="selectedNodes" select="//node[@active='1']"/>
   <xsl:variable name="words" select="str:tokenize(/*/sentence)"/>
 
   <!-- Result Tree Fragment, geen node-set -->

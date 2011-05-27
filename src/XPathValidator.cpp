@@ -22,33 +22,22 @@ XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObj
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
+    if (d_corpusReader.isNull())
+        return XPathValidator::Intermediate;
+    
     if (exprStr.trimmed().isEmpty())
         return XPathValidator::Acceptable;
 
     // Consistent quoting
     exprStr.replace('\'', '"');
+
     
-    QByteArray expr(d_macrosModel.isNull()
-        ? exprStr.toUtf8()
-        : (d_macrosModel->expand(exprStr)).toUtf8());
+    QString expandedExpr = d_macrosModel.isNull()
+        ? exprStr
+        : d_macrosModel->expand(exprStr); 
+    
+    bool valid = d_corpusReader->isValidQuery(alpinocorpus::CorpusReader::XPATH, d_variables,
+        expandedExpr);
 
-    // Prepare context
-    xmlXPathContextPtr ctx = xmlXPathNewContext(0);
-    if (!d_variables)
-        ctx->flags = XML_XPATH_NOVAR;
-    xmlSetStructuredErrorFunc(ctx, &ignoreStructuredError);
-
-    // Compile expression
-    xmlXPathCompExprPtr r = xmlXPathCtxtCompile(ctx,
-        reinterpret_cast<xmlChar const *>(expr.constData()));
-
-    if (!r) {
-        xmlXPathFreeContext(ctx);
-        return XPathValidator::Intermediate;
-    }
-
-    xmlXPathFreeCompExpr(r);
-    xmlXPathFreeContext(ctx);
-
-    return XPathValidator::Acceptable;
+    return valid ? XPathValidator::Acceptable : XPathValidator::Intermediate;
 }

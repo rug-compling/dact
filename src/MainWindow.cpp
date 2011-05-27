@@ -160,6 +160,11 @@ void MainWindow::showFilterWindow()
     d_bracketedWindow->raise();
 }
 
+void MainWindow::showOpenCorpusError(QString const &error)
+{
+    QMessageBox::critical(this, "Open error", error);
+}
+
 void MainWindow::showStatisticsWindow()
 {
     if (d_statisticsWindow == 0)
@@ -219,9 +224,8 @@ void MainWindow::createActions()
     connect(this, SIGNAL(exportError(QString const &)),
         SLOT(showWriteCorpusError(QString const &)));
     
-    // @TODO don't steal other peoples error dialogs!
     connect(this, SIGNAL(openError(QString const &)),
-        SLOT(showWriteCorpusError(QString const &)));
+        SLOT(showOpenCorpusError(QString const &)));
     
     connect(d_exportProgressDialog, SIGNAL(rejected()),
         SLOT(cancelWriteCorpus()));
@@ -333,8 +337,16 @@ void MainWindow::showFile(QString const &filename)
         return;
     
     try {
-        QString xml = d_corpusReader->read(filename);
-    
+        QString xml;
+        if (d_highlight.trimmed().isEmpty())
+            xml = d_corpusReader->read(filename);
+        else {
+            ac::CorpusReader::MarkerQuery query(d_macrosModel->expand(d_highlight),
+                "active", "1");
+            QList<ac::CorpusReader::MarkerQuery> queries;
+            xml = d_corpusReader->readMarkQueries(filename, queries << query);
+        }
+
         if (xml.size() == 0) {
             qWarning() << "MainWindow::writeSettings: empty XML data!";
             d_ui->treeGraphicsView->setScene(0);
@@ -577,6 +589,7 @@ bool MainWindow::readAndShowFiles(QString const &path)
         d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
     } catch (std::runtime_error const &e) {
         d_corpusReader.clear();
+        d_xpathValidator->setCorpusReader(QSharedPointer<ac::CorpusReader>());
         emit openError(e.what());
         return false;
     }
@@ -601,6 +614,22 @@ void MainWindow::corpusRead(int idx)
     // If opening the corpus failed, don't do anything.
     if (!d_corpusReader)
         return;
+    
+    // Set up validator.
+    d_xpathValidator->setCorpusReader(d_corpusReader);
+    
+    // XXX - There seems to be no way to revalidate a QLineEdit
+    QString query = d_ui->filterLineEdit->text();
+    if (d_ui->filterLineEdit->hasAcceptableInput()) {
+        d_ui->filterLineEdit->clear();
+        d_ui->filterLineEdit->insert(query);
+    }
+    
+    query = d_ui->highlightLineEdit->text();
+    if (d_ui->highlightLineEdit->hasAcceptableInput()) {
+        d_ui->highlightLineEdit->clear();
+        d_ui->highlightLineEdit->insert(query);
+    }
     
     setModel(new FilterModel(d_corpusReader));
     
@@ -778,8 +807,9 @@ void MainWindow::setHighlight(QString const &query)
 {
     d_highlight = query;
     d_ui->highlightLineEdit->setText(query);
-    d_ui->sentenceWidget->setQuery(query);
-    d_ui->treeGraphicsView->setHighlightQuery(d_macrosModel->expand(query));
+    QItemSelection const &current =
+        d_ui->fileListWidget->selectionModel()->selection();
+    entrySelected(current, current);
 }
 
 void MainWindow::highlightChanged()

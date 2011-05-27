@@ -262,6 +262,13 @@ private slots:
     void setHighlight(QString const &filter);
     
     /*!
+     Displays a critical error dialog with the suplied error message.
+     \sa exportError
+     \sa showWriteCorpusError
+     */
+    void showOpenCorpusError(QString const &error);
+    
+    /*!
      Using the sentence stylsheet transformation it generates a sentence
      from an xml file and displays it in the sentence field below the tree
      scene.
@@ -282,6 +289,7 @@ private slots:
     /*!
      Displays a critical error dialog with the supplied error message.
      \sa exportError
+     \sa showOpenCorpusError
      */
     void showWriteCorpusError(QString const &error);
     
