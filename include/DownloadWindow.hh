@@ -39,6 +39,7 @@ private slots:
     void archiveProcessingError(QString error);
     void archiveRetrieved();
     void corpusReplyFinished(QNetworkReply *reply);
+    void downloadCanceled();
     void inflate(QIODevice *dev);
     void inflateHandleError(QString error);
     void download();
@@ -60,6 +61,7 @@ private:
     QString d_baseUrl;
     QString d_filename;
     QString d_hash;
+    QNetworkReply *d_reply;
 };
 
 #endif // DOWNLOADWINDOW_H

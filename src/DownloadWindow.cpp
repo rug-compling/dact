@@ -34,7 +34,8 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_archiveModel(new ArchiveModel),
     d_corpusAccessManager(new QNetworkAccessManager),
     d_downloadProgressDialog(new QProgressDialog(this)),
-    d_inflateProgressDialog(new QProgressDialog(this))
+    d_inflateProgressDialog(new QProgressDialog(this)),
+    d_reply(0)
 {
     d_ui->setupUi(this);
 
@@ -44,7 +45,6 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui->downloadPushButton->setEnabled(false);
     d_ui->informationGroupBox->setEnabled(false);
 
-    d_downloadProgressDialog->setCancelButton(0);
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
     
@@ -65,6 +65,8 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
             SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
+    connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
+        SLOT(downloadCanceled()));
     connect(d_ui->refreshPushButton, SIGNAL(clicked()),
         SLOT(refreshCorpusList()));
     connect(d_ui->downloadPushButton, SIGNAL(clicked()),
@@ -110,25 +112,29 @@ void DownloadWindow::archiveRetrieved()
 
 void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
 {
+    d_reply = 0;
     QNetworkReply::NetworkError error = reply->error();
     if (error != QNetworkReply::NoError)
     {
+        reply->deleteLater();
+
+        if (error == QNetworkReply::OperationCanceledError) 
+            return;
+        
         QString errorValue(networkErrorToString(error));
         
         QMessageBox box(QMessageBox::Warning, "Failed to download corpus",
                         QString("Downloading of corpus failed with error: %1").arg(errorValue),
                         QMessageBox::Ok);
         
-        d_downloadProgressDialog->close();
+        d_downloadProgressDialog->accept();
         
         box.exec();
-
-        reply->deleteLater();
 
         return;
     }
     
-    d_downloadProgressDialog->close();
+    d_downloadProgressDialog->accept();
     d_inflateProgressDialog->setValue(0);
     d_inflateProgressDialog->open();
     
@@ -169,10 +175,16 @@ void DownloadWindow::download()
     
     QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
     QNetworkRequest request(corpusUrl);    
-    QNetworkReply *reply = d_corpusAccessManager->get(request);
+    d_reply = d_corpusAccessManager->get(request);
         
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+    connect(d_reply, SIGNAL(downloadProgress(qint64, qint64)),
         SLOT(downloadProgress(qint64, qint64)));
+}
+
+void DownloadWindow::downloadCanceled()
+{
+    Q_ASSERT(d_reply != 0);
+    d_reply->abort();
 }
 
 void DownloadWindow::downloadProgress(qint64 progress, qint64 maximum)
