@@ -87,7 +87,7 @@ protected:
     
 private:
     QList<Chunk> *parseSentence(QString const &sentence) const;
-    QString transformXML(QString const &xml, QString const &query) const;
+    QString transformXML(QString const &xml) const;
     
     mutable QCache<QString,QList<Chunk> > d_cache;
     CorpusReaderPtr d_corpus;

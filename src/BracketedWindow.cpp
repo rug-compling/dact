@@ -86,6 +86,10 @@ void BracketedWindow::startQuery()
 {
     setFilter(d_ui->filterLineEdit->text());
     
+    // Reload the list delegate since they keep their results cached. This will
+    // make sure no old cached data is used.
+    listDelegateChanged(0);
+    
     d_model->runQuery(d_macrosModel->expand(d_filter));
 }
 
