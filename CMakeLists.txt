@@ -83,7 +83,6 @@ SET(dact_SRCS
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
   src/DownloadWindow.cpp
-  src/StatisticsWindow.cpp
   src/DactApplication.cpp
   src/DactListView.cpp
   src/DactMacrosWindow.cpp
@@ -99,6 +98,8 @@ SET(dact_SRCS
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
+  src/StatisticsTable.cpp
+  src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
   src/XPathValidator.cpp
@@ -135,6 +136,7 @@ SET(dact_HDRS
   include/PreferencesWindow.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
+  include/StatisticsTable.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -155,7 +157,6 @@ SET(dact_MOC_HDRS
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
   include/DownloadWindow.hh
-  include/StatisticsWindow.hh
   include/DactListView.hh
   include/DactMacrosWindow.hh
   include/DactMacrosModel.hh
@@ -169,6 +170,8 @@ SET(dact_MOC_HDRS
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
+  include/StatisticsTable.hh
+  include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
   include/XPathValidator.hh
 )

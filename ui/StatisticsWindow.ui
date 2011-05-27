@@ -69,16 +69,16 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableView" name="resultsTable">
-      <property name="selectionBehavior">
-       <enum>SelectRows</enum>
-      </property>
-      <property name="showGrid">
-       <bool>false</bool>
-      </property>
-      <property name="sortingEnabled">
-       <bool>true</bool>
-      </property>
+    <widget class="StatisticsTable" name="resultsTable">
+     <property name="selectionBehavior">
+      <enum>SelectRows</enum>
+     </property>
+     <property name="showGrid">
+      <bool>false</bool>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
@@ -143,6 +143,13 @@
   <tabstop>resultsTable</tabstop>
   <tabstop>percentageCheckBox</tabstop>
  </tabstops>
+ <customwidgets>
+  <customwidget>
+   <class>StatisticsTable</class>
+   <extends>QTableView</extends>
+   <header>StatisticsTable.hh</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
