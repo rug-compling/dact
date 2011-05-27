@@ -25,6 +25,9 @@ void DactColorWell::setColor(QColor const &color)
 
 void DactColorWell::updateColor(QColor const &color)
 {
+    if (!color.isValid())
+        return;
+    
     setColor(color);
     emit colorSelected(d_color);
 }
