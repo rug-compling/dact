@@ -303,11 +303,11 @@ void MainWindow::entrySelected(QItemSelection const &current, QItemSelection con
 {
     Q_UNUSED(prev);
     
-    if (!current.size()) {
+    if (!current.size() || !current.indexes().size()) {
         d_ui->treeGraphicsView->setScene(0);
         return;
     }
-    
+        
     showFile(current.indexes().at(0).data(Qt::UserRole).toString());
     
     focusFitTree();
