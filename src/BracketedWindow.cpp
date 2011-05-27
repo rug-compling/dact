@@ -31,7 +31,7 @@ BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow)),
     d_macrosModel(macrosModel),
-    d_xpathValidator(new XPathValidator(d_macrosModel))
+    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel, 0, corpusReader)))
 {
     d_ui->setupUi(this);
     
@@ -45,6 +45,7 @@ BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+    d_xpathValidator->setCorpusReader(d_corpusReader);
     setModel(new FilterModel(corpusReader));
 }
 
