@@ -46,6 +46,7 @@ private slots:
     void progressStarted(int total);
     void progressChanged(int n, int total);
     void progressStopped(int n, int total);
+    void queryFailed(QString error);
     void showPercentageChanged();
     void updateResultsTotalCount();
 

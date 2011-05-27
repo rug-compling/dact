@@ -108,6 +108,9 @@ private slots:
      \param index index of the delegate in the dropdown menu.
      */
     void listDelegateChanged(int index);
+
+    /*! Called when the execution of a query failed. */
+    void queryFailed(QString error);
     
     void startQuery();
     void stopQuery();

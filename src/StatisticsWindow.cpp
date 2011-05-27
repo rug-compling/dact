@@ -48,6 +48,13 @@ StatisticsWindow::~StatisticsWindow()
 {
 }
 
+void StatisticsWindow::queryFailed(QString error)
+{
+    QMessageBox::critical(this, tr("Error processing query"),
+        tr("Could not process query: ") + error,
+        QMessageBox::Ok);
+}
+
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
@@ -76,6 +83,9 @@ void StatisticsWindow::setModel(QueryModel *model)
 {
     d_model = QSharedPointer<QueryModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
+
+    connect(d_model.data(), SIGNAL(queryFailed(QString)),
+        SLOT(queryFailed(QString)));
     
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
         SLOT(updateResultsTotalCount()));

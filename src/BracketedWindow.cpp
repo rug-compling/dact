@@ -42,6 +42,13 @@ BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
     readSettings();
 }
 
+void BracketedWindow::queryFailed(QString error)
+{
+    QMessageBox::critical(this, tr("Error processing query"),
+        tr("Could not process query: ") + error,
+        QMessageBox::Ok);
+}
+
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
@@ -74,6 +81,9 @@ void BracketedWindow::setModel(FilterModel *model)
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
         this, SLOT(updateResultsTotalCount()));
     */
+
+    connect(d_model.data(), SIGNAL(queryFailed(QString)),
+        SLOT(queryFailed(QString)));
     
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         SLOT(progressStarted(int)));
