@@ -69,7 +69,7 @@
     </layout>
    </item>
    <item>
-    <widget class="StatisticsTable" name="resultsTable">
+    <widget class="QTableView" name="resultsTable">
      <property name="selectionBehavior">
       <enum>SelectRows</enum>
      </property>
@@ -79,6 +79,10 @@
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <addaction name="copyResultsAction"/>
     </widget>
    </item>
    <item>
@@ -135,6 +139,17 @@
     </layout>
    </item>
   </layout>
+  <action name="copyResultsAction">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcut">
+    <enum>QKeySequence::Copy</enum>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
@@ -143,13 +158,13 @@
   <tabstop>resultsTable</tabstop>
   <tabstop>percentageCheckBox</tabstop>
  </tabstops>
- <customwidgets>
-  <customwidget>
-   <class>StatisticsTable</class>
-   <extends>QTableView</extends>
-   <header>StatisticsTable.hh</header>
-  </customwidget>
- </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>copyResultsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>StatisticsWindow</receiver>
+   <slot>copy()</slot>
+  </connection>
+ </connections>
 </ui>

@@ -31,9 +31,13 @@ public:
     void setFilter(QString const &text);
     void setAggregateAttribute(QString const &text);
     void showPercentage(bool show);
+    QString selectionAsCSV(QString const &separator = "") const;
 
 signals:
     void entryActivated(QString, QString);
+
+public slots:
+    void copy() const;
 
 private slots:
     void applyValidityColor(QString const &text);

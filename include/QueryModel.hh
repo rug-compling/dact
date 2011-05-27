@@ -29,7 +29,7 @@ public:
     ~QueryModel();
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
-    QVariant data(QModelIndex const &index, int role) const;
+    QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     inline int totalHits() const { return d_totalHits; }
     

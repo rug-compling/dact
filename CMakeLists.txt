@@ -98,7 +98,6 @@ SET(dact_SRCS
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
-  src/StatisticsTable.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
@@ -136,7 +135,6 @@ SET(dact_HDRS
   include/PreferencesWindow.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
-  include/StatisticsTable.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -170,7 +168,6 @@ SET(dact_MOC_HDRS
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
-  include/StatisticsTable.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
   include/XPathValidator.hh

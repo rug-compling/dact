@@ -1,3 +1,4 @@
+#include <QClipboard>
 #include <QDebug>
 #include <QFile>
 #include <QKeyEvent>
@@ -90,6 +91,14 @@ void StatisticsWindow::applyValidityColor(QString const &)
     ::applyValidityColor(sender());
 }
 
+void StatisticsWindow::copy() const
+{
+    QString csv = selectionAsCSV("\t");
+
+    if (!csv.isEmpty())
+        QApplication::clipboard()->setText(csv);
+}
+
 void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
@@ -175,9 +184,38 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
     emit entryActivated(data, query);
 }
 
+QString StatisticsWindow::selectionAsCSV(QString const &separator) const
+{
+    // If there is no model attached (e.g. no corpus loaded) do nothing
+    if (!d_model)
+        return QString();
+    
+    QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
+    
+    // If there is nothing selected, do nothing
+    if (rows.isEmpty())
+        return QString();
+    
+    QStringList output;
+    
+    foreach (QModelIndex row, rows)
+    {
+        // This only works if the selection behavior is SelectRows
+        output << d_model->data(row).toString() // value
+               << separator
+               << d_model->data(row.sibling(row.row(), 1)).toString() // count
+               << "\n";
+    }
+    
+    // Remove superfluous newline separator
+    output.removeLast();
+    
+    return output.join(QString());
+}
+
 void StatisticsWindow::showPercentage(bool show)
 {
-   //d_ui->resultsTableWidget->setColumnHidden(1, show);
+   //d_ui->resultsTable->setColumnHidden(1, show);
    d_ui->resultsTable->setColumnHidden(2, !show);
     
    d_ui->percentageCheckBox->setChecked(show);
