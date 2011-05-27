@@ -14,6 +14,7 @@
 
 #include "StatisticsWindow.hh"
 #include "DactMacrosModel.hh"
+#include "Query.hh"
 #include "QueryModel.hh"
 #include "PercentageCellDelegate.hh"
 #include "ValidityColor.hh"
@@ -153,35 +154,12 @@ void StatisticsWindow::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
 }
 
-QString StatisticsWindow::generateQuery(QString const &base, QString const &attribute, QString const &value) const
-{
-    int subSelectionPos = base.lastIndexOf('/');
-    
-    if (!subSelectionPos)
-        return QString();
-    
-    //qWarning() << base.mid(subSelectionPos);
-    
-    int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
-    
-    QString condition = QString("@%1=\"%2\"").arg(attribute).arg(value);
-    
-    if (closingBracketPos == -1)
-        return QString("%1[%2]").arg(base).arg(condition);
-    else
-        return QString("%1 and %2%3").arg(
-            base.left(subSelectionPos + closingBracketPos),
-            condition,
-            base.mid(subSelectionPos + closingBracketPos));
-}
-
-
 void StatisticsWindow::generateQuery(QModelIndex const &index)
 {
     // Get the text from the first column, that is the found value
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
     
-    QString query = generateQuery(
+    QString query = ::generateQuery(
         d_filter,
         d_ui->attributeComboBox->currentText(),
         data);

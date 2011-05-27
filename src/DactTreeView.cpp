@@ -105,7 +105,9 @@ void DactTreeView::zoomOut()
 
 void DactTreeView::resetZoom()
 {
-    setMatrix(QMatrix());
+    // Scale back to 1:1
+    QRectF unity = matrix().mapRect(QRectF(0, 0, 1, 1));
+    scale(1 / unity.width(), 1 / unity.height());
 }
 
 void DactTreeView::focusNextTreeNode()
@@ -117,6 +119,17 @@ void DactTreeView::focusPreviousTreeNode()
 {
     focusTreeNode(-1);
 }
+
+void DactTreeView::fitInView(QRectF const &rect, Qt::AspectRatioMode aspectRatioMode)
+{
+    QGraphicsView::fitInView(rect, aspectRatioMode);
+    
+    // Yeah, it fits, but that doesn't mean in needs to blow up in your face.
+    // So, if it is scaled beyond its original size, reset the scale to 1.0
+    if (matrix().m11() > 1.0 || matrix().m12() > 1.0)
+        resetZoom();
+}
+
 
 void DactTreeView::wheelEvent(QWheelEvent * event)
 {

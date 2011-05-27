@@ -44,6 +44,7 @@
 #include <XSLTransformer.hh>
 #include "ValidityColor.hh"
 #include <ui_MainWindow.h>
+#include <Query.hh>
 
 namespace ac = alpinocorpus;
 
@@ -290,6 +291,8 @@ void MainWindow::createActions()
         SLOT(focusFilter()));
     connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)),
         SLOT(focusHighlight()));
+    connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
+        SLOT(filterOnInspectorSelection()));
 }
 
 void MainWindow::entryFound(QString) {
@@ -311,6 +314,21 @@ void MainWindow::entrySelected(QItemSelection const &current, QItemSelection con
     showFile(current.indexes().at(0).data(Qt::UserRole).toString());
     
     focusFitTree();
+}
+
+void MainWindow::filterOnInspectorSelection()
+{
+    QString query = d_filter.isEmpty() ? "//node" : d_filter;
+    QMap<QString,QString> attributes = d_ui->inspector->selectedAttributes();
+    
+    if (attributes.size() < 1)
+        return;
+    
+    for (QMap<QString,QString>::const_iterator itr(attributes.constBegin()),
+        end(attributes.constEnd()); itr != end; itr++)
+        query = ::generateQuery(query, itr.key(), itr.value());
+    
+    setFilter(query);
 }
 
 void MainWindow::help()

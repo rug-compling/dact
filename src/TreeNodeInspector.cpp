@@ -12,6 +12,18 @@ TreeNodeInspector::TreeNodeInspector(QWidget *parent)
     d_ui->attributesTree->sortByColumn(0, Qt::AscendingOrder);
 }
 
+QMap<QString, QString> TreeNodeInspector::selectedAttributes() const
+{
+    QMap<QString,QString> pairs;
+    QList<QTreeWidgetItem *> selection = d_ui->attributesTree->selectedItems();
+
+    foreach (QTreeWidgetItem *attribute, selection)
+        pairs[attribute->data(0, Qt::DisplayRole).toString()]
+          = attribute->data(1, Qt::DisplayRole).toString();
+    
+    return pairs;
+}
+
 void TreeNodeInspector::inspect(TreeNode const *node)
 {
     // Clear the table

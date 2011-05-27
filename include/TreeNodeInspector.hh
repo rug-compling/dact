@@ -15,8 +15,10 @@ class TreeNode;
 class TreeNodeInspector : public QDockWidget
 {
     Q_OBJECT
+
 public:
     TreeNodeInspector(QWidget *parent = 0);
+    QMap<QString,QString> selectedAttributes() const;
 
 public slots:
     void inspect(TreeNode const *);

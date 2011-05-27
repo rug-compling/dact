@@ -22,6 +22,7 @@ public:
     
     void showTree(QString const &xml);
     void focusTreeNode(int direction);
+    void fitInView(QRectF const &rect, Qt::AspectRatioMode aspectRatioMode);
     
 public slots:
     void fitTree();
