@@ -5,7 +5,11 @@
 #include <QSharedPointer>
 #include <QValidator>
 
+#include <AlpinoCorpus/CorpusReader.hh>
+
 #include "DactMacrosModel.hh"
+
+namespace ac = alpinocorpus;
 
 /*!
  This class is used by the QLineEdit widgets for xpath queries. It uses
@@ -17,10 +21,17 @@ class XPathValidator : public QValidator
 public:
     XPathValidator(QObject *parent = 0, bool variables = false);
     XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent = 0, bool variables = false);
+    void setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader);
     State validate(QString &exprStr, int &pos) const;
 private:
     bool d_variables;
     QSharedPointer<DactMacrosModel> d_macrosModel;
+    QSharedPointer<ac::CorpusReader> d_corpusReader;
 };
+
+inline void XPathValidator::setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader)
+{
+    d_corpusReader = corpusReader;
+}
 
 #endif // XPATHVALIDATOR_HH

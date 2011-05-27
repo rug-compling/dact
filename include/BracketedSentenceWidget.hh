@@ -15,14 +15,12 @@ class BracketedSentenceWidget : public QLineEdit
 public:
     BracketedSentenceWidget(QWidget *parent = 0);
     void setParse(QString const &parse);
-    void setQuery(QString const &query);
 
 private:
-    QString transformXML(QString const &xml, QString const &query) const;
+    QString transformXML(QString const &xml) const;
     void updateText();
 
     QString d_parse;
-    QString d_query;
     QFile d_stylesheet;
     XSLTransformer d_transformer;
 };

@@ -25,25 +25,7 @@ void DactTreeView::showTree(QString const &xml)
 QString DactTreeView::transformParseToTree(QString const &xml) const
 {   
     QHash<QString, QString> params;
-    params["expr"] = d_query.trimmed().isEmpty()
-        ? "'/..'"
-        : QString("'%1'").arg(d_query);
-    
     return d_transformer->transform(xml, params);
-}
-
-void DactTreeView::setHighlightQuery(QString const &query)
-{
-    d_query = query;
-    
-    // Only update the tree if there is a tree already
-    if (scene())
-        showTree(d_xml);
-}
-
-QString const &DactTreeView::highlightQuery() const
-{
-    return d_query;
 }
 
 void DactTreeView::setScene(DactTreeScene *scene)
