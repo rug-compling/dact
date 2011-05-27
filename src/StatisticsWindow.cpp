@@ -109,10 +109,6 @@ void StatisticsWindow::createActions()
     connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
         SLOT(startQuery()));
     
-    // Or start searching when the [search] button is pressed
-    connect(d_ui->startPushButton, SIGNAL(clicked()),
-        SLOT(startQuery()));
-    
     // When a row is activated, generate a query to be used in the main window to
     // filter all the results so only the results which are accumulated in this
     // row will be shown.
