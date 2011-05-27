@@ -30,6 +30,7 @@ public:
     ~DownloadWindow();
 
 signals:
+    void inflateCanceled();
     void inflateError(QString error);
     void inflateFinished();
     void inflateProgressed(int value);
@@ -38,6 +39,7 @@ private slots:
     void archiveNetworkError(QString error);
     void archiveProcessingError(QString error);
     void archiveRetrieved();
+    void cancelInflate();
     void corpusReplyFinished(QNetworkReply *reply);
     void downloadCanceled();
     void inflate(QIODevice *dev);
@@ -62,6 +64,7 @@ private:
     QString d_filename;
     QString d_hash;
     QNetworkReply *d_reply;
+    volatile bool d_cancelInflate;
 };
 
 #endif // DOWNLOADWINDOW_H

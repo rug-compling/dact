@@ -35,7 +35,8 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_corpusAccessManager(new QNetworkAccessManager),
     d_downloadProgressDialog(new QProgressDialog(this)),
     d_inflateProgressDialog(new QProgressDialog(this)),
-    d_reply(0)
+    d_reply(0),
+    d_cancelInflate(false)
 {
     d_ui->setupUi(this);
 
@@ -48,7 +49,6 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
     
-    d_inflateProgressDialog->setCancelButton(0);
     d_inflateProgressDialog->setWindowTitle("Decompressing corpus");
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
     d_inflateProgressDialog->setRange(0, 100);
@@ -67,6 +67,8 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
         SLOT(corpusReplyFinished(QNetworkReply*)));
     connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
         SLOT(downloadCanceled()));
+    connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
+            SLOT(cancelInflate()));
     connect(d_ui->refreshPushButton, SIGNAL(clicked()),
         SLOT(refreshCorpusList()));
     connect(d_ui->downloadPushButton, SIGNAL(clicked()),
@@ -76,7 +78,7 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     connect(this, SIGNAL(inflateError(QString)),
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
-        d_inflateProgressDialog.data(), SLOT(close()));
+        d_inflateProgressDialog.data(), SLOT(accept()));
     
     refreshCorpusList();
 }
@@ -219,7 +221,7 @@ void DownloadWindow::inflate(QIODevice *dev)
     // We'll check whether the uncompressed data matches the given hash.
     QCryptographicHash sha1(QCryptographicHash::Sha1);
     
-    while (!data.atEnd()) {
+    while (!data.atEnd() && !d_cancelInflate) {
         emit inflateProgressed(static_cast<int>(
             ((initAvailable - dev->bytesAvailable()) * 100) / initAvailable));
         QByteArray newData = data.read(65535);
@@ -227,19 +229,16 @@ void DownloadWindow::inflate(QIODevice *dev)
         out.write(newData);
     }
     
-    /*
-    Decompression state checking should be covered by the SHA-1 check that follows.
-     
-    if (!data.errorString().isNull()) {
-        delete dev;
-        emit inflateError(data.errorString());
+    dev->deleteLater();
+
+    if (d_cancelInflate) {
+        d_cancelInflate = false;
+        out.remove();
+        emit inflateCanceled();
         return;
     }
-    */
     
     QString hash(sha1.result().toHex());
-
-    dev->deleteLater();
     
     if (hash != d_hash) {
         out.remove();
@@ -250,9 +249,14 @@ void DownloadWindow::inflate(QIODevice *dev)
     
 }
 
+void DownloadWindow::cancelInflate()
+{
+    d_cancelInflate = true;
+}
+
 void DownloadWindow::inflateHandleError(QString error)
 {
-    d_inflateProgressDialog->close();
+    d_inflateProgressDialog->accept();
     
     QMessageBox box(QMessageBox::Warning, "Failed to decompress corpus",
                     QString("Could not decompress corpus: %1").arg(error),
