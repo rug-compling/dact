@@ -37,6 +37,7 @@ public:
     void cancelQuery();
     
 signals:
+    void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
     void queryEntryFound(QString entry);

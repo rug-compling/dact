@@ -182,9 +182,14 @@ void QueryModel::cancelQuery()
 // run async, because query() starts searching immediately
 void QueryModel::getEntriesWithQuery(QString const &query)
 {
+  try {
     QueryModel::getEntries(
         d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
         d_corpus->end());
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Error in QueryModel::getEntriesWithQuery: " << e.what();
+        emit queryFailed(e.what());
+    }
 }
 
 // run async
@@ -200,6 +205,7 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
             
         queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {
-        qDebug() << "Error performing query: " << e.what();
+        qDebug() << "Error in QueryModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
     }
 }
