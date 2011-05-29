@@ -13,11 +13,11 @@ endif(APPLE)
 
 set(VERSION "0.0.2")
 
-set(GIT_REVISION "unknown")
-exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
-  OUTPUT_VARIABLE GIT_REVISION 
-)
+set(GIT_REVISION ${VERSION})
+#exec_program(git
+#  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
+#  OUTPUT_VARIABLE GIT_REVISION 
+#)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
