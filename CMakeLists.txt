@@ -8,7 +8,7 @@ if(APPLE)
   set (CMAKE_OSX_ARCHITECTURES "x86_64")
   set (CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
 else(APPLE)
-set(PROGNAME dact)
+set(PROGNAME alpino-dact)
 endif(APPLE)
 
 set(VERSION "0.0.2")
