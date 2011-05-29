@@ -1,0 +1,18 @@
+Source: alpino-dact
+Section: science
+Priority: extra
+Maintainer: Daniël de Kok <me@danieldk.eu>
+Build-Depends: debhelper (>= 7.0.50~), cmake, cdbs (>= 0.4.62), alpinocorpus-dev (>= 0.2.0-2), libxml2-dev (>= 2.7.8), libxslt1-dev (>= 1.1.26), qt4-dev (>= 4.7.0)
+Standards-Version: 3.9.1
+Homepage: http://github.com/rug-compling/dact
+Vcs-Git: git://github.com/rug-compling/dact.git
+Vcs-Browser: https://github.com/rug-compling/dact
+
+Package: alpino-dact
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Alpino treebank viewer/analyizer
+ The Decafeinated Alpino Corpus Tool (Dact) is a program for browsing
+ and querying large treebanks that were created using the Alpino parser
+ for Dutch. Specific linguistic phenomena can be obtained by applying
+ XPath queries.
