@@ -43,11 +43,6 @@ if(ZLIB_FOUND)
   include_directories(${ZLIB_INCLUDE_DIRS})
 endif()
 
-find_package(DBXML REQUIRED)
-if (DBXML_FOUND)
-  include_directories(${DBXML_INCLUDE_DIR})
-endif()
-
 find_package(Iconv REQUIRED)
 if(ICONV_FOUND)
   include_directories(${ICONV_INCLUDE_DIR})
