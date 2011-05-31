@@ -11,7 +11,7 @@ else(APPLE)
 set(PROGNAME alpino-dact)
 endif(APPLE)
 
-set(VERSION "0.0.2")
+set(VERSION "0.0.3")
 
 set(GIT_REVISION ${VERSION})
 #exec_program(git
@@ -43,11 +43,6 @@ if(ZLIB_FOUND)
   include_directories(${ZLIB_INCLUDE_DIRS})
 endif()
 
-find_package(DBXML REQUIRED)
-if (DBXML_FOUND)
-  include_directories(${DBXML_INCLUDE_DIR})
-endif()
-
 find_package(Iconv REQUIRED)
 if(ICONV_FOUND)
   include_directories(${ICONV_INCLUDE_DIR})
@@ -68,7 +63,7 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork QtSvg REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 # Dact sources
