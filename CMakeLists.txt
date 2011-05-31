@@ -68,7 +68,7 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork QtSvg REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 # Dact sources
