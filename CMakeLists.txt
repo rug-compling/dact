@@ -11,7 +11,7 @@ else(APPLE)
 set(PROGNAME dact)
 endif(APPLE)
 
-set(VERSION "0.0.2")
+set(VERSION "0.0.3")
 
 set(GIT_REVISION "unknown")
 exec_program(git
