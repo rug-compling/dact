@@ -1,3 +1,9 @@
+alpino-dact (0.0.3-1) natty; urgency=low
+
+  * New upstream release.
+
+ -- Daniël de Kok <me@danieldk.eu>  Tue, 31 May 2011 22:42:36 +0200
+
 alpino-dact (0.0.2-1) natty; urgency=low
 
   * Initial release
