@@ -1,0 +1,2 @@
+?package(alpino-dact):needs="X11" section="Applications/Science/Social"\
+  title="Dact" command="/usr/bin/alpino-dact"
