@@ -6,6 +6,10 @@ body {
   font-size: 90%;
 }
 
+h2 {
+  color: #990000;
+}
+
 p {
   text-align: justify;
 }
