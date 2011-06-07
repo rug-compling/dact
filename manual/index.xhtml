@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Decaffeinated Alpino Corpus Tool</title>
+    <link rel="stylesheet" type="text/css" href="screen.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+  </head>
+  <body>
+    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="id36113020"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#id36113063">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#id36113240">2. Queries</a></span></dt></dl></div>
+    
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113063"></a>1. Introduction</h2></div></div></div>
+        
+        <p>If Dact could be started correctly, you can open a corpus in Dact. Dact supports three
+            kinds of corpora:</p>
+        <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                <p>Dact corpora (recognizable by the <span class="italic">.dact</span> extension). Use of this corpus format is strongly recommended,
+                    because it has superior performance in query processing.</p>
+            </li><li class="listitem">
+                <p>Compact corpora, consisting of a data and index file (recognizable by
+                        the <span class="italic">.data.dz</span> and <span class="italic">.index</span> extensions).</p>
+            </li><li class="listitem">
+                <p>Directory corpora, which are directories that contain parses.</p>
+            </li></ul></div>
+        <p>Dact and compact corpora can be opened using the <span class="italic">Ctrl+o</span> keyboard shortcut, directory corpora using the <span class="italic">Ctrl+d</span>shortcut (on OS X, use Cmd instead of Ctrl). This
+            will show a dialog that allows you to open the corpus. If you prefer, you can use
+                the <span class="italic">File - Open…</span> and <span class="italic">File
+                - Open Directory…</span> menu items as well.</p>
+        <div class="figure"><a id="id36113072"></a><p class="title"><strong>Figure 1. Dact main window</strong></p><div class="figure-contents">
+            
+            <div class="mediaobject"><img src="../images/dact-osx-small.png" alt="Dact main window" /></div>
+        </div></div><br class="figure-break" />
+        <p>After opening a corpus, the window will resemble that in the screenshot above. The
+            main Dact Window consists of two panes:</p>
+        <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                <p>The entries pane (left) shows the list of corpus entries, here you can browse
+                    and select entries.</p>
+            </li><li class="listitem">
+                <p>The detail pane (right) will contains more information about the entry that is
+                    selected in the left pane. This information consists of a sentence and the
+                    associated dependency tree.</p>
+            </li></ul></div>
+        <p>Although the corpus can be browsed entry by entry, most functionality of Dact is
+            query-driven. After a short introduction to the query language in the next section, you
+            will be prepared to use other functionality of Dact.</p>
+    </div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113240"></a>2. Queries</h2></div></div></div>
+        
+        <p> Queries are written in the <a class="ulink" href="http://en.wikipedia.org/wiki/XPath" target="_top">XPath</a> query language.</p>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113254"></a>2.1. Matching a node</h3></div></div></div>
+            
+            <p></p>
+            <p>Every node in the tree is represented as an <span class="italic">node</span> element. You can match any node in the tree by using two
+                forward slashes:</p>
+            <pre class="programlisting">//node</pre>
+            <p>Of course, normally, you’d want to match nodes with certain restrictions based on
+                attributes of a node. Such restrictions can be entered between square brackets
+                    (<span class="italic">* and <span class="italic">]</span>). And
+                    attributes are prefixed by the ‘at’ sign (<span class="italic">@</span>).
+                    Commonly-used attributes are:</span></p>
+            <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                    <p><span class="bold"><strong>rel</strong></span>: relation label</p>
+                </li><li class="listitem">
+                    <p><span class="bold"><strong>cat</strong></span>: category</p>
+                </li><li class="listitem">
+                    <p><span class="bold"><strong>pos</strong></span>: part of speech tag</p>
+                </li><li class="listitem">
+                    <p><span class="bold"><strong>root</strong></span>: the root/stem of a lexical
+                        node</p>
+                </li></ul></div>
+            <p>For instance, the following query will match all nodes with the <span class="italic">pos</span> attribute, or in other words lexical nodes:</p>
+            <pre class="programlisting">//node[@pos]</pre>
+            <p>We can also restrict the selection by requiring that an attribute has a specific
+                value using the equals sign (<span class="italic">=</span>). For instance,
+                the following query will match all nodes, which have a <span class="italic">pos</span> attribute with the value <span class="italic">det</span>:</p>
+            <pre class="programlisting">//node[@pos="det"]</pre>
+            <p>Such conditions can also be combined. Using the <span class="italic">and</span> operator will require both conditions to be true, while
+                    the <span class="italic">or</span>operator requires one of the conditions
+                to be true. The following query will match all nodes with a <span class="italic">su</span> dependency relation, that also have <span class="italic">det</span> as their part of speech tag:</p>
+            <pre class="programlisting">//node[@rel="su" and @pos="det"]</pre>
+            <p>There are some functions available in XPath which may be useful. For example
+                    using <span class="italic">not</span> we could find any node that doesn’t
+                match a certain condition. Say we want to match everything except nouns, we could
+                write:</p>
+            <pre class="programlisting">//node[not(@pt="n")]</pre>
+            <p>Or say we wanted to match everything except nouns that are lexical nodes starting
+                with the letter <span class="italic">v</span>. We can use the <span class="italic">starts-with</span> function to require that the <span class="italic">root</span> attribute starts with the text <span class="italic">v</span>. The <span class="italic">and</span> operator
+                will tie them together.</p>
+            <pre class="programlisting">//node[not(@pt) and starts-with(@root, "v")]</pre>
+            <p><span class="italic">contains</span> is another function that works just
+                    like <span class="italic">start-with</span>, except it match if the text
+                is found anywhere in the attribute’s value, not just at the beginning.</p>
+            <p>We can also make queries based on the structure of a tree. For example, the
+                following query will match any node with a <span class="italic">su</span> dependency relation that has a determiner: one of the children of the
+                matching node is a node which<span class="italic">pos</span> attribute has
+                the value <span class="italic">det</span>.</p>
+            <pre class="programlisting">//node[@rel="su" and node[@pos="det"]]</pre>
+            <p>Now that query matched the <span class="italic">su</span> node, but we can
+                also match the <span class="italic">det</span> node. This is useful in the
+                Statistics Window, where the matching nodes are read. This query will do just
+                that:</p>
+            <pre class="programlisting">//node[@rel="su"]/node[@pos="det"]</pre>
+            <p>It first finds the subject nodes, and then matches all the determiners found in
+                these nodes. We can continue this to for example find all the nouns in the noun
+                phrase in a preposition phrase. We first find the preposition phrase somewhere in
+                the tree (mind the double slash), then find the noun phrase among one of it’s
+                children (the single slash), and then find a noun among the noun phrase it’s
+                children.</p>
+            <pre class="programlisting">//node[@cat="pp"]/node[@cat="np"]/node[@pt="n"]</pre>
+            <p>This goes down deeper into the tree, but we can also move back up in the tree
+                using double dots. Say we wanted to select all the siblings of a noun node, we can
+                use .. to move up to the parent of the noun node, and then select all the children
+                of this parent node:</p>
+            <pre class="programlisting">//node[@pt="n"]/../node</pre>
+            <p>Or we could select all nodes of which the parent node has a child node which is a
+                noun:</p>
+            <pre class="programlisting">//node[../node[@pt="n"]]</pre>
+            <p>Note that strings, i.e. the text between quotes and attributes can be used
+                interchangeably since an attribute has a string as a value. For example, say we
+                would want to do something silly and try to find all lexical nodes with an
+                    attribute <span class="italic">pt</span> that has the same value al the
+                word of the node, which would mostly be just the letter <span class="italic">n</span>. The word is accessible through the <span class="italic">word</span> attribute. So we end up comparing the <span class="italic">word</span> attribute with the <span class="italic">pt</span> attribute:</p>
+            <pre class="programlisting">//node[@pt=@word]</pre>
+            <p>And we are not just bound to the attributes of the current node. Say we wanted to
+                find examples the dutch verb<span class="italic">krijgen</span> used in a
+                passive form. To do this, we have to look for sentences where the subject of the
+                sentence is also the object of the verb phrase. A translation takes place. In the
+                corpus this is indicated by an <span class="italic">index</span> attribute.
+                This attribute contains the same value on both nodes. Ie. when we want to see
+                translation 1, this query will highlight both the nodes before and after the
+                translation:</p>
+            <pre class="programlisting">//node[@index=1]</pre>
+            <p>Now using that knowledge we can find the node which contains the verb <span class="italic">krijgen</span>, a subject, and a object in the verb complement
+                which both share the same value for <span class="italic">index</span>:</p>
+            <pre class="programlisting">//node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]</pre>
+            <p>(This query was taken from the <a class="ulink" href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html" target="_top">manual for Treebank Tools</a>, which contains some more interesting
+                queries.)</p>
+            <p>Please do note that Dact expects queries that return nodes. A highlight query
+                returning the value of an attribute of a node won’t highlight any nodes.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113640"></a>2.2. Filtering a corpus</h3></div></div></div>
+            
+            <p>The left pane shows a list of corpus entries, where each entry represents a parsed
+                sentence. When viewing large corpora, it is often more interesting to look at
+                particular entries. You can filter a corpus using an XPath query, where only the
+                entries with nodes matching the query will be shown. A filter query can be typed in
+                the field above the list of corpus entries: </p>
+            <div class="figure"><a id="id36113649"></a><p class="title"><strong>Figure 2. Filtering entries</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="../images/filter-entry.png" alt="Filtering entries" /></div>
+            </div></div><br class="figure-break" />
+            <p>After typing the query, press the <span class="italic">Enter</span> key,
+                and Dact will start filtering the corpus. If you want to interrupt filtering, press
+                    the <span class="italic">Esc</span> key.</p>
+            <p>Using <span class="italic">Next</span> and <span class="italic">Previous</span> arrows in the top left menu bar, you can walk through each
+                found entry. Or you can use the <span class="italic">Ctrl+Down</span> and <span class="italic">Ctrl+Up</span> shortcuts.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113713"></a>2.3. Highlighting</h3></div></div></div>
+            
+            <p>After selecting an entry, its parse tree is shown in the right pane. All nodes
+                matching an XPath query can be highlighted, this makes it easier to spot interesting
+                phenomena. Entries can be highlighted by entering an XPath query:</p>
+            <div class="figure"><a id="id36113725"></a><p class="title"><strong>Figure 3. Highlighting nodes</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="../images/highlight-entry.png" alt="Highlighting nodes" /></div>
+            </div></div><br class="figure-break" />
+            <p>Initially, the filter query is copied as the highlight query.</p>
+            <div class="figure"><a id="id36113748"></a><p class="title"><strong>Figure 4. Highlighted nodes</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="../images/tree-highlighted.png" alt="Highlighted nodes" /></div>
+            </div></div><br class="figure-break" />
+            <p>Matching nodes will be highlighted in the tree in green. The buttons <span class="italic">Zoom In</span> and <span class="italic">Zoom
+                Out</span> can be used to scale the tree. <span class="italic">Previous
+                    Node</span> and <span class="italic">Next Node</span> will walk you
+                through all the matching nodes. You can use <span class="italic">Ctrl+Left</span> and<span class="italic">Ctrl+Right</span> as well.
+                This node will then be marked by a slightly thicker border. When zoomed in, it also
+                focusses on the node, making sure it is visible. Normally, the scroll wheel is used
+                for panning the tree. but when you press<span class="italic">Ctrl</span>,
+                scrolling will zoom the tree. <span class="italic">Ctrl+=</span> and <span class="italic">Ctrl+-</span> can also be
+                used to zoom in and out, and <span class="italic">Ctrl+0</span> resets the
+                zoom level to show the whole tree.</p>
+            <p>The leaf nodes have tooltips showing more details about the node.</p>
+            <p>Below the tree the bracketed sentence is shown, and the parts in the sentence
+                represented by the matching nodes are surrounded by square brackets.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113837"></a>2.4. Gathering statistics</h3></div></div></div>
+            
+            <p>The Statistics window can be found in the <span class="italic">Tools</span> menu, or using <span class="italic">Ctrl+t</span>.</p>
+            <p>The Statistics window shows which values can be found for a certain attribute of
+                the matching nodes throughout the corpus. These nodes can be filtered using the same
+                XPath queries. If a node does match the filter, but does not have the attribute, it
+                won’t be counted.</p>
+            <div class="figure"><a id="id36113868"></a><p class="title"><strong>Figure 5. Statistics window</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="../images/statistics-window.png" alt="Statistics window" /></div>
+            </div></div><br class="figure-break" />
+            <p>Make sure to use a filter which matches the nodes you want to know the values of.
+                For example, say we wanted to know how often every preposition occurs in a
+                preposition phrase. We need to filter for the preposition nodes that are children of
+                a preposition phrase node:</p>
+            <pre class="programlisting">//node[@cat="pp"]/node[@pt="vz"]</pre>
+            <p>If you are unsure whether your filter will match too much or too little, try to
+                test it visually in the tree by using it as the highlight query.</p>
+            <p>Because we want to know how often the word occurs, we select <span class="italic">word</span> or <span class="italic">lemma</span>.</p>
+            <p>The <span class="italic">result</span> column shows all the distinct values
+                found, and the <span class="italic">count</span> column shows how often these
+                values where encountered. The <span class="italic">percentage</span> column
+                puts this number into perspective by showing how much this is as a percentage of the
+                total count of found values. This total is shown in the bottom right of the
+                window.</p>
+            <p>You can double-click one of the rows to search for all nodes that together are
+                summed up in that row.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113838"></a>2.5. Bracketed sentences</h3></div></div></div>
+            
+            <p></p>
+            <p>To quickly get an impression which part of a sentence matches a query, you can use
+                    the <span class="italic">Bracketed sentences</span>window in
+                    the <span class="italic">View</span> menu. Or by using <span class="italic">Ctrl+b</span>.</p>
+            <div class="figure"><a id="id36113973"></a><p class="title"><strong>Figure 6. Bracketed sentences window</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="../images/bracketed-sentences-window.png" alt="Bracketed sentences window" /></div>
+            </div></div><br class="figure-break" />
+            <p>The window shows the part of a sentence which matches the query between brackets
+                for all the sentences in the corpus where at least one matching node is found.
+                Single clicking on one of these sentences will draw its tree in the Main Window.
+                Double clicking a sentence will bring the Main Window with the tree to the
+                front.</p>
+            <p>You can select alternative display modes using the dropdown menu. Currently three
+                methods are implemented:</p>
+            <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
+                    <p><span class="italic">Complete Sentence</span> shows the matching
+                        nodes in the sentence on a different background. Nested matches have a more
+                        opaque background.</p>
+                </li><li class="listitem">
+                    <p><span class="italic">Only Matches</span> shows only partial
+                        sentences of the nodes that matched. One match or nested match per line.
+                        Currently because of the way this view is implemented the matches cannot be
+                        sorted.</p>
+                </li><li class="listitem">
+                    <p><span class="italic">Keywords in Context</span> shows all the
+                        matches directly underneath each other and prints the rest of the sentence
+                        left and right of the match. The colors can be configured in Dact’s
+                        preference window.</p>
+                </li></ul></div>
+        </div>
+    </div>
+</div>
+  </body>
+</html>

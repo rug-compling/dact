@@ -1,0 +1,57 @@
+body {
+  width: 800px;
+  margin: 0px auto;
+
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 90%;
+}
+
+h2 {
+  color: #990000;
+}
+
+p {
+  text-align: justify;
+}
+div.caption p {
+        text-align: center;
+}
+
+table {
+    border: 1px solid #000;
+    border-width: 0px;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+table th {
+    padding: 0.2em;
+}
+
+table td {
+    padding: 0.2em;
+}
+
+.italic {
+  font-style: italic;
+}
+
+pre.screen {
+  border: 1px dashed #94da3a;
+  background-color: #e7ffc7;
+  color: #000000;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+pre.programlisting {
+  border: 1px dashed #b4baea;
+  background-color: #f0f4ff;
+  color: #000000;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.type {
+    font-family: monospace;
+}
