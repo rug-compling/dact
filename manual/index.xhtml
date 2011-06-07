@@ -8,7 +8,7 @@
     <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
   </head>
   <body>
-    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="id36113020"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#id36113063">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#id36113240">2. Queries</a></span></dt></dl></div>
+    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="id36113190"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#id36113063">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#id36113253">2. Queries</a></span></dt></dl></div>
     
     <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113063"></a>1. Introduction</h2></div></div></div>
         
@@ -23,11 +23,11 @@
             </li><li class="listitem">
                 <p>Directory corpora, which are directories that contain parses.</p>
             </li></ul></div>
-        <p>Dact and compact corpora can be opened using the <span class="italic">Ctrl+o</span> keyboard shortcut, directory corpora using the <span class="italic">Ctrl+d</span>shortcut (on OS X, use Cmd instead of Ctrl). This
+        <p>Dact and compact corpora can be opened using the <span class="italic">Ctrl+o</span> keyboard shortcut, directory corpora using the <span class="italic">Ctrl+d</span> shortcut (on OS X, use Cmd instead of Ctrl). This
             will show a dialog that allows you to open the corpus. If you prefer, you can use
                 the <span class="italic">File - Open…</span> and <span class="italic">File
                 - Open Directory…</span> menu items as well.</p>
-        <div class="figure"><a id="id36113072"></a><p class="title"><strong>Figure 1. Dact main window</strong></p><div class="figure-contents">
+        <div class="figure"><a id="id36113087"></a><p class="title"><strong>Figure 1. Dact main window</strong></p><div class="figure-contents">
             
             <div class="mediaobject"><img src="../images/dact-osx-small.png" alt="Dact main window" /></div>
         </div></div><br class="figure-break" />
@@ -45,12 +45,11 @@
             query-driven. After a short introduction to the query language in the next section, you
             will be prepared to use other functionality of Dact.</p>
     </div>
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113240"></a>2. Queries</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113253"></a>2. Queries</h2></div></div></div>
         
         <p> Queries are written in the <a class="ulink" href="http://en.wikipedia.org/wiki/XPath" target="_top">XPath</a> query language.</p>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113254"></a>2.1. Matching a node</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113267"></a>2.1. Matching a node</h3></div></div></div>
             
-            <p></p>
             <p>Every node in the tree is represented as an <span class="italic">node</span> element. You can match any node in the tree by using two
                 forward slashes:</p>
             <pre class="programlisting">//node</pre>
@@ -139,14 +138,14 @@
             <p>Please do note that Dact expects queries that return nodes. A highlight query
                 returning the value of an attribute of a node won’t highlight any nodes.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113640"></a>2.2. Filtering a corpus</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113272"></a>2.2. Filtering a corpus</h3></div></div></div>
             
             <p>The left pane shows a list of corpus entries, where each entry represents a parsed
                 sentence. When viewing large corpora, it is often more interesting to look at
                 particular entries. You can filter a corpus using an XPath query, where only the
                 entries with nodes matching the query will be shown. A filter query can be typed in
                 the field above the list of corpus entries: </p>
-            <div class="figure"><a id="id36113649"></a><p class="title"><strong>Figure 2. Filtering entries</strong></p><div class="figure-contents">
+            <div class="figure"><a id="id36113645"></a><p class="title"><strong>Figure 2. Filtering entries</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/filter-entry.png" alt="Filtering entries" /></div>
             </div></div><br class="figure-break" />
@@ -156,17 +155,17 @@
             <p>Using <span class="italic">Next</span> and <span class="italic">Previous</span> arrows in the top left menu bar, you can walk through each
                 found entry. Or you can use the <span class="italic">Ctrl+Down</span> and <span class="italic">Ctrl+Up</span> shortcuts.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113713"></a>2.3. Highlighting</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113704"></a>2.3. Highlighting</h3></div></div></div>
             
             <p>After selecting an entry, its parse tree is shown in the right pane. All nodes
                 matching an XPath query can be highlighted, this makes it easier to spot interesting
                 phenomena. Entries can be highlighted by entering an XPath query:</p>
-            <div class="figure"><a id="id36113725"></a><p class="title"><strong>Figure 3. Highlighting nodes</strong></p><div class="figure-contents">
+            <div class="figure"><a id="id36113716"></a><p class="title"><strong>Figure 3. Highlighting nodes</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/highlight-entry.png" alt="Highlighting nodes" /></div>
             </div></div><br class="figure-break" />
             <p>Initially, the filter query is copied as the highlight query.</p>
-            <div class="figure"><a id="id36113748"></a><p class="title"><strong>Figure 4. Highlighted nodes</strong></p><div class="figure-contents">
+            <div class="figure"><a id="id36113739"></a><p class="title"><strong>Figure 4. Highlighted nodes</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/tree-highlighted.png" alt="Highlighted nodes" /></div>
             </div></div><br class="figure-break" />
@@ -176,22 +175,22 @@
                 through all the matching nodes. You can use <span class="italic">Ctrl+Left</span> and<span class="italic">Ctrl+Right</span> as well.
                 This node will then be marked by a slightly thicker border. When zoomed in, it also
                 focusses on the node, making sure it is visible. Normally, the scroll wheel is used
-                for panning the tree. but when you press<span class="italic">Ctrl</span>,
+                for panning the tree. but when you press <span class="italic">Ctrl</span>,
                 scrolling will zoom the tree. <span class="italic">Ctrl+=</span> and <span class="italic">Ctrl+-</span> can also be
                 used to zoom in and out, and <span class="italic">Ctrl+0</span> resets the
                 zoom level to show the whole tree.</p>
-            <p>The leaf nodes have tooltips showing more details about the node.</p>
+            <p>The leaf nodes have tool tips showing more details about the node.</p>
             <p>Below the tree the bracketed sentence is shown, and the parts in the sentence
                 represented by the matching nodes are surrounded by square brackets.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113837"></a>2.4. Gathering statistics</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113828"></a>2.4. Gathering statistics</h3></div></div></div>
             
             <p>The Statistics window can be found in the <span class="italic">Tools</span> menu, or using <span class="italic">Ctrl+t</span>.</p>
             <p>The Statistics window shows which values can be found for a certain attribute of
                 the matching nodes throughout the corpus. These nodes can be filtered using the same
                 XPath queries. If a node does match the filter, but does not have the attribute, it
                 won’t be counted.</p>
-            <div class="figure"><a id="id36113868"></a><p class="title"><strong>Figure 5. Statistics window</strong></p><div class="figure-contents">
+            <div class="figure"><a id="id36113858"></a><p class="title"><strong>Figure 5. Statistics window</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/statistics-window.png" alt="Statistics window" /></div>
             </div></div><br class="figure-break" />
@@ -212,13 +211,13 @@
             <p>You can double-click one of the rows to search for all nodes that together are
                 summed up in that row.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113838"></a>2.5. Bracketed sentences</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113829"></a>2.5. Bracketed sentences</h3></div></div></div>
             
             <p></p>
             <p>To quickly get an impression which part of a sentence matches a query, you can use
-                    the <span class="italic">Bracketed sentences</span>window in
+                    the <span class="italic">Bracketed sentences</span> window in
                     the <span class="italic">View</span> menu. Or by using <span class="italic">Ctrl+b</span>.</p>
-            <div class="figure"><a id="id36113973"></a><p class="title"><strong>Figure 6. Bracketed sentences window</strong></p><div class="figure-contents">
+            <div class="figure"><a id="id36113964"></a><p class="title"><strong>Figure 6. Bracketed sentences window</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/bracketed-sentences-window.png" alt="Bracketed sentences window" /></div>
             </div></div><br class="figure-break" />
@@ -227,7 +226,7 @@
                 Single clicking on one of these sentences will draw its tree in the Main Window.
                 Double clicking a sentence will bring the Main Window with the tree to the
                 front.</p>
-            <p>You can select alternative display modes using the dropdown menu. Currently three
+            <p>You can select alternative display modes using the drop-down menu. Currently three
                 methods are implemented:</p>
             <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
                     <p><span class="italic">Complete Sentence</span> shows the matching
