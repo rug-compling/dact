@@ -25,7 +25,7 @@
         </itemizedlist>
         <para>Dact and compact corpora can be opened using the <emphasis role="italic"
                 >Ctrl+o</emphasis> keyboard shortcut, directory corpora using the <emphasis
-                role="italic">Ctrl+d</emphasis>shortcut (on OS X, use Cmd instead of Ctrl). This
+                role="italic">Ctrl+d</emphasis> shortcut (on OS X, use Cmd instead of Ctrl). This
             will show a dialog that allows you to open the corpus. If you prefer, you can use
                 the <emphasis role="italic">File - Open…</emphasis> and <emphasis role="italic">File
                 - Open Directory…</emphasis> menu items as well.</para>
@@ -60,7 +60,6 @@
                 >XPath</link> query language.</para>
         <sect2>
             <title>Matching a node</title>
-            <para/>
             <para>Every node in the tree is represented as an <emphasis role="italic"
                     >node</emphasis> element. You can match any node in the tree by using two
                 forward slashes:</para>
@@ -228,12 +227,12 @@
                     >Ctrl+Left</emphasis> and<emphasis role="italic">Ctrl+Right</emphasis> as well.
                 This node will then be marked by a slightly thicker border. When zoomed in, it also
                 focusses on the node, making sure it is visible. Normally, the scroll wheel is used
-                for panning the tree. but when you press<emphasis role="italic">Ctrl</emphasis>,
+                for panning the tree. but when you press <emphasis role="italic">Ctrl</emphasis>,
                 scrolling will zoom the tree. <emphasis role="italic"
                     >Ctrl+=</emphasis> and <emphasis role="italic">Ctrl+-</emphasis> can also be
                 used to zoom in and out, and <emphasis role="italic">Ctrl+0</emphasis> resets the
                 zoom level to show the whole tree.</para>
-            <para>The leaf nodes have tooltips showing more details about the node.</para>
+            <para>The leaf nodes have tool tips showing more details about the node.</para>
             <para>Below the tree the bracketed sentence is shown, and the parts in the sentence
                 represented by the matching nodes are surrounded by square brackets.</para>
         </sect2>
@@ -277,7 +276,7 @@
             <title>Bracketed sentences</title>
             <para/>
             <para>To quickly get an impression which part of a sentence matches a query, you can use
-                    the <emphasis role="italic">Bracketed sentences</emphasis>window in
+                    the <emphasis role="italic">Bracketed sentences</emphasis> window in
                     the <emphasis role="italic">View</emphasis> menu. Or by using <emphasis
                     role="italic">Ctrl+b</emphasis>.</para>
             <figure>
@@ -295,7 +294,7 @@
                 Single clicking on one of these sentences will draw its tree in the Main Window.
                 Double clicking a sentence will bring the Main Window with the tree to the
                 front.</para>
-            <para>You can select alternative display modes using the dropdown menu. Currently three
+            <para>You can select alternative display modes using the drop-down menu. Currently three
                 methods are implemented:</para>
             <itemizedlist>
                 <listitem>
