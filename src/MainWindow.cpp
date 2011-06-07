@@ -333,7 +333,7 @@ void MainWindow::filterOnInspectorSelection()
 
 void MainWindow::help()
 {
-    static QUrl const usage("http://rug-compling.github.com/dact/Usage.html");
+    static QUrl const usage("http://rug-compling.github.com/dact/manual/");
     QDesktopServices::openUrl(usage);
 }
 
