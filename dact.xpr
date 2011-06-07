@@ -6,5 +6,6 @@
     </meta>
     <projectTree name="dact.xpr">
         <file name="xml/dact.xml"/>
+        <file name="xsl/html.xsl"/>
     </projectTree>
 </project>
