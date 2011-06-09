@@ -196,8 +196,6 @@
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
     <addaction name="separator"/>
-    <addaction name="preferencesAction"/>
-    <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -206,6 +204,8 @@
     </property>
     <addaction name="focusFilterAction"/>
     <addaction name="focusHighlightAction"/>
+    <addaction name="separator"/>
+    <addaction name="preferencesAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
