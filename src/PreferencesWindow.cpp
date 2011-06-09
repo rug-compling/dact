@@ -25,30 +25,33 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     d_ui->tabWidget->removeTab(0);
 #endif
     
-    loadColors();    
+    loadColorsTab();
+    loadNetworkTab();
     
     connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     connect(d_ui->treeActiveNodeBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     
     connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     connect(d_ui->keywordsInContextContextForegroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     connect(d_ui->keywordsInContextContextBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
         
     connect(d_ui->completeSentencesBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColors()));
+        SLOT(saveColorsTab()));
     
-    QSettings settings;
-    d_ui->archiveBaseUrlLineEdit->setText(
-        settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
     connect(d_ui->archiveBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveArchiveBaseUrl()));
+        
+    connect(d_ui->restoreDefaultColorsButton, SIGNAL(clicked()),
+        SLOT(restoreDefaultColors()));
+    connect(d_ui->restoreDefaultNetworkButton, SIGNAL(clicked()),
+        SLOT(restoreDefaultNetwork()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -72,7 +75,7 @@ void PreferencesWindow::selectAppFont()
     applyAppFont();
 }
 
-void PreferencesWindow::loadColors()
+void PreferencesWindow::loadColorsTab()
 {
     QSettings settings;
     
@@ -112,13 +115,20 @@ void PreferencesWindow::loadColors()
     settings.endGroup();
 }
 
+void PreferencesWindow::loadNetworkTab()
+{
+    QSettings settings;
+    d_ui->archiveBaseUrlLineEdit->setText(
+        settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+}
+
 void PreferencesWindow::saveArchiveBaseUrl()
 {
     QSettings settings;
     settings.setValue(ARCHIVE_BASEURL_KEY, d_ui->archiveBaseUrlLineEdit->text());
 }
 
-void PreferencesWindow::saveColors()
+void PreferencesWindow::saveColorsTab()
 {
     QSettings settings;
     
@@ -137,6 +147,34 @@ void PreferencesWindow::saveColors()
     settings.beginGroup("CompleteSentence");
     settings.setValue("background", d_ui->completeSentencesBackgroundColor->color());
     settings.endGroup();
+}
+
+void PreferencesWindow::restoreDefaultColors()
+{
+    QSettings settings;
+    
+    settings.beginGroup("Tree");
+    settings.remove("");
+    settings.endGroup();
+    
+    settings.beginGroup("KeywordsInContext");
+    settings.remove("");
+    settings.endGroup();
+    
+    settings.beginGroup("CompleteSentence");
+    settings.remove("");
+    settings.endGroup();
+    
+    loadColorsTab();
+}
+
+void PreferencesWindow::restoreDefaultNetwork()
+{
+    QSettings settings;
+    
+    settings.remove(ARCHIVE_BASEURL_KEY);
+    
+    loadNetworkTab();
 }
 
 void PreferencesWindow::keyPressEvent(QKeyEvent *event)
