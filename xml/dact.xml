@@ -243,7 +243,7 @@
                     role="italic">Ctrl+i</emphasis> or by enabling it in the <emphasis role="italic"
                     >View</emphasis> menu. This is very usefull for writing queries.</para>
             <figure>
-                <title>inspector.png</title>
+                <title>Main window with inspector attached</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="../images/inspector.png"/>
@@ -349,10 +349,10 @@
                 try to export your selection, and only if you have nothing selected it will export
                 the complete corpus. Select <emphasis>File - Export to corpus…</emphasis> to select
                 where you want to store your new corpus. If you are unsure whether Dact tries to
-                export the complete corpus or only a selection, check the title of the Save File
-                Dialog. </para>
+                export the complete corpus or only a selection, check the title of the Save file
+                dialog. </para>
             <figure>
-                <title>export-corpus-dialog.png</title>
+                <title>Export corpus dialog</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="../images/export-corpus-dialog.png"/>
@@ -379,6 +379,35 @@
                 it with another tool. Select the sentence you want to export in the file list and
                 select <emphasis>File - Export to XML…</emphasis>. Currently you cannot export
                 multiple sentences as XML at once.</para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Configuring Dact</title>
+        <para>Dact has some preferences to change it to your needs. You can configure the font and
+            colors of the interface and specify macros for common query conditions.</para>
+        <sect2>
+            <title>Macros</title>
+            <para>Macros in Dact are nothing more than simple substitutions, and using them is
+                really simple. To use a macro simply use its pattern surrounded by percentage signs
+                in a query. E.g. if you have a macro that replaces <literal>su</literal> with
+                    <literal>@rel="su"</literal>, the following query will be internally translated
+                like this:<programlisting>//node[%su%] -> //node[@rel="su"]</programlisting></para>
+            <para>You can use macros in every query in Dact. Macro patterns are replaced before a
+                query is validated or executed. If a pattern in the query is not in your list of
+                macros it won't be replaced and will be present in the final query.</para>
+            <para>You can add macros in the Macros window, which you can find in <emphasis>Tools -
+                    Macros…</emphasis> menu. Simply press the <emphasis>Add</emphasis> button to add
+                a new macro, and double click the fields to edit them. Macros are stored along with
+                Dacts other preferences, and currently there is no easy way to import and export
+                them.</para>
+            <figure>
+                <title>Macros window</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/macros-window.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
         </sect2>
     </sect1>
 </article>
