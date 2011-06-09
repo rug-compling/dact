@@ -99,7 +99,7 @@ void BracketedWindow::startQuery()
     
     // Reload the list delegate since they keep their results cached.
     // This will make sure no old cached data is used.
-    listDelegateChanged(0);
+    reloadListDelegate();
     
     QString query = d_macrosModel->expand(d_filter);
     
@@ -194,6 +194,11 @@ void BracketedWindow::initListDelegates()
     addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
     addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
     addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);   
+}
+
+void BracketedWindow::reloadListDelegate()
+{
+    listDelegateChanged(d_ui->listDelegateComboBox->currentIndex());
 }
 
 void BracketedWindow::keyPressEvent(QKeyEvent *event)

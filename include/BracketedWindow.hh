@@ -124,6 +124,7 @@ private:
     void updateResults();
     void createActions();
     void initListDelegates();
+    void reloadListDelegate();
     void setModel(FilterModel* model);
     void readSettings();
     void writeSettings();
