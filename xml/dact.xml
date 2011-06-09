@@ -10,14 +10,12 @@
             kinds of corpora:</para>
         <itemizedlist>
             <listitem>
-                <para>Dact corpora (recognizable by the <emphasis role="italic"
-                    >.dact</emphasis> extension). Use of this corpus format is strongly recommended,
+                <para>Dact corpora (recognizable by the <filename>.dact</filename> extension). Use of this corpus format is strongly recommended,
                     because it has superior performance in query processing.</para>
             </listitem>
             <listitem>
                 <para>Compact corpora, consisting of a data and index file (recognizable by
-                        the <emphasis role="italic">.data.dz</emphasis> and <emphasis role="italic"
-                        >.index</emphasis> extensions).</para>
+                        the <filename>.data.dz</filename> and <filename>.index</filename> extensions).</para>
             </listitem>
             <listitem>
                 <para>Directory corpora, which are directories that contain parses.</para>
@@ -66,24 +64,27 @@
             <programlisting>//node</programlisting>
             <para>Of course, normally, you’d want to match nodes with certain restrictions based on
                 attributes of a node. Such restrictions can be entered between square brackets
-                    (<emphasis role="italic">* and <emphasis role="italic">]</emphasis>). And
+                    (<emphasis role="italic">[ and <emphasis role="italic">]</emphasis>). And
                     attributes are prefixed by the ‘at’ sign (<emphasis role="italic">@</emphasis>).
                     Commonly-used attributes are:</emphasis></para>
-            <itemizedlist>
-                <listitem>
-                    <para><emphasis role="bold">rel</emphasis>: relation label</para>
-                </listitem>
-                <listitem>
-                    <para><emphasis role="bold">cat</emphasis>: category</para>
-                </listitem>
-                <listitem>
-                    <para><emphasis role="bold">pos</emphasis>: part of speech tag</para>
-                </listitem>
-                <listitem>
-                    <para><emphasis role="bold">root</emphasis>: the root/stem of a lexical
-                        node</para>
-                </listitem>
-            </itemizedlist>
+            <variablelist>
+                <varlistentry>
+                    <term>rel</term>
+                    <listitem><para>relation label</para></listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>cat</term>
+                    <listitem><para>category</para></listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>pos</term>
+                    <listitem><para>part of speech tag</para></listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>root</term>
+                    <listitem><para>the root/stem of a lexical node</para></listitem>
+                </varlistentry>
+            </variablelist>
             <para>For instance, the following query will match all nodes with the <emphasis
                     role="italic">pos</emphasis> attribute, or in other words lexical nodes:</para>
             <programlisting>//node[@pos]</programlisting>
@@ -101,19 +102,18 @@
                     >det</emphasis> as their part of speech tag:</para>
             <programlisting>//node[@rel="su" and @pos="det"]</programlisting>
             <para>There are some functions available in XPath which may be useful. For example
-                    using <emphasis role="italic">not</emphasis> we could find any node that doesn’t
+                    using <function>not</function> we could find any node that doesn’t
                 match a certain condition. Say we want to match everything except nouns, we could
                 write:</para>
             <programlisting>//node[not(@pt="n")]</programlisting>
             <para>Or say we wanted to match everything except nouns that are lexical nodes starting
-                with the letter <emphasis role="italic">v</emphasis>. We can use the <emphasis
-                    role="italic">starts-with</emphasis> function to require that the <emphasis
+                with the letter <emphasis role="italic">v</emphasis>. We can use the <function>starts-with</function> function to require that the <emphasis
                     role="italic">root</emphasis> attribute starts with the text <emphasis
                     role="italic">v</emphasis>. The <emphasis role="italic">and</emphasis> operator
                 will tie them together.</para>
             <programlisting>//node[not(@pt) and starts-with(@root, "v")]</programlisting>
-            <para><emphasis role="italic">contains</emphasis> is another function that works just
-                    like <emphasis role="italic">start-with</emphasis>, except it match if the text
+            <para><function>contains</function> is another function that works just
+                    like <function>start-with</function>, except it match if the text
                 is found anywhere in the attribute’s value, not just at the beginning.</para>
             <para>We can also make queries based on the structure of a tree. For example, the
                 following query will match any node with a <emphasis role="italic"
@@ -129,8 +129,8 @@
             <para>It first finds the subject nodes, and then matches all the determiners found in
                 these nodes. We can continue this to for example find all the nouns in the noun
                 phrase in a preposition phrase. We first find the preposition phrase somewhere in
-                the tree (mind the double slash), then find the noun phrase among one of it’s
-                children (the single slash), and then find a noun among the noun phrase it’s
+                the tree (mind the double slash), then find the noun phrase among one of its
+                children (the single slash), and then find a noun among the noun phrase its
                 children.</para>
             <programlisting>//node[@cat="pp"]/node[@cat="np"]/node[@pt="n"]</programlisting>
             <para>This goes down deeper into the tree, but we can also move back up in the tree
