@@ -348,6 +348,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
       QMainWindow::keyPressEvent(event);
 }
 
+void MainWindow::showFile()
+{
+    if (!d_file.isNull())
+        showFile(d_file);
+}
+
 void MainWindow::showFile(QString const &filename)
 {
     // Read XML data.
@@ -370,6 +376,9 @@ void MainWindow::showFile(QString const &filename)
             d_ui->treeGraphicsView->setScene(0);
             return;
         }
+
+        // Remember file for when we need to redraw the tree
+        d_file = filename;
 
         // Parameters
         QString valStr = d_highlight.trimmed().isEmpty() ? "'/..'" :
@@ -821,9 +830,7 @@ void MainWindow::setHighlight(QString const &query)
 {
     d_highlight = query;
     d_ui->highlightLineEdit->setText(query);
-    QItemSelection const &current =
-        d_ui->fileListWidget->selectionModel()->selection();
-    entrySelected(current, current);
+    showFile(); // to force-reload the tree and bracketed sentence
 }
 
 void MainWindow::highlightChanged()

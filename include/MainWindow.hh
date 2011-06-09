@@ -82,8 +82,13 @@ public slots:
     void showMacrosWindow();
     
     /*!
-     Show a xml file in the main window's tree scene and select it in the list of
-     files (if it isn't hidden by the file list filter query).
+     * Shows last successfully shown xml file. Used to reload the tree
+     * and bracketed sentence when the highlight query changes.
+     */
+    void showFile();
+    
+    /*!
+     Show a xml file in the main window's tree scene.
      \param filename path to xml file to be used.
     */
     void showFile(QString const &filename);
@@ -431,6 +436,11 @@ private:
      by their xpath counterparts.
      */
     QString d_filterExpr; // Stores the raw, unexpanded filter expression
+    
+    /*!
+     * Last read file.
+     */
+    QString d_file;
     
     /*!
      The macros model. Used to store and apply macros to XPath queries.
