@@ -337,4 +337,48 @@
             </itemizedlist>
         </sect2>
     </sect1>
+    <sect1>
+        <title>Converting and exporting corpora</title>
+        <para>Dact can also be used to create Dact corpora from any corpus that can be read with
+            Dact. Dact corpora are larger than Compact corpora but can be queried very quickly.
+            Currently you cannot add new sentences to an existing corpus using Dact.</para>
+        <sect2>
+            <title>Exporting a whole corpus</title>
+            <para>Any corpus that can be loaded can be saved as a Dact corpus. Open the corpus, and
+                make sure you do not have any files selected in the file list on the left. Dact will
+                try to export your selection, and only if you have nothing selected it will export
+                the complete corpus. Select <emphasis>File - Export to corpus…</emphasis> to select
+                where you want to store your new corpus. If you are unsure whether Dact tries to
+                export the complete corpus or only a selection, check the title of the Save File
+                Dialog. </para>
+            <figure>
+                <title>export-corpus-dialog.png</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/export-corpus-dialog.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>Depending on the size of the corpus you have loaded, exporting can take a while. A
+                progress dialog will tell you how many of the sentences have been exported. When you
+                cancel the export action, the corpus you where exporting will be saved but the
+                sentences that where not yet added will be missing from it.</para>
+        </sect2>
+        <sect2>
+            <title>Exporting a selection</title>
+            <para>If you want to create a new corpus from a subset of the sentences in the corpus
+                you have loaded, select all the files you want in it and select <emphasis>File -
+                    Export to corpus…</emphasis>. You can use the Filter query to filter the file
+                list, and press <emphasis>Ctrl+a</emphasis> to select every sentence that matched.
+                Since only the selected sentences will be added to the corpus, only the sentences
+                that matched your query will be added.</para>
+        </sect2>
+        <sect2>
+            <title>Exporting a single sentence as XML</title>
+            <para>You can export the XML of a single sentence if you want to inspect it or play with
+                it with another tool. Select the sentence you want to export in the file list and
+                select <emphasis>File - Export to XML…</emphasis>. Currently you cannot export
+                multiple sentences as XML at once.</para>
+        </sect2>
+    </sect1>
 </article>
