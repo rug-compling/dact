@@ -23,6 +23,7 @@ public:
     QVariant data(QModelIndex const &index, int role) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     int hits() const;
+    QModelIndex indexOfFile(QString const &filename) const;
     
     void runQuery(QString const &xpath_query = "");
     void cancelQuery();

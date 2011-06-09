@@ -107,10 +107,9 @@ void MainWindow::aboutDialog()
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
 {
+    setFilter(d_bracketedWindow->filter());
     showFile(entry);
-    focusFitTree();
     
-    setHighlight(d_bracketedWindow->filter());
     activateWindow();
 }
 
@@ -509,6 +508,12 @@ void MainWindow::mapperFailed(QString error)
 void MainWindow::mapperStopped(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setVisible(false);
+    
+    if (!d_file.isNull())
+    {
+        QModelIndex current = d_model->indexOfFile(d_file);
+        d_ui->fileListWidget->setCurrentIndex(current);
+    }
 }
 
 /* Next- and prev entry buttons */

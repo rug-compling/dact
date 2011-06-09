@@ -67,6 +67,21 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
     }
 }
 
+QModelIndex FilterModel::indexOfFile(QString const &filename) const
+{
+    int index = -1;
+    for (int i = 0, size = d_results.size(); i < size; ++i)
+    {
+        if (d_results.at(i).first == filename)
+        {
+            index = i;
+            break;
+        }
+    }
+    
+    return createIndex(index, 0);
+}
+
 void FilterModel::mapperEntryFound(QString entry)
 {
     /*
