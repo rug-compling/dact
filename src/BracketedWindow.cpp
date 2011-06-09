@@ -21,6 +21,7 @@
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
+#include "Query.hh"
 #include "ValidityColor.hh"
 #include "ui_BracketedWindow.h"
 
@@ -96,11 +97,13 @@ void BracketedWindow::startQuery()
 {
     setFilter(d_ui->filterLineEdit->text());
     
-    // Reload the list delegate since they keep their results cached. This will
-    // make sure no old cached data is used.
+    // Reload the list delegate since they keep their results cached.
+    // This will make sure no old cached data is used.
     listDelegateChanged(0);
     
-    d_model->runQuery(d_macrosModel->expand(d_filter));
+    QString query = d_macrosModel->expand(d_filter);
+    
+    d_model->runQuery(generateQuery(query, "(@root or .//node[@root])"));
 }
 
 void BracketedWindow::stopQuery()
