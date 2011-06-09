@@ -292,11 +292,10 @@
                 summed up in that row in the Main Window.</para>
             <para>When copying rows to the clipboards, they will be pasted as a tab-separated
                 plain-text table. Excel and many other programs are able to import this format when
-                pasting it into the document.</para>
+                pasting it into a document.</para>
         </sect2>
         <sect2>
             <title>Bracketed sentences</title>
-            <para/>
             <para>To quickly get an impression which part of a sentence matches a query, you can use
                     the <emphasis role="italic">Bracketed sentences</emphasis> window in
                     the <emphasis role="italic">Tools</emphasis> menu. Or by using <emphasis
@@ -320,7 +319,8 @@
                 <listitem>
                     <para><emphasis role="italic">Complete Sentence</emphasis> shows the matching
                         nodes in the sentence on a different background. Nested matches have a more
-                        opaque background.</para>
+                        opaque background. The color can be changed in Dact's Preference
+                        Window.</para>
                 </listitem>
                 <listitem>
                     <para><emphasis role="italic">Only Matches</emphasis> shows only partial
@@ -332,7 +332,7 @@
                     <para><emphasis role="italic">Keywords in Context</emphasis> shows all the
                         matches directly underneath each other and prints the rest of the sentence
                         left and right of the match. The colors can be configured in Dact’s
-                        preference window.</para>
+                        Preference Window.</para>
                 </listitem>
             </itemizedlist>
         </sect2>
