@@ -237,6 +237,25 @@
                 represented by the matching nodes are surrounded by square brackets.</para>
         </sect2>
         <sect2>
+            <title>Inspecting nodes</title>
+            <para>If you want to know more about a node, you can select it and open the Inspector by
+                clicking its button on the right hand side of the toolbar, pressing <emphasis
+                    role="italic">Ctrl+i</emphasis> or by enabling it in the <emphasis role="italic"
+                    >View</emphasis> menu. This is very usefull for writing queries.</para>
+            <figure>
+                <title>inspector.png</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/inspector.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>The Inspector will show you
+                <?oxy_comment_start author="jelmer" timestamp="20110609T133213+0200" comment="except the attribute that is internally used to mark a node for highlighting"?>every
+                attribute<?oxy_comment_end?> the node has. You can right-click an attribute and use
+                the context menu to directly add it to your search query.</para>
+        </sect2>
+        <sect2>
             <title>Gathering statistics</title>
             <para>The Statistics window can be found in the <emphasis role="italic"
                 >Tools</emphasis> menu, or using <emphasis role="italic">Ctrl+t</emphasis>.</para>
@@ -270,14 +289,17 @@
                 total count of found values. This total is shown in the bottom right of the
                 window.</para>
             <para>You can double-click one of the rows to search for all nodes that together are
-                summed up in that row.</para>
+                summed up in that row in the Main Window.</para>
+            <para>When copying rows to the clipboards, they will be pasted as a tab-separated
+                plain-text table. Excel and many other programs are able to import this format when
+                pasting it into the document.</para>
         </sect2>
         <sect2>
             <title>Bracketed sentences</title>
             <para/>
             <para>To quickly get an impression which part of a sentence matches a query, you can use
                     the <emphasis role="italic">Bracketed sentences</emphasis> window in
-                    the <emphasis role="italic">View</emphasis> menu. Or by using <emphasis
+                    the <emphasis role="italic">Tools</emphasis> menu. Or by using <emphasis
                     role="italic">Ctrl+b</emphasis>.</para>
             <figure>
                 <title>Bracketed sentences window</title>
@@ -291,9 +313,7 @@
             </figure>
             <para>The window shows the part of a sentence which matches the query between brackets
                 for all the sentences in the corpus where at least one matching node is found.
-                Single clicking on one of these sentences will draw its tree in the Main Window.
-                Double clicking a sentence will bring the Main Window with the tree to the
-                front.</para>
+                Double clicking on one of these sentences will draw its tree in the Main Window. </para>
             <para>You can select alternative display modes using the drop-down menu. Currently three
                 methods are implemented:</para>
             <itemizedlist>
