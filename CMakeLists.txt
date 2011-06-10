@@ -193,7 +193,9 @@ if(WIN32)
   )
 endif(WIN32)
 
-set(dact_MACOSX_RESOURCE_FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.icns)
+set(dact_MACOSX_RESOURCE_FILES
+  ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
+  ${DACT_SOURCE_DIR}/resources/dact-corpus.icns)
 
 set_source_files_properties(
   ${dact_MACOSX_RESOURCE_FILES}

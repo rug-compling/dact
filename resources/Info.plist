@@ -39,7 +39,9 @@
 			<array>
 				<string>dact</string>
 			</array>
-			<key>CFBundleTypeName</key>
+			<key>CFBundleTypeIconFile</key>
+			<string>dact-corpus.icns</string>
+      <key>CFBundleTypeName</key>
 			<string>Dact DBXML Corpus</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
