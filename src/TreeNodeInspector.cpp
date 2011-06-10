@@ -27,7 +27,7 @@ QMap<QString, QString> TreeNodeInspector::selectedAttributes() const
     QMap<QString,QString> pairs;
     QList<QTreeWidgetItem *> selection = d_ui->attributesTree->selectedItems();
 
-    foreach (QTreeWidgetItem *attribute, selection)
+    foreach (QTreeWidgetItem const *attribute, selection)
         pairs[attribute->data(0, Qt::DisplayRole).toString()]
           = attribute->data(1, Qt::DisplayRole).toString();
     

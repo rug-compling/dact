@@ -19,7 +19,7 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
     d_leafMinimumHeight(30),
     d_leafPadding(10)
 {
-    setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setFlags(ItemIsSelectable | ItemIsFocusable);
     setAcceptHoverEvents(true);
 }
 
@@ -81,7 +81,7 @@ QString TreeNode::asString(QString const &indent) const
 {
     QString dump = indent + "[node labels:";
     
-    foreach (QString line, d_labels)
+    foreach (QString const &line, d_labels)
     {
         dump += " \"" + line + "\"";
     }
@@ -96,7 +96,7 @@ QString TreeNode::asString(QString const &indent) const
     
     dump += "\n" + indent + QString("      children: (%1)\n").arg(d_childNodes.length());
     
-    foreach (TreeNode* child, d_childNodes)
+    foreach (TreeNode const *child, d_childNodes)
     {
         dump += child->asString(indent + "\t");
     }
@@ -151,7 +151,7 @@ QSizeF TreeNode::leafSize() const
     QFontMetricsF metrics(font());
     QSizeF leaf(d_leafMinimumWidth, d_leafMinimumHeight);
     
-    foreach (QString label, d_labels)
+    foreach (QString const &label, d_labels)
     {
         qreal labelWidth = metrics.width(label) + 2 * d_leafPadding;
         if (labelWidth > leaf.width())
@@ -178,7 +178,7 @@ void TreeNode::layout()
     if (d_popupItem)
         d_popupItem->setPos(scenePos());
     
-    foreach (TreeNode* child, d_childNodes)
+    foreach (TreeNode *child, d_childNodes)
     {
         child->setPos(left, leaf.height() + d_spaceBetweenLayers);
         child->layout();
@@ -236,7 +236,7 @@ void TreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
     // but if I could implement drawing each line separately, it would be easy as pie
     // to implement colors, weights etc for each line separately.
     QString labels;
-    foreach (QString label, d_labels)
+    foreach (QString const &label, d_labels)
         labels += QString("%1\n").arg(label);
     
     QRectF textBox(leaf);
@@ -261,7 +261,7 @@ void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
 
     QPointF origin(leaf.x() + leaf.width() / 2, leaf.y() + leaf.height());
     
-    foreach (TreeNode* child, d_childNodes)
+    foreach (TreeNode const *child, d_childNodes)
     {
         // child's top center position, where the leaf should be found
         QPointF target(child->pos() + QPointF(child->branchBoundingRect().width() / 2, 0));

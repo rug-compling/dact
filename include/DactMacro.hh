@@ -12,4 +12,6 @@ struct DactMacro {
     QString replacement;
 };
 
+Q_DECLARE_TYPEINFO(DactMacro, Q_PRIMITIVE_TYPE);
+
 #endif

@@ -191,7 +191,7 @@ QString StatisticsWindow::selectionAsCSV(QString const &separator) const
     
     QStringList output;
     
-    foreach (QModelIndex row, rows)
+    foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
         output << d_model->data(row).toString() // value

@@ -37,7 +37,7 @@ void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
     QWidget *widget)
 {
     QString lines;
-    foreach (QString line, d_lines)
+    foreach (QString const &line, d_lines)
         lines += QString("%1\n").arg(line);
 
     // Get the font size.
@@ -77,7 +77,7 @@ QSizeF PopupItem::size() const
     QFontMetricsF metrics(font());
     QSizeF popupSize(10, 10);
     
-    foreach (QString label, d_lines)
+    foreach (QString const &label, d_lines)
     {
         qreal labelWidth = metrics.width(label);
         if (labelWidth > popupSize.width())

@@ -52,7 +52,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     
     int previousDepth = 0;
     
-    foreach (Chunk chunk, chunks)
+    foreach (Chunk const &chunk, chunks)
     {
         // Indeed, this is copy-pastework from ~20
         bool skip = false;

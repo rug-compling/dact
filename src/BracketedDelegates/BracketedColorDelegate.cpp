@@ -46,7 +46,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             ? option.palette.highlightedText()
             : option.palette.text());
     
-        foreach (Chunk chunk, chunks)
+        foreach (Chunk const &chunk, chunks)
         {
             if (chunk.text().isEmpty())
                 continue;

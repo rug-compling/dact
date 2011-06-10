@@ -732,7 +732,7 @@ void MainWindow::exportCorpus()
         
         if (selectionOnly)
         {
-            foreach (QModelIndex item, selectionModel->selectedRows())
+            foreach (QModelIndex const &item, selectionModel->selectedRows())
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
@@ -883,7 +883,7 @@ void MainWindow::updateTreeNodeButtons()
     bool focussedNodePassed = false;
     
     if (d_ui->treeGraphicsView->scene())
-        foreach(TreeNode* node, d_ui->treeGraphicsView->scene()->nodes())
+        foreach(TreeNode const *node, d_ui->treeGraphicsView->scene()->nodes())
         {
             if (node->hasFocus())
                 focussedNodePassed = true;
