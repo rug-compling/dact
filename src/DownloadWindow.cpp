@@ -20,7 +20,6 @@
 
 #include <ArchiveModel.hh>
 #include <DownloadWindow.hh>
-#include <DactProgressDialog.hh>
 #include <QtIOCompressor.hh>
 #include <config.hh>
 

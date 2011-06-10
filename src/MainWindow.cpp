@@ -13,6 +13,7 @@
 #include <QPoint>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QSize>
 #include <QTextStream>
@@ -35,7 +36,6 @@
 #include <DactMacrosWindow.hh>
 //#include <DactQueryHistory.hh>
 #include <FilterModel.hh>
-#include <DactProgressDialog.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
@@ -60,8 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     d_downloadWindow(0),
     d_statisticsWindow(0),
     d_macrosWindow(0),
-    d_openProgressDialog(new DactProgressDialog(this)),
-    d_exportProgressDialog(new DactProgressDialog(this)),
+    d_openProgressDialog(new QProgressDialog(this)),
+    d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
 #if 0
     d_queryHistory(0)
@@ -230,18 +230,16 @@ void MainWindow::createActions()
     connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
         SLOT(corpusWritten(int)));
     
-    connect(d_openProgressDialog, SIGNAL(rejected()),
-        SLOT(cancelReadCorpus()));
     connect(this, SIGNAL(exportError(QString const &)),
         SLOT(showWriteCorpusError(QString const &)));
     
     connect(this, SIGNAL(openError(QString const &)),
         SLOT(showOpenCorpusError(QString const &)));
     
-    connect(d_exportProgressDialog, SIGNAL(rejected()),
+    connect(d_exportProgressDialog, SIGNAL(canceled()),
         SLOT(cancelWriteCorpus()));
     connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
-    connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setProgress(int)));
+    connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setValue(int)));
     
     connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
@@ -620,11 +618,11 @@ void MainWindow::readCorpus(QString const &corpusPath)
     setWindowFilePath(corpusPath);
 
     d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
-    d_openProgressDialog->setDescription(QString("Opening %1").arg(corpusPath));
+    d_openProgressDialog->setLabelText(QString("Opening %1").arg(corpusPath));
     d_openProgressDialog->open();
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
-    d_openProgressDialog->setCancelable(false);
+    d_openProgressDialog->setCancelButton(0);
     
     QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &MainWindow::readAndShowFiles, corpusPath);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
@@ -644,11 +642,6 @@ bool MainWindow::readAndShowFiles(QString const &path)
     }
 
     return true;
-}
-
-void MainWindow::cancelReadCorpus()
-{
-    //
 }
 
 void MainWindow::cancelWriteCorpus()
@@ -746,7 +739,7 @@ void MainWindow::exportCorpus()
     if (!filename.isNull())
     {
         d_exportProgressDialog->setWindowTitle(selectionOnly ? "Exporting selection" : "Exporting corpus");
-        d_exportProgressDialog->setDescription(QString("Exporting %1 to:\n%2")
+        d_exportProgressDialog->setLabelText(QString("Exporting %1 to:\n%2")
             .arg(selectionOnly ? "selection" : "corpus")
             .arg(filename));
         d_exportProgressDialog->open();
@@ -766,7 +759,7 @@ void MainWindow::exportCorpus()
             std::copy(d_corpusReader->begin(), d_corpusReader->end(), std::back_inserter(files));
         
         d_writeCorpusCancelled = false;
-        d_exportProgressDialog->setCancelable(true);
+        d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
         
         QFuture<bool> corpusWriterFuture =
             QtConcurrent::run(this, &MainWindow::writeCorpus, filename, files);

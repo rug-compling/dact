@@ -25,7 +25,6 @@ class DactMacrosWindow;
 class DactQueryHistory;
 class FilterModel;
 class StatisticsWindow;
-class DactProgressDialog;
 class PreferencesWindow;
 class FilterModel;
 class DactQueryWindow;
@@ -34,6 +33,7 @@ class DactTreeScene;
 
 class QItemSelection;
 class QKeyEvent;
+class QProgressDialog;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -116,12 +116,6 @@ private slots:
      \sa currentBracketedEntryChanged
     */
     void bracketedEntryActivated(QString const &file);
-    
-    /*!
-     Cancels reading the iterator in addFiles. Invoked by the open-file
-     dialog's cancel button.
-     */
-    void cancelReadCorpus();
     
     /*!
      Cancels the writing loop when exporting files to a corpus.
@@ -415,8 +409,8 @@ private:
     DownloadWindow *d_downloadWindow;
     StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
-    DactProgressDialog *d_openProgressDialog;
-    DactProgressDialog *d_exportProgressDialog;
+    QProgressDialog *d_openProgressDialog;
+    QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
     
     /*!
