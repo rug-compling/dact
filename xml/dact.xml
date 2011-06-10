@@ -51,6 +51,22 @@
         <para>Although the corpus can be browsed entry by entry, most functionality of Dact is
             query-driven. After a short introduction to the query language in the next section, you
             will be prepared to use other functionality of Dact.</para>
+        <sect2>
+            <title>Getting a corpus</title>
+            <para>Dact comes with a download tool for corpora. Select <emphasis>Tools – Download
+                    corpus…</emphasis> and choose the corpus you want to download, and press
+                    <emphasis>Download</emphasis>. You will be asked where you want to store the
+                corpus. After downloading and unpacking the corpus you will have to open it manually
+                using <emphasis>File – Open…</emphasis>.</para>
+            <figure>
+                <title>Download Corpora window</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../images/download-corpora-window.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+        </sect2>
     </sect1>
     <sect1>
         <title>Queries</title>
@@ -426,8 +442,6 @@
             <para>Note that the OS X version of Dact does not have a <emphasis>Font</emphasis> tab.
                 In the other versions of Dact you can change the font that is used for the buttons
                 and lists throughout Dact.</para>
-            <para>On the <emphasis role="italic">Network</emphasis> tab you can change the base url
-                used as source by the Download Corpora tool.</para>
             <para>If you mess up, you can always return to the default preferences Dact ships with
                 by clicking the <emphasis>Return to Default</emphasis> button in a tab. Any
                 preference on that tab will be reset.</para>
