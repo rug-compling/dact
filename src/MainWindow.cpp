@@ -46,7 +46,7 @@
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
-#ifdef __APPLE__
+#ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
 #endif
 
@@ -214,6 +214,13 @@ void MainWindow::setupUi()
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d_ui->mainToolBar->addWidget(spacer);
     d_ui->mainToolBar->addAction(d_ui->inspectorAction);
+    
+    #ifdef Q_WS_MAC
+        QMenu *appleDockMenu = new QMenu(this);
+        appleDockMenu->addAction(d_ui->openAction);
+        appleDockMenu->addAction(d_ui->openDirectoryAction);
+        qt_mac_set_dock_menu(appleDockMenu);
+    #endif
 }
 
 void MainWindow::createActions()
@@ -296,13 +303,6 @@ void MainWindow::createActions()
         SLOT(focusHighlight()));
     connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
-    
-#ifdef __APPLE__
-    QMenu *appleDockMenu = new QMenu(this);
-    appleDockMenu->addAction(d_ui->openAction);
-    appleDockMenu->addAction(d_ui->openDirectoryAction);
-    qt_mac_set_dock_menu(appleDockMenu);
-#endif
 }
 
 void MainWindow::entryFound(QString) {
