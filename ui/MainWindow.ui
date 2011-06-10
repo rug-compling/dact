@@ -94,6 +94,9 @@
              </item>
              <item row="1" column="1">
               <widget class="QLabel" name="hitsLabel">
+               <property name="toolTip">
+                <string>Number of matching nodes found in the sentences</string>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -101,6 +104,9 @@
              </item>
              <item row="0" column="1">
               <widget class="QLabel" name="entriesLabel">
+               <property name="toolTip">
+                <string>Number of sentences</string>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -271,15 +277,15 @@
    <addaction name="inspectorAction"/>
   </widget>
   <widget class="TreeNodeInspector" name="inspector">
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
    <property name="windowTitle">
     <string>Inspector</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
-   </property>
    <addaction name="filterOnAttributeAction"/>
   </widget>
   <action name="quitAction">
