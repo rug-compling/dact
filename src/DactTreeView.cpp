@@ -41,11 +41,8 @@ DactTreeScene* DactTreeView::scene() const
 
 void DactTreeView::fitTree()
 {
-    if (!scene())
-        return;
-    
-    if (scene()->rootNode() != 0)
-        fitInView(scene()->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+    if (scene())
+        fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 void DactTreeView::focusTreeNode(int direction)
