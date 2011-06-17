@@ -187,15 +187,21 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="RecentFilesMenu" name="menuRecentFiles">
+     <property name="title">
+      <string>Recent</string>
+     </property>
+    </widget>
     <addaction name="openAction"/>
     <addaction name="openDirectoryAction"/>
+    <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="xmlExportAction"/>
@@ -605,6 +611,11 @@
    <extends>QDockWidget</extends>
    <header>TreeNodeInspector.hh</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RecentFilesMenu</class>
+   <extends>QMenu</extends>
+   <header>RecentFilesMenu.hh</header>
   </customwidget>
  </customwidgets>
  <resources>

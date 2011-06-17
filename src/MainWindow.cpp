@@ -263,6 +263,8 @@ void MainWindow::createActions()
         SLOT(openCorpus()));
     connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
         SLOT(openDirectoryCorpus()));
+    connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
+        SLOT(readCorpus(QString)));
     connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
         SLOT(exportCorpus()));
     connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->treeGraphicsView,
@@ -613,9 +615,10 @@ void MainWindow::readCorpus(QString const &corpusPath)
         d_corpusOpenWatcher.waitForFinished();
     }
     
-    // XXX It would be nicer if this could be set in corpusRead, but there we
+    // XXX It would be a lot nicer if this could be set in corpusRead, but there we
     // don't know the path to the corpus.
     setWindowFilePath(corpusPath);
+    d_ui->menuRecentFiles->addFile(corpusPath);
 
     d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
     d_openProgressDialog->setLabelText(QString("Opening %1").arg(corpusPath));

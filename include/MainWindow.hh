@@ -41,14 +41,6 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     
-    /*!
-     Start loading a corpus
-     \param corpusPath path to a .dz or directory with the XML files
-    */
-    void readCorpus(QString const &corpusPath);
-
-    bool readAndShowFiles(QString const &path);
-
 signals:
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
@@ -60,6 +52,12 @@ public slots:
      Hide the main window
     */
     void close();
+    
+    /*!
+     Start loading a corpus
+     \param corpusPath path to a .dz or directory with the XML files
+    */
+    void readCorpus(QString const &corpusPath);
     
     /*!
      Instantiate (if not already instantiated) and raise the download window.
@@ -385,6 +383,8 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
+    bool readAndShowFiles(QString const &path);
+
     /*!
      Read settings like the main window position and dimensions
      */
