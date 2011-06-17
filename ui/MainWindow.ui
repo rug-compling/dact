@@ -196,7 +196,7 @@
     </property>
     <widget class="RecentFilesMenu" name="menuRecentFiles">
      <property name="title">
-      <string>Recent</string>
+      <string>Open Recent</string>
      </property>
     </widget>
     <addaction name="openAction"/>
