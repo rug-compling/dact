@@ -2,6 +2,7 @@
 #include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFuture>
 #include <QHash>
 #include <QItemSelection>
@@ -225,8 +226,8 @@ void MainWindow::setupUi()
 
 void MainWindow::createActions()
 {
-    connect(&d_corpusOpenWatcher, SIGNAL(resultReadyAt(int)),
-        SLOT(corpusRead(int)));
+    connect(&d_corpusOpenWatcher, SIGNAL(finished()),
+        SLOT(corpusRead()));
     connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
         SLOT(corpusWritten(int)));
     
@@ -615,11 +616,6 @@ void MainWindow::readCorpus(QString const &corpusPath)
         d_corpusOpenWatcher.waitForFinished();
     }
     
-    // XXX It would be a lot nicer if this could be set in corpusRead, but there we
-    // don't know the path to the corpus.
-    setWindowFilePath(corpusPath);
-    d_ui->menuRecentFiles->addFile(corpusPath);
-
     d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
     d_openProgressDialog->setLabelText(QString("Opening %1").arg(corpusPath));
     d_openProgressDialog->open();
@@ -627,24 +623,21 @@ void MainWindow::readCorpus(QString const &corpusPath)
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
     d_openProgressDialog->setCancelButton(0);
     
-    QFuture<bool> corpusOpenFuture = QtConcurrent::run(this, &MainWindow::readAndShowFiles, corpusPath);
+    QFuture< QPair< QSharedPointer<ac::CorpusReader>, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReader, corpusPath);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
 
-bool MainWindow::readAndShowFiles(QString const &path)
+QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader(QString const &path)
 {
+    QSharedPointer<ac::CorpusReader> reader;
+    
     try {
-        d_corpusReader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
+        reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
     } catch (std::runtime_error const &e) {
-        d_corpusReader.clear();
-        // readAndShowFiles is runned in a different thread. Is this safe?
-        d_xpathValidator->setCorpusReader(QSharedPointer<ac::CorpusReader>());
-        setWindowFilePath("");
         emit openError(e.what());
-        return false;
     }
-
-    return true;
+    
+    return QPair< QSharedPointer<ac::CorpusReader>, QString >(reader, path);
 }
 
 void MainWindow::cancelWriteCorpus()
@@ -652,19 +645,11 @@ void MainWindow::cancelWriteCorpus()
     d_writeCorpusCancelled = true;
 }
 
-void MainWindow::corpusRead(int idx)
+void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path)
 {
-    d_openProgressDialog->accept();
+    d_corpusReader = reader;
     
-    // If opening the corpus failed, don't do anything.
-    if (!d_corpusReader)
-    {
-        setWindowFilePath("");
-        return;
-    }
-    
-    // Set up validator.
-    d_xpathValidator->setCorpusReader(d_corpusReader);
+    d_xpathValidator->setCorpusReader(reader);
     
     // XXX - There seems to be no way to revalidate a QLineEdit
     QString query = d_ui->filterLineEdit->text();
@@ -675,12 +660,31 @@ void MainWindow::corpusRead(int idx)
     d_ui->highlightLineEdit->clear();
     d_ui->highlightLineEdit->insert(query);
     
-    // Show the canonical name in the window title, if it is implemented
-    // (related: alpinocorpus issue #9)
-    if (d_corpusReader->name().isEmpty())
-        setWindowTitle("Dact");
+    if (!reader.isNull())
+    {
+        // Show the canonical name in the window title, if it is implemented
+        // (related: alpinocorpus issue #9)
+        /*
+        if (d_corpusReader->name().isEmpty())
+            setWindowTitle("Dact");
+        else
+            setWindowTitle(QString("%1 — Dact").arg(d_corpusReader->name()));
+        */
+        
+        setWindowTitle(QString::fromUtf8("%1 — Dact").arg(QFileInfo(path).fileName()));
+        
+        // On OS X, add the file icon to the window (and try alt-clicking it!)
+        setWindowFilePath(path);
+        
+        // Add file to the recent files menu
+        d_ui->menuRecentFiles->addFile(path);
+    }
     else
-        setWindowTitle(QString("%1 — Dact").arg(d_corpusReader->name()));
+    {
+        // Make everything unhappy and empty
+        setWindowTitle("Dact");
+        setWindowFilePath(QString());
+    }
     
     setModel(new FilterModel(d_corpusReader));
     
@@ -693,6 +697,15 @@ void MainWindow::corpusRead(int idx)
 
     if(d_statisticsWindow != 0)
         d_statisticsWindow->switchCorpus(d_corpusReader);
+}
+
+void MainWindow::corpusRead()
+{
+    d_openProgressDialog->accept();
+    
+    QPair<QSharedPointer<ac::CorpusReader>, QString> result(d_corpusOpenWatcher.result());
+    
+    setCorpusReader(result.first, result.second);
 }
 
 void MainWindow::corpusWritten(int idx)

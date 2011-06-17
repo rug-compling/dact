@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QMainWindow>
 #include <QMutex>
+#include <QPair>
 #include <QSharedPointer>
 #include <QString>
 
@@ -123,13 +124,12 @@ private slots:
     void cancelWriteCorpus();
     
     /*!
-     Listens for the resultReadyAt signal from the corpus reader. When heard, it hides
+     Listens for the finished signal from the corpus reader. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statistics window.
      \sa addFiles
-     \param idx files available so far. Not used by corpusRead.
     */
-    void corpusRead(int idx);
+    void corpusRead();
 
     void corpusWritten(int idx);
     
@@ -240,6 +240,8 @@ private slots:
      Renders the current tree scene to the printer.
      */
     void print();
+    
+    void setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path);
     
     /*!
      Changes the filter query field used to filter the file list and calls
@@ -383,7 +385,7 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
-    bool readAndShowFiles(QString const &path);
+    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path);
 
     /*!
      Read settings like the main window position and dimensions
@@ -469,7 +471,7 @@ private:
      \sa d_corpusOpenFuture
      \sa corpusRead
      */
-    QFutureWatcher<void> d_corpusOpenWatcher;
+    QFutureWatcher< QPair< QSharedPointer<ac::CorpusReader>, QString> > d_corpusOpenWatcher;
 
     /*!
      \sa d_corpusWriteFuture
