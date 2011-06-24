@@ -235,6 +235,8 @@ void ArchiveModel::setUrl(QUrl const &archiveUrl)
 
 void ArchiveModel::refresh()
 {
+    emit retrieving();
+    
     QNetworkRequest request(d_archiveUrl);
     d_accessManager->get(request);
 }
