@@ -40,6 +40,7 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui->setupUi(this);
 
     d_ui->archiveTreeView->setModel(d_archiveModel.data());
+    d_ui->archiveTreeView->hideColumn(3);
     
     // We only enable the download button when a corpus is selected.
     d_ui->downloadPushButton->setEnabled(false);
