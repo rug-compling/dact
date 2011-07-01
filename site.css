@@ -114,6 +114,7 @@ article a.up {
 	display: block;
 	clear: both;
 	background: silver;
+	-webkit-transition: background 0.125s linear;
 	width: 48px;
 	height: 48px;
 	border-radius: 24px;
@@ -122,6 +123,10 @@ article a.up {
 	color: white;
 	line-height: 48px;
 	margin: 48px auto 0 auto;
+}
+
+article a:hover.up {
+	background: grey;
 }
 
 header {
