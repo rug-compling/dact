@@ -9,9 +9,10 @@
 		<header id="home">
 			<div>
 				<img id="logo" src="images-new/dact.svg">
+				<a class="download-button button" href="#download">Download Dact</a>
 				<h1>Dact</h1>
 				<p>Dact is a tool for viewing and analyzing <a href="http://www.let.rug.nl/~vannoord/alp/Alpino/">Alpino</a> corpora. It is a user-friendly replacement for the excellent <a href="http://www.let.rug.nl/vannoord/alp/Alpino/TreebankTools.html">Alpino Treebank Tools</a>.</p>
-				<a class="download-button button" href="#download">Download Dact</a>
+				<p>With Dact you can open, query and convert compact corpora and directories with XML files. Dact can show trees and count occurrences for almost anything you can query using XPath2 and XQuery expressions. Instantaneously.</p>
 			</div>
 		</header>
 		
@@ -117,19 +118,21 @@
 					<a id="show-all-downloads-button" href="#">Show all versions</a>
 				</div>
 				
-				<h3>… or compile Dact from source</h3>
-				<p>To build Dact from source you will need to have the following packages installed:</p>
-				<ul class="prequests list">
-					<li><a href="http://qt.nokia.com/">Qt</a></li>
-					<li><a href="http://www.oracle.com/us/products/database/berkeley-db/index-066571.html">Berkeley DBXML</a> (<a href="http://download-uk.oracle.com/berkeley-db/dbxml-2.5.16.tar.gz">direct download</a>)</li>
-					<li><a href="http://github.com/rug-compling/alpinocorpus">alpinocorpus</a></li>
-				</ul>
-				<p>You can retrieve the source from the <a href="http://github.com/rug-compling/dact">Dact GitHub page</a>, or by simply running:</p>
-				<pre><code>$ git clone git://github.com/rug-compling/dact.git</code></pre>
-				<p>And then you just:</p>
-				<pre><code>$ cmake .
-$ make
-$ make install</code></pre>
+				<div class="hidden">
+					<h3>… or compile Dact from source</h3>
+					<p>To build Dact from source you will need to have the following packages installed:</p>
+					<ul class="prequests list">
+						<li><a href="http://qt.nokia.com/">Qt</a></li>
+						<li><a href="http://www.oracle.com/us/products/database/berkeley-db/index-066571.html">Berkeley DBXML</a> (<a href="http://download-uk.oracle.com/berkeley-db/dbxml-2.5.16.tar.gz">direct download</a>)</li>
+						<li><a href="http://github.com/rug-compling/alpinocorpus">alpinocorpus</a></li>
+					</ul>
+					<p>You can retrieve the source from the <a href="http://github.com/rug-compling/dact">Dact GitHub page</a>, or by simply running:</p>
+					<pre><code>$ git clone git://github.com/rug-compling/dact.git</code></pre>
+					<p>And then you just:</p>
+					<pre><code>$ cmake .
+	$ make
+	$ make install</code></pre>
+				</div>
 				<a class="up" href="#home">Up</a>
 			</div>
 		</article>
