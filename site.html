@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Dact</title>
+		<link rel="stylesheet" href="site.css">
+	</head>
+	<body class="features-at-the-side">
+		<header id="home">
+			<div>
+				<img id="logo" src="images-new/dact.svg">
+				<h1>Dact</h1>
+				<p>Dact is a tool for viewing and analyzing <a href="http://www.let.rug.nl/~vannoord/alp/Alpino/">Alpino</a> corpora. It is a user-friendly replacement for the excellent <a href="http://www.let.rug.nl/vannoord/alp/Alpino/TreebankTools.html">Alpino Treebank Tools</a>.</p>
+				<a class="download-button button" href="#download">Download Dact</a>
+			</div>
+		</header>
+		
+		<nav>
+			<ul>
+				<li><a href="#home">Home</a></li>
+				<li><a href="#features">Features</a></li>
+				<li><a href="#download">Download</a></li>
+				<li><a href="https://github.com/rug-compling/dact">GitHub</a></li>
+				<li><a href="#contact">Contact</a></li>
+			</ul>
+		</nav>
+		
+		<article id="features">
+			<div>
+				<h2>Features</h2>
+				<ul id="features-list">
+					<li>
+						<a href="#feature-interface">
+							<img src="images-new/features/interface-highlight.png">
+							<span>An intuitive interface</span>
+						</a>
+					</li>
+					<li>
+						<a href="#feature-tree">
+							<img src="images-new/features/tree-highlight.png">
+							<span>Parsed sentences are drawn as trees</span>
+						</a>
+					</li>
+					<li>
+						<a href="#feature-inspector">
+							<img src="images-new/features/inspector-highlight.png">
+							<span>Inspectable tree nodes</span>
+						</a>
+					</li>
+					<li>
+						<a href="#feature-statistics">
+							<img src="images-new/features/statistics-highlight.png">
+							<span>Quickly gather statistics</span>
+						</a>
+					</li>
+					<li>
+						<a href="#feature-sentences">
+							<img src="images-new/features/sentences-highlight.png">
+							<span>Get insight in your corpus</span>
+						</a>
+					</li>
+					<li>
+						<a href="#feature-download">
+							<img src="images-new/features/download-highlight">
+							<span>Download directly from inside the app</span>
+						</a>
+					</li>
+				</ul>
+				<div id="features-showcase">
+					<div id="feature-interface">
+						<img src="images-new/features/interface.png">
+						<h3>Easy to use interface</h3>
+						<p>Dact features an easy to use interface that works like any other desktop application.</p>
+					</div>
+					<div id="feature-tree">
+						<img src="images-new/features/tree.png">
+						<h3>Tree</h3>
+						<p>Parsed sentences are shown as trees, and nodes that match you XPath query are highlighted. You can print a tree or save it as PDF. And you can click a node to inspect it in the Inspector.</p>
+					</div>
+					<div id="feature-inspector">
+						<img src="images-new/features/inspector.png">
+						<h3>Node inspector</h3>
+						<p>Inspect tree nodes to see their attributes. These are the attributes you can use to refine you XPath queries. Any attribute encoded in the corpus will be shown.</p>
+					</div>
+					<div id="feature-statistics">
+						<img src="images-new/features/statistics.png">
+						<h3>Statistics</h3>
+						<p>Because Dact uses DBXML to store corpora, queries can be run quickly and the results of these queries can be copy-and-pasted into almost any program or spreadsheet.</p>
+					</div>
+					<div id="feature-sentences">
+						<img src="images-new/features/sentences.png">
+						<h3>Sentences</h3>
+						<p>Gain insight in your corpus by looking at the phenomenon in different contexts, or hide the context completely.</p>
+					</div>
+					<div id="feature-download">
+						<img src="images-new/features/download.png">
+						<h3>Download new corpora</h3>
+						<p>Download and unpack corpora directly from within the app. You can bring your own compact corpus as well, or even just a directory with xml files.</p>
+ 					</div>
+				</div>
+				<a class="up" href="#home">Up</a>
+			</div>
+		</article>
+		
+		<article id="download">
+			<div>
+				<h2>Get Dact</h2>
+				<div id="binaries">
+					<div id="binaries-mac" class="MacIntel">
+						<img src="images-new/dact.svg">
+						<a href="dact.dmg" class="fat button">Download Dact for Mac</a>
+					</div>
+					<div id="binaries-windows" class="Windows">
+						<img src="images-new/dact.svg">
+						<a href="setup-dact.exe" class="fat button">Download Dact for Windows</a>
+					</div>
+					<a id="show-all-downloads-button" href="#">Show all versions</a>
+				</div>
+				
+				<h3>… or compile Dact from source</h3>
+				<p>To build Dact from source you will need to have the following packages installed:</p>
+				<ul class="prequests list">
+					<li><a href="http://qt.nokia.com/">Qt</a></li>
+					<li><a href="http://www.oracle.com/us/products/database/berkeley-db/index-066571.html">Berkeley DBXML</a> (<a href="http://download-uk.oracle.com/berkeley-db/dbxml-2.5.16.tar.gz">direct download</a>)</li>
+					<li><a href="http://github.com/rug-compling/alpinocorpus">alpinocorpus</a></li>
+				</ul>
+				<p>You can retrieve the source from the <a href="http://github.com/rug-compling/dact">Dact GitHub page</a>, or by simply running:</p>
+				<pre><code>$ git clone git://github.com/rug-compling/dact.git</code></pre>
+				<p>And then you just:</p>
+				<pre><code>$ cmake .
+$ make
+$ make install</code></pre>
+				<a class="up" href="#home">Up</a>
+			</div>
+		</article>
+		
+		<article id="contact">
+			<div>
+				<h2>Contact</h2>
+				<p>Questions about Dact can be sent to:
+					<span class="hcard">
+						<span class="fn">Daniël de Kok</span>
+						<a class="email" href="mailto:me@danieldk.eu">me@danieldk.eu</a>
+					</span>.
+				</p>
+				<p>Please use <a href="https://github.com/rug-compling/dact/issues">our bugtracker</a> to report bugs that you encountered in Dact.</p>
+				<a class="up" href="#home">Up</a>
+			</div>
+		</article>
+		
+		<footer>
+			Hosted by <a href="http://github.com/">Github</a>.</div>
+		</footer>
+		<script src="site.js"></script>
+	</body>
+</html>

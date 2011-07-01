@@ -1,0 +1,313 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+/* @group Reset.css */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* @end */
+
+body {
+	/* 24px to cancel out the menu bar */
+	margin-top: 24px;
+	font: 16px/24px Helvetica, sans-serif;
+	background: #EBEBEB url(images-new/background.png) repeat;
+}
+
+nav {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	font: 16px/32px Helvetica, sans-serif;
+	text-align: center;
+	background: black;
+	box-shadow: 0 0 14px #555
+}
+
+nav li {
+	display: inline;
+}
+
+nav li:after {
+	color: #333;
+	content: ' •';
+}
+
+nav li:last-child:after {
+	content:  '';
+}
+
+nav a {
+	padding: 4px;
+	color: white;
+	text-shadow: 0 1px 1px #333;
+	text-decoration: none;
+}
+
+nav a:hover {
+	text-decoration: underline;
+}
+
+header,
+article,
+footer {
+	/* overflow: auto to keep the floating elements inside */
+	overflow: auto;
+}
+
+header > div,
+article > div,
+footer > div {
+	margin: 0 auto 48px auto;
+	width: 940px;
+}
+
+article a.up {
+	display: block;
+	clear: both;
+	background: silver;
+	width: 48px;
+	height: 48px;
+	border-radius: 24px;
+	text-align: center;
+	text-decoration: none;
+	color: white;
+	line-height: 48px;
+	margin: 48px auto 0 auto;
+}
+
+header {
+	background: rgba(0, 0, 0, 0.4);
+	padding: 48px;
+	
+	line-height: 24px;
+	
+	/* give the letters a bit of stamp-ness */
+	text-shadow: 0px 1px 1px #aaa;
+	
+	/* very subtile hint of a border */
+	border-bottom: 1px solid white;
+}
+
+header a {
+	color: inherit;
+}
+
+
+
+header #logo {
+	float: left;
+	width: 256px;
+	height: 275px;
+}
+
+header h1 {
+	font: 144px/192px 'Lucida Grande', sans-serif;
+}
+
+.button {
+	display: inline-block;
+	font: 16px/28px 'Lucida Grande', sans-serif;
+	text-align: center;
+	text-shadow: 0 1px 1px black;
+	background: #000;
+	color: #fff;
+	text-decoration: none;
+	margin: 1px;
+	padding: 0px 16px;
+	border-radius: 16px;
+}
+
+.fat.button {
+	line-height: 42px;
+	border-radius: 24px
+}
+
+.button:hover {
+	background: #666;
+}
+
+.button:active {
+	background: #444;
+}
+
+header .download-button {
+	clear: left;
+	float: left;
+	width: 192px;
+	margin: 0 16px;
+	-webkit-transition: box-shadow 0.2s linear;
+}
+
+header .download-button:hover {
+	background: #000;
+	box-shadow: 0 0 12px white;
+}
+
+article:nth-of-type(even) {
+	background: rgba(0, 0, 0, 0.1);
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #eee;
+}
+
+article:nth-of-type(even) .up {
+	color: #ededed;
+}
+
+article > div > h2,
+article > div > h3 {
+	text-align: center;
+	font: 72px/144px 'Lucida Grande', sans-serif;
+	text-shadow: 0px 1px 1px #ccc;
+}
+
+article > div > h3 {
+	font-size: 24px;
+}
+
+article img {
+	max-width: 940px;
+	margin: 0 auto;
+}
+
+article p,
+article pre,
+article .list {
+	margin-bottom: 8px;
+}
+
+#features ul {
+	float: left;
+}
+
+#features li {
+	display: block;
+	float: left;
+	margin: 8px;
+}
+
+#features li a span {
+	display: none;
+}
+
+#features li a img {
+	width: 100px;
+	height: 100px;
+	box-shadow: 0 1px 8px #ccc;
+	margin: 1px 9px 9px 1px;
+	border: 1px solid #ccc;
+}
+
+#features li a.active img{
+	margin: 0 8px 8px 0;
+	border: 2px solid #999;
+}
+
+#features-showcase h3 {
+	font-size: 24px;
+	color: #333;
+}
+
+.features-at-the-side #features ul {
+	float: left;
+	width: 260px;
+}
+
+.features-at-the-side #features #features-showcase {
+	width: 660px;
+	overflow: hidden;
+}
+
+#download #binaries {
+	background: white;
+	border: 1px solid #999;
+	border-radius: 6px;
+	text-align: center;
+}
+
+#download #binaries div {
+	display: inline-block;
+	width: 280px;
+	margin: 16px;
+}
+
+#download #show-all-downloads-button {
+	display: block;
+	padding: 4px;
+}
+
+#download .prequests {
+	list-style: disc;
+	padding-left: 24px;
+}
+
+footer {
+	padding: 16px;
+	
+	font-size: 13px;
+	color: grey;
+	text-align: center;
+}
+
+footer a {
+	color: grey;
+}
+
+pre {
+	font: 16px/24px monospace;
+}
+
+code {
+	display: block;
+	padding: 4px;
+	background: #333;
+	color: #eee;
+}
+
+.hidden {
+	display: none !important;
+}
