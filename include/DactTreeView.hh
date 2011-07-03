@@ -9,6 +9,7 @@ double const ZOOM_OUT_FACTOR = 0.8;
 double const ZOOM_IN_FACTOR = 1.0 / ZOOM_OUT_FACTOR;
 
 class DactTreeScene;
+class QEvent;
 
 class DactTreeView : public QGraphicsView
 {
@@ -37,10 +38,12 @@ signals:
 
 protected:
     QString transformParseToTree(QString const &xml) const;
-    void wheelEvent(QWheelEvent * event);
+    virtual bool viewportEvent(QEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 private:
     QString d_xml; // xml of the last transformed tree
+    qreal d_scaleFactor;
     QSharedPointer<XSLTransformer> d_transformer;
 };
 

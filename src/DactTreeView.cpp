@@ -1,3 +1,6 @@
+#include <QEvent>
+#include <QScrollBar>
+#include <QTouchEvent>
 #include <QWheelEvent>
 
 #include "DactTreeView.hh"
@@ -10,6 +13,8 @@ DactTreeView::DactTreeView(QWidget* parent)
 {
     QFile stylesheet(":/stylesheets/tree.xsl");
     d_transformer = QSharedPointer<XSLTransformer>(new XSLTransformer(stylesheet));
+    viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
+    setDragMode(ScrollHandDrag);
 }
 
 void DactTreeView::showTree(QString const &xml)
@@ -20,6 +25,7 @@ void DactTreeView::showTree(QString const &xml)
     DactTreeScene *scene = new DactTreeScene(this);
     scene->parseTree(tree_xml);
     setScene(scene);
+    d_scaleFactor = transform().m11();
 }
 
 QString DactTreeView::transformParseToTree(QString const &xml) const
@@ -41,8 +47,10 @@ DactTreeScene* DactTreeView::scene() const
 
 void DactTreeView::fitTree()
 {
-    if (scene())
+    if (scene()) {
         fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+        d_scaleFactor = transform().m11();
+    }
 }
 
 void DactTreeView::focusTreeNode(int direction)
@@ -92,12 +100,14 @@ void DactTreeView::focusTreeNode(int direction)
 
 void DactTreeView::zoomIn()
 {
-    scale(ZOOM_IN_FACTOR, ZOOM_IN_FACTOR);
+    d_scaleFactor *= ZOOM_IN_FACTOR;
+    setTransform(QTransform().scale(d_scaleFactor, d_scaleFactor));
 }
 
 void DactTreeView::zoomOut()
 {
-    scale(ZOOM_OUT_FACTOR, ZOOM_OUT_FACTOR);
+    d_scaleFactor *= ZOOM_OUT_FACTOR;
+    setTransform(QTransform().scale(d_scaleFactor, d_scaleFactor));
 }
 
 void DactTreeView::resetZoom()
@@ -105,6 +115,7 @@ void DactTreeView::resetZoom()
     // Scale back to 1:1
     QRectF unity = matrix().mapRect(QRectF(0, 0, 1, 1));
     scale(1 / unity.width(), 1 / unity.height());
+    d_scaleFactor = transform().m11();
 }
 
 void DactTreeView::focusNextTreeNode()
@@ -123,12 +134,47 @@ void DactTreeView::fitInView(QRectF const &rect, Qt::AspectRatioMode aspectRatio
     
     // Yeah, it fits, but that doesn't mean in needs to blow up in your face.
     // So, if it is scaled beyond its original size, reset the scale to 1.0
-    if (matrix().m11() > 1.0 || matrix().m12() > 1.0)
+    if (matrix().m11() > 1.0 || matrix().m22() > 1.0)
         resetZoom();
 }
 
+bool DactTreeView::viewportEvent(QEvent *event)
+{
+    // Based on touch-pinchzoom example.
+    switch (event->type()) {
+        case QEvent::TouchBegin:
+        case QEvent::TouchUpdate:
+        case QEvent::TouchEnd:
+        {
+            QTouchEvent *touchEvent = reinterpret_cast<QTouchEvent *>(event);
+            QList<QTouchEvent::TouchPoint> points = touchEvent-> touchPoints();
+            
+            if (points.count() == 2) {
+                QTouchEvent::TouchPoint &touchPoint0 = points.first();
+                QTouchEvent::TouchPoint &touchPoint1 = points.last();
+                qreal curScaleFactor = QLineF(touchPoint0.pos(), touchPoint1.pos()).length() /
+                    QLineF(touchPoint0.startPos(), touchPoint1.startPos()).length();
+                if (touchEvent->touchPointStates() & Qt::TouchPointReleased) {
+                    // if one of the fingers is released, remember the current scale
+                    // factor so that adding another finger later will continue zooming
+                    // by adding new scale factor to the existing remembered value.
+                    d_scaleFactor *= curScaleFactor;
+                    curScaleFactor = 1;
+                }
+                
+                setTransform(QTransform().scale(d_scaleFactor * curScaleFactor,
+                                                d_scaleFactor * curScaleFactor));
+            }
+            return true;
+        }
+        default:
+            break;
+    }
+    
+    return QGraphicsView::viewportEvent(event);
+}
 
-void DactTreeView::wheelEvent(QWheelEvent * event)
+void DactTreeView::wheelEvent(QWheelEvent *event)
 {
     // If the control modifier key isn't pressed, handle this wheel
     // even as any other event: pan the scene... probably.
@@ -161,7 +207,8 @@ void DactTreeView::wheelEvent(QWheelEvent * event)
     
     // Zoom in on position of the mouse (like Google Maps)
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    scale(zoomFactor, zoomFactor);
+    d_scaleFactor *= zoomFactor;
+    setTransform(QTransform().scale(d_scaleFactor, d_scaleFactor));
     
     event->accept();
 }
