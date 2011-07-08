@@ -1,13 +1,10 @@
 (function() {
-	function hide_showcases() {
-		$('#features-showcase > div').hide();
-	}
-	
-	function show_showcase(id) {
-		$('#' + id).show();
+	function show_showcase(showcase) {
+		showcase = $(showcase);
+		$('#features-showcase').scrollTo(showcase, 500);
 
 		$('#features-list a').each(function() {
-			if (this.hash.substring(1) == id)
+			if (this.hash.substring(1) == showcase.attr('id'))
 				$(this).addClass('active');
 			else
 				$(this).removeClass('active');
@@ -15,12 +12,10 @@
 	}
 	
 	$('#features-list a').click(function() {
-		hide_showcases();
-		show_showcase(this.hash.substring(1));
+		show_showcase(this.hash);
 	});
 	
-	hide_showcases();
-	show_showcase($('#features-showcase > div')[0].id);
+	show_showcase($('#features-showcase > ul > li').first());
 
 	var download_selector = document.getElementById('binaries');
 	var binaries = download_selector.getElementsByTagName('div');

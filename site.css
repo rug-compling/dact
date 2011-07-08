@@ -253,10 +253,6 @@ article img {
 	color: #333;
 }
 
-#features-showcase img {
-	width: 100%;
-}
-
 .features-at-the-side #features ul {
 	float: left;
 	width: 260px;
@@ -265,6 +261,16 @@ article img {
 .features-at-the-side #features-showcase {
 	width: 660px;
 	overflow: hidden;
+}
+
+.features-at-the-side #features-showcase ul {
+	width: 4200px;
+}
+
+.features-at-the-side #features-showcase li {
+	width: 660px;
+	float: left;
+	margin: 0 20px;
 }
 
 #download #binaries {
