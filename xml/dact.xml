@@ -447,4 +447,17 @@
                 preference on that tab will be reset.</para>
         </sect2>
     </sect1>
+    <sect1>
+        <title>Common errors</title>
+        <sect2>
+            <title>The application failed to initialize properly
+                (0xc0000022)</title>
+            <para>If you get the error <literal>The application failed to initialize properly
+                (0xc0000022)</literal> it means that something is wrong with the DLL permissions.
+                Presumably with the .dll files in the Dact distribution.</para>
+            <para>You can fix this problem by opening a command prompt, and cd to the directory in
+                which the Dact files reside. Then type:</para>
+            <programlisting>cacls *.dll /E /G BUILTIN\Users:R</programlisting>
+        </sect2>
+    </sect1>
 </article>
