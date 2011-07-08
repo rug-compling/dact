@@ -42,7 +42,11 @@
 	$('a[href^=#]')
 		.filter(function() { return this.hash.length; })
 		.click(function(e) {
-			$(window).scrollTo(this.hash, 500);
+			if ($(this.hash).parents('#features').length)
+				$(window).scrollTo('#features', 500);
+			else
+				$(window).scrollTo(this.hash, 500);
+			
 			e.preventDefault();
 		});
 })();
