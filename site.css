@@ -51,6 +51,65 @@ table {
 
 /* @end */
 
+/* @group elements */
+
+/* @group download buttons */
+
+.button {
+	display: inline-block;
+	font: 16px/28px 'Lucida Grande', sans-serif;
+	text-align: center;
+	text-shadow: 0 1px 1px black;
+	background: #000;
+	color: #fff;
+	text-decoration: none;
+	margin: 1px;
+	padding: 0px 16px;
+	border-radius: 16px;
+}
+
+.fat.button {
+	line-height: 42px;
+	border-radius: 24px
+}
+
+.button:hover {
+	background: #666;
+}
+
+.button:active {
+	background: #444;
+}
+
+/* @end */
+
+/* @group up buttons */
+
+a.up {
+	display: block;
+	clear: both;
+	background-color: silver;
+	width: 48px;
+	height: 48px;
+	border-radius: 24px;
+	text-align: center;
+	text-decoration: none;
+	color: white;
+	line-height: 48px;
+	margin: 48px auto 0 auto;
+	
+	-moz-transition: background 0.125s linear;
+	-o-transition: background-color 0.125s linear;
+	-webkit-transition: background 0.125s linear;
+	transition: background 0.125s linear;
+}
+
+a:hover.up {
+	background: grey;
+}
+
+/* @end */
+
 body {
 	/* 24px to cancel out the menu bar */
 	margin-top: 24px;
@@ -61,6 +120,25 @@ body {
 p, pre, .list {
 	margin-bottom: 8px;
 }
+
+pre {
+	font: 16px/24px monospace;
+}
+
+code {
+	display: block;
+	padding: 4px;
+	background: #333;
+	color: #eee;
+}
+
+.hidden {
+	display: none !important;
+}
+
+/* @end */
+
+/* @group Navigation */
 
 nav {
 	position: fixed;
@@ -96,11 +174,14 @@ nav a:hover {
 	text-decoration: underline;
 }
 
+/* @end */
+
 header,
 article,
 footer {
 	/* overflow: auto to keep the floating elements inside */
 	overflow: auto;
+	min-width: 940px;
 }
 
 header > div,
@@ -110,24 +191,7 @@ footer > div {
 	width: 940px;
 }
 
-article a.up {
-	display: block;
-	clear: both;
-	background: silver;
-	-webkit-transition: background 0.125s linear;
-	width: 48px;
-	height: 48px;
-	border-radius: 24px;
-	text-align: center;
-	text-decoration: none;
-	color: white;
-	line-height: 48px;
-	margin: 48px auto 0 auto;
-}
-
-article a:hover.up {
-	background: grey;
-}
+/* @group header */
 
 header {
 	background: rgba(0, 0, 0, 0.4);
@@ -156,44 +220,25 @@ header h1 {
 	font: 144px/192px 'Lucida Grande', sans-serif;
 }
 
-.button {
-	display: inline-block;
-	font: 16px/28px 'Lucida Grande', sans-serif;
-	text-align: center;
-	text-shadow: 0 1px 1px black;
-	background: #000;
-	color: #fff;
-	text-decoration: none;
-	margin: 1px;
-	padding: 0px 16px;
-	border-radius: 16px;
-}
-
-.fat.button {
-	line-height: 42px;
-	border-radius: 24px
-}
-
-.button:hover {
-	background: #666;
-}
-
-.button:active {
-	background: #444;
-}
-
 header .download-button {
 	clear: left;
 	float: left;
 	width: 192px;
 	margin: 0 16px;
+	-moz-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
 	-webkit-transition: box-shadow 0.2s linear;
+	transition: box-shadow 0.2s linear;
 }
 
 header .download-button:hover {
 	background: #000;
 	box-shadow: 0 0 12px white;
 }
+
+/* @end */
+
+/* @group article */
 
 article:nth-of-type(even) {
 	background: rgba(0, 0, 0, 0.1);
@@ -220,6 +265,8 @@ article img {
 	max-width: 940px;
 	margin: 0 auto;
 }
+
+/* @group features */
 
 #features ul {
 	float: left;
@@ -273,10 +320,9 @@ article img {
 	margin: 0 20px;
 }
 
-#download .get-the-source {
-	margin-top: 20px;
-	text-align: center;
-}
+/* @end */
+
+/* @group downloads */
 
 #download #binaries {
 	background: white;
@@ -296,14 +342,31 @@ article img {
 	padding: 4px;
 }
 
+#download .get-the-source {
+	margin-top: 20px;
+	text-align: center;
+}
+
 #download .prequests {
 	list-style: disc;
 	padding-left: 24px;
 }
 
+/* @end */
+
+/* @group contact */
+
 #contact {
 	text-align: center;
 }
+
+
+
+/* @end */
+
+/* @end */
+
+/* @group footer */
 
 footer {
 	padding: 16px;
@@ -317,17 +380,4 @@ footer a {
 	color: grey;
 }
 
-pre {
-	font: 16px/24px monospace;
-}
-
-code {
-	display: block;
-	padding: 4px;
-	background: #333;
-	color: #eee;
-}
-
-.hidden {
-	display: none !important;
-}
+/* @end */
