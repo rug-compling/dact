@@ -8,18 +8,18 @@
     <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
   </head>
   <body>
-    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="id36113190"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#id36113063">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#id36113253">2. Queries</a></span></dt></dl></div>
+    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="idp5440"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#idp21376">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#idp33360">2. Queries</a></span></dt><dt><span class="sect1"><a href="#idp136624">3. Converting and exporting corpora</a></span></dt><dt><span class="sect1"><a href="#idp149152">4. Configuring Dact</a></span></dt><dt><span class="sect1"><a href="#idp164096">5. Common errors</a></span></dt></dl></div>
     
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113063"></a>1. Introduction</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp21376"></a>1. Introduction</h2></div></div></div>
         
         <p>If Dact could be started correctly, you can open a corpus in Dact. Dact supports three
             kinds of corpora:</p>
         <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
-                <p>Dact corpora (recognizable by the <span class="italic">.dact</span> extension). Use of this corpus format is strongly recommended,
+                <p>Dact corpora (recognizable by the <code class="filename">.dact</code> extension). Use of this corpus format is strongly recommended,
                     because it has superior performance in query processing.</p>
             </li><li class="listitem">
                 <p>Compact corpora, consisting of a data and index file (recognizable by
-                        the <span class="italic">.data.dz</span> and <span class="italic">.index</span> extensions).</p>
+                        the <code class="filename">.data.dz</code> and <code class="filename">.index</code> extensions).</p>
             </li><li class="listitem">
                 <p>Directory corpora, which are directories that contain parses.</p>
             </li></ul></div>
@@ -27,9 +27,9 @@
             will show a dialog that allows you to open the corpus. If you prefer, you can use
                 the <span class="italic">File - Open…</span> and <span class="italic">File
                 - Open Directory…</span> menu items as well.</p>
-        <div class="figure"><a id="id36113087"></a><p class="title"><strong>Figure 1. Dact main window</strong></p><div class="figure-contents">
+        <div class="figure"><a id="idp24368"></a><p class="title"><strong>Figure 1. Dact main window</strong></p><div class="figure-contents">
             
-            <div class="mediaobject"><img src="../images/dact-osx-small.png" alt="Dact main window" /></div>
+            <div class="mediaobject"><img src="images/dact-osx-small.png" alt="Dact main window" /></div>
         </div></div><br class="figure-break" />
         <p>After opening a corpus, the window will resemble that in the screenshot above. The
             main Dact Window consists of two panes:</p>
@@ -44,30 +44,33 @@
         <p>Although the corpus can be browsed entry by entry, most functionality of Dact is
             query-driven. After a short introduction to the query language in the next section, you
             will be prepared to use other functionality of Dact.</p>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp28960"></a>1.1. Getting a corpus</h3></div></div></div>
+            
+            <p>Dact comes with a download tool for corpora. Select <span class="emphasis"><em>Tools – Download
+                    corpus…</em></span> and choose the corpus you want to download, and press
+                    <span class="emphasis"><em>Download</em></span>. You will be asked where you want to store the
+                corpus. After downloading and unpacking the corpus you will have to open it manually
+                using <span class="emphasis"><em>File – Open…</em></span>.</p>
+            <div class="figure"><a id="idp31312"></a><p class="title"><strong>Figure 2. Download Corpora window</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="images/download-corpora-window.png" alt="Download Corpora window" /></div>
+            </div></div><br class="figure-break" />
+        </div>
     </div>
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id36113253"></a>2. Queries</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp33360"></a>2. Queries</h2></div></div></div>
         
         <p> Queries are written in the <a class="ulink" href="http://en.wikipedia.org/wiki/XPath" target="_top">XPath</a> query language.</p>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113267"></a>2.1. Matching a node</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp35072"></a>2.1. Matching a node</h3></div></div></div>
             
             <p>Every node in the tree is represented as an <span class="italic">node</span> element. You can match any node in the tree by using two
                 forward slashes:</p>
             <pre class="programlisting">//node</pre>
-            <p>Of course, normally, you’d want to match nodes with certain restrictions based on
-                attributes of a node. Such restrictions can be entered between square brackets
-                    (<span class="italic">* and <span class="italic">]</span>). And
-                    attributes are prefixed by the ‘at’ sign (<span class="italic">@</span>).
-                    Commonly-used attributes are:</span></p>
-            <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
-                    <p><span class="bold"><strong>rel</strong></span>: relation label</p>
-                </li><li class="listitem">
-                    <p><span class="bold"><strong>cat</strong></span>: category</p>
-                </li><li class="listitem">
-                    <p><span class="bold"><strong>pos</strong></span>: part of speech tag</p>
-                </li><li class="listitem">
-                    <p><span class="bold"><strong>root</strong></span>: the root/stem of a lexical
-                        node</p>
-                </li></ul></div>
+            <p>Of course, normally, you would want to match nodes with certain restrictions based
+                on attributes of a node. Such restrictions can be entered between square brackets
+                    (<code class="literal">[</code> and <code class="literal">]</code>). And
+                attributes are prefixed by the ‘at’ sign (<code class="literal">@</code>).
+                Commonly-used attributes are:</p>
+            <div class="variablelist"><dl><dt><span class="term">rel</span></dt><dd><p>relation label</p></dd><dt><span class="term">cat</span></dt><dd><p>category</p></dd><dt><span class="term">pos</span></dt><dd><p>part of speech tag</p></dd><dt><span class="term">root</span></dt><dd><p>the root/stem of a lexical node</p></dd></dl></div>
             <p>For instance, the following query will match all nodes with the <span class="italic">pos</span> attribute, or in other words lexical nodes:</p>
             <pre class="programlisting">//node[@pos]</pre>
             <p>We can also restrict the selection by requiring that an attribute has a specific
@@ -79,17 +82,17 @@
                 to be true. The following query will match all nodes with a <span class="italic">su</span> dependency relation, that also have <span class="italic">det</span> as their part of speech tag:</p>
             <pre class="programlisting">//node[@rel="su" and @pos="det"]</pre>
             <p>There are some functions available in XPath which may be useful. For example
-                    using <span class="italic">not</span> we could find any node that doesn’t
-                match a certain condition. Say we want to match everything except nouns, we could
+                    using <code class="function">not</code> we could find any node that does not match a
+                certain condition. Say we want to match everything except nouns, we could
                 write:</p>
             <pre class="programlisting">//node[not(@pt="n")]</pre>
             <p>Or say we wanted to match everything except nouns that are lexical nodes starting
-                with the letter <span class="italic">v</span>. We can use the <span class="italic">starts-with</span> function to require that the <span class="italic">root</span> attribute starts with the text <span class="italic">v</span>. The <span class="italic">and</span> operator
+                with the letter <span class="italic">v</span>. We can use the <code class="function">starts-with</code> function to require that the <span class="italic">root</span> attribute starts with the text <span class="italic">v</span>. The <span class="italic">and</span> operator
                 will tie them together.</p>
             <pre class="programlisting">//node[not(@pt) and starts-with(@root, "v")]</pre>
-            <p><span class="italic">contains</span> is another function that works just
-                    like <span class="italic">start-with</span>, except it match if the text
-                is found anywhere in the attribute’s value, not just at the beginning.</p>
+            <p><code class="function">contains</code> is another function that works just
+                    like <code class="function">start-with</code>, except it match if the text is found
+                anywhere in the attribute its value, not just at the beginning.</p>
             <p>We can also make queries based on the structure of a tree. For example, the
                 following query will match any node with a <span class="italic">su</span> dependency relation that has a determiner: one of the children of the
                 matching node is a node which<span class="italic">pos</span> attribute has
@@ -103,8 +106,8 @@
             <p>It first finds the subject nodes, and then matches all the determiners found in
                 these nodes. We can continue this to for example find all the nouns in the noun
                 phrase in a preposition phrase. We first find the preposition phrase somewhere in
-                the tree (mind the double slash), then find the noun phrase among one of it’s
-                children (the single slash), and then find a noun among the noun phrase it’s
+                the tree (mind the double slash), then find the noun phrase among one of its
+                children (the single slash), and then find a noun among the noun phrase its
                 children.</p>
             <pre class="programlisting">//node[@cat="pp"]/node[@cat="np"]/node[@pt="n"]</pre>
             <p>This goes down deeper into the tree, but we can also move back up in the tree
@@ -126,7 +129,7 @@
                 passive form. To do this, we have to look for sentences where the subject of the
                 sentence is also the object of the verb phrase. A translation takes place. In the
                 corpus this is indicated by an <span class="italic">index</span> attribute.
-                This attribute contains the same value on both nodes. Ie. when we want to see
+                This attribute contains the same value on both nodes. I.e.. when we want to see
                 translation 1, this query will highlight both the nodes before and after the
                 translation:</p>
             <pre class="programlisting">//node[@index=1]</pre>
@@ -136,18 +139,18 @@
             <p>(This query was taken from the <a class="ulink" href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html" target="_top">manual for Treebank Tools</a>, which contains some more interesting
                 queries.)</p>
             <p>Please do note that Dact expects queries that return nodes. A highlight query
-                returning the value of an attribute of a node won’t highlight any nodes.</p>
+                returning the value of an attribute of a node wont highlight any nodes.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113272"></a>2.2. Filtering a corpus</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp81824"></a>2.2. Filtering a corpus</h3></div></div></div>
             
             <p>The left pane shows a list of corpus entries, where each entry represents a parsed
                 sentence. When viewing large corpora, it is often more interesting to look at
                 particular entries. You can filter a corpus using an XPath query, where only the
                 entries with nodes matching the query will be shown. A filter query can be typed in
                 the field above the list of corpus entries: </p>
-            <div class="figure"><a id="id36113645"></a><p class="title"><strong>Figure 2. Filtering entries</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp82912"></a><p class="title"><strong>Figure 3. Filtering entries</strong></p><div class="figure-contents">
                 
-                <div class="mediaobject"><img src="../images/filter-entry.png" alt="Filtering entries" /></div>
+                <div class="mediaobject"><img src="images/filter-entry.png" alt="Filtering entries" /></div>
             </div></div><br class="figure-break" />
             <p>After typing the query, press the <span class="italic">Enter</span> key,
                 and Dact will start filtering the corpus. If you want to interrupt filtering, press
@@ -155,19 +158,19 @@
             <p>Using <span class="italic">Next</span> and <span class="italic">Previous</span> arrows in the top left menu bar, you can walk through each
                 found entry. Or you can use the <span class="italic">Ctrl+Down</span> and <span class="italic">Ctrl+Up</span> shortcuts.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113704"></a>2.3. Highlighting</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp90384"></a>2.3. Highlighting</h3></div></div></div>
             
             <p>After selecting an entry, its parse tree is shown in the right pane. All nodes
                 matching an XPath query can be highlighted, this makes it easier to spot interesting
                 phenomena. Entries can be highlighted by entering an XPath query:</p>
-            <div class="figure"><a id="id36113716"></a><p class="title"><strong>Figure 3. Highlighting nodes</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp91840"></a><p class="title"><strong>Figure 4. Highlighting nodes</strong></p><div class="figure-contents">
                 
-                <div class="mediaobject"><img src="../images/highlight-entry.png" alt="Highlighting nodes" /></div>
+                <div class="mediaobject"><img src="images/highlight-entry.png" alt="Highlighting nodes" /></div>
             </div></div><br class="figure-break" />
             <p>Initially, the filter query is copied as the highlight query.</p>
-            <div class="figure"><a id="id36113739"></a><p class="title"><strong>Figure 4. Highlighted nodes</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp94704"></a><p class="title"><strong>Figure 5. Highlighted nodes</strong></p><div class="figure-contents">
                 
-                <div class="mediaobject"><img src="../images/tree-highlighted.png" alt="Highlighted nodes" /></div>
+                <div class="mediaobject"><img src="images/tree-highlighted.png" alt="Highlighted nodes" /></div>
             </div></div><br class="figure-break" />
             <p>Matching nodes will be highlighted in the tree in green. The buttons <span class="italic">Zoom In</span> and <span class="italic">Zoom
                 Out</span> can be used to scale the tree. <span class="italic">Previous
@@ -183,16 +186,30 @@
             <p>Below the tree the bracketed sentence is shown, and the parts in the sentence
                 represented by the matching nodes are surrounded by square brackets.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113828"></a>2.4. Gathering statistics</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp105536"></a>2.4. Inspecting nodes</h3></div></div></div>
+            
+            <p>If you want to know more about a node, you can select it and open the Inspector by
+                clicking its button on the right hand side of the toolbar, pressing <span class="italic">Ctrl+i</span> or by enabling it in the <span class="italic">View</span> menu. This is very useful for writing queries.</p>
+            <div class="figure"><a id="idp108336"></a><p class="title"><strong>Figure 6. Main window with inspector attached</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="images/inspector.png" alt="Main window with inspector attached" /></div>
+            </div></div><br class="figure-break" />
+            <p>The Inspector will show you
+                every
+                attribute the node has. You can right-click an attribute and use
+                the context menu to directly add it to your search query.</p>
+            <p>The Inspector is detachable and be torn of the Main window.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp112384"></a>2.5. Gathering statistics</h3></div></div></div>
             
             <p>The Statistics window can be found in the <span class="italic">Tools</span> menu, or using <span class="italic">Ctrl+t</span>.</p>
             <p>The Statistics window shows which values can be found for a certain attribute of
                 the matching nodes throughout the corpus. These nodes can be filtered using the same
                 XPath queries. If a node does match the filter, but does not have the attribute, it
                 won’t be counted.</p>
-            <div class="figure"><a id="id36113858"></a><p class="title"><strong>Figure 5. Statistics window</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp115904"></a><p class="title"><strong>Figure 7. Statistics window</strong></p><div class="figure-contents">
                 
-                <div class="mediaobject"><img src="../images/statistics-window.png" alt="Statistics window" /></div>
+                <div class="mediaobject"><img src="images/statistics-window.png" alt="Statistics window" /></div>
             </div></div><br class="figure-break" />
             <p>Make sure to use a filter which matches the nodes you want to know the values of.
                 For example, say we wanted to know how often every preposition occurs in a
@@ -201,7 +218,7 @@
             <pre class="programlisting">//node[@cat="pp"]/node[@pt="vz"]</pre>
             <p>If you are unsure whether your filter will match too much or too little, try to
                 test it visually in the tree by using it as the highlight query.</p>
-            <p>Because we want to know how often the word occurs, we select <span class="italic">word</span> or <span class="italic">lemma</span>.</p>
+            <p>Because we want to know how often the word occurs, we select <code class="literal">word</code> or <code class="literal">lemma</code>.</p>
             <p>The <span class="italic">result</span> column shows all the distinct values
                 found, and the <span class="italic">count</span> column shows how often these
                 values where encountered. The <span class="italic">percentage</span> column
@@ -209,29 +226,30 @@
                 total count of found values. This total is shown in the bottom right of the
                 window.</p>
             <p>You can double-click one of the rows to search for all nodes that together are
-                summed up in that row.</p>
+                summed up in that row in the Main Window.</p>
+            <p>When copying rows to the clipboards, they will be pasted as a tab-separated
+                plain-text table. Excel and many other programs are able to import this format when
+                pasting it into a document.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="id36113829"></a>2.5. Bracketed sentences</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp112512"></a>2.6. Bracketed sentences</h3></div></div></div>
             
-            <p></p>
             <p>To quickly get an impression which part of a sentence matches a query, you can use
                     the <span class="italic">Bracketed sentences</span> window in
-                    the <span class="italic">View</span> menu. Or by using <span class="italic">Ctrl+b</span>.</p>
-            <div class="figure"><a id="id36113964"></a><p class="title"><strong>Figure 6. Bracketed sentences window</strong></p><div class="figure-contents">
+                    the <span class="italic">Tools</span> menu. Or by using <span class="italic">Ctrl+b</span>.</p>
+            <div class="figure"><a id="idp128976"></a><p class="title"><strong>Figure 8. Bracketed sentences window</strong></p><div class="figure-contents">
                 
-                <div class="mediaobject"><img src="../images/bracketed-sentences-window.png" alt="Bracketed sentences window" /></div>
+                <div class="mediaobject"><img src="images/bracketed-sentences-window.png" alt="Bracketed sentences window" /></div>
             </div></div><br class="figure-break" />
             <p>The window shows the part of a sentence which matches the query between brackets
                 for all the sentences in the corpus where at least one matching node is found.
-                Single clicking on one of these sentences will draw its tree in the Main Window.
-                Double clicking a sentence will bring the Main Window with the tree to the
-                front.</p>
+                Double clicking on one of these sentences will open it in the Main Window. </p>
             <p>You can select alternative display modes using the drop-down menu. Currently three
                 methods are implemented:</p>
             <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
                     <p><span class="italic">Complete Sentence</span> shows the matching
                         nodes in the sentence on a different background. Nested matches have a more
-                        opaque background.</p>
+                        opaque background. The color can be changed in Dact's Preference
+                        Window.</p>
                 </li><li class="listitem">
                     <p><span class="italic">Only Matches</span> shows only partial
                         sentences of the nodes that matched. One match or nested match per line.
@@ -241,8 +259,103 @@
                     <p><span class="italic">Keywords in Context</span> shows all the
                         matches directly underneath each other and prints the rest of the sentence
                         left and right of the match. The colors can be configured in Dact’s
-                        preference window.</p>
+                        Preference Window.</p>
                 </li></ul></div>
+        </div>
+    </div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp136624"></a>3. Converting and exporting corpora</h2></div></div></div>
+        
+        <p>Dact can also be used to create Dact corpora from any corpus that can be read with
+            Dact. Dact corpora are larger than Compact corpora but can be queried very quickly.
+            Currently you cannot add new sentences to an existing corpus using Dact.</p>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp139376"></a>3.1. Exporting a whole corpus</h3></div></div></div>
+            
+            <p>Any corpus that can be loaded can be saved as a Dact corpus. Open the corpus, and
+                make sure you do not have any files selected in the file list on the left. Dact will
+                try to export your selection, and only if you have nothing selected it will export
+                the complete corpus. Select <span class="emphasis"><em>File - Export to corpus…</em></span> to select
+                where you want to store your new corpus. If you are unsure whether Dact tries to
+                export the complete corpus or only a selection, check the title of the Save file
+                dialog. </p>
+            <div class="figure"><a id="idp141440"></a><p class="title"><strong>Figure 9. Export corpus dialog</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="images/export-corpus-dialog.png" alt="Export corpus dialog" /></div>
+            </div></div><br class="figure-break" />
+            <p>Depending on the size of the corpus you have loaded, exporting can take a while. A
+                progress dialog will tell you how many of the sentences have been exported. When you
+                cancel the export action, the corpus you where exporting will be saved but the
+                sentences that where not yet added will be missing from it.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp144592"></a>3.2. Exporting a selection</h3></div></div></div>
+            
+            <p>If you want to create a new corpus from a subset of the sentences in the corpus
+                you have loaded, select all the files you want in it and select <span class="emphasis"><em>File -
+                    Export to corpus…</em></span>. You can use the Filter query to filter the file
+                list, and press <span class="emphasis"><em>Ctrl+a</em></span> to select every sentence that matched.
+                Since only the selected sentences will be added to the corpus, only the sentences
+                that matched your query will be added.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp147152"></a>3.3. Exporting a single sentence as XML</h3></div></div></div>
+            
+            <p>You can export the XML of a single sentence if you want to inspect it or play with
+                it with another tool. Select the sentence you want to export in the file list and
+                select <span class="emphasis"><em>File - Export to XML…</em></span>. Currently you cannot export
+                multiple sentences as XML at once.</p>
+        </div>
+    </div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp149152"></a>4. Configuring Dact</h2></div></div></div>
+        
+        <p>Dact has some preferences to change it to your needs. You can configure the font and
+            colors of the interface and specify macros for common query conditions.</p>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp150352"></a>4.1. Macros</h3></div></div></div>
+            
+            <p>Macros in Dact are nothing more than simple substitutions, and using them is
+                really simple. To use a macro simply use its pattern surrounded by percentage signs
+                in a query. E.g. if you have a macro that replaces <code class="literal">su</code> with
+                    <code class="literal">@rel="su"</code>, the following query will be internally translated
+                like this:</p><pre class="programlisting">//node[%su%] -&gt; //node[@rel="su"]</pre>
+            <p>You can use macros in every query in Dact. Macro patterns are replaced before a
+                query is validated or executed. If a pattern in the query is not in your list of
+                macros it won't be replaced and will be present in the final query.</p>
+            <p>You can add macros in the Macros window, which you can find in <span class="emphasis"><em>Tools -
+                    Macros…</em></span> menu. Simply press the <span class="emphasis"><em>Add</em></span> button to add
+                a new macro, and double click the fields to edit them. Macros are stored along with
+                Dact's other preferences, and currently there is no easy way to import and export
+                them.</p>
+            <div class="figure"><a id="idp155376"></a><p class="title"><strong>Figure 10. Macros window</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="images/macros-window.png" alt="Macros window" /></div>
+            </div></div><br class="figure-break" />
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp157136"></a>4.2. Font and colors</h3></div></div></div>
+            
+            <p>Dact allows you to choose your own colors and font used in the interface to some
+                extend. You can find these in the Preference window, which you can find in
+                    <span class="emphasis"><em>Edit</em></span> menu. (On OS X, you will find it in the application
+                menu like in any other OS X application.) Changes are automatically saved.</p>
+            <div class="figure"><a id="idp159856"></a><p class="title"><strong>Figure 11. Preferences window</strong></p><div class="figure-contents">
+                
+                <div class="mediaobject"><img src="images/preferences-window.png" alt="Preferences window" /></div>
+            </div></div><br class="figure-break" />
+            <p>Note that the OS X version of Dact does not have a <span class="emphasis"><em>Font</em></span> tab.
+                In the other versions of Dact you can change the font that is used for the buttons
+                and lists throughout Dact.</p>
+            <p>If you mess up, you can always return to the default preferences Dact ships with
+                by clicking the <span class="emphasis"><em>Return to Default</em></span> button in a tab. Any
+                preference on that tab will be reset.</p>
+        </div>
+    </div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp164096"></a>5. Common errors</h2></div></div></div>
+        
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp164736"></a>5.1. The application failed to initialize properly
+                (0xc0000022)</h3></div></div></div>
+            
+            <p>If you get the error <code class="literal">The application failed to initialize properly
+                (0xc0000022)</code> it means that something is wrong with the DLL permissions.
+                Presumably with the .dll files in the Dact distribution.</p>
+            <p>You can fix this problem by opening a command prompt, and cd to the directory in
+                which the Dact files reside. Then type:</p>
+            <pre class="programlisting">cacls *.dll /E /G BUILTIN\Users:R</pre>
         </div>
     </div>
 </div>
