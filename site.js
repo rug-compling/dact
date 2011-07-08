@@ -33,15 +33,28 @@
 		e.preventDefault();
 	});
 	
+	var scrollTo_settings = {
+		offset: {left: 0, top: -30} // -30 compensates the menu that overlaps. h2's look nicer this way.
+	};
 	
 	$('a[href^=#]')
 		.filter(function() { return this.hash.length; })
 		.click(function(e) {
 			if ($(this.hash).parents('#features').length)
-				$(window).scrollTo('#features', 500);
+				$(window).scrollTo('#features', 500, scrollTo_settings);
 			else
-				$(window).scrollTo(this.hash, 500);
+				$(window).scrollTo(this.hash, 500, scrollTo_settings);
 			
 			e.preventDefault();
 		});
+	
+	/*
+	// Experimental full screen sections. That is a lot of empty space!
+	function resize_sections() {
+		$('header, article').css('min-height', $(window).height() + 'px');
+	}
+	
+	$(window).bind('resize', resize_sections);
+	resize_sections();
+	*/
 })();

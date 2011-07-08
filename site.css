@@ -300,9 +300,10 @@ article img {
 	color: #333;
 }
 
-.features-at-the-side #features ul {
+.features-at-the-side #features-list {
 	float: left;
 	width: 260px;
+	margin-top: 13px;
 }
 
 .features-at-the-side #features-showcase {
