@@ -253,12 +253,16 @@ article img {
 	color: #333;
 }
 
+#features-showcase img {
+	width: 100%;
+}
+
 .features-at-the-side #features ul {
 	float: left;
 	width: 260px;
 }
 
-.features-at-the-side #features #features-showcase {
+.features-at-the-side #features-showcase {
 	width: 660px;
 	overflow: hidden;
 }
