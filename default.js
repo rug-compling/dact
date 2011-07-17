@@ -21,7 +21,7 @@
 	var binaries = download_selector.getElementsByTagName('div');
 
 	$('#binaries > div').each(function() {
-		if (this.className.indexOf(navigator.platform) != -1)
+		if (navigator.platform.indexOf(this.className) != -1)
 			$(this).show();
 		else
 			$(this).hide();
