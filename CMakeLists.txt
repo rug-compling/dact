@@ -230,7 +230,6 @@ install(TARGETS ${PROGNAME}
 
 # OS X bundle creation
 if(APPLE)
-
   set(APP ${CMAKE_INSTALL_PREFIX}/${PROGNAME}.app)
 
   get_filename_component(ALPINOCORPUS_LIBRARY_DIR
@@ -240,6 +239,7 @@ if(APPLE)
     ${QT_LIBRARY_DIR}
     ${ALPINOCORPUS_LIBRARY_DIR})
 
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
   set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
   set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
