@@ -6,6 +6,7 @@
 #include <QFuture>
 #include <QList>
 #include <QPair>
+#include <QSharedPointer>
 
 class FilterModel : public QAbstractTableModel
 {

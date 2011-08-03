@@ -156,7 +156,7 @@ void FilterModel::getEntriesWithQuery(QString const &query)
 {
     try {
         FilterModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
             d_corpus->end());
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntriesWithQuery: " << e.what();
@@ -176,7 +176,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
         {
             ++d_hits;
-            emit entryFound(*itr);
+            emit entryFound(QString::fromUtf8((*itr).c_str()));
         }
             
         emit queryStopped(d_results.size(), d_results.size());

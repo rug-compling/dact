@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QItemSelection>
 #include <QLineEdit>
+#include <QList>
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QMutexLocker>
@@ -23,6 +24,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <list>
 #include <stdexcept>
 #include <typeinfo>
 
@@ -374,12 +376,13 @@ void MainWindow::showFile(QString const &filename)
     try {
         QString xml;
         if (d_highlight.trimmed().isEmpty())
-            xml = d_corpusReader->read(filename);
+            xml = QString::fromUtf8(d_corpusReader->read(filename.toUtf8().constData()).c_str());
         else {
-            ac::CorpusReader::MarkerQuery query(d_macrosModel->expand(d_highlight),
+            ac::CorpusReader::MarkerQuery query(d_macrosModel->expand(d_highlight).toUtf8().constData(),
                 "active", "1");
-            QList<ac::CorpusReader::MarkerQuery> queries;
-            xml = d_corpusReader->readMarkQueries(filename, queries << query);
+            std::list<ac::CorpusReader::MarkerQuery> queries;
+            queries.push_back(query);
+            xml = QString::fromUtf8(d_corpusReader->readMarkQueries(filename.toUtf8().constData(), queries).c_str());
         }
 
         if (xml.size() == 0) {
@@ -632,7 +635,7 @@ QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader
     QSharedPointer<ac::CorpusReader> reader;
     
     try {
-        reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path));
+        reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path.toUtf8().constData()));
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }
@@ -772,7 +775,9 @@ void MainWindow::exportCorpus()
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
-            std::copy(d_corpusReader->begin(), d_corpusReader->end(), std::back_inserter(files));
+            for (ac::CorpusReader::EntryIterator iter = d_corpusReader->begin();
+                    iter != d_corpusReader->end(); ++iter)
+                files.push_back(QString::fromUtf8((*iter).c_str()));
         
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
@@ -786,7 +791,7 @@ void MainWindow::exportCorpus()
 bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
 {
     try {
-        ac::DbCorpusWriter corpus(filename, true);
+        ac::DbCorpusWriter corpus(filename.toUtf8().constData(), true);
         
         emit exportProgressMaximum(files.size());
         emit exportProgress(0);
@@ -797,7 +802,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
              end(files.constEnd());
              !d_writeCorpusCancelled && itr != end; ++itr)
         {
-            corpus.write(*itr, d_corpusReader->read(*itr));
+            corpus.write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
             ++progress;
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);
@@ -838,7 +843,7 @@ void MainWindow::exportXML()
         return;
     }
     
-    target.write(d_corpusReader->read(file).toUtf8());
+    target.write(d_corpusReader->read(file.toUtf8().constData()).c_str());
     target.close();
 }
 

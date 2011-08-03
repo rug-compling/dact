@@ -1,3 +1,5 @@
+#include <list>
+
 #include "BracketedDelegate.hh"
 #include "FilterModel.hh"
 #include "XSLTransformer.hh"
@@ -20,16 +22,16 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     {
         FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
         
-        QList<ac::CorpusReader::MarkerQuery> queries;
+        std::list<ac::CorpusReader::MarkerQuery> queries;
         
         if (model)
         {
-            ac::CorpusReader::MarkerQuery query(model->lastQuery(), "active", "1");
-            queries << query;
+            ac::CorpusReader::MarkerQuery query(model->lastQuery().toUtf8().constData(), "active", "1");
+            queries.push_back(query);
         }
         
         QString bracketed_sentence(transformXML(
-            d_corpus->readMarkQueries(filename, queries)).trimmed());
+            QString::fromUtf8(d_corpus->readMarkQueries(filename.toUtf8().constData(), queries).c_str())).trimmed());
         
         QList<Chunk> *chunks = parseSentence(bracketed_sentence);
         

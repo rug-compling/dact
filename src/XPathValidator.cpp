@@ -46,7 +46,7 @@ XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
         : d_macrosModel->expand(exprStr); 
     
     bool valid = d_corpusReader->isValidQuery(alpinocorpus::CorpusReader::XPATH, d_variables,
-        expandedExpr);
+        expandedExpr.toUtf8().constData());
 
     return valid ? XPathValidator::Acceptable : XPathValidator::Intermediate;
 }
