@@ -266,6 +266,10 @@ article img {
 	margin: 0 auto;
 }
 
+article a {
+  color: inherit;
+}
+
 /* @group features */
 
 #features ul {
