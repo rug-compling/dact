@@ -18,6 +18,7 @@
 #include <QProgressDialog>
 #include <QSettings>
 #include <QSize>
+#include <QStatusBar>
 #include <QTextStream>
 #include <QUrl>
 #include <QtConcurrentRun>
@@ -71,7 +72,10 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 {
     setupUi();
-    
+
+    // Ensure that we have a status bar.
+    statusBar();
+
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
     
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
@@ -123,6 +127,13 @@ void MainWindow::bracketedEntryActivated(const QString &entry)
 void MainWindow::applyValidityColor(QString const &)
 {
     ::applyValidityColor(sender());
+}
+
+void MainWindow::cancelQuery()
+{
+  d_model->cancelQuery();
+  statusBar()->clearMessage();
+
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -243,6 +254,8 @@ void MainWindow::createActions()
         SLOT(cancelWriteCorpus()));
     connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
     connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setValue(int)));
+    connect(this, SIGNAL(queryCancelRequest()), SLOT(cancelQuery()),
+        Qt::QueuedConnection);
     
     connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
@@ -354,7 +367,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape && d_model)
     {
-        d_model->cancelQuery();
+        statusBar()->showMessage("Cancelling the query...");
+        emit queryCancelRequest();
         event->accept();
     }
     else

@@ -43,12 +43,18 @@ public:
     ~MainWindow();
     
 signals:
+    void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
     void exportError(QString const &error);
     void openError(QString const &error);
 
 public slots:
+    /*!
+     Cancel a running query
+     */
+    void cancelQuery();
+
     /*!
      Hide the main window
     */
