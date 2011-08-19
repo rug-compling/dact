@@ -38,7 +38,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="filterLineEdit"/>
+              <widget class="HistoryLineEdit" name="filterLineEdit"/>
              </item>
             </layout>
            </item>
@@ -604,6 +604,12 @@
    <class>BracketedSentenceWidget</class>
    <extends>QFrame</extends>
    <header>BracketedSentenceWidget.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HistoryLineEdit</class>
+   <extends>QFrame</extends>
+   <header>HistoryLineEdit.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>

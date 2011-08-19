@@ -79,6 +79,7 @@ SET(dact_SRCS
   src/BracketedWindow.cpp
   src/DownloadWindow.cpp
   src/DactApplication.cpp
+  src/HistoryLineEdit.cpp
   src/DactListView.cpp
   src/DactMacrosWindow.cpp
   src/DactMacrosModel.cpp
@@ -124,6 +125,7 @@ SET(dact_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/FilterModel.hh
+  include/HistoryLineEdit.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -158,6 +160,7 @@ SET(dact_MOC_HDRS
   #include/DactQueryHistory.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
+  include/HistoryLineEdit.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
