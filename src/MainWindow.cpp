@@ -326,19 +326,26 @@ void MainWindow::entryFound(QString) {
     int hits = d_model->hits();
     d_ui->entriesLabel->setText(QString::number(entries));
     d_ui->hitsLabel->setText(QString::number(hits));
+
+    if (entries == 1) {
+      d_ui->fileListWidget->selectionModel()->clear();
+      QModelIndex idx(d_model->index(0, 0));
+      d_ui->fileListWidget->selectionModel()->setCurrentIndex(idx,
+          QItemSelectionModel::ClearAndSelect);
+    }
 }
 
-void MainWindow::entrySelected(QItemSelection const &current, QItemSelection const &prev)
+void MainWindow::entrySelected(QModelIndex const &current, QModelIndex const &prev)
 {
     Q_UNUSED(prev);
     
-    if (!current.size() || !current.indexes().size()) {
+    if (!current.isValid()) {
         d_ui->treeGraphicsView->setScene(0);
         d_ui->sentenceWidget->clear();
         return;
     }
         
-    showFile(current.indexes().at(0).data(Qt::UserRole).toString());
+    showFile(current.data(Qt::UserRole).toString());
     
     focusFitTree();
 }
@@ -914,8 +921,8 @@ void MainWindow::setModel(FilterModel *model)
         SLOT(entryFound(QString)));
     
     connect(d_ui->fileListWidget->selectionModel(),
-        SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-        SLOT(entrySelected(QItemSelection,QItemSelection)));
+        SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+        SLOT(entrySelected(QModelIndex,QModelIndex)));
 }
 
 void MainWindow::treeChanged(DactTreeScene *scene)

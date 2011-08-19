@@ -152,7 +152,7 @@ private slots:
      \param current currently selected entry
      \param previous previous selected entry
      */
-    void entrySelected(QItemSelection const &current, QItemSelection const &previous);
+    void entrySelected(QModelIndex const &current, QModelIndex const &previous);
     
     /*!
      * Save currently selected sentences to DBXML file (filename obtained from
