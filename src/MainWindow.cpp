@@ -334,6 +334,7 @@ void MainWindow::entrySelected(QItemSelection const &current, QItemSelection con
     
     if (!current.size() || !current.indexes().size()) {
         d_ui->treeGraphicsView->setScene(0);
+        d_ui->sentenceWidget->clear();
         return;
     }
         
