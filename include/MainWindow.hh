@@ -25,7 +25,6 @@ class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
 class FilterModel;
-class StatisticsWindow;
 class PreferencesWindow;
 class FilterModel;
 class DactQueryWindow;
@@ -75,12 +74,7 @@ public slots:
      Instantiate (if not already instantiated) and raise the filter window, BracketedWindow.
     */
     void showFilterWindow();
-    
-    /*!
-     Instantiate (if not already done so) and raise the StatisticsWindow
-    */
-    void showStatisticsWindow();
-    
+        
     /*!
      Instantiate (if not already done so) and raise the DactMacrosWindow
     */
@@ -132,7 +126,7 @@ private slots:
     /*!
      Listens for the finished signal from the corpus reader. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
-     the current corpus used by the bracketed window and statistics window.
+     the current corpus used by the bracketed window and statics window.
      \sa addFiles
     */
     void corpusRead();
@@ -415,7 +409,6 @@ private:
     AboutWindow *d_aboutWindow;
     BracketedWindow *d_bracketedWindow;
     DownloadWindow *d_downloadWindow;
-    StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;

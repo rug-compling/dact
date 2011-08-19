@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent) :
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_bracketedWindow(0),
     d_downloadWindow(0),
-    d_statisticsWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
@@ -103,7 +102,6 @@ MainWindow::~MainWindow()
     delete d_aboutWindow;
     delete d_bracketedWindow;
     delete d_downloadWindow;
-    delete d_statisticsWindow;
     delete d_macrosWindow;
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
@@ -183,20 +181,6 @@ void MainWindow::showOpenCorpusError(QString const &error)
     QMessageBox::critical(this, "Open error", error);
 }
 
-void MainWindow::showStatisticsWindow()
-{
-    if (d_statisticsWindow == 0)
-    {
-        d_statisticsWindow = new StatisticsWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-        connect(d_statisticsWindow, SIGNAL(entryActivated(QString, QString)),
-            SLOT(statisticsEntryActivated(QString const &, QString const &)));
-    }
-
-    d_statisticsWindow->setFilter(d_filter);
-    d_statisticsWindow->show();
-    d_statisticsWindow->raise();
-}
-
 void MainWindow::showWriteCorpusError(QString const &error)
 {
     QMessageBox::critical(this, "Export error", error);
@@ -257,6 +241,9 @@ void MainWindow::createActions()
     connect(this, SIGNAL(queryCancelRequest()), SLOT(cancelQuery()),
         Qt::QueuedConnection);
     
+    connect(d_ui->statisticsWindow, SIGNAL(entryActivated(QString, QString)),
+            SLOT(statisticsEntryActivated(QString const &, QString const &)));
+    
     connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
     connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)),
@@ -309,8 +296,6 @@ void MainWindow::createActions()
         SLOT(focusPreviousTreeNode()));
     connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)),
         SLOT(showFilterWindow()));
-    connect(d_ui->showStatisticsWindow, SIGNAL(triggered(bool)),
-        SLOT(showStatisticsWindow()));
     connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)),
         SLOT(showMacrosWindow()));
     connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
@@ -484,11 +469,12 @@ void MainWindow::filterChanged()
         d_ui->statisticsLayout->setVerticalSpacing(-1);
         d_ui->hitsDescLabel->show();
         d_ui->hitsLabel->show();
+        d_ui->statisticsWindow->setFilter(d_filter);
     }
     
     setHighlight(d_filter);
 
-    d_model->runQuery(d_macrosModel->expand(d_filter));
+    d_model->runQuery(d_macrosModel->expand(d_filter));    
 }
 
 void MainWindow::focusFitTree()
@@ -720,8 +706,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     if(d_bracketedWindow != 0)
         d_bracketedWindow->switchCorpus(d_corpusReader);
 
-    if(d_statisticsWindow != 0)
-        d_statisticsWindow->switchCorpus(d_corpusReader);
+    d_ui->statisticsWindow->switchCorpus(d_corpusReader);
 }
 
 void MainWindow::corpusRead()

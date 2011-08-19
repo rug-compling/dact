@@ -44,6 +44,22 @@ StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> co
       d_ui->attributeComboBox->setCurrentIndex(idx);
 }
 
+StatisticsWindow::StatisticsWindow(QWidget *parent) :
+    QWidget(parent),
+    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow))
+{
+    d_ui->setupUi(this);
+
+    createActions();
+    readNodeAttributes();
+    readSettings();
+    
+    // Pick a sane default attribute.
+    int idx = d_ui->attributeComboBox->findText("word");
+    if (idx != -1)
+        d_ui->attributeComboBox->setCurrentIndex(idx);
+}
+
 StatisticsWindow::~StatisticsWindow()
 {
 }
@@ -59,18 +75,15 @@ void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
 {
     d_corpusReader = corpusReader;
     
-    d_xpathValidator->setCorpusReader(d_corpusReader);
-    QString query = d_ui->filterLineEdit->text();
-    d_ui->filterLineEdit->clear();
-    d_ui->filterLineEdit->insert(query);
+    //d_xpathValidator->setCorpusReader(d_corpusReader);
     
     setModel(new QueryModel(corpusReader));
 }
 
 void StatisticsWindow::setFilter(QString const &filter)
 {
-    d_filter = d_macrosModel->expand(filter);
-    d_ui->filterLineEdit->setText(filter);
+    d_filter = filter;
+    startQuery();
 }
 
 void StatisticsWindow::setAggregateAttribute(QString const &detail)
@@ -125,16 +138,8 @@ void StatisticsWindow::createActions()
     d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
     
     // Only allow valid xpath queries to be submitted
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    
-    // This colors the query input if it doesn't contain a valid xpath query
-    connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
-        SLOT(applyValidityColor(QString const &)));
-    
-    // Start searching when [enter] is pressed in the query field
-    connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
-        SLOT(startQuery()));
-    
+    //d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
+        
     // When a row is activated, generate a query to be used in the main window to
     // filter all the results so only the results which are accumulated in this
     // row will be shown.
@@ -216,8 +221,6 @@ void StatisticsWindow::showPercentage(bool show)
 
 void StatisticsWindow::startQuery()
 {
-    setFilter(d_ui->filterLineEdit->text());
-    
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
     
     d_model->runQuery(QString("%1/@%2")

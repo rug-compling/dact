@@ -126,56 +126,71 @@
         </item>
        </layout>
       </widget>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Tree</string>
+      <widget class="QTabWidget" name="tabWidget_2">
+       <property name="currentIndex">
+        <number>0</number>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="highlightLineEdit"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Highlight:</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="DactTreeView" name="treeGraphicsView" native="true"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label_1">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Sentence:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="BracketedSentenceWidget" name="sentenceWidget">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>200</horstretch>
-              <verstretch>24</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
+       <widget class="QWidget" name="tabWidget_2Page1" native="true">
+        <attribute name="title">
+         <string>Tree</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="2">
+            <widget class="QLineEdit" name="highlightLineEdit"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Highlight:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="DactTreeView" name="treeGraphicsView" native="true"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label_1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Sentence:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="BracketedSentenceWidget" name="sentenceWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>200</horstretch>
+               <verstretch>24</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Statistics</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="StatisticsWindow" name="statisticsWindow" native="true"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -187,7 +202,7 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -241,7 +256,6 @@
     </property>
     <addaction name="showMacrosWindow"/>
     <addaction name="separator"/>
-    <addaction name="showStatisticsWindow"/>
     <addaction name="showFilterWindow"/>
     <addaction name="separator"/>
     <addaction name="downloadAction"/>
@@ -415,14 +429,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
-   </property>
-  </action>
-  <action name="showStatisticsWindow">
-   <property name="text">
-    <string>Statistics…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="nextAction">
@@ -599,6 +605,11 @@
    <class>DactTreeView</class>
    <extends>QWidget</extends>
    <header>DactTreeView.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>StatisticsWindow</class>
+   <extends>QWidget</extends>
+   <header>StatisticsWindow.hh</header>
   </customwidget>
   <customwidget>
    <class>BracketedSentenceWidget</class>

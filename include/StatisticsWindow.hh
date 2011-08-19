@@ -25,6 +25,7 @@ class StatisticsWindow : public QWidget {
 public:
     StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
+    StatisticsWindow(QWidget *parent = 0);
     ~StatisticsWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);

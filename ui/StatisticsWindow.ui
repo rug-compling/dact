@@ -20,19 +20,6 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QLabel" name="filterLabel">
-       <property name="text">
-        <string>Filter:</string>
-       </property>
-       <property name="buddy">
-        <cstring>filterLineEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="filterLineEdit"/>
-     </item>
-     <item row="1" column="0">
       <widget class="QLabel" name="detailLabel">
        <property name="text">
         <string>Count:</string>
@@ -42,7 +29,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QComboBox" name="attributeComboBox">
        <item>
         <property name="text">
@@ -70,17 +57,17 @@
    </item>
    <item>
     <widget class="QTableView" name="resultsTable">
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
      <property name="selectionBehavior">
-      <enum>SelectRows</enum>
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <property name="showGrid">
       <bool>false</bool>
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::ActionsContextMenu</enum>
      </property>
      <addaction name="copyResultsAction"/>
     </widget>
@@ -143,17 +130,16 @@
    <property name="text">
     <string>&amp;Copy</string>
    </property>
+   <property name="shortcut">
+    <number>-1</number>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
-   </property>
-   <property name="shortcut">
-    <enum>QKeySequence::Copy</enum>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>filterLineEdit</tabstop>
   <tabstop>attributeComboBox</tabstop>
   <tabstop>resultsTable</tabstop>
   <tabstop>percentageCheckBox</tabstop>
@@ -165,6 +151,16 @@
    <signal>triggered()</signal>
    <receiver>StatisticsWindow</receiver>
    <slot>copy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
