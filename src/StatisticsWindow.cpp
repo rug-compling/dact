@@ -232,6 +232,8 @@ void StatisticsWindow::showPercentage(bool show)
 void StatisticsWindow::startQuery()
 {
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
+
+    d_ui->totalHitsLabel->clear();
     
     d_model->runQuery(QString("%1/@%2")
         .arg(d_filter)

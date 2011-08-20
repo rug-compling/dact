@@ -465,6 +465,7 @@ void MainWindow::filterChanged()
         d_ui->hitsDescLabel->hide();
         d_ui->hitsLabel->hide();
         d_ui->statisticsLayout->setVerticalSpacing(0);
+        d_ui->statisticsWindow->setFilter(d_filter);
     } else {
         d_ui->statisticsLayout->setVerticalSpacing(-1);
         d_ui->hitsDescLabel->show();
