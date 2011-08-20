@@ -42,6 +42,7 @@ public slots:
 
 private slots:
     void applyValidityColor(QString const &text);
+    void attributeChanged(int index);
     void generateQuery(QModelIndex const &index);
     void startQuery();
     void progressStarted(int total);

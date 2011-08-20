@@ -64,6 +64,13 @@ StatisticsWindow::~StatisticsWindow()
 {
 }
 
+void StatisticsWindow::attributeChanged(int index)
+{
+  Q_UNUSED(index);
+  if (!d_model.isNull())
+    startQuery();
+}
+
 void StatisticsWindow::queryFailed(QString error)
 {
     QMessageBox::critical(this, tr("Error processing query"),
@@ -149,6 +156,9 @@ void StatisticsWindow::createActions()
     // Toggle percentage column checkbox (is this needed?)
     connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
         SLOT(showPercentageChanged()));
+
+    connect(d_ui->attributeComboBox, SIGNAL(currentIndexChanged(int)),
+        SLOT(attributeChanged(int)));
 }
 
 void StatisticsWindow::keyPressEvent(QKeyEvent *event)
