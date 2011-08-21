@@ -252,6 +252,8 @@ void MainWindow::createActions()
         SLOT(filterChanged()));
     connect(d_ui->highlightLineEdit, SIGNAL(returnPressed()),
         SLOT(highlightChanged()));
+    connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
+        SLOT(tabChanged(int)));
 
     // listen to selection changes to update the next/prev node buttons accordingly.
     connect(d_ui->treeGraphicsView, SIGNAL(sceneChanged(DactTreeScene*)),
@@ -909,6 +911,23 @@ void MainWindow::setModel(FilterModel *model)
     connect(d_ui->fileListWidget->selectionModel(),
         SIGNAL(currentChanged(QModelIndex,QModelIndex)),
         SLOT(entrySelected(QModelIndex,QModelIndex)));
+}
+
+void MainWindow::tabChanged(int index)
+{
+  bool treeWidgetsEnabled = index == 0 ? true : false;
+
+  d_ui->previousAction->setEnabled(treeWidgetsEnabled);
+  d_ui->nextAction->setEnabled(treeWidgetsEnabled);
+  d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
+  d_ui->zoomOutAction->setEnabled(treeWidgetsEnabled);
+  d_ui->fitAction->setEnabled(treeWidgetsEnabled);
+  d_ui->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
+  d_ui->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
+  d_ui->xmlExportAction->setEnabled(treeWidgetsEnabled);
+  d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
+  d_ui->printAction->setEnabled(treeWidgetsEnabled);
+  d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
 }
 
 void MainWindow::treeChanged(DactTreeScene *scene)

@@ -302,6 +302,11 @@ private slots:
      represent the row.
      */
     void statisticsEntryActivated(QString const &value, QString const &query);
+
+    /*!
+     * The tab in the main window is changed.
+     */
+    void tabChanged(int index);
     
     /*!
      When the tree scene changes because of a new tree (or new highlight query)
