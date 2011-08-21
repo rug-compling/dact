@@ -130,6 +130,7 @@ void MainWindow::applyValidityColor(QString const &)
 void MainWindow::cancelQuery()
 {
   d_model->cancelQuery();
+  d_ui->statisticsWindow->cancelQuery();
   statusBar()->clearMessage();
 
 }

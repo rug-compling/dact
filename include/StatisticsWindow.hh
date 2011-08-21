@@ -38,6 +38,7 @@ signals:
     void entryActivated(QString, QString);
 
 public slots:
+    void cancelQuery();
     void copy() const;
 
 private slots:
@@ -54,7 +55,6 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
-    void keyPressEvent(QKeyEvent *event);
 
 private:
     QString generateQuery(QString const &base, QString const &attribute, QString const &value) const;

@@ -127,6 +127,11 @@ void StatisticsWindow::applyValidityColor(QString const &)
     ::applyValidityColor(sender());
 }
 
+void StatisticsWindow::cancelQuery()
+{
+  d_model->cancelQuery();
+}
+
 void StatisticsWindow::copy() const
 {
     QString csv = selectionAsCSV("\t");
@@ -159,24 +164,6 @@ void StatisticsWindow::createActions()
 
     connect(d_ui->attributeComboBox, SIGNAL(currentIndexChanged(int)),
         SLOT(attributeChanged(int)));
-}
-
-void StatisticsWindow::keyPressEvent(QKeyEvent *event)
-{
-    // When pressing Esc, stop with what you where doing
-    if (event->key() == Qt::Key_Escape)
-    {
-        d_model->cancelQuery();
-        event->accept();
-    }
-    // Cmd + w closes the window in OS X (and in some programs on Windows as well)
-    else if (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
-    {
-        hide();
-        event->accept();
-    }
-    else
-        QWidget::keyPressEvent(event);
 }
 
 void StatisticsWindow::generateQuery(QModelIndex const &index)
