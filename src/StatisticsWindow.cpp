@@ -129,7 +129,8 @@ void StatisticsWindow::applyValidityColor(QString const &)
 
 void StatisticsWindow::cancelQuery()
 {
-  d_model->cancelQuery();
+    if (d_model)
+        d_model->cancelQuery();
 }
 
 void StatisticsWindow::copy() const

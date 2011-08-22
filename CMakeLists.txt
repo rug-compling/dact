@@ -77,6 +77,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
+  src/DependencyTreeWidget.cpp
   src/DownloadWindow.cpp
   src/DactApplication.cpp
   src/HistoryLineEdit.cpp
@@ -113,6 +114,7 @@ SET(dact_HDRS
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/config.hh
   include/DactApplication.hh
@@ -153,6 +155,7 @@ SET(dact_MOC_HDRS
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/DactListView.hh
   include/DactMacrosWindow.hh
@@ -176,6 +179,7 @@ SET(dact_MOC_HDRS
 SET(dact_UI
   ui/AboutWindow.ui
   ui/BracketedWindow.ui
+  ui/DependencyTreeWidget.ui
   ui/DownloadWindow.ui
   ui/MainWindow.ui
   ui/PreferencesWindow.ui

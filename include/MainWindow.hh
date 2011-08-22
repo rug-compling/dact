@@ -24,9 +24,7 @@ class DownloadWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
-class FilterModel;
 class PreferencesWindow;
-class FilterModel;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -79,18 +77,6 @@ public slots:
      Instantiate (if not already done so) and raise the DactMacrosWindow
     */
     void showMacrosWindow();
-    
-    /*!
-     * Shows last successfully shown xml file. Used to reload the tree
-     * and bracketed sentence when the highlight query changes.
-     */
-    void showFile();
-    
-    /*!
-     Show a xml file in the main window's tree scene.
-     \param filename path to xml file to be used.
-    */
-    void showFile(QString const &filename);
 
 private slots:
     /*!
@@ -132,22 +118,7 @@ private slots:
     void corpusRead();
 
     void corpusWritten(int idx);
-    
-    /*!
-     Called when an entry was added to the model.
-     */
-    void entryFound(QString entry);
-    
-    /*!
-     Called when a file in the file list is selected (or the selection is removed.)
-     It loads the selected file (if any) and focusses on the first matching node.
-     \sa showFile
-     \sa focusFitTree
-     \param current currently selected entry
-     \param previous previous selected entry
-     */
-    void entrySelected(QModelIndex const &current, QModelIndex const &previous);
-    
+            
     /*!
      * Save currently selected sentences to DBXML file (filename obtained from
      * dialog window).
@@ -174,43 +145,17 @@ private slots:
     void filterChanged();
     
     void filterOnInspectorSelection();
-    
-    /*!
-     Focusses on the first node and zooms in on that node.
-     \sa forcusTreeNode
-     */
-    void focusFitTree();
-    
+        
     /*!
      Focus the filter query entry field
      */
     void focusFilter();
-    
-    /*!
-     Focus the highlight query entry field
-     */
-    void focusHighlight();
-    
+        
     /*!
      Opens the wiki in the default webbrowser.
      */
     void help();
-    
-    /*!
-     Called when the highlight query changed. Calls showFile to 'refresh' the
-     tree scene.
-     \sa filterChanged
-     \sa showFile
-     */
-    void highlightChanged();
-    
-    /*!
-     Selects the next entry in the file list. (This triggers the entrySelected
-     slot which subsequenly calls showFile)
-     \sa previousEntry
-     */
-    void nextEntry(bool);
-    
+            
     /*!
      Calls the open file dialog and filters on the .data.dz extension
      \sa openDirectoryCorpus
@@ -231,12 +176,6 @@ private slots:
     void preferencesWindow();
     
     /*!
-     Selects the previous entry in the file list. See nextEntry.
-     \sa nextEntry
-     */
-    void previousEntry(bool);
-    
-    /*!
      Renders the current tree scene to the printer.
      */
     void print();
@@ -253,40 +192,14 @@ private slots:
      \sa filterChanged
      */
     void setFilter(QString const &filter);
-    
-    /*!
-     Changes the highlight query field and calls highlightChanged.
-     \param filter the XPath query which selects the nodes to highlight
-     \sa setFilter
-     \sa highlightChanged
-     */
-    void setHighlight(QString const &filter);
-    
+
     /*!
      Displays a critical error dialog with the suplied error message.
      \sa exportError
      \sa showWriteCorpusError
      */
     void showOpenCorpusError(QString const &error);
-    
-    /*!
-     Using the sentence stylsheet transformation it generates a sentence
-     from an xml file and displays it in the sentence field below the tree
-     scene.
-     \param xml the contents of the xml file from the corpus
-     \param params key-value pairs used by the stylesheet
-     */
-    void showSentence(QString const &xml, QHash<QString, QString> const &params);
-    
-    /*!
-     Displays the xml file as a tree in the tree scene. It uses the tree styleheet
-     to transform the xml file from the corpus into something DactTreeScene can use.
-     It replaces the current DactTreeScene with a new one.
-     \param xml the contents of the xml file form the corpus
-     \param params key-value pairs used by the stylesheet
-     */
-    void showTree(QString const &xml);
-    
+        
     /*!
      Displays a critical error dialog with the supplied error message.
      \sa exportError
@@ -318,37 +231,6 @@ private slots:
      Update the state of the next/previous node buttons in the toolbar.
      */
     void updateTreeNodeButtons();
-
-    /*!
-     When the mapper failed (e.g. due to an error in the corpus reader), hide
-     the progress bar and display an error.
-     \param error error message 
-     \sa mapperStarted
-     \sa mapperProgressed
-     \sa mapperStopped
-     */
-    void mapperFailed(QString error);
-    
-    /*!
-     When the mapper (the one used to find files that match the filter query) is
-     started, this will make the progress bar visible.
-     \param totalEntries number of entries in the corpus that will be searched
-     \sa mapperFailed
-     \sa mapperStopped
-     \sa mapperProgressed
-     */
-    void mapperStarted(int totalEntries);
-    
-    /*!
-     When the mapper stopped (because it finished or was cancelled), hide the
-     progress bar.
-     \param processedEntries number of entries searched
-     \param totalEntries number of entries in the corpus
-     \sa mapperFailed
-     \sa mapperStarted
-     \sa mapperProgressed
-     */
-    void mapperStopped(int processedEntries, int totalEntries);
     
 protected:
     void changeEvent(QEvent *e);
@@ -401,9 +283,7 @@ private:
      Write settings like the main window position and dimensions
      */
     void writeSettings();
-    
-    void setModel(FilterModel *model);
-    
+        
     /*!
      * Finishes the ui loading. Its main purpose is to align the toolbar
      * correctly. If this could be done in the ui file itself...
@@ -418,12 +298,7 @@ private:
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
-    
-    /*!
-     The XPath query currently used to highlight nodes in the tree scene.
-     */
-    QString d_highlight;
-    
+        
     /*!
      The XPath query currently used for filtering files. This is after
      the macros have been expanded (so it's real XPath)
@@ -436,12 +311,7 @@ private:
      by their xpath counterparts.
      */
     QString d_filterExpr; // Stores the raw, unexpanded filter expression
-    
-    /*!
-     * Last read file.
-     */
-    QString d_file;
-    
+        
     /*!
      The macros model. Used to store and apply macros to XPath queries.
      */
@@ -507,9 +377,7 @@ private:
      exported corpus.
      \sa writeCorpus
      */
-    bool d_writeCorpusCancelled;
-    
-    QSharedPointer<FilterModel> d_model;
+    bool d_writeCorpusCancelled;    
 };
 
 #endif // MAINWINDOW_H
