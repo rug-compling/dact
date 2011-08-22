@@ -144,8 +144,9 @@ void StatisticsWindow::copy() const
 void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
-    
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+   
+    // Requires initialized UI.
+    //d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTable->verticalHeader()->hide();
     d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
     d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
