@@ -13,7 +13,6 @@
 #include <typeinfo>
 
 #include "StatisticsWindow.hh"
-#include "DactMacrosModel.hh"
 #include "Query.hh"
 #include "QueryModel.hh"
 #include "PercentageCellDelegate.hh"
@@ -21,28 +20,6 @@
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"
-
-StatisticsWindow::StatisticsWindow(QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
-        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f)
-:
-    QWidget(parent, f),
-    d_macrosModel(macrosModel),
-    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
-    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel, 0, corpusReader)))
-{
-    d_ui->setupUi(this);
- 
-    switchCorpus(corpusReader);
-    
-    createActions();
-    readNodeAttributes();
-    readSettings();
-
-    // Pick a sane default attribute.
-    int idx = d_ui->attributeComboBox->findText("word");
-    if (idx != -1)
-      d_ui->attributeComboBox->setCurrentIndex(idx);
-}
 
 StatisticsWindow::StatisticsWindow(QWidget *parent) :
     QWidget(parent),

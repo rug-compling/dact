@@ -331,9 +331,9 @@ void MainWindow::filterChanged()
 #endif
 
 
-    d_ui->dependencyTreeWidget->setFilter(d_filter);
-    d_ui->statisticsWindow->setFilter(d_filter);
-    d_ui->sentencesWidget->setFilter(d_filter);
+    d_ui->dependencyTreeWidget->setFilter(d_macrosModel->expand(d_filter));
+    d_ui->statisticsWindow->setFilter(d_macrosModel->expand(d_filter));
+    d_ui->sentencesWidget->setFilter(d_macrosModel->expand(d_filter));
 }
 
 void MainWindow::focusFilter()

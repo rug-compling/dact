@@ -208,7 +208,7 @@ void DependencyTreeWidget::setFilter(QString const &filter)
 
     setHighlight(d_filter);
     
-    d_model->runQuery(d_macrosModel->expand(d_filter));
+    d_model->runQuery(d_filter);
 }
 
 void DependencyTreeWidget::setModel(FilterModel *model)
