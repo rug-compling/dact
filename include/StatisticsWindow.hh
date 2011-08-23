@@ -9,6 +9,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 
 namespace Ui {
@@ -19,7 +20,7 @@ class QueryModel;
 class StatisticsWindowResultsRow;
 class QKeyEvent;
 
-class StatisticsWindow : public QWidget {
+class StatisticsWindow : public CorpusWidget {
     Q_OBJECT
 public:
     StatisticsWindow(QWidget *parent = 0);

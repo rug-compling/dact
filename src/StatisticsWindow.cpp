@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <typeinfo>
 
+#include "CorpusWidget.hh"
 #include "StatisticsWindow.hh"
 #include "Query.hh"
 #include "QueryModel.hh"
@@ -22,7 +23,7 @@
 #include "ui_StatisticsWindow.h"
 
 StatisticsWindow::StatisticsWindow(QWidget *parent) :
-    QWidget(parent),
+    CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow))
 {
     d_ui->setupUi(this);

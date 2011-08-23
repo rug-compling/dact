@@ -9,6 +9,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
@@ -28,7 +29,7 @@ class QStyledItemDelegate;
  into html using xslt)
  \sa BracketedDelegate
  */
-class BracketedWindow : public QWidget {
+class BracketedWindow : public CorpusWidget {
     Q_OBJECT
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;

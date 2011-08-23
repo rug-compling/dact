@@ -17,6 +17,7 @@
 #include "BracketedKeywordInContextDelegate.hh"
 #include "BracketedVisibilityDelegate.hh"
 #include "BracketedWindow.hh"
+#include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XSLTransformer.hh"
@@ -27,7 +28,7 @@
 namespace ac = alpinocorpus;
 
 BracketedWindow::BracketedWindow(QWidget *parent) :
-    QWidget(parent),
+    CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow))
 {
     d_ui->setupUi(this);

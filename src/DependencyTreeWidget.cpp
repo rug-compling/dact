@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include <QWidget>
 
+#include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
 #include <DactTreeScene.hh>
 #include <DactTreeView.hh>
@@ -16,7 +17,7 @@
 #include "ui_DependencyTreeWidget.h"
 
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
-    QWidget(parent),
+    CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
     d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel())),
     d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))

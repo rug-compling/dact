@@ -114,6 +114,7 @@ SET(dact_HDRS
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/config.hh
@@ -155,6 +156,7 @@ SET(dact_MOC_HDRS
   include/BracketedSentenceWidget.hh
   include/BracketedVisibilityDelegate.hh
   include/BracketedWindow.hh
+  include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/DactListView.hh

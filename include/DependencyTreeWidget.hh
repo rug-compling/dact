@@ -8,6 +8,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "ui_DependencyTreeWidget.h"
@@ -17,7 +18,7 @@ class DactTreeScene;
 class QPainter;
 class QItemSelectionModel;
 
-class DependencyTreeWidget : public QWidget
+class DependencyTreeWidget : public CorpusWidget
 {
     Q_OBJECT
 public:
