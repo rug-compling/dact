@@ -8,9 +8,11 @@
 #include <QPair>
 #include <QSharedPointer>
 #include <QString>
+#include <QVector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -255,7 +257,17 @@ private:
      \sa sentenceForFile
      */
     void initSentenceTransformer();
-        
+    
+    /*!
+     Initialize the tainted widget list.
+     */
+    void initTaintedWidgets();
+    
+    /*!
+     Taint all widget in the taint list.
+     */
+    void taintAllWidgets();
+    
     /*!
      Export a set of sentences as a dbxml .dact file to the given location.
      This can be run (and is run) on a different thread, and sends signals to
@@ -371,6 +383,13 @@ private:
      \sa writeCorpus
      */
     bool d_writeCorpusCancelled;    
+    
+    /*!
+     Keep track of tabs/widgets that are 'tainted'. Widgets that are tainted
+     need to have their query reset when switching to their tab. This makes
+     querying of corpora a bit more lazy.
+     */
+    QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 };
 
 #endif // MAINWINDOW_H

@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QMutexLocker>
 #include <QPainter>
+#include <QPair>
 #include <QPoint>
 #include <QPrintDialog>
 #include <QPrinter>
@@ -20,6 +21,7 @@
 #include <QSize>
 #include <QStatusBar>
 #include <QTextStream>
+#include <QVector>
 #include <QUrl>
 #include <QtConcurrentRun>
 
@@ -36,16 +38,17 @@
 #include <DownloadWindow.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
+#include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
 #include <DactMacrosWindow.hh>
 //#include <DactQueryHistory.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
-#include "TreeNode.hh"
+#include <TreeNode.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
-#include "ValidityColor.hh"
+#include <ValidityColor.hh>
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
@@ -69,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 {
     setupUi();
+    
+    initTaintedWidgets();
 
     // Ensure that we have a status bar.
     statusBar();
@@ -296,6 +301,13 @@ void MainWindow::filterOnInspectorSelection()
     setFilter(query);
 }
 
+void MainWindow::initTaintedWidgets()
+{
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, true));
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, true));
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, true));
+}
+
 void MainWindow::help()
 {
     static QUrl const usage("http://rug-compling.github.com/dact/manual/");
@@ -332,9 +344,8 @@ void MainWindow::filterChanged()
 #endif
 
 
-    d_ui->dependencyTreeWidget->setFilter(d_macrosModel->expand(d_filter));
-    d_ui->statisticsWindow->setFilter(d_macrosModel->expand(d_filter));
-    d_ui->sentencesWidget->setFilter(d_macrosModel->expand(d_filter));
+    taintAllWidgets();
+    tabChanged(d_ui->mainTabWidget->currentIndex());
 }
 
 void MainWindow::focusFilter()
@@ -493,6 +504,9 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     d_ui->dependencyTreeWidget->switchCorpus(d_corpusReader);
     d_ui->statisticsWindow->switchCorpus(d_corpusReader);
     d_ui->sentencesWidget->switchCorpus(d_corpusReader);
+    
+    taintAllWidgets();
+    tabChanged(d_ui->mainTabWidget->currentIndex());
 }
 
 void MainWindow::corpusRead()
@@ -654,19 +668,34 @@ void MainWindow::writeSettings()
 
 void MainWindow::tabChanged(int index)
 {
-  bool treeWidgetsEnabled = index == 0 ? true : false;
+    bool treeWidgetsEnabled = index == 0 ? true : false;
+    
+    d_ui->previousAction->setEnabled(treeWidgetsEnabled);
+    d_ui->nextAction->setEnabled(treeWidgetsEnabled);
+    d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
+    d_ui->zoomOutAction->setEnabled(treeWidgetsEnabled);
+    d_ui->fitAction->setEnabled(treeWidgetsEnabled);
+    d_ui->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    d_ui->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    d_ui->xmlExportAction->setEnabled(treeWidgetsEnabled);
+    d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
+    d_ui->printAction->setEnabled(treeWidgetsEnabled);
+    d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
 
-  d_ui->previousAction->setEnabled(treeWidgetsEnabled);
-  d_ui->nextAction->setEnabled(treeWidgetsEnabled);
-  d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
-  d_ui->zoomOutAction->setEnabled(treeWidgetsEnabled);
-  d_ui->fitAction->setEnabled(treeWidgetsEnabled);
-  d_ui->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
-  d_ui->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
-  d_ui->xmlExportAction->setEnabled(treeWidgetsEnabled);
-  d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
-  d_ui->printAction->setEnabled(treeWidgetsEnabled);
-  d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
+    Q_ASSERT(index < d_taintedWidgets.size());
+    
+    if (d_taintedWidgets[index].second)
+    {
+        d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter));
+        d_taintedWidgets[index].second = false;
+    }
+}
+
+void MainWindow::taintAllWidgets()
+{
+    for (QVector<QPair<CorpusWidget *, bool> >::iterator iter = d_taintedWidgets.begin();
+            iter != d_taintedWidgets.end(); ++iter)
+        iter->second = true;
 }
 
 void MainWindow::treeChanged(DactTreeScene *scene)
