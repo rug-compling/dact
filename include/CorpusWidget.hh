@@ -5,9 +5,7 @@
 #include <QString>
 #include <QWidget>
 
-namespace alpinocorpus {
-    class CorpusReader;
-}
+#include <AlpinoCorpus/CorpusReader.hh>
 
 class CorpusWidget : public QWidget
 {
