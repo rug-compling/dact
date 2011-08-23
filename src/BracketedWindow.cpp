@@ -207,12 +207,6 @@ void BracketedWindow::closeEvent(QCloseEvent *event)
 void BracketedWindow::readSettings()
 {
     QSettings settings;
-
-    // Window geometry.
-    QPoint pos = settings.value("filter_pos", QPoint(200, 200)).toPoint();
-    QSize size = settings.value("filter_size", QSize(350, 400)).toSize();
-    resize(size);
-    move(pos);
     
     // restore last selected display method
     int delegateIndex = settings.value("filter_list_delegate", 0).toInt();
@@ -223,10 +217,6 @@ void BracketedWindow::readSettings()
 void BracketedWindow::writeSettings()
 {
     QSettings settings;
-
-    // Window geometry
-    settings.setValue("filter_pos", pos());
-    settings.setValue("filter_size", size());
     
     // display method
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
