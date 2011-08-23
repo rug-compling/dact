@@ -123,6 +123,7 @@ void MainWindow::cancelQuery()
 {
   d_ui->dependencyTreeWidget->cancelQuery();
   d_ui->statisticsWindow->cancelQuery();
+  d_ui->sentencesWidget->cancelQuery();
   statusBar()->clearMessage();
 
 }
@@ -416,6 +417,7 @@ void MainWindow::readCorpus(QString const &corpusPath)
 {
     d_ui->dependencyTreeWidget->cancelQuery();
     d_ui->statisticsWindow->cancelQuery();
+    d_ui->sentencesWidget->cancelQuery();
     
     if (d_corpusOpenWatcher.isRunning()) {
         d_corpusOpenWatcher.cancel();

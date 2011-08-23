@@ -64,6 +64,9 @@ signals:
      */
     void entryActivated(QString file);
     
+public slots:
+    void cancelQuery();
+
 private slots:
     void applyValidityColor(QString const &text);
     /*
@@ -105,8 +108,7 @@ private slots:
     void queryFailed(QString error);
     
     void startQuery();
-    void stopQuery();
-
+    
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 

@@ -37,6 +37,12 @@ BracketedWindow::BracketedWindow(QWidget *parent) :
     //readSettings();
 }
 
+void BracketedWindow::cancelQuery()
+{
+    if (d_model)
+        d_model->cancelQuery();
+}
+
 void BracketedWindow::queryFailed(QString error)
 {
     QMessageBox::critical(this, tr("Error processing query"),
@@ -87,11 +93,6 @@ void BracketedWindow::startQuery()
     reloadListDelegate();
         
     d_model->runQuery(generateQuery(d_filter, "(@root or .//node[@root])"));
-}
-
-void BracketedWindow::stopQuery()
-{
-    d_model->cancelQuery();
 }
 
 void BracketedWindow::applyValidityColor(QString const &)
