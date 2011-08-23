@@ -53,9 +53,7 @@ void BracketedWindow::queryFailed(QString error)
 
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
-    d_corpusReader = corpusReader;
-    
-    setModel(new FilterModel(corpusReader));
+    d_corpusReader = corpusReader;    
 }
 
 void BracketedWindow::setFilter(QString const &filter)
@@ -86,14 +84,17 @@ void BracketedWindow::setModel(FilterModel *model)
 
 void BracketedWindow::startQuery()
 {
-    if (!d_model)
-        return;
-    
+    if (d_filter.trimmed().isEmpty())
+        setModel(new FilterModel(QSharedPointer<ac::CorpusReader>()));
+    else
+        setModel(new FilterModel(d_corpusReader));
+
     // Reload the list delegate since they keep their results cached.
     // This will make sure no old cached data is used.
     reloadListDelegate();
-        
+
     d_model->runQuery(generateQuery(d_filter, "(@root or .//node[@root])"));
+
 }
 
 void BracketedWindow::applyValidityColor(QString const &)
