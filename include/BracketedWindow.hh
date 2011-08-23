@@ -34,16 +34,8 @@ class BracketedWindow : public QWidget {
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
     typedef QStyledItemDelegate*(*DelegateFactory)(CorpusReaderPtr);
     
-public:
-    /*
-     Constructor
-     \param corpusReader the corpus reader that will be queried
-     \param macrosModel the current macros model which should preprocess the queries
-     \param parent
-     \param f
-    */
-    BracketedWindow(CorpusReaderPtr corpusReader,
-        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
+public:    
+    BracketedWindow(QWidget *parent = 0);
     
     /*!
      When a new treebank is loaded into the main window, the corpus is switched and the
@@ -117,7 +109,6 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
-    void keyPressEvent(QKeyEvent *event);
 
 private:
     void addListDelegate(QString const &name, DelegateFactory);
@@ -140,7 +131,6 @@ private:
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
-    QSharedPointer<XPathValidator> d_xpathValidator;
 };
 
 #endif // DACTFILTERWINDOW_H

@@ -57,6 +57,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Sentences</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="BracketedWindow" name="sentencesWidget" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -121,7 +131,6 @@
     </property>
     <addaction name="showMacrosWindow"/>
     <addaction name="separator"/>
-    <addaction name="showFilterWindow"/>
     <addaction name="separator"/>
     <addaction name="downloadAction"/>
    </widget>
@@ -286,14 +295,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
-   </property>
-  </action>
-  <action name="showFilterWindow">
-   <property name="text">
-    <string>Bracketed sentences…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="nextAction">
@@ -470,6 +471,11 @@
    <class>StatisticsWindow</class>
    <extends>QWidget</extends>
    <header>StatisticsWindow.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>BracketedWindow</class>
+   <extends>QWidget</extends>
+   <header>BracketedWindow.hh</header>
   </customwidget>
   <customwidget>
    <class>DependencyTreeWidget</class>

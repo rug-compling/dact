@@ -19,7 +19,6 @@
 #include "BracketedWindow.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
-#include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 #include "Query.hh"
 #include "ValidityColor.hh"
@@ -27,20 +26,15 @@
 
 namespace ac = alpinocorpus;
 
-BracketedWindow::BracketedWindow(QSharedPointer<ac::CorpusReader> corpusReader,
-        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent, Qt::WindowFlags f) :
-    QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow)),
-    d_macrosModel(macrosModel),
-    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel, 0, corpusReader)))
+BracketedWindow::BracketedWindow(QWidget *parent) :
+    QWidget(parent),
+    d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow))
 {
     d_ui->setupUi(this);
     
-    switchCorpus(corpusReader);
-    
     initListDelegates();
     createActions();
-    readSettings();
+    //readSettings();
 }
 
 void BracketedWindow::queryFailed(QString error)
@@ -54,23 +48,13 @@ void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader
 {
     d_corpusReader = corpusReader;
     
-    d_xpathValidator->setCorpusReader(d_corpusReader);
-    QString query = d_ui->filterLineEdit->text();
-    d_ui->filterLineEdit->clear();
-    d_ui->filterLineEdit->insert(query);
-
     setModel(new FilterModel(corpusReader));
 }
 
 void BracketedWindow::setFilter(QString const &filter)
 {
-    d_ui->filterLineEdit->setText(filter);
-    
-    // Don't try to filter with an invalid xpath expression
-    if (!d_ui->filterLineEdit->hasAcceptableInput())
-        d_filter = QString();
-    else
-        d_filter = filter.trimmed();
+    d_filter = filter;
+    startQuery();
 }
 
 void BracketedWindow::setModel(FilterModel *model)
@@ -95,15 +79,14 @@ void BracketedWindow::setModel(FilterModel *model)
 
 void BracketedWindow::startQuery()
 {
-    setFilter(d_ui->filterLineEdit->text());
+    if (!d_model)
+        return;
     
     // Reload the list delegate since they keep their results cached.
     // This will make sure no old cached data is used.
     reloadListDelegate();
-    
-    QString query = d_macrosModel->expand(d_filter);
-    
-    d_model->runQuery(generateQuery(query, "(@root or .//node[@root])"));
+        
+    d_model->runQuery(generateQuery(d_filter, "(@root or .//node[@root])"));
 }
 
 void BracketedWindow::stopQuery()
@@ -133,14 +116,7 @@ void BracketedWindow::createActions()
         SIGNAL(activated(QModelIndex const &)),
         this,
         SLOT(entryActivated(QModelIndex const &)));
-    
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
-        this, SLOT(applyValidityColor(QString const &)));
-    
-    QObject::connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
-        this, SLOT(startQuery()));
-    
+
     QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)),
         this, SLOT(listDelegateChanged(int)));
 }
@@ -199,24 +175,6 @@ void BracketedWindow::initListDelegates()
 void BracketedWindow::reloadListDelegate()
 {
     listDelegateChanged(d_ui->listDelegateComboBox->currentIndex());
-}
-
-void BracketedWindow::keyPressEvent(QKeyEvent *event)
-{
-    // When pressing Esc, stop with what you where doing
-    if (event->key() == Qt::Key_Escape)
-    {
-        d_model->cancelQuery();
-        event->accept();
-    }
-    // Cmd + w closes the window in OS X (and in some programs on Windows as well)
-    else if (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier)
-    {
-        hide();
-        event->accept();
-    }
-    else
-        QWidget::keyPressEvent(event);
 }
 
 void BracketedWindow::progressStarted(int totalEntries)

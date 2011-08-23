@@ -19,7 +19,6 @@ namespace Ui {
 }
 
 class AboutWindow;
-class BracketedWindow;
 class DownloadWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
@@ -67,12 +66,7 @@ public slots:
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
-    
-    /*!
-     Instantiate (if not already instantiated) and raise the filter window, BracketedWindow.
-    */
-    void showFilterWindow();
-        
+            
     /*!
      Instantiate (if not already done so) and raise the DactMacrosWindow
     */
@@ -292,7 +286,6 @@ private:
     
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
-    BracketedWindow *d_bracketedWindow;
     DownloadWindow *d_downloadWindow;
     DactMacrosWindow *d_macrosWindow;
     QProgressDialog *d_openProgressDialog;

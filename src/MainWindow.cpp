@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
-    d_bracketedWindow(0),
     d_downloadWindow(0),
     d_macrosWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
@@ -94,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete d_aboutWindow;
-    delete d_bracketedWindow;
     delete d_downloadWindow;
     delete d_macrosWindow;
     delete d_openProgressDialog;
@@ -110,7 +108,7 @@ void MainWindow::aboutDialog()
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
 {
-    setFilter(d_bracketedWindow->filter());
+    setFilter(d_ui->sentencesWidget->filter());
     d_ui->dependencyTreeWidget->showFile(entry);
     
     activateWindow();
@@ -154,21 +152,6 @@ void MainWindow::showDownloadWindow()
     
     d_downloadWindow->show();
     d_downloadWindow->raise();
-}
-
-void MainWindow::showFilterWindow()
-{
-    if (d_bracketedWindow == 0)
-    {
-        d_bracketedWindow = new BracketedWindow(d_corpusReader, d_macrosModel, this, Qt::Window);
-
-        connect(d_bracketedWindow, SIGNAL(entryActivated(QString)),
-            SLOT(bracketedEntryActivated(QString)));
-    }
-
-    d_bracketedWindow->setFilter(d_filter);
-    d_bracketedWindow->show();
-    d_bracketedWindow->raise();
 }
 
 void MainWindow::showOpenCorpusError(QString const &error)
@@ -287,8 +270,6 @@ void MainWindow::createActions()
         SLOT(focusNextTreeNode()));
     connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusPreviousTreeNode()));
-    connect(d_ui->showFilterWindow, SIGNAL(triggered(bool)),
-        SLOT(showFilterWindow()));
     connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)),
         SLOT(showMacrosWindow()));
     connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
@@ -352,6 +333,7 @@ void MainWindow::filterChanged()
 
     d_ui->dependencyTreeWidget->setFilter(d_filter);
     d_ui->statisticsWindow->setFilter(d_filter);
+    d_ui->sentencesWidget->setFilter(d_filter);
 }
 
 void MainWindow::focusFilter()
@@ -508,9 +490,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
     d_ui->dependencyTreeWidget->switchCorpus(d_corpusReader);
     d_ui->statisticsWindow->switchCorpus(d_corpusReader);
-
-    if(d_bracketedWindow != 0)
-        d_bracketedWindow->switchCorpus(d_corpusReader);
+    d_ui->sentencesWidget->switchCorpus(d_corpusReader);
 }
 
 void MainWindow::corpusRead()
