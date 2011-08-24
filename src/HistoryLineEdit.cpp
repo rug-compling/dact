@@ -1,5 +1,4 @@
 #include <QKeyEvent>
-
 #include <HistoryLineEdit.hh>
 
 HistoryLineEdit::HistoryLineEdit(QWidget *parent) : QLineEdit(parent)
@@ -24,9 +23,8 @@ void HistoryLineEdit::keyPressEvent(QKeyEvent *event)
         historyForward();
         event->accept();
     }
-    else {
+    else
         QLineEdit::keyPressEvent(event);
-    }
 }
 
 void HistoryLineEdit::historyBack()
@@ -37,7 +35,7 @@ void HistoryLineEdit::historyBack()
     
     --d_currentIter;
     
-    setText(*d_currentIter);
+    QLineEdit::setText(*d_currentIter);
 }
 
 void HistoryLineEdit::historyForward()
@@ -48,5 +46,19 @@ void HistoryLineEdit::historyForward()
     
     ++d_currentIter;
     
-    setText(*d_currentIter);
+    QLineEdit::setText(*d_currentIter);
+}
+
+void HistoryLineEdit::insert(QString const &newText)
+{
+  QLineEdit::insert(newText);
+
+  addHistoryEntry();
+}
+
+void HistoryLineEdit::setText(QString const &newText)
+{
+  QLineEdit::setText(newText);
+
+  addHistoryEntry();
 }
