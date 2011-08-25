@@ -20,6 +20,8 @@ public:
 
 public slots:
     void addHistoryEntry();
+    virtual void insert(QString const &newText);
+    virtual void setText(QString const &newText);
 
 private:
     QList<QString> d_history;
