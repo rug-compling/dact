@@ -40,6 +40,7 @@ StatisticsWindow::StatisticsWindow(QWidget *parent) :
 
 StatisticsWindow::~StatisticsWindow()
 {
+    writeSettings();
 }
 
 void StatisticsWindow::attributeChanged(int index)
