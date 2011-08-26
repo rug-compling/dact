@@ -292,7 +292,7 @@ void StatisticsWindow::readSettings()
 {
     QSettings settings;
 
-    bool show = settings.value("query_show_percentage", false).toBool();
+    bool show = settings.value("query_show_percentage", true).toBool();
     showPercentage(show);
 
     // Window geometry.
