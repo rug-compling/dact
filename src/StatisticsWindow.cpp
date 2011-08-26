@@ -190,9 +190,7 @@ QString StatisticsWindow::selectionAsCSV(QString const &separator) const
 
 void StatisticsWindow::showPercentage(bool show)
 {
-   //d_ui->resultsTable->setColumnHidden(1, show);
    d_ui->resultsTable->setColumnHidden(2, !show);
-    
    d_ui->percentageCheckBox->setChecked(show);
 }
 
@@ -201,6 +199,7 @@ void StatisticsWindow::startQuery()
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
 
     d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
     d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
