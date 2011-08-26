@@ -75,14 +75,20 @@ QVariant QueryModel::data(QModelIndex const &index, int role) const
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
+    if (role != Qt::DisplayRole)
+        return QVariant();
+    
+    if (orientation == Qt::Vertical)
+        return QVariant();
+    
     switch (column)
     {
         case 0:
             return tr("Value");
         case 1:
-            return tr("Hits");
+            return tr("Nodes");
         case 2:
-            return tr("Relative");
+            return tr("Percentage");
         default:
             return QVariant();
     }
