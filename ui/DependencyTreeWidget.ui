@@ -28,7 +28,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QListView" name="fileListWidget">
+           <widget class="DactListView" name="fileListWidget">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -167,6 +167,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>DactListView</class>
+   <extends>QWidget</extends>
+   <header>DactListView.hh</header>
+  </customwidget>
   <customwidget>
    <class>DactTreeView</class>
    <extends>QWidget</extends>
