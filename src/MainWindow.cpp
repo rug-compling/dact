@@ -537,7 +537,7 @@ void MainWindow::readSettings()
     
     // Inspector
     d_ui->inspector->setVisible(
-        settings.value("inspectorVisible").toBool());
+        settings.value("inspectorVisible", true).toBool());
     
     d_ui->dependencyTreeWidget->readSettings();
 }
