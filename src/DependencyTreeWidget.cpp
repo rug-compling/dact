@@ -141,9 +141,28 @@ void DependencyTreeWidget::mapperFailed(QString error)
                           QMessageBox::Ok);
 }
 
-void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
+void DependencyTreeWidget::mapperFinished(int processedEntries, int totalEntries, bool cached)
 {
+    if (cached) {
+        d_ui->fileListWidget->selectionModel()->clear();
+        QModelIndex idx(d_model->index(0, 0));
+        d_ui->fileListWidget->selectionModel()->setCurrentIndex(idx,
+            QItemSelectionModel::ClearAndSelect);
+    }
+    
+    mapperStopped(processedEntries, totalEntries);
+}
+
+void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
+{    
     d_ui->filterProgressBar->setVisible(false);
+    
+    // Final counts. Doing this again is necessary, because the query may
+    // have been cached. If so, it doesn't emit a signal for every entry.
+    int entries = d_model->rowCount(QModelIndex());
+    int hits = d_model->hits();
+    d_ui->entriesLabel->setText(QString::number(entries));
+    d_ui->hitsLabel->setText(QString::number(hits));
     
     if (!d_file.isNull())
     {
@@ -223,6 +242,8 @@ void DependencyTreeWidget::setModel(FilterModel *model)
             SLOT(mapperStarted(int)));
     connect(model, SIGNAL(queryStopped(int, int)),
             SLOT(mapperStopped(int, int)));
+    connect(model, SIGNAL(queryFinished(int, int, bool)),
+            SLOT(mapperFinished(int, int, bool)));
     connect(model, SIGNAL(entryFound(QString)),
             SLOT(entryFound(QString)));
     

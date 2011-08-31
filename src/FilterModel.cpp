@@ -1,4 +1,7 @@
+#include <QCache>
 #include <QDebug>
+#include <QString>
+#include <QStringList>
 #include <QtConcurrentRun>
 
 #include <algorithm>
@@ -10,10 +13,13 @@ FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
 :
     QAbstractTableModel(parent),
     d_corpus(corpus),
-    d_hits(0)
+    d_hits(0),
+    d_entryCache(new EntryCache(1000000))
 {
     connect(this, SIGNAL(entryFound(QString)),
         SLOT(mapperEntryFound(QString)));
+    connect(this, SIGNAL(queryFinished(int, int, bool)),
+        SLOT(finalizeQuery(int, int, bool)));
 }
 
 FilterModel::~FilterModel()
@@ -49,6 +55,15 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
             return QVariant();
     }
 }
+
+void FilterModel::finalizeQuery(int n, int totalEntries, bool cached)
+{
+    if (!cached) {
+        // Cache the query
+        d_entryCache->insert(d_query, new CacheItem(d_hits, d_results));
+    }
+}
+
 
 QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
@@ -154,14 +169,17 @@ void FilterModel::cancelQuery()
 // run async, because query() starts searching immediately
 void FilterModel::getEntriesWithQuery(QString const &query)
 {
-    try {
-        FilterModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            d_corpus->end());
-    } catch (alpinocorpus::Error const &e) {
-        qDebug() << "Error in FilterModel::getEntriesWithQuery: " << e.what();
-        emit queryFailed(e.what());
+    if (d_entryCache->contains(query)) {
+        d_results = d_entryCache->object(query)->entries;
+        d_hits = d_entryCache->object(query)->hits;
+
+        emit queryFinished(d_results.size(), d_results.size(), true);
+        return;
     }
+    
+    FilterModel::getEntries(
+        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+        d_corpus->end());    
 }
 
 // run async
@@ -178,8 +196,11 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
             ++d_hits;
             emit entryFound(QString::fromUtf8((*itr).c_str()));
         }
-            
-        emit queryStopped(d_results.size(), d_results.size());
+        
+        if (d_cancelled)
+            emit queryStopped(d_results.size(), d_results.size());
+        else
+            emit queryFinished(d_results.size(), d_results.size(), false);
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());

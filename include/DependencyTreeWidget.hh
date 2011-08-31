@@ -131,17 +131,32 @@ private slots:
      \sa mapperProgressed
      */
     void mapperStarted(int totalEntries);
+
+    /*!
+     When the mapper stopped (because it finished), hide the
+     progress bar.
+     \param processedEntries number of entries searched
+     \param totalEntries number of entries in the corpus
+     \param cached entries were received from cache
+     \sa mapperFailed
+     \sa mapperStopped
+     \sa mapperStarted
+     \sa mapperProgressed
+     */
+    void mapperFinished(int processedEntries, int totalEntries, bool cached);
     
     /*!
-     When the mapper stopped (because it finished or was cancelled), hide the
+     When the mapper stopped (because it cancelled), hide the
      progress bar.
      \param processedEntries number of entries searched
      \param totalEntries number of entries in the corpus
      \sa mapperFailed
+     \sa mapperFinished
      \sa mapperStarted
      \sa mapperProgressed
      */
     void mapperStopped(int processedEntries, int totalEntries);
+    
 private:
     void addConnections();
     
