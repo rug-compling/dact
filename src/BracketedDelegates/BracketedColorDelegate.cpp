@@ -27,8 +27,9 @@ void BracketedColorDelegate::loadSettings()
 
 QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // @TODO this is incorrect, these are the dimensions required to display the filename!
-    return option.fontMetrics.size(Qt::TextSingleLine, index.data().toString());
+    QString filename(index.data(Qt::UserRole).toString());
+
+    return option.fontMetrics.size(Qt::TextSingleLine, sentence(index));
 }
 
 void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const

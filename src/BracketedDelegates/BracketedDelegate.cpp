@@ -130,6 +130,23 @@ QList<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString const 
     return chunks;
 }
 
+QString BracketedDelegate::sentence(QModelIndex const &index) const
+{
+  // This method will be used in the sizeHint() of deriving classes.
+  // Performing a full XML parse and XSLT transformation to get the sentence
+  // length is *very* wasteful. Instead, we do some regexp magic.
+
+  QString filename(index.data(Qt::UserRole).toString());
+  QString data(QString::fromUtf8(d_corpus->read(filename.toUtf8().constData()).c_str()));
+  QRegExp sentExpr("<sentence>(.*)</sentence>"); // XXX - Precompile once.
+  int pos = sentExpr.indexIn(data);
+
+  if (pos > -1)
+    return sentExpr.cap(1);
+  else
+    return QString();
+}
+
 QString BracketedDelegate::transformXML(QString const &xml) const
 {
     QHash<QString, QString> params;
