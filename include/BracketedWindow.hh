@@ -90,9 +90,16 @@ private slots:
      \param totalEntries number of entries it could have processed.
      */
     void progressChanged(int processedEntries, int totalEntries);
+
+    /*!
+     Called when the search mapper was finished. Cancels the progress bar.
+     \param processedEntries number of entries searched so far.
+     \param totalEntries number of entries to search thru.
+     */
+    void progressFinished(int processedEntries, int totalEntries, bool cached);
     
     /*!
-     Called when the search mapper progresssed. Updates the progress bar.
+     Called when the search mapper was canceled. Cancels the progress bar.
      \param processedEntries number of entries searched so far.
      \param totalEntries number of entries to search thru.
      */

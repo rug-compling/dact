@@ -80,6 +80,10 @@ void BracketedWindow::setModel(FilterModel *model)
     
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
+    
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
+            SLOT(progressFinished(int, int, bool)));
+
 }
 
 void BracketedWindow::startQuery()
@@ -192,6 +196,12 @@ void BracketedWindow::progressChanged(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setValue(processedEntries);
 }
+
+void BracketedWindow::progressFinished(int processedEntries, int totalEntries, bool cached)
+{
+    progressStopped(processedEntries, totalEntries);
+}
+
 
 void BracketedWindow::progressStopped(int processedEntries, int totalEntries)
 {
