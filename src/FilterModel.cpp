@@ -14,10 +14,15 @@ FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
     QAbstractTableModel(parent),
     d_corpus(corpus),
     d_hits(0),
-    d_entryCache(new EntryCache(1000000))
+    d_entryCache(new EntryCache(1000000)),
+    d_timer(new QTimer)
 {
-    connect(this, SIGNAL(entryFound(QString)),
-        SLOT(mapperEntryFound(QString)));
+    connect(d_timer.data(), SIGNAL(timeout()),
+        SLOT(fireDataChanged()));
+    connect(this, SIGNAL(queryStopped(int, int)),
+        SLOT(lastDataChanged(int, int)));
+    connect(this, SIGNAL(queryFinished(int, int, bool)),
+        SLOT(lastDataChanged(int, int, bool)));
     connect(this, SIGNAL(queryFinished(int, int, bool)),
         SLOT(finalizeQuery(int, int, bool)));
 }
@@ -34,11 +39,14 @@ int FilterModel::columnCount(QModelIndex const &index) const
 
 int FilterModel::rowCount(QModelIndex const &index) const
 {
+    QMutexLocker locker(&d_resultsMutex);
     return d_results.size();
 }
 
 QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
+    QMutexLocker locker(&d_resultsMutex);
+
     if (!index.isValid()
         || index.row() >= d_results.size()
         || index.row() < 0
@@ -84,6 +92,7 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
 
 QModelIndex FilterModel::indexOfFile(QString const &filename) const
 {
+    QMutexLocker locker(&d_resultsMutex);
     int index = -1;
     for (int i = 0, size = d_results.size(); i < size; ++i)
     {
@@ -97,47 +106,49 @@ QModelIndex FilterModel::indexOfFile(QString const &filename) const
     return createIndex(index, 0);
 }
 
-void FilterModel::mapperEntryFound(QString entry)
+void FilterModel::fireDataChanged()
 {
-    /*
-     * WARNING: This assumes all the hits per result only occur right after
-     * each other, never shuffled. Otherwise we might want to change to QHash
-     * or QMap for fast lookup.
-     */
-    
     // @TODO make this more robust so no assumption is required.
-    
-    int row = d_results.size() - 1;
-    
-    // Just update the hits counter if this file was already in the list
-    if (row >= 0 && d_results[row].first == entry)
+   
+    int row;
     {
-        ++d_results[row].second;
-        
-        // only update the second (hits) column
-        emit dataChanged(index(row, 1), index(row + 1, 1));
+      QMutexLocker locker(&d_resultsMutex);
+      row = d_results.size() - 1;
     }
-    // Add found file to the list
-    else
-    {
-        /*
-        for (QList<value_type>::iterator it = d_results.begin(), end = d_results.end();
-            it != end; it++)
-            if (it->first == entry)
-            qDebug() << "Your assumption is wrong!";
-        */
-        ++row;
-        d_results.append(value_type(entry, 1));
-        emit dataChanged(index(row, 0), index(row + 1, 1));
-    }
+
+    emit dataChanged(index(d_lastRow, 0), index(row + 1, 1));
+    
+    d_lastRow = row;
+}
+
+void FilterModel::lastDataChanged(int n, int totalEntries)
+{
+  Q_UNUSED(n);
+  Q_UNUSED(totalEntries);
+
+  fireDataChanged();
+
+  d_timer->stop();
+}
+
+void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
+{
+  if (cached)
+    return;
+
+  lastDataChanged(n, totalEntries);
 }
 
 void FilterModel::runQuery(QString const &query)
 {
     cancelQuery(); // just in case
     
-    int size = d_results.size();
-    d_results.clear();
+    int size;
+    {
+      QMutexLocker locker(&d_resultsMutex);
+      size = d_results.size();
+      d_results.clear();
+    }
     
     emit dataChanged(index(0, 0), index(size, 0));
     
@@ -146,7 +157,12 @@ void FilterModel::runQuery(QString const &query)
     // Do nothing if this is a dummy filter model with a stupid null pointer
     if (!d_corpus)
         return;
-    
+   
+    d_timer->setInterval(100);
+    d_timer->setSingleShot(false);
+    d_lastRow = 0;
+    d_timer->start();
+
     if (!d_query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntriesWithQuery, d_query);
     else
@@ -170,7 +186,11 @@ void FilterModel::cancelQuery()
 void FilterModel::getEntriesWithQuery(QString const &query)
 {
     if (d_entryCache->contains(query)) {
-        d_results = d_entryCache->object(query)->entries;
+        {
+          QMutexLocker locker(&d_resultsMutex);
+          d_results = d_entryCache->object(query)->entries;
+        }
+
         d_hits = d_entryCache->object(query)->hits;
 
         emit queryFinished(d_results.size(), d_results.size(), true);
@@ -194,7 +214,26 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
         {
             ++d_hits;
-            emit entryFound(QString::fromUtf8((*itr).c_str()));
+
+            QString entry(QString::fromUtf8((*itr).c_str()));
+
+            // Lock the results list.
+            QMutexLocker locker(&d_resultsMutex);
+
+            /*
+             * WARNING: This assumes all the hits per result only occur right after
+             * each other, never shuffled. Otherwise we might want to change to QHash
+             * or QMap for fast lookup.
+             */
+            int row = d_results.size() - 1;
+            if (row >= 0 && d_results[row].first == entry)
+                ++d_results[row].second;
+            // Add found file to the list
+            else
+            {
+                ++row;
+                d_results.append(value_type(entry, 1));
+            }
         }
         
         if (d_cancelled)
