@@ -38,7 +38,7 @@ signals:
     void queryStarted(int totalEntries);
     void queryFinished(int n, int totalEntries, bool cached);
     void queryStopped(int n, int totalEntries);
-    void entryFound(QString entry);
+    void nEntriesFound(int entries, int hits);
     
 private:
     void getEntries(EntryIterator const &begin, EntryIterator const &end);

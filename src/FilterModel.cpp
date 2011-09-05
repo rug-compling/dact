@@ -110,15 +110,16 @@ void FilterModel::fireDataChanged()
 {
     // @TODO make this more robust so no assumption is required.
    
-    int row;
+    int rows;
     {
       QMutexLocker locker(&d_resultsMutex);
-      row = d_results.size() - 1;
+      rows = d_results.size();
     }
 
-    emit dataChanged(index(d_lastRow, 0), index(row + 1, 1));
+    emit dataChanged(index(d_lastRow, 0), index(rows, 1));
+    emit nEntriesFound(rows, d_hits);
     
-    d_lastRow = row;
+    d_lastRow = rows - 1;
 }
 
 void FilterModel::lastDataChanged(int n, int totalEntries)

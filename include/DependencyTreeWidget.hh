@@ -92,9 +92,9 @@ private slots:
     void applyValidityColor(QString const &text);
 
     /*!
-     Called when an entry was added to the model.
+     Called when entries were added to the model.
      */
-    void entryFound(QString const &entry);
+    void nEntriesFound(int entries, int hits);
     
     /*!
      Called when a file in the file list is selected (or the selection is removed.)
@@ -217,6 +217,7 @@ private:
      */
     QString d_highlight;
 
+    bool d_treeShown;
 };
 
 #endif // DEPENDENCYTREEWIDGET

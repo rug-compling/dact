@@ -54,19 +54,16 @@ void DependencyTreeWidget::cancelQuery()
         d_model->cancelQuery();
 }
 
-void DependencyTreeWidget::entryFound(QString const &entry) {
-    Q_UNUSED(entry);
-    
-    int entries = d_model->rowCount(QModelIndex());
-    int hits = d_model->hits();
+void DependencyTreeWidget::nEntriesFound(int entries, int hits) {
     d_ui->entriesLabel->setText(QString::number(entries));
     d_ui->hitsLabel->setText(QString::number(hits));
     
-    if (entries == 1) {
+    if (!d_treeShown) {
         d_ui->fileListWidget->selectionModel()->clear();
         QModelIndex idx(d_model->index(0, 0));
         d_ui->fileListWidget->selectionModel()->setCurrentIndex(idx,
                                                                 QItemSelectionModel::ClearAndSelect);
+        d_treeShown = true;
     }
 }
 
@@ -215,6 +212,7 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
 void DependencyTreeWidget::setFilter(QString const &filter)
 {
     d_filter = filter;
+    d_treeShown = false;
     
     if (d_filter.isEmpty()) {
         d_ui->hitsDescLabel->hide();
@@ -244,8 +242,8 @@ void DependencyTreeWidget::setModel(FilterModel *model)
             SLOT(mapperStopped(int, int)));
     connect(model, SIGNAL(queryFinished(int, int, bool)),
             SLOT(mapperFinished(int, int, bool)));
-    connect(model, SIGNAL(entryFound(QString)),
-            SLOT(entryFound(QString)));
+    connect(model, SIGNAL(nEntriesFound(int, int)),
+            SLOT(nEntriesFound(int, int)));
     
     connect(d_ui->fileListWidget->selectionModel(),
             SIGNAL(currentChanged(QModelIndex,QModelIndex)),
