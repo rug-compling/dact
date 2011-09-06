@@ -4,12 +4,19 @@ project(DACT)
 set(CMAKE_CXX_FLAGS "-pthread")
 
 if(APPLE)
-  set(PROGNAME Dact)
-  set (CMAKE_OSX_ARCHITECTURES "x86_64")
-  set (CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
+  set(CMAKE_OSX_ARCHITECTURES "x86_64")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
+  set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
 else(APPLE)
-set(PROGNAME dact)
+  set(ENABLE_BUNDLE OFF)
 endif(APPLE)
+
+if(ENABLE_BUNDLE)
+  set(PROGNAME Dact)
+else()
+  set(PROGNAME dact)
+endif()
+
 
 set(VERSION "0.0.1")
 
@@ -215,12 +222,22 @@ qt4_add_resources(dact_SRCS ${dact_RCS})
 qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
 qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
-add_executable(${PROGNAME} MACOSX_BUNDLE WIN32
-  ${dact_SRCS}
-  ${dact_HDRS}
-  ${dact_MOC_SRCS}
-  ${dact_UI_HDRS}
-  ${dact_MACOSX_RESOURCE_FILES})
+if(ENABLE_BUNDLE)
+  add_executable(${PROGNAME} MACOSX_BUNDLE
+    ${dact_SRCS}
+    ${dact_HDRS}
+    ${dact_MOC_SRCS}
+    ${dact_UI_HDRS}
+    ${dact_MACOSX_RESOURCE_FILES})
+else()
+  add_executable(${PROGNAME} WIN32
+    ${dact_SRCS}
+    ${dact_HDRS}
+    ${dact_MOC_SRCS}
+    ${dact_UI_HDRS}
+    ${dact_MACOSX_RESOURCE_FILES})
+endif()
+
 target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(${PROGNAME} ${DBXML_LIBRARY})
@@ -239,34 +256,35 @@ install(TARGETS ${PROGNAME}
 
 # OS X bundle creation
 if(APPLE)
-  set(APP ${CMAKE_INSTALL_PREFIX}/${PROGNAME}.app)
+  if(ENABLE_BUNDLE)
+    set(APP ${CMAKE_INSTALL_PREFIX}/${PROGNAME}.app)
 
-  get_filename_component(ALPINOCORPUS_LIBRARY_DIR
-    ${ALPINOCORPUS_LIBRARIES} PATH)
+    get_filename_component(ALPINOCORPUS_LIBRARY_DIR
+      ${ALPINOCORPUS_LIBRARIES} PATH)
 
-  set(DIRS
-    ${QT_LIBRARY_DIR}
-    ${ALPINOCORPUS_LIBRARY_DIR})
+    set(DIRS
+      ${QT_LIBRARY_DIR}
+      ${ALPINOCORPUS_LIBRARY_DIR})
 
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
-  set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
-  set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
+    set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+    set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
-  set_target_properties(${PROGNAME}
-    PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
+    set_target_properties(${PROGNAME}
+      PROPERTIES
+      MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
 
-  INSTALL(CODE "
-    file(WRITE \"${APP}/Contents/Resources/qt.conf\")
-    file(MAKE_DIRECTORY \"${APP}/Contents/Resources/qt_menu.nib\")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
-      \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
-      \"${APP}/Contents/Resources/qt_menu.nib\")
-    include(BundleUtilities)
-    fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
-  " COMPONENT Runtime)
+    INSTALL(CODE "
+      file(WRITE \"${APP}/Contents/Resources/qt.conf\")
+      file(MAKE_DIRECTORY \"${APP}/Contents/Resources/qt_menu.nib\")
+      execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+        \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
+        \"${APP}/Contents/Resources/qt_menu.nib\")
+      include(BundleUtilities)
+      fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
+    " COMPONENT Runtime)
 
-  set(CPACK_BINARY_DRAGNDROP ON)
-  include(CPack)
-
+    set(CPACK_BINARY_DRAGNDROP ON)
+    include(CPack)
+  endif(ENABLE_BUNDLE)
 endif(APPLE)
