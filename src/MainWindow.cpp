@@ -72,7 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 {
     setupUi();
-    
+
+    d_ui->filterLineEdit->readHistory("filterHistory");
+
     initTaintedWidgets();
 
     // Ensure that we have a status bar.
@@ -97,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    d_ui->filterLineEdit->writeHistory("filterHistory");
+
     delete d_aboutWindow;
     delete d_downloadWindow;
     delete d_macrosWindow;
@@ -471,9 +475,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     d_xpathValidator->setCorpusReader(reader);
     
     // XXX - There seems to be no way to revalidate a QLineEdit
-    QString query = d_ui->filterLineEdit->text();
-    d_ui->filterLineEdit->clear();
-    d_ui->filterLineEdit->insert(query);
+    d_ui->filterLineEdit->revalidate();
         
     if (!reader.isNull())
     {
