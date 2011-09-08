@@ -386,7 +386,7 @@ void MainWindow::openDirectoryCorpus()
     if (corpusPath.isNull())
         return;
 
-    readCorpus(corpusPath, true);
+    readCorpus(corpusPath, false);
 }
 
 void MainWindow::exportPDF()
