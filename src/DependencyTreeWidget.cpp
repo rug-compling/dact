@@ -27,7 +27,7 @@ DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     addConnections();
     
     d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-    
+
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);

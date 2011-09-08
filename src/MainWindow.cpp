@@ -386,7 +386,7 @@ void MainWindow::openDirectoryCorpus()
     if (corpusPath.isNull())
         return;
 
-    readCorpus(corpusPath);
+    readCorpus(corpusPath, true);
 }
 
 void MainWindow::exportPDF()
@@ -428,7 +428,7 @@ void MainWindow::print()
     }
 }
 
-void MainWindow::readCorpus(QString const &corpusPath)
+void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
 {
     d_ui->dependencyTreeWidget->cancelQuery();
     d_ui->statisticsWindow->cancelQuery();
@@ -446,16 +446,19 @@ void MainWindow::readCorpus(QString const &corpusPath)
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
     d_openProgressDialog->setCancelButton(0);
     
-    QFuture< QPair< QSharedPointer<ac::CorpusReader>, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReader, corpusPath);
+    QFuture< QPair< QSharedPointer<ac::CorpusReader>, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReader, corpusPath, recursive);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
 
-QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader(QString const &path)
+QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
 {
     QSharedPointer<ac::CorpusReader> reader;
     
     try {
-        reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path.toUtf8().constData()));
+        if (recursive)
+            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::openRecursive(path.toUtf8().constData()));
+        else
+            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path.toUtf8().constData()));
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }

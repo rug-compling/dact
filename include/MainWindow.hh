@@ -62,7 +62,7 @@ public slots:
      Start loading a corpus
      \param corpusPath path to a .dz or directory with the XML files
     */
-    void readCorpus(QString const &corpusPath);
+    void readCorpus(QString const &corpusPath, bool recursive = false);
     
     /*!
      Instantiate (if not already instantiated) and raise the download window.
@@ -278,7 +278,7 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
-    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path);
+    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path, bool recursive = false);
 
     /*!
      Read settings like the main window position and dimensions
