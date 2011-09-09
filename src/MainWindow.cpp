@@ -306,9 +306,9 @@ void MainWindow::filterOnInspectorSelection()
 
 void MainWindow::initTaintedWidgets()
 {
-    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, true));
-    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, true));
-    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, true));
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, false));
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, false));
+    d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, false));
 }
 
 void MainWindow::help()
@@ -509,7 +509,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     d_ui->statisticsWindow->switchCorpus(d_corpusReader);
     d_ui->sentencesWidget->switchCorpus(d_corpusReader);
     
-    taintAllWidgets();
+    //taintAllWidgets();
     tabChanged(d_ui->mainTabWidget->currentIndex());
 }
 
