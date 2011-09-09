@@ -303,20 +303,17 @@ void DependencyTreeWidget::showFile(QString const &entry)
             // I try to find my file back in the file list to keep the list
             // in sync with the treegraph since showFile can be called from
             // the child dialogs.
-            
-            // TODO: disabled this for now because it messes up the selection
-            // when deselecting files by ctrl/cmd-clicking on them.
-            /*
-             QListWidgetItem *item;
-             for(int i = 0; i < d_ui->fileListWidget->count(); ++i) {
-             item = d_ui->fileListWidget->item(i);
-             if(item->data(Qt::UserRole).toString() == filename) {
-             d_ui->fileListWidget->setCurrentItem(item);
-             break;
-             }
-             }
-             */
-            
+        
+            QModelIndexList matches =
+              d_ui->fileListWidget->model()->match(
+                  d_ui->fileListWidget->model()->index(0, 0),
+                  Qt::DisplayRole, entry, 1,
+                  Qt::MatchFixedString | Qt::MatchCaseSensitive);
+            if (matches.size() > 0) {
+              d_ui->fileListWidget->selectionModel()->select(matches.at(0),
+                  QItemSelectionModel::ClearAndSelect);
+              d_ui->fileListWidget->scrollTo(matches.at(0));
+            }
         } catch (std::runtime_error const &e) {
             QMessageBox::critical(this, QString("Tranformation error"),
                                   QString("A transformation error occured: %1\n\nCorpus data is probably corrupt.").arg(e.what()));

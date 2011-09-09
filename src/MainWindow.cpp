@@ -117,10 +117,8 @@ void MainWindow::aboutDialog()
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
 {
-    setFilter(d_ui->sentencesWidget->filter());
+    d_ui->mainTabWidget->setCurrentIndex(0);
     d_ui->dependencyTreeWidget->showFile(entry);
-    
-    activateWindow();
 }
 
 void MainWindow::applyValidityColor(QString const &)
@@ -234,6 +232,8 @@ void MainWindow::createActions()
     
     connect(d_ui->statisticsWindow, SIGNAL(entryActivated(QString, QString)),
             SLOT(statisticsEntryActivated(QString const &, QString const &)));
+    connect(d_ui->sentencesWidget, SIGNAL(entryActivated(QString)),
+            SLOT(bracketedEntryActivated(QString)));
     
     connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
