@@ -134,7 +134,6 @@ void MainWindow::cancelQuery()
   d_ui->statisticsWindow->cancelQuery();
   d_ui->sentencesWidget->cancelQuery();
   statusBar()->clearMessage();
-
 }
 
 void MainWindow::changeEvent(QEvent *e)

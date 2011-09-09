@@ -129,7 +129,6 @@ void FilterModel::lastDataChanged(int n, int totalEntries)
 
   fireDataChanged();
 
-  d_timer->stop();
 }
 
 void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
@@ -138,6 +137,8 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
     return;
 
   lastDataChanged(n, totalEntries);
+
+  d_timer->stop();
 }
 
 void FilterModel::runQuery(QString const &query)
@@ -181,6 +182,7 @@ void FilterModel::cancelQuery()
 {
     d_cancelled = true;
     d_entriesFuture.waitForFinished();
+    d_timer->stop();
 }
 
 // run async, because query() starts searching immediately
