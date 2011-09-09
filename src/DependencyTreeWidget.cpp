@@ -79,7 +79,7 @@ void DependencyTreeWidget::entrySelected(QModelIndex const &current, QModelIndex
     
     showFile(current.data(Qt::UserRole).toString());
     
-    focusFitTree();
+    //focusFitTree();
 }
 
 void DependencyTreeWidget::fitTree()
