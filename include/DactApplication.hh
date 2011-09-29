@@ -11,7 +11,7 @@ class DactApplication: public QApplication
 public:
     DactApplication(int &argc, char** argv);
     void init();
-    void openCorpus(QString const &fileName);
+    void openCorpora(QStringList const &fileNames);
 protected:
     bool event(QEvent *event);
 

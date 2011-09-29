@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFuture>
+#include <QFutureSynchronizer>
 #include <QHash>
 #include <QItemSelection>
 #include <QLineEdit>
@@ -32,6 +33,7 @@
 #include <typeinfo>
 
 #include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
@@ -438,6 +440,11 @@ void MainWindow::setInspectorVisible(bool visible)
 
 void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
 {
+    return readCorpora(QStringList(corpusPath), recursive);
+}
+
+void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
+{
     d_ui->dependencyTreeWidget->cancelQuery();
     d_ui->statisticsWindow->cancelQuery();
     d_ui->sentencesWidget->cancelQuery();
@@ -447,31 +454,58 @@ void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
         d_corpusOpenWatcher.waitForFinished();
     }
     
-    d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
-    d_openProgressDialog->setLabelText(QString("Opening %1").arg(corpusPath));
+    QString actionDescription = QString("Opening %1").arg(
+        corpusPaths.size() == 1
+            ? deriveNameFromPath(corpusPaths[0])
+            : QString("%1 corpora").arg(corpusPaths.size()));
+
+    d_openProgressDialog->setWindowTitle(actionDescription);
+    d_openProgressDialog->setLabelText(actionDescription);
     d_openProgressDialog->open();
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
     d_openProgressDialog->setCancelButton(0);
     
-    QFuture< QPair< QSharedPointer<ac::CorpusReader>, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReader, corpusPath, recursive);
+    QFuture< QPair< ac::CorpusReader*, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReaders, corpusPaths, recursive);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
 
-QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
+QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
 {
-    QSharedPointer<ac::CorpusReader> reader;
+    ac::CorpusReader* reader = 0;
     
     try {
         if (recursive)
-            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::openRecursive(path.toUtf8().constData()));
+            reader = ac::CorpusReader::openRecursive(path.toUtf8().constData());
         else
-            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path.toUtf8().constData()));
+            reader = ac::CorpusReader::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }
     
-    return QPair< QSharedPointer<ac::CorpusReader>, QString >(reader, path);
+    return QPair< ac::CorpusReader*, QString >(reader, path);
+}
+
+QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList const &paths, bool recursive)
+{
+    // No need for the multicorpusreader if there is only one corpus to open
+    if (paths.size() == 1)
+        return createCorpusReader(paths[0], recursive);
+    
+    ac::MultiCorpusReader* readers = new ac::MultiCorpusReader();
+
+    foreach (QString const &path, paths) {
+        QPair< ac::CorpusReader*, QString> result = createCorpusReader(path, recursive);
+        if (result.first != 0)
+            readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
+    }
+
+    return QPair< ac::CorpusReader*, QString>(readers, "Multiple Corpora");
+}
+
+QString MainWindow::deriveNameFromPath(QString const &path) const
+{
+    return QFileInfo(path).baseName();
 }
 
 void MainWindow::cancelWriteCorpus()
@@ -526,9 +560,9 @@ void MainWindow::corpusRead()
 {
     d_openProgressDialog->accept();
     
-    QPair<QSharedPointer<ac::CorpusReader>, QString> result(d_corpusOpenWatcher.result());
+    QPair<ac::CorpusReader*, QString> result(d_corpusOpenWatcher.result());
     
-    setCorpusReader(result.first, result.second);
+    setCorpusReader(QSharedPointer<ac::CorpusReader>(result.first), result.second);
 }
 
 void MainWindow::corpusWritten(int idx)

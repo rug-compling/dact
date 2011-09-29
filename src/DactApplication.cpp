@@ -21,14 +21,14 @@ bool DactApplication::event(QEvent *event)
     switch (event->type())
     {
         case QEvent::FileOpen:
-            openCorpus(static_cast<QFileOpenEvent *>(event)->file());
+            openCorpora(QStringList(static_cast<QFileOpenEvent *>(event)->file()));
             return true;
         default:
             return QApplication::event(event);
     }
 }
 
-void DactApplication::openCorpus(QString const &fileName)
+void DactApplication::openCorpora(QStringList const &fileNames)
 {
-    d_mainWindow->readCorpus(fileName);
+    d_mainWindow->readCorpora(fileNames);
 }

@@ -54,12 +54,14 @@ int main(int argc, char *argv[])
 
         a->init();
     
-        if (a->arguments().size() > 2)
-            usage(argv[0]);
+        //if (a->arguments().size() > 2)
+        //    usage(argv[0]);
     
-        if (a->arguments().size() == 2)
-            a->openCorpus(a->arguments().at(1));
+        QStringList corpusPaths(a->arguments());
+        corpusPaths.removeFirst(); // remove dact application path
 
+        a->openCorpora(corpusPaths);
+        
         r = a->exec();
     } catch (std::logic_error const &e) {
         std::cerr << "dact: internal logic error: please report at\n"

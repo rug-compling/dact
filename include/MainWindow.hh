@@ -64,6 +64,8 @@ public slots:
     */
     void readCorpus(QString const &corpusPath, bool recursive = false);
     
+    void readCorpora(QStringList const &corpusPaths, bool recursive = false);
+
     /*!
      Instantiate (if not already instantiated) and raise the download window.
      */
@@ -280,7 +282,24 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
-    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path, bool recursive = false);
+    /*!
+     Given a path create one CorpusReader. In an error occurs, an openError(QString)
+     event is emitted and the pointer is a null-pointer.
+     */
+    QPair<ac::CorpusReader*, QString> createCorpusReader(QString const &path, bool recursive = false);
+
+    /*!
+     Creates one CorpusReader for all the corpora found at paths. If only one path is provided,
+     the CorpusReader will not be wrapped by a MultiCorpusReader. If opening one of the paths results
+     in an error, an openError(QString) event is emitted and the reader is not added to the wrapping list.
+     \sa createCorpusReaders
+     */
+    QPair<ac::CorpusReader*, QString> createCorpusReaders(QStringList const &paths, bool recursive = false);
+
+    /*!
+     Create a reasonable name for the corpus based on its path.
+     */
+    QString deriveNameFromPath(QString const &path) const;
 
     /*!
      Read settings like the main window position and dimensions
@@ -352,7 +371,7 @@ private:
      \sa d_corpusOpenFuture
      \sa corpusRead
      */
-    QFutureWatcher< QPair< QSharedPointer<ac::CorpusReader>, QString> > d_corpusOpenWatcher;
+    QFutureWatcher< QPair< ac::CorpusReader*, QString> > d_corpusOpenWatcher;
 
     /*!
      \sa d_corpusWriteFuture
