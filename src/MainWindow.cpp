@@ -493,14 +493,17 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
         return createCorpusReader(paths[0], recursive);
     
     ac::MultiCorpusReader* readers = new ac::MultiCorpusReader();
+    int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
         QPair< ac::CorpusReader*, QString> result = createCorpusReader(path, recursive);
-        if (result.first != 0)
+        if (result.first != 0) {
             readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
+            nLoadedCorpora++;
+        }
     }
 
-    return QPair< ac::CorpusReader*, QString>(readers, "Multiple Corpora");
+    return QPair< ac::CorpusReader*, QString>(readers, QString("%1 corpora").arg(nLoadedCorpora));
 }
 
 QString MainWindow::deriveNameFromPath(QString const &path) const
@@ -519,27 +522,18 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     
     d_xpathValidator->setCorpusReader(reader);
     
-    // XXX - There seems to be no way to revalidate a QLineEdit
     d_ui->filterLineEdit->revalidate();
         
     if (!reader.isNull())
     {
-        // Show the canonical name in the window title, if it is implemented
-        // (related: alpinocorpus issue #9)
-        /*
-        if (d_corpusReader->name().isEmpty())
-            setWindowTitle("Dact");
-        else
-            setWindowTitle(QString("%1 — Dact").arg(d_corpusReader->name()));
-        */
-        
         setWindowTitle(QString::fromUtf8("%1 — Dact").arg(QFileInfo(path).fileName()));
         
         // On OS X, add the file icon to the window (and try alt-clicking it!)
         setWindowFilePath(path);
-        
-        // Add file to the recent files menu
-        d_ui->menuRecentFiles->addFile(path);
+
+        if (QFileInfo(path).exists())
+            // Add file to the recent files menu
+            d_ui->menuRecentFiles->addFile(path);
     }
     else
     {
