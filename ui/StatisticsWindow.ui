@@ -149,7 +149,10 @@
     <string>&amp;Copy</string>
    </property>
    <property name="shortcut">
-    <number>-1</number>
+    <enum>QKeySequence::Copy</enum>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
