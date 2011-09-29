@@ -227,6 +227,8 @@ private slots:
      Update the state of the next/previous node buttons in the toolbar.
      */
     void updateTreeNodeButtons();
+
+    void setInspectorVisible(bool);
     
 protected:
     void changeEvent(QEvent *e);
@@ -390,6 +392,8 @@ private:
      querying of corpora a bit more lazy.
      */
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
+
+    bool d_inspectorVisible;
 };
 
 #endif // MAINWINDOW_H

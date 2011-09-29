@@ -521,26 +521,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>inspector</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>inspectorAction</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>749</x>
-     <y>360</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>inspectorAction</sender>
    <signal>toggled(bool)</signal>
-   <receiver>inspector</receiver>
-   <slot>setVisible(bool)</slot>
+   <receiver>MainWindow</receiver>
+   <slot>setInspectorVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

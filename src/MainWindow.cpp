@@ -427,6 +427,15 @@ void MainWindow::print()
     }
 }
 
+void MainWindow::setInspectorVisible(bool visible)
+{
+    bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
+    d_inspectorVisible = visible;
+    
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
+    d_ui->inspectorAction->setChecked(visible);
+}
+
 void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
 {
     d_ui->dependencyTreeWidget->cancelQuery();
@@ -540,8 +549,11 @@ void MainWindow::readSettings()
     move(pos);
     
     // Inspector
-    d_ui->inspector->setVisible(
-        settings.value("inspectorVisible", true).toBool());
+    d_inspectorVisible = settings.value("inspectorVisible", true).toBool();
+    d_ui->inspectorAction->setChecked(d_inspectorVisible);
+
+    bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
     
     d_ui->dependencyTreeWidget->readSettings();
 }
@@ -665,7 +677,7 @@ void MainWindow::writeSettings()
     settings.setValue("size", size());
     
     // Inspector
-    settings.setValue("inspectorVisible", d_ui->inspector->isVisible());
+    settings.setValue("inspectorVisible", d_inspectorVisible);
     
     d_ui->dependencyTreeWidget->writeSettings();
 }
@@ -685,6 +697,10 @@ void MainWindow::tabChanged(int index)
     d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
     d_ui->printAction->setEnabled(treeWidgetsEnabled);
     d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
+
+    // Hide inspector on other tabs
+    d_ui->inspectorAction->setEnabled(treeWidgetsEnabled);
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
 
     Q_ASSERT(index < d_taintedWidgets.size());
     
