@@ -32,7 +32,18 @@
     </layout>
    </item>
    <item>
-    <widget class="DactListView" name="resultsList" native="true"/>
+    <widget class="DactListView" name="resultsList" native="true">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <addaction name="copyResultsAction"/>
+    </widget>
    </item>
    <item>
     <widget class="QProgressBar" name="filterProgressBar">
@@ -42,6 +53,20 @@
     </widget>
    </item>
   </layout>
+  <action name="copyResultsAction">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="shortcut">
+    <enum>QKeySequence::Copy</enum>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -52,5 +77,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>copyResultsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>BracketedWindow</receiver>
+   <slot>copy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

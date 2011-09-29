@@ -10,6 +10,7 @@
 
 #include "DactListView.hh"
 
+/*
 void DactListView::keyPressEvent(QKeyEvent *event)
 {
     QAbstractItemModel *modelPtr = model();
@@ -35,6 +36,7 @@ void DactListView::keyPressEvent(QKeyEvent *event)
     else
         QListView::keyPressEvent(event);
 }
+*/
 
 void DactListView::setItemDelegate(QAbstractItemDelegate* delegate)
 {

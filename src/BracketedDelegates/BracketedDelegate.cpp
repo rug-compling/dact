@@ -20,18 +20,7 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     
     if (!d_cache.contains(filename))
     {
-        FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
-        
-        std::list<ac::CorpusReader::MarkerQuery> queries;
-        
-        if (model)
-        {
-            ac::CorpusReader::MarkerQuery query(model->lastQuery().toUtf8().constData(), "active", "1");
-            queries.push_back(query);
-        }
-        
-        QString bracketed_sentence(transformXML(
-            QString::fromUtf8(d_corpus->readMarkQueries(filename.toUtf8().constData(), queries).c_str())).trimmed());
+        QString bracketed_sentence(bracketedSentence(index));
         
         QList<Chunk> *chunks = parseSentence(bracketed_sentence);
         
@@ -145,6 +134,29 @@ QString BracketedDelegate::sentence(QModelIndex const &index) const
     return sentExpr.cap(1);
   else
     return QString();
+}
+
+QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
+{
+    FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
+    
+    QString filename(index.data(Qt::UserRole).toString());
+    
+    std::list<ac::CorpusReader::MarkerQuery> queries;
+    
+    if (model)
+    {
+        ac::CorpusReader::MarkerQuery query(model->lastQuery().toUtf8().constData(), "active", "1");
+        queries.push_back(query);
+    }
+    
+    return transformXML(
+        QString::fromUtf8(d_corpus->readMarkQueries(filename.toUtf8().constData(), queries).c_str())).trimmed();
+}
+
+QString BracketedDelegate::sentenceForClipboard(QModelIndex const &index) const
+{
+    return bracketedSentence(index);
 }
 
 QString BracketedDelegate::transformXML(QString const &xml) const
