@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QChar>
+#include <QFile>
 #include <QString>
 
 #include "DactMacro.hh"
@@ -35,13 +36,22 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     QString expand(QString const &query);
-    
+
 private:
+    QList<DactMacro> readMacros(QFile &file) const;
+    void writeMacros(const QList<DactMacro> &macros, QFile &file) const;
+
+    // for now for compatibility reasons, these write to the default settings path/macros
     QList<DactMacro> readMacros() const;
     void writeMacros(const QList<DactMacro> &macros) const;
 
+
     QList<DactMacro> d_macros;
-    QChar d_symbol;
+
+    static const QChar d_symbol;
+    static const QString d_assignment_symbol;
+    static const QString d_start_replacement_symbol;
+    static const QString d_end_replacement_symbol;
 };
 
 #endif

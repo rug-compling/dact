@@ -1,13 +1,18 @@
 #include <QDebug>
+#include <QFileInfo>
 #include <QSettings>
 
 #include "DactMacrosModel.hh"
 
+const QChar DactMacrosModel::d_symbol('%');
+const QString DactMacrosModel::d_assignment_symbol("=");
+const QString DactMacrosModel::d_start_replacement_symbol("\"\"\"");
+const QString DactMacrosModel::d_end_replacement_symbol("\"\"\"");
+
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
     QAbstractTableModel(parent),
-    d_macros(readMacros()),
-    d_symbol('%')
+    d_macros(readMacros())
 {
 }
     
@@ -120,44 +125,96 @@ Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
-QList<DactMacro> DactMacrosModel::readMacros() const
-{
+QList<DactMacro> DactMacrosModel::readMacros(QFile &file) const
+{   
     QList<DactMacro> macros;
     
-    QSettings settings;
+    QString data;
     
-    int size = settings.beginReadArray("macros");
-    
-    for (int i = 0; i < size; ++i)
+    // XXX - a nice parser would parse directly from the QTextStream
     {
-        settings.setArrayIndex(i);
-        
-        DactMacro macro;
-        macro.pattern = settings.value("pattern").toString();
-        macro.replacement = settings.value("replacement").toString();
-        
-        macros.append(macro);
+        file.open(QIODevice::ReadOnly);
+        QTextStream macro_data(&file);
+        data = macro_data.readAll();
+        file.close();
     }
-    
-    settings.endArray();
-    
+
+    int cursor = 0;
+
+    while (cursor < data.size())
+    {
+        // find '=' symbol, which indicates the end of the name of the macro
+        int assignment_symbol_pos = data.indexOf(d_assignment_symbol, cursor);
+
+        if (assignment_symbol_pos == -1)
+            break;
+
+        // find the '"""' symbol which indicates the start of the replacement
+        int opening_quotes_pos = data.indexOf(d_start_replacement_symbol,
+            assignment_symbol_pos + d_assignment_symbol.size());
+
+        if (opening_quotes_pos == -1)
+            break;
+
+        // find the second '"""' symbol which marks the end of the replacement
+        int closing_quotes_pos = data.indexOf(d_end_replacement_symbol,
+            opening_quotes_pos + d_start_replacement_symbol.size());
+
+        if (closing_quotes_pos == -1)
+            break;
+
+        qDebug() << assignment_symbol_pos
+                 << opening_quotes_pos
+                 << closing_quotes_pos;
+
+        // and go get it!
+        DactMacro macro;
+        macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
+        macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
+            closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
+        macros.append(macro);
+
+        cursor = closing_quotes_pos + d_end_replacement_symbol.size();
+    }
+
     return macros;
 }
 
-void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
+void DactMacrosModel::writeMacros(QList<DactMacro> const &macros, QFile &file) const
 {
-    QSettings settings;
-    
-    settings.beginWriteArray("macros");
-    
-    for (int i = 0; i < d_macros.size(); ++i)
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+    QTextStream macro_data(&file);
+
+    foreach (DactMacro const &macro, macros)
     {
-        settings.setArrayIndex(i);
-        settings.setValue("pattern", d_macros.at(i).pattern);
-        settings.setValue("replacement", d_macros.at(i).replacement);
+        macro_data << macro.pattern
+            << " " << d_assignment_symbol << " "
+            << d_start_replacement_symbol << macro.replacement << d_end_replacement_symbol
+            << '\n';
     }
+
+    file.close();
+}
+
+QList<DactMacro> DactMacrosModel::readMacros() const
+{
+    QFileInfo old_path(QSettings().fileName());
+    QFileInfo new_path(old_path.path() + "/macros");
+
+    if (!new_path.exists())
+        return QList<DactMacro>();
     
-    settings.endArray();
+    QFile new_file(new_path.absoluteFilePath());
+    return readMacros(new_file);
+}
+
+void DactMacrosModel::writeMacros(QList<DactMacro> const &macros) const
+{
+    QFileInfo old_path(QSettings().fileName());
+    QFileInfo new_path(old_path.path() + "/macros");
+
+    QFile new_file(new_path.absoluteFilePath());
+    writeMacros(macros, new_file);
 }
 
 QString DactMacrosModel::expand(QString const &expression)
