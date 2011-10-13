@@ -54,6 +54,8 @@
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
+#include <GlobalEditCommand.hh>
+
 #ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
 #endif
@@ -293,6 +295,10 @@ void MainWindow::createActions()
         SLOT(filterOnInspectorSelection()));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
+    
+    new GlobalEditCommand(d_ui->globalCopyAction, "copy()");
+    new GlobalEditCommand(d_ui->globalCutAction, "cut()");
+    new GlobalEditCommand(d_ui->globalPasteAction, "paste()");
 }
 
 void MainWindow::filterOnInspectorSelection()

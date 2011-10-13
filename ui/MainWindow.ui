@@ -107,6 +107,10 @@
     <addaction name="focusFilterAction"/>
     <addaction name="focusHighlightAction"/>
     <addaction name="separator"/>
+    <addaction name="globalCopyAction"/>
+    <addaction name="globalCutAction"/>
+    <addaction name="globalPasteAction"/>
+    <addaction name="separator"/>
     <addaction name="preferencesAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -475,6 +479,21 @@
   <action name="loadMacrosAction">
    <property name="text">
     <string>Load file</string>
+   </property>
+  </action>
+  <action name="globalCopyAction">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="globalCutAction">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="globalPasteAction">
+   <property name="text">
+    <string>Paste</string>
    </property>
   </action>
  </widget>
