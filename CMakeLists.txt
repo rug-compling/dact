@@ -96,9 +96,9 @@ SET(dact_SRCS
   src/DactApplication.cpp
   src/HistoryLineEdit.cpp
   src/DactListView.cpp
-  src/DactMacrosWindow.cpp
+  src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
-  #src/DactQueryHistory.cpp
+  src/DactMacrosWindow.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
   src/DactTreeScene.cpp
@@ -136,6 +136,7 @@ SET(dact_HDRS
   include/DactColorWell.hh
   include/DactListView.hh
   include/DactMacro.hh
+  include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactMacrosWindow.hh
   include/DactQueryHistory.hh
@@ -174,9 +175,9 @@ SET(dact_MOC_HDRS
   include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/DactListView.hh
-  include/DactMacrosWindow.hh
+  include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  #include/DactQueryHistory.hh
+  include/DactMacrosWindow.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/HistoryLineEdit.hh

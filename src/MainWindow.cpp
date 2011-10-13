@@ -83,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar();
 
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
+
+    d_ui->menuMacros->setModel(d_macrosModel);
     
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());

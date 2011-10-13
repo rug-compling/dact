@@ -15,6 +15,9 @@ struct DactMacro {
     QSharedPointer<QString> source;
 };
 
+bool operator==(DactMacro const &left, DactMacro const &right);
+
 Q_DECLARE_TYPEINFO(DactMacro, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(DactMacro);
 
 #endif

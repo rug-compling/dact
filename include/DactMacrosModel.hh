@@ -38,19 +38,18 @@ public:
 
     QString expand(QString const &query);
 
+public slots:
     void watchFile(QString const &path);
 
 private slots:
     void fileChanged(QString const &path);
 
 private:
+    void removeOneRow(int row);
+    void removeMacrosFromFile(QString const &file);
+    void addMacros(QList<DactMacro> const &macros);
     QList<DactMacro> readMacros(QFile &file) const;
     void writeMacros(const QList<DactMacro> &macros, QFile &file) const;
-
-    // for now for compatibility reasons, these write to the default settings path/macros
-    //QList<DactMacro> readMacros() const;
-    //void writeMacros(const QList<DactMacro> &macros) const;
-
 
     QList<DactMacro> d_macros;
     QFileSystemWatcher d_watcher;

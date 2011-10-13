@@ -141,7 +141,7 @@
     <addaction name="helpAction"/>
     <addaction name="aboutAction"/>
    </widget>
-   <widget class="QMenu" name="menuMacros">
+   <widget class="DactMacrosMenu" name="menuMacros">
     <property name="title">
      <string>Macros</string>
     </property>
@@ -511,6 +511,11 @@
    <class>RecentFilesMenu</class>
    <extends>QMenu</extends>
    <header>RecentFilesMenu.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>DactMacrosMenu</class>
+   <extends>QMenu</extends>
+   <header>DactMacrosMenu.hh</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -78,6 +78,9 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
                 return *macro.source;
         }
     }
+
+    if (role == Qt::UserRole)
+        return QVariant::fromValue(d_macros.at(index.row()));
     
     return QVariant();
 }
@@ -87,7 +90,35 @@ Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::ItemIsEnabled;
     
-    return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    return QAbstractTableModel::flags(index);
+}
+
+void DactMacrosModel::removeOneRow(int row)
+{
+    beginRemoveRows(index(row, 0), row, row + 1);
+    
+    d_macros.removeAt(row);
+    
+    endRemoveRows();
+}
+
+void DactMacrosModel::removeMacrosFromFile(QString const &file)
+{
+    for (int i = 0; i < d_macros.length(); ++i)
+    {
+        if (*d_macros[i].source == file)
+            removeOneRow(i--);
+    }
+}
+
+void DactMacrosModel::addMacros(QList<DactMacro> const &macros)
+{
+    beginInsertRows(index(0, 0), d_macros.length(), d_macros.length() + macros.length());
+
+    foreach (DactMacro const &macro, macros)
+        d_macros.append(macro);
+
+    endInsertRows();
 }
 
 QList<DactMacro> DactMacrosModel::readMacros(QFile &file) const
@@ -161,20 +192,22 @@ void DactMacrosModel::writeMacros(QList<DactMacro> const &macros, QFile &file) c
 
 void DactMacrosModel::watchFile(QString const &path)
 {
-    // TODO maybe be able to load (and watch) multiple files?
-    // but then we need an interface to stop watching them.
-    d_watcher.removePaths(d_watcher.files());
-
     d_watcher.addPath(path);
     fileChanged(path);
 }
 
 void DactMacrosModel::fileChanged(QString const &file_name)
 {
-    // TODO only delete macros with file_name as source
-    // this way we can load and watch multiple macro files :D
+    // Load the fresh macros
     QFile file(file_name);
-    d_macros = readMacros(file);
+    QList<DactMacro> macros(readMacros(file));
+
+    // Remove any old macros that origin from this file, and add the new ones
+    removeMacrosFromFile(file_name);
+    addMacros(macros);
+
+    // Notify the menu that we reloaded our data.
+    emit dataChanged(index(0, 0), index(d_macros.length() - 1, 2));
 }
 
 QString DactMacrosModel::expand(QString const &expression)
@@ -185,4 +218,11 @@ QString DactMacrosModel::expand(QString const &expression)
         query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
     
     return query;
+}
+
+bool operator==(DactMacro const &left, DactMacro const &right)
+{
+    return left.pattern == right.pattern
+        && left.replacement == right.replacement
+        && *left.source == *right.source;
 }
