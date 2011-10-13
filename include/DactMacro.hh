@@ -1,6 +1,8 @@
 #ifndef DACTMACRO_H
 #define DACTMACRO_H
 
+#include <QFile>
+#include <QSharedPointer>
 #include <QString>
 
 // Currently macros are just structs. This might become something decent once
@@ -10,6 +12,7 @@
 struct DactMacro {
     QString pattern;
     QString replacement;
+    QSharedPointer<QString> source;
 };
 
 Q_DECLARE_TYPEINFO(DactMacro, Q_PRIMITIVE_TYPE);

@@ -168,6 +168,8 @@ private slots:
      */
     void openDirectoryCorpus();
     
+    void openMacrosFile();
+
     /*!
      Instantiates (if not already done so) and raises the PreferencesWindow
      */

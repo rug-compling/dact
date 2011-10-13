@@ -141,10 +141,18 @@
     <addaction name="helpAction"/>
     <addaction name="aboutAction"/>
    </widget>
+   <widget class="QMenu" name="menuMacros">
+    <property name="title">
+     <string>Macros</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="loadMacrosAction"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTools"/>
+   <addaction name="menuMacros"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -462,6 +470,11 @@
   <action name="filterOnAttributeAction">
    <property name="text">
     <string>Filter on attribute</string>
+   </property>
+  </action>
+  <action name="loadMacrosAction">
+   <property name="text">
+    <string>Load file</string>
    </property>
   </action>
  </widget>

@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QSettings>
+#include <QStringList>
 
 #include "DactMacrosModel.hh"
 
@@ -11,9 +12,10 @@ const QString DactMacrosModel::d_end_replacement_symbol("\"\"\"");
 
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
-    QAbstractTableModel(parent),
-    d_macros(readMacros())
+    QAbstractTableModel(parent)
 {
+    connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
+        SLOT(fileChanged(QString const &)));
 }
     
 int DactMacrosModel::rowCount(const QModelIndex &parent) const
@@ -36,12 +38,20 @@ QVariant DactMacrosModel::headerData(int column, Qt::Orientation orientation, in
     if (orientation != Qt::Horizontal)
         return QVariant();
     
-    if (column == 0)
-        return tr("Pattern");
-    else if (column == 1)
-        return tr("Replacement");
-    else
-        return QVariant();
+    switch (column)
+    {
+        case 0:
+            return tr("Pattern");
+    
+        case 1:
+            return tr("Replacement");
+    
+        case 2:
+            return tr("Source file");
+    
+        default:
+            return QVariant();   
+    }
 }
 
 QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
@@ -56,65 +66,20 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
     {
         DactMacro macro = d_macros.at(index.row());
         
-        if(index.column() == 0)
-            return macro.pattern;
-        else if(index.column() == 1)
-            return macro.replacement;
+        switch (index.column())
+        {
+            case 0:
+                return macro.pattern;
+            
+            case 1:
+                return macro.replacement;
+            
+            case 2:
+                return *macro.source;
+        }
     }
     
     return QVariant();
-}
-
-bool DactMacrosModel::insertRows(int position, int rows, const QModelIndex &index)
-{
-    beginInsertRows(index, position, position + rows - 1);
-    
-    for (int row = 0; row < rows; ++row)
-    {
-        DactMacro macro;
-        macro.pattern = QString();
-        macro.replacement = QString();
-        d_macros.insert(position, macro);
-    }
-    
-    endInsertRows();
-    
-    return true;
-}
-
-bool DactMacrosModel::removeRows(int position, int rows, const QModelIndex &index)
-{
-    beginRemoveRows(index, position, position + rows - 1);
-    
-    for (int row = 0; row < rows; ++row)
-        d_macros.removeAt(position);
-    
-    endRemoveRows();
-    
-    writeMacros(d_macros);
-    
-    return true;
-}
-
-bool DactMacrosModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if (!index.isValid() || role != Qt::EditRole)
-        return false;
-    
-    DactMacro macro = d_macros.at(index.row());
-    
-    if (index.column() == 0)
-        macro.pattern = value.toString();
-    else if (index.column() == 1)
-        macro.replacement = value.toString();
-    
-    d_macros.replace(index.row(), macro);
-    
-    emit dataChanged(index,index);
-    
-    writeMacros(d_macros);
-    
-    return true;
 }
 
 Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
@@ -128,7 +93,8 @@ Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
 QList<DactMacro> DactMacrosModel::readMacros(QFile &file) const
 {   
     QList<DactMacro> macros;
-    
+    QSharedPointer<QString> source(new QString(file.fileName()));
+
     QString data;
     
     // XXX - a nice parser would parse directly from the QTextStream
@@ -163,15 +129,12 @@ QList<DactMacro> DactMacrosModel::readMacros(QFile &file) const
         if (closing_quotes_pos == -1)
             break;
 
-        qDebug() << assignment_symbol_pos
-                 << opening_quotes_pos
-                 << closing_quotes_pos;
-
         // and go get it!
         DactMacro macro;
         macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
         macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
             closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
+        macro.source = source;
         macros.append(macro);
 
         cursor = closing_quotes_pos + d_end_replacement_symbol.size();
@@ -196,25 +159,22 @@ void DactMacrosModel::writeMacros(QList<DactMacro> const &macros, QFile &file) c
     file.close();
 }
 
-QList<DactMacro> DactMacrosModel::readMacros() const
+void DactMacrosModel::watchFile(QString const &path)
 {
-    QFileInfo old_path(QSettings().fileName());
-    QFileInfo new_path(old_path.path() + "/macros");
+    // TODO maybe be able to load (and watch) multiple files?
+    // but then we need an interface to stop watching them.
+    d_watcher.removePaths(d_watcher.files());
 
-    if (!new_path.exists())
-        return QList<DactMacro>();
-    
-    QFile new_file(new_path.absoluteFilePath());
-    return readMacros(new_file);
+    d_watcher.addPath(path);
+    fileChanged(path);
 }
 
-void DactMacrosModel::writeMacros(QList<DactMacro> const &macros) const
+void DactMacrosModel::fileChanged(QString const &file_name)
 {
-    QFileInfo old_path(QSettings().fileName());
-    QFileInfo new_path(old_path.path() + "/macros");
-
-    QFile new_file(new_path.absoluteFilePath());
-    writeMacros(macros, new_file);
+    // TODO only delete macros with file_name as source
+    // this way we can load and watch multiple macro files :D
+    QFile file(file_name);
+    d_macros = readMacros(file);
 }
 
 QString DactMacrosModel::expand(QString const &expression)

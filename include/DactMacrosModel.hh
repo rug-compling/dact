@@ -5,6 +5,7 @@
 #include <QList>
 #include <QChar>
 #include <QFile>
+#include <QFileSystemWatcher>
 #include <QString>
 
 #include "DactMacro.hh"
@@ -30,23 +31,29 @@ public:
     int columnCount(const QModelIndex &parent) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     QVariant data(const QModelIndex &index, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
-    bool insertRows(int position, int rows, const QModelIndex &index);
-    bool removeRows(int position, int rows, const QModelIndex &index);
+    //bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
+    //bool insertRows(int position, int rows, const QModelIndex &index);
+    //bool removeRows(int position, int rows, const QModelIndex &index);
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
     QString expand(QString const &query);
+
+    void watchFile(QString const &path);
+
+private slots:
+    void fileChanged(QString const &path);
 
 private:
     QList<DactMacro> readMacros(QFile &file) const;
     void writeMacros(const QList<DactMacro> &macros, QFile &file) const;
 
     // for now for compatibility reasons, these write to the default settings path/macros
-    QList<DactMacro> readMacros() const;
-    void writeMacros(const QList<DactMacro> &macros) const;
+    //QList<DactMacro> readMacros() const;
+    //void writeMacros(const QList<DactMacro> &macros) const;
 
 
     QList<DactMacro> d_macros;
+    QFileSystemWatcher d_watcher;
 
     static const QChar d_symbol;
     static const QString d_assignment_symbol;

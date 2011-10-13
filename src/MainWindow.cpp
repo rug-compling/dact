@@ -289,6 +289,8 @@ void MainWindow::createActions()
         SLOT(focusHighlight()));
     connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
+    connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
+        SLOT(openMacrosFile()));
 }
 
 void MainWindow::filterOnInspectorSelection()
@@ -388,6 +390,17 @@ void MainWindow::openDirectoryCorpus()
         return;
 
     readCorpus(corpusPath, false);
+}
+
+void MainWindow::openMacrosFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open macros file", QString(),
+        "Macros file (*.*)");
+    
+    if (filePath.isNull())
+        return;
+    
+    d_macrosModel->watchFile(filePath);
 }
 
 void MainWindow::exportPDF()
