@@ -66,6 +66,8 @@ public slots:
     
     void readCorpora(QStringList const &corpusPaths, bool recursive = false);
 
+    void readMacros(QStringList const &macroPaths);
+
     /*!
      Instantiate (if not already instantiated) and raise the download window.
      */

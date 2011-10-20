@@ -12,6 +12,7 @@ public:
     DactApplication(int &argc, char** argv);
     void init();
     void openCorpora(QStringList const &fileNames);
+    void openMacros(QStringList const &fileNames);
 protected:
     bool event(QEvent *event);
 

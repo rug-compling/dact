@@ -32,3 +32,8 @@ void DactApplication::openCorpora(QStringList const &fileNames)
 {
     d_mainWindow->readCorpora(fileNames);
 }
+
+void DactApplication::openMacros(QStringList const &fileNames)
+{
+    d_mainWindow->readMacros(fileNames);
+}

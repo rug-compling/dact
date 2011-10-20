@@ -413,6 +413,12 @@ void MainWindow::openMacrosFile()
     d_macrosModel->watchFile(filePath);
 }
 
+void MainWindow::readMacros(QStringList const &fileNames)
+{
+    foreach (QString const &fileName, fileNames)
+        d_macrosModel->watchFile(fileName);
+}
+
 void MainWindow::exportPDF()
 {
     QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
