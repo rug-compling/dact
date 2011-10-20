@@ -104,6 +104,7 @@ SET(dact_SRCS
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
+  src/GlobalCopyCommand.cpp
   src/GlobalEditCommand.cpp
   src/MainWindow.cpp
   src/PercentageCellDelegate.cpp
@@ -144,6 +145,7 @@ SET(dact_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/FilterModel.hh
+  include/GlobalCopyCommand.hh
   include/GlobalEditCommand.hh
   include/HistoryLineEdit.hh
   include/MainWindow.hh
@@ -186,6 +188,7 @@ SET(dact_MOC_HDRS
   include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
+  include/GlobalCopyCommand.hh
   include/GlobalEditCommand.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh

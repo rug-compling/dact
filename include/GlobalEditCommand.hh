@@ -33,13 +33,13 @@ protected:
 	/**
 	 * Tests whether the object supports this method.
 	 */
-	bool supports(QWidget *);
+	virtual bool supports(QWidget *);
 
 	/**
 	 * If it supports the method, it can be called
 	 * with apply().
 	 */
-	void apply(QWidget *);
+	virtual void apply(QWidget *);
 
 private:
 	/**
