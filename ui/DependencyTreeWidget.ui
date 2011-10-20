@@ -41,6 +41,7 @@
             <property name="uniformItemSizes">
              <bool>true</bool>
             </property>
+            <addaction name="copyFileNamesAction"/>
            </widget>
           </item>
           <item>
@@ -165,6 +166,20 @@
     </widget>
    </item>
   </layout>
+  <action name="copyFileNamesAction">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="shortcut">
+    <enum>QKeySequence::Copy</enum>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -185,5 +200,12 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>copyFileNamesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>fileListWidget</receiver>
+   <slot>copy()</slot>
+  </connection>
+ </connections>
 </ui>
