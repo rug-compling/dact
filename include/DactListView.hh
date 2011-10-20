@@ -14,10 +14,6 @@ public:
     
     // Overrides QListWidget::setItemDelegate to call dataChanged() afterwards.
     void setItemDelegate(QAbstractItemDelegate* delegate);
-
-public slots:
-	void copy();
-
 };
 
 #endif

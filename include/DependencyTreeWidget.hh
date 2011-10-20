@@ -82,6 +82,8 @@ public slots:
     
     void zoomOut();
 
+    void copy();
+
 private slots:
     /*!
      Attached to the highlight and filter query fields. Called every keypress to

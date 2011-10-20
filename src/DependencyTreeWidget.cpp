@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include <QClipboard>
 #include <QMessageBox>
 #include <QSettings>
 #include <QSharedPointer>
@@ -52,6 +53,26 @@ void DependencyTreeWidget::cancelQuery()
 {
     if (d_model)
         d_model->cancelQuery();
+}
+
+void DependencyTreeWidget::copy()
+{
+    if (!d_model)
+        return;
+    
+    QStringList filenames;
+    
+    QModelIndexList indices = d_ui->fileListWidget->selectionModel()->selectedIndexes();
+    
+    for (QModelIndexList::const_iterator iter = indices.begin();
+        iter != indices.end(); ++iter)
+    {
+        QVariant v = d_model->data(*iter, Qt::DisplayRole);
+        if (v.type() == QVariant::String)
+            filenames.push_back(v.toString());
+    }
+
+    QApplication::clipboard()->setText(filenames.join("\n")); // XXX - Good enough for Windows?
 }
 
 void DependencyTreeWidget::nEntriesFound(int entries, int hits) {

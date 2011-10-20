@@ -10,26 +10,6 @@
 
 #include "DactListView.hh"
 
-void DactListView::copy()
-{
-    QAbstractItemModel *modelPtr = model();
-    
-    QStringList data;
-    if (modelPtr != 0) {
-        QModelIndexList indices = selectedIndexes();
-        
-        for (QModelIndexList::const_iterator iter = indices.begin();
-            iter != indices.end(); ++iter)
-        {
-            QVariant v = modelPtr->data(*iter, Qt::DisplayRole);
-            if (v.type() == QVariant::String)
-                data.push_back(v.toString());
-        }
-    }
-    
-    QApplication::clipboard()->setText(data.join("\n")); // XXX - Good enough for Windows?
-}
-
 void DactListView::setItemDelegate(QAbstractItemDelegate* delegate)
 {
     QAbstractItemView::setItemDelegate(delegate);

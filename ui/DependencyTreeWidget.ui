@@ -204,7 +204,7 @@
   <connection>
    <sender>copyFileNamesAction</sender>
    <signal>triggered()</signal>
-   <receiver>fileListWidget</receiver>
+   <receiver>DependencyTreeWidget</receiver>
    <slot>copy()</slot>
   </connection>
  </connections>
