@@ -36,15 +36,37 @@ void GlobalEditCommand::focusHasChanged(QWidget *prev, QWidget *current)
 void GlobalEditCommand::update()
 {
 	QWidget *current = QApplication::focusWidget();
-	d_action->setEnabled(current != 0 && supports(current));
+
+	// Walk the tree, sometimes it is not the list-widget that
+	// supports the copy operation, but the window that hosts it.
+	while (current != 0)
+	{
+		if (supports(current))
+		{
+			d_action->setEnabled(true);
+			return;
+		}
+
+		current = current->parentWidget();
+	}
+
+	d_action->setEnabled(false);
 }
 
 void GlobalEditCommand::trigger()
 {
 	QWidget *current = QApplication::focusWidget();
 
-	if (current && supports(current))
-		apply(current);
+	while (current != 0)
+	{
+		if (supports(current))
+		{
+			apply(current);
+			return;
+		}
+
+		current = current->parentWidget();
+	}
 }
 
 bool GlobalEditCommand::supportsSignal(QObject *object, char const *signal)
