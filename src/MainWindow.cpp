@@ -55,6 +55,7 @@
 #include <Query.hh>
 
 #include <GlobalCopyCommand.hh>
+#include <GlobalCutCommand.hh>
 #include <GlobalEditCommand.hh>
 
 #ifdef Q_WS_MAC
@@ -298,7 +299,7 @@ void MainWindow::createActions()
         SLOT(openMacrosFile()));
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
-    new GlobalEditCommand(d_ui->globalCutAction, "cut()");
+    new GlobalCutCommand(d_ui->globalCutAction);
     new GlobalEditCommand(d_ui->globalPasteAction, "paste()");
 }
 
