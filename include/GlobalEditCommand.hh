@@ -29,6 +29,12 @@ private slots:
 	 */
 	void focusHasChanged(QWidget *, QWidget *);
 
+	/**
+	 * Triggered as the selection inside a widget changes
+	 * and also, indirectly, when the focus jumps.
+	 */
+	void update();
+
 protected:
 	/**
 	 * Tests whether the object supports this method.
@@ -42,6 +48,13 @@ protected:
 	virtual void apply(QWidget *);
 
 private:
+	/**
+	 * Test to see whether an object can send a certain
+	 * signal. Or more specific, test to see whether the
+	 * widget can send the selectionChanged signal.
+	 */
+	bool supportsSignal(QObject *, char const *);
+	
 	/**
 	 * The QAction widget which it tries to keep in sync with
 	 * the capabilities of the currently focussed widget.

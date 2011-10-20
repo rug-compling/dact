@@ -22,36 +22,34 @@ GlobalEditCommand::GlobalEditCommand(QAction *action, char const *method)
 
 void GlobalEditCommand::focusHasChanged(QWidget *prev, QWidget *current)
 {
-	QObject *focussedWidget = QApplication::focusWidget();
+	if (prev != 0 && supportsSignal(prev, "selectionChanged()"))
+		disconnect(prev, SIGNAL(selectionChanged()),
+			this, SLOT(update()));
 
-	while (QWidget *widget = qobject_cast<QWidget *>(focussedWidget))
-	{
-		if (supports(widget))
-		{
-			d_action->setEnabled(true);
-			return;
-		}
+	if (current != 0 && supportsSignal(current, "selectionChanged()"))
+		connect(current, SIGNAL(selectionChanged()),
+			this, SLOT(update()));
+	
+	update();
+}
 
-		focussedWidget = widget->parent();
-	}
-
-	d_action->setEnabled(false);
+void GlobalEditCommand::update()
+{
+	QWidget *current = QApplication::focusWidget();
+	d_action->setEnabled(current != 0 && supports(current));
 }
 
 void GlobalEditCommand::trigger()
 {
-	QObject *focussedWidget = QApplication::focusWidget();
+	QWidget *current = QApplication::focusWidget();
 
-	while (QWidget *widget = qobject_cast<QWidget *>(focussedWidget))
-	{
-		if (supports(widget))
-		{
-			apply(widget);
-			return;
-		}
-		
-		focussedWidget = focussedWidget->parent();
-	}
+	if (current && supports(current))
+		apply(current);
+}
+
+bool GlobalEditCommand::supportsSignal(QObject *object, char const *signal)
+{
+	return object->metaObject()->indexOfSignal(signal) != -1;
 }
 
 bool GlobalEditCommand::supports(QWidget *widget)
