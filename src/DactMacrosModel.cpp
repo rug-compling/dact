@@ -1,33 +1,43 @@
 #include <QDebug>
 #include <QFileInfo>
-#include <QSettings>
 #include <QStringList>
 
 #include "DactMacrosModel.hh"
+#include "DactMacrosFile.hh"
 
 const QChar DactMacrosModel::d_symbol('%');
-const QString DactMacrosModel::d_assignment_symbol("=");
-const QString DactMacrosModel::d_start_replacement_symbol("\"\"\"");
-const QString DactMacrosModel::d_end_replacement_symbol("\"\"\"");
 
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
-    QAbstractTableModel(parent)
+    QAbstractItemModel(parent)
 {
     connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
         SLOT(fileChanged(QString const &)));
 }
-    
-int DactMacrosModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-    return d_macros.size();
-}
 
+DactMacrosModel::~DactMacrosModel()
+{
+    foreach (DactMacrosFile *file, d_files)
+        delete file;
+}
+    
 int DactMacrosModel::columnCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
-    return 2;
+    return 2; // pattern and replacement
+}
+
+int DactMacrosModel::rowCount(const QModelIndex &parent) const
+{
+    // No index? You must be new here. A row for each file
+    if (!parent.isValid())
+        return d_files.size();
+
+    // macrofiles have a row for each macro they contain
+    else if (parent.internalId() == ROOT_ID)
+        return d_files[parent.row()]->macros().size();
+    
+    // macro's themselves have no rows
+    return 0;
 }
 
 QVariant DactMacrosModel::headerData(int column, Qt::Orientation orientation, int role) const
@@ -46,9 +56,6 @@ QVariant DactMacrosModel::headerData(int column, Qt::Orientation orientation, in
         case 1:
             return tr("Replacement");
     
-        case 2:
-            return tr("Source file");
-    
         default:
             return QVariant();   
     }
@@ -59,170 +66,135 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     
-    if (index.row() >= d_macros.size() || index.row() < 0)
-        return QVariant();
-        
-    if (role == Qt::DisplayRole || role == Qt::EditRole)
+    // Aah, we are pointing at the root, also known as the list of macro files.
+    if (index.internalId() == ROOT_ID)
     {
-        DactMacro macro = d_macros.at(index.row());
+        if (index.row() >= d_files.size() || index.column() != 0)
+            return QVariant();
         
-        switch (index.column())
+        DactMacrosFile *file = d_files[index.row()];
+        QFileInfo fileInfo(file->file());
+
+        switch (role)
         {
-            case 0:
-                return macro.pattern;
+            case Qt::DisplayRole:
+                return fileInfo.baseName();
             
-            case 1:
-                return macro.replacement;
+            case Qt::UserRole:
+                return fileInfo.filePath();
             
-            case 2:
-                return *macro.source;
+            default:
+                return QVariant();
         }
     }
 
-    if (role == Qt::UserRole)
-        return QVariant::fromValue(d_macros.at(index.row()));
-    
-    return QVariant();
+    // Are we pointing to a specific macro-file?
+    else if (index.internalId() >= 0 && index.internalId() < d_files.size())
+    {
+        DactMacrosFile *file = d_files[index.internalId()];
+
+        if (index.row() >= file->macros().size() || index.row() < 0 || index.column() > 1)
+            return QVariant();
+
+        DactMacro const &macro(file->macros().at(index.row()));
+        
+        if (role == Qt::DisplayRole)
+        {
+            switch (index.column())
+            {
+                case 0:
+                    return macro.pattern;
+                
+                case 1:
+                    return macro.replacement;
+            }
+        }
+        else if (role == Qt::UserRole)
+        {
+            switch (index.column())
+            {
+                case 0:
+                    return d_symbol + macro.pattern + d_symbol;
+            }
+        }
+    }
+
+    // What is happening here?!
+    else
+    {
+        //qDebug() << "Data asking for" << index.internalId() << index.row() << index.column() << "which does not exist";
+        return QVariant();
+    }
 }
 
-Qt::ItemFlags DactMacrosModel::flags(const QModelIndex &index) const
+QModelIndex DactMacrosModel::index(int row, int column, QModelIndex const &parent) const
+{
+    // Invalid parent -> coordinates point to a file
+    if (!parent.isValid() && row < d_files.size() && column == 0)
+        return createIndex(row, column, ROOT_ID);
+    
+    // file-list is the parent -> coordinates point to a macro
+    if (parent.internalId() == ROOT_ID && parent.row() < d_files.size() && column < 2)
+        return createIndex(row, column, parent.row());
+
+    // yeah, that's it. This isn't Inception.
+    return QModelIndex();
+}
+
+QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 {
     if (!index.isValid())
-        return Qt::ItemIsEnabled;
+        return QModelIndex();
     
-    return QAbstractTableModel::flags(index);
-}
-
-void DactMacrosModel::removeOneRow(int row)
-{
-    beginRemoveRows(index(row, 0), row, row + 1);
+    // The First Man .. has no parents. Poor guy.
+    if (index.internalId() == ROOT_ID)
+        return QModelIndex();
     
-    d_macros.removeAt(row);
+    // otherwise it is probably pointing to a file,
+    // so let's return its position!
+    Q_ASSERT(index.internalId() >= 0);
+    return createIndex(index.internalId(), 0, ROOT_ID);
+}
+
+void DactMacrosModel::loadFile(QString const &path)
+{
+    if (!d_watcher.files().contains(path))
+        d_watcher.addPath(path);
     
-    endRemoveRows();
-}
-
-void DactMacrosModel::removeMacrosFromFile(QString const &file)
-{
-    for (int i = 0; i < d_macros.length(); ++i)
-    {
-        if (*d_macros[i].source == file)
-            removeOneRow(i--);
-    }
-}
-
-void DactMacrosModel::addMacros(QList<DactMacro> const &macros)
-{
-    beginInsertRows(index(0, 0), d_macros.length(), d_macros.length() + macros.length());
-
-    foreach (DactMacro const &macro, macros)
-        d_macros.append(macro);
-
-    endInsertRows();
-}
-
-QList<DactMacro> DactMacrosModel::readMacros(QFile &file) const
-{   
-    QList<DactMacro> macros;
-    QSharedPointer<QString> source(new QString(file.fileName()));
-
-    QString data;
-    
-    // XXX - a nice parser would parse directly from the QTextStream
-    {
-        file.open(QIODevice::ReadOnly);
-        QTextStream macro_data(&file);
-        data = macro_data.readAll();
-        file.close();
-    }
-
-    int cursor = 0;
-
-    while (cursor < data.size())
-    {
-        // find '=' symbol, which indicates the end of the name of the macro
-        int assignment_symbol_pos = data.indexOf(d_assignment_symbol, cursor);
-
-        if (assignment_symbol_pos == -1)
-            break;
-
-        // find the '"""' symbol which indicates the start of the replacement
-        int opening_quotes_pos = data.indexOf(d_start_replacement_symbol,
-            assignment_symbol_pos + d_assignment_symbol.size());
-
-        if (opening_quotes_pos == -1)
-            break;
-
-        // find the second '"""' symbol which marks the end of the replacement
-        int closing_quotes_pos = data.indexOf(d_end_replacement_symbol,
-            opening_quotes_pos + d_start_replacement_symbol.size());
-
-        if (closing_quotes_pos == -1)
-            break;
-
-        // and go get it!
-        DactMacro macro;
-        macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
-        macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
-            closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
-        macro.source = source;
-        macros.append(macro);
-
-        cursor = closing_quotes_pos + d_end_replacement_symbol.size();
-    }
-
-    return macros;
-}
-
-void DactMacrosModel::writeMacros(QList<DactMacro> const &macros, QFile &file) const
-{
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-    QTextStream macro_data(&file);
-
-    foreach (DactMacro const &macro, macros)
-    {
-        macro_data << macro.pattern
-            << " " << d_assignment_symbol << " "
-            << d_start_replacement_symbol << macro.replacement << d_end_replacement_symbol
-            << '\n';
-    }
-
-    file.close();
-}
-
-void DactMacrosModel::watchFile(QString const &path)
-{
-    d_watcher.addPath(path);
     fileChanged(path);
 }
 
 void DactMacrosModel::fileChanged(QString const &file_name)
 {
-    // Load the fresh macros
-    QFile file(file_name);
-    QList<DactMacro> macros(readMacros(file));
+    int i;
+    // Is this file already loaded? Then just reload it.
+    for (i = 0; i < d_files.size(); ++i)
+    {
+        if (d_files[i]->file().fileName() == file_name)
+        {   
+            d_files[i]->reload();
+            break;
+        }   
+    }
 
-    // Remove any old macros that origin from this file, and add the new ones
-    removeMacrosFromFile(file_name);
-    addMacros(macros);
-
-    // Notify the menu that we reloaded our data.
-    emit dataChanged(index(0, 0), index(d_macros.length() - 1, 2));
+    // Apparently it is a new file! CooL!
+    if (i == d_files.size())
+    {
+        DactMacrosFile *file = new DactMacrosFile(file_name);
+        d_files.insert(i, file);
+    }
+    
+    // Now tell everyone that that file changed
+    dataChanged(index(i, 0), index(i, 0));
 }
 
 QString DactMacrosModel::expand(QString const &expression)
 {
     QString query(expression);
     
-    foreach (DactMacro const &macro, d_macros)
-        query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
+    foreach (DactMacrosFile *file, d_files)
+        foreach (DactMacro const &macro, file->macros())
+            query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
     
     return query;
-}
-
-bool operator==(DactMacro const &left, DactMacro const &right)
-{
-    return left.pattern == right.pattern
-        && left.replacement == right.replacement
-        && *left.source == *right.source;
 }

@@ -23,9 +23,9 @@ void DactMacrosWindow::createActions()
 {
     d_ui->macrosTable->setModel(d_model.data());
     d_ui->macrosTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    d_ui->macrosTable->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
-    d_ui->macrosTable->verticalHeader()->hide();
-    d_ui->macrosTable->setShowGrid(false);
+    //d_ui->macrosTable->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
+    //d_ui->macrosTable->verticalHeader()->hide();
+    //d_ui->macrosTable->setShowGrid(false);
        
     // update [remove] button state
     macrosTableSelectionChanged();

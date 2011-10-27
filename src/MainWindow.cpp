@@ -410,13 +410,13 @@ void MainWindow::openMacrosFile()
     if (filePath.isNull())
         return;
     
-    d_macrosModel->watchFile(filePath);
+    d_macrosModel->loadFile(filePath);
 }
 
 void MainWindow::readMacros(QStringList const &fileNames)
 {
     foreach (QString const &fileName, fileNames)
-        d_macrosModel->watchFile(fileName);
+        d_macrosModel->loadFile(fileName);
 }
 
 void MainWindow::exportPDF()

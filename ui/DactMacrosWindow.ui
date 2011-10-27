@@ -18,7 +18,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="macrosTable"/>
+    <widget class="QTreeView" name="macrosTable"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

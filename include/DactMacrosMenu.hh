@@ -19,11 +19,12 @@ signals:
 
 private slots:
 	void reload();
-	void macroTriggered();
+	void macroActionTriggered();
+	void reloadActionTriggered();
 
 private:
 	QSharedPointer<DactMacrosModel> d_model;
-
+	QList<QMenu *> d_menus;
 };
 
 #endif

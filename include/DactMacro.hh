@@ -1,8 +1,7 @@
 #ifndef DACTMACRO_H
 #define DACTMACRO_H
 
-#include <QFile>
-#include <QSharedPointer>
+#include <QMetaType>
 #include <QString>
 
 // Currently macros are just structs. This might become something decent once
@@ -12,10 +11,13 @@
 struct DactMacro {
     QString pattern;
     QString replacement;
-    QSharedPointer<QString> source;
 };
 
-bool operator==(DactMacro const &left, DactMacro const &right);
+inline bool operator==(DactMacro const &left, DactMacro const &right)
+{
+	return left.pattern == right.pattern
+        && left.replacement == right.replacement;
+}
 
 Q_DECLARE_TYPEINFO(DactMacro, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(DactMacro);
