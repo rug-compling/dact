@@ -99,7 +99,6 @@ SET(dact_SRCS
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
-  src/DactMacrosWindow.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
   src/DactTreeScene.cpp
@@ -144,7 +143,6 @@ SET(dact_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  include/DactMacrosWindow.hh
   include/DactQueryHistory.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
@@ -188,7 +186,6 @@ SET(dact_MOC_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  include/DactMacrosWindow.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/HistoryLineEdit.hh
@@ -217,7 +214,6 @@ SET(dact_UI
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
-  ui/DactMacrosWindow.ui
 )
 
 SET(dact_RCS

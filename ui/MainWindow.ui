@@ -133,7 +133,6 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="showMacrosWindow"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="downloadAction"/>
@@ -299,14 +298,6 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="showMacrosWindow">
-   <property name="text">
-    <string>Macros…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="nextAction">

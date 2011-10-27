@@ -42,7 +42,6 @@
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
-#include <DactMacrosWindow.hh>
 //#include <DactQueryHistory.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
@@ -69,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
-    d_macrosWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
@@ -111,7 +109,6 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
-    delete d_macrosWindow;
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
@@ -184,15 +181,6 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
     d_ui->filterLineEdit->setText(query);
     filterChanged();
     activateWindow();
-}
-
-void MainWindow::showMacrosWindow()
-{
-    if (d_macrosWindow == 0)
-        d_macrosWindow = new DactMacrosWindow(d_macrosModel, this, Qt::Window);
-    
-    d_macrosWindow->show();
-    d_macrosWindow->raise();
 }
 
 void MainWindow::setupUi()
@@ -287,8 +275,6 @@ void MainWindow::createActions()
         SLOT(focusNextTreeNode()));
     connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusPreviousTreeNode()));
-    connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)),
-        SLOT(showMacrosWindow()));
     connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
         SLOT(focusFilter()));
     connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,

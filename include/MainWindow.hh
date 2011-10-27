@@ -23,7 +23,6 @@ namespace Ui {
 class AboutWindow;
 class DownloadWindow;
 class DactMacrosModel;
-class DactMacrosWindow;
 class DactQueryHistory;
 class PreferencesWindow;
 class DactQueryWindow;
@@ -72,12 +71,7 @@ public slots:
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
-            
-    /*!
-     Instantiate (if not already done so) and raise the DactMacrosWindow
-    */
-    void showMacrosWindow();
-
+    
 private slots:
     /*!
      Raise the about window
@@ -324,7 +318,6 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     DownloadWindow *d_downloadWindow;
-    DactMacrosWindow *d_macrosWindow;
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
