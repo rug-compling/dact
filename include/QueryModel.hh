@@ -3,6 +3,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 #include <QAbstractTableModel>
+#include <QCache>
 #include <QFuture>
 #include <QHash>
 #include <QList>
@@ -15,6 +16,7 @@ class QueryModel : public QAbstractTableModel
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
+    typedef QPair<QString, int> value_type;
 
 private:
     class HitsCompare
@@ -41,6 +43,7 @@ signals:
     void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
+    void queryFinished(int n, int totalEntries, bool cached);
     void queryEntryFound(QString entry);
     
 private:
@@ -49,17 +52,34 @@ private:
     
 private slots:
     void mapperEntryFound(QString entry);
+    void finalizeQuery(int n, int totalEntries, bool cached);
     
 private:
+    typedef QList<int> EntryIndex;
+    typedef QList<value_type> EntryList;
+
+    struct CacheItem {
+        CacheItem(int newHits, EntryIndex newIndex, EntryList newEntries) : hits(newHits), index(newIndex), entries(newEntries) {}
+        
+        int hits;
+        QList<int> index;
+        EntryList entries;
+    };
+
+    typedef QCache<QString, CacheItem> EntryCache;
+
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
     
     QHash<QString, int> d_valueIndex;
-    QList<int> d_hitsIndex;
-    QList< QPair<QString, int> > d_results;
+    EntryIndex d_hitsIndex;
+    QList<value_type> d_results;
     int d_totalHits;
     QFuture<void> d_entriesFuture;
-    
+    QString d_query;
+
+    mutable QMutex d_resultsMutex;
+    QSharedPointer<EntryCache> d_entryCache;
 };
 
 #endif

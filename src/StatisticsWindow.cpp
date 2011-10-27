@@ -94,6 +94,9 @@ void StatisticsWindow::setModel(QueryModel *model)
     
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
+    
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
+        SLOT(progressStopped(int, int)));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
