@@ -107,6 +107,7 @@ SET(dact_SRCS
   src/GlobalCopyCommand.cpp
   src/GlobalCutCommand.cpp
   src/GlobalEditCommand.cpp
+  src/GlobalPasteCommand.cpp
   src/MainWindow.cpp
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
@@ -149,6 +150,7 @@ SET(dact_HDRS
   include/GlobalCopyCommand.hh
   include/GlobalCutCommand.hh
   include/GlobalEditCommand.hh
+  include/GlobalPasteCommand.hh
   include/HistoryLineEdit.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
@@ -193,6 +195,7 @@ SET(dact_MOC_HDRS
   include/GlobalCopyCommand.hh
   include/GlobalCutCommand.hh
   include/GlobalEditCommand.hh
+  include/GlobalPasteCommand.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh

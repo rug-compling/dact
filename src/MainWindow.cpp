@@ -56,7 +56,7 @@
 
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
-#include <GlobalEditCommand.hh>
+#include <GlobalPasteCommand.hh>
 
 #ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
@@ -300,7 +300,7 @@ void MainWindow::createActions()
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
-    new GlobalEditCommand(d_ui->globalPasteAction, "paste()");
+    new GlobalPasteCommand(d_ui->globalPasteAction);
 }
 
 void MainWindow::filterOnInspectorSelection()
