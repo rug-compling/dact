@@ -1,9 +1,11 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QStringList>
+#include <QTimer>
 
 #include "DactMacrosModel.hh"
 #include "DactMacrosFile.hh"
+#include "DelayedLoadFileCallback.hh";
 
 const QChar DactMacrosModel::d_symbol('%');
 
@@ -12,7 +14,7 @@ DactMacrosModel::DactMacrosModel(QObject *parent)
     QAbstractItemModel(parent)
 {
     connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
-        SLOT(fileChanged(QString const &)));
+        SLOT(loadFileDelayed(QString const &)));
 }
 
 DactMacrosModel::~DactMacrosModel()
@@ -161,16 +163,16 @@ void DactMacrosModel::loadFile(QString const &path)
     if (!d_watcher.files().contains(path))
         d_watcher.addPath(path);
     
-    fileChanged(path);
+    readFile(path);
 }
 
-void DactMacrosModel::fileChanged(QString const &file_name)
+void DactMacrosModel::readFile(QString const &fileName)
 {
     int i;
     // Is this file already loaded? Then just reload it.
     for (i = 0; i < d_files.size(); ++i)
     {
-        if (d_files[i]->file().fileName() == file_name)
+        if (d_files[i]->file().fileName() == fileName)
         {   
             d_files[i]->reload();
             break;
@@ -180,7 +182,7 @@ void DactMacrosModel::fileChanged(QString const &file_name)
     // Apparently it is a new file! CooL!
     if (i == d_files.size())
     {
-        DactMacrosFile *file = new DactMacrosFile(file_name);
+        DactMacrosFile *file = new DactMacrosFile(fileName);
         d_files.insert(i, file);
     }
     
@@ -197,4 +199,9 @@ QString DactMacrosModel::expand(QString const &expression)
             query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
     
     return query;
+}
+
+void DactMacrosModel::loadFileDelayed(QString const &fileName)
+{
+    QTimer::singleShot(500, new DelayedLoadFileCallback(this, fileName), SLOT(invokeOnce()));
 }

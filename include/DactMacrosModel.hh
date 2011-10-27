@@ -37,9 +37,10 @@ public:
 
 public slots:
     void loadFile(QString const &path);
+    void loadFileDelayed(QString const &path);
 
-private slots:
-    void fileChanged(QString const &path);
+private:
+    void readFile(QString const &path);
 
 private:
     QList<DactMacrosFile *> d_files;
