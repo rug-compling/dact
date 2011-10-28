@@ -209,23 +209,28 @@ void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
 // run async, because query() starts searching immediately
 void QueryModel::getEntriesWithQuery(QString const &query)
 {
-    if (d_entryCache->contains(query))
-    {
+    try {
+        if (d_entryCache->contains(query))
         {
-          QMutexLocker locker(&d_resultsMutex);
-          CacheItem *cachedResult = d_entryCache->object(query);
-          d_totalHits = cachedResult->hits;
-          d_hitsIndex = cachedResult->index;
-          d_results   = cachedResult->entries;
+            {
+              QMutexLocker locker(&d_resultsMutex);
+              CacheItem *cachedResult = d_entryCache->object(query);
+              d_totalHits = cachedResult->hits;
+              d_hitsIndex = cachedResult->index;
+              d_results   = cachedResult->entries;
+            }
+
+            emit queryFinished(d_results.size(), d_results.size(), true);
+            return;
         }
 
-        emit queryFinished(d_results.size(), d_results.size(), true);
-        return;
+        QueryModel::getEntries(
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+            d_corpus->end());
+    } catch (std::exception const &e) {
+        qDebug() << "Error in QueryModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
     }
-
-    QueryModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-        d_corpus->end());
 }
 
 // run async

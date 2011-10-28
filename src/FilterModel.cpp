@@ -200,9 +200,17 @@ void FilterModel::getEntriesWithQuery(QString const &query)
         return;
     }
     
-    FilterModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-        d_corpus->end());    
+    try {
+        FilterModel::getEntries(
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+            d_corpus->end());
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Alpino Error in FilterModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
+    } catch (std::exception const &e) {
+        qDebug() << "Error in FilterModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
+    }
 }
 
 // run async
