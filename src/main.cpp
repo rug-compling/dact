@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 
     try {
         QCoreApplication::setOrganizationName("RUG");
+        QCoreApplication::setOrganizationDomain("rug.nl");
         QCoreApplication::setApplicationName("Dact");
 
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));

@@ -9,6 +9,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
@@ -28,22 +29,14 @@ class QStyledItemDelegate;
  into html using xslt)
  \sa BracketedDelegate
  */
-class BracketedWindow : public QWidget {
+class BracketedWindow : public CorpusWidget {
     Q_OBJECT
     
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
     typedef QStyledItemDelegate*(*DelegateFactory)(CorpusReaderPtr);
     
-public:
-    /*
-     Constructor
-     \param corpusReader the corpus reader that will be queried
-     \param macrosModel the current macros model which should preprocess the queries
-     \param parent
-     \param f
-    */
-    BracketedWindow(CorpusReaderPtr corpusReader,
-        QSharedPointer<DactMacrosModel> macrosModel, QWidget *parent = 0, Qt::WindowFlags f = 0);
+public:    
+    BracketedWindow(QWidget *parent = 0);
     
     /*!
      When a new treebank is loaded into the main window, the corpus is switched and the
@@ -72,6 +65,9 @@ signals:
      */
     void entryActivated(QString file);
     
+public slots:
+    void cancelQuery();
+
 private slots:
     void applyValidityColor(QString const &text);
     /*
@@ -94,9 +90,16 @@ private slots:
      \param totalEntries number of entries it could have processed.
      */
     void progressChanged(int processedEntries, int totalEntries);
+
+    /*!
+     Called when the search mapper was finished. Cancels the progress bar.
+     \param processedEntries number of entries searched so far.
+     \param totalEntries number of entries to search thru.
+     */
+    void progressFinished(int processedEntries, int totalEntries, bool cached);
     
     /*!
-     Called when the search mapper progresssed. Updates the progress bar.
+     Called when the search mapper was canceled. Cancels the progress bar.
      \param processedEntries number of entries searched so far.
      \param totalEntries number of entries to search thru.
      */
@@ -113,17 +116,16 @@ private slots:
     void queryFailed(QString error);
     
     void startQuery();
-    void stopQuery();
-
+    
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
-    void keyPressEvent(QKeyEvent *event);
 
 private:
     void addListDelegate(QString const &name, DelegateFactory);
     void updateResults();
     void createActions();
     void initListDelegates();
+    void reloadListDelegate();
     void setModel(FilterModel* model);
     void readSettings();
     void writeSettings();
@@ -139,7 +141,6 @@ private:
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
     QSharedPointer<XSLTransformer> d_sentenceTransformer;
-    QSharedPointer<XPathValidator> d_xpathValidator;
 };
 
 #endif // DACTFILTERWINDOW_H

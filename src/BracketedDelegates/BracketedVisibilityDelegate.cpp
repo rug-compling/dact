@@ -17,7 +17,7 @@ QString BracketedVisibilityDelegate::formatSentence(QModelIndex const &index) co
     QString result;
     
     int previousDepth = 0;
-    foreach (Chunk chunk, parseChunks(index))
+    foreach (Chunk const &chunk, parseChunks(index))
     {
         // Indeed, this is copy-pastework from ~20
         bool skip = false;

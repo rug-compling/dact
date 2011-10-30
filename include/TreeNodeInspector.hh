@@ -19,6 +19,8 @@ class TreeNodeInspector : public QDockWidget
 public:
     TreeNodeInspector(QWidget *parent = 0);
     QMap<QString,QString> selectedAttributes() const;
+    void setContextMenuPolicy(Qt::ContextMenuPolicy policy);
+    void addAction(QAction *action);
 
 public slots:
     void inspect(TreeNode const *);

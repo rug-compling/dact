@@ -12,12 +12,22 @@ TreeNodeInspector::TreeNodeInspector(QWidget *parent)
     d_ui->attributesTree->sortByColumn(0, Qt::AscendingOrder);
 }
 
+void TreeNodeInspector::setContextMenuPolicy(Qt::ContextMenuPolicy policy)
+{
+    d_ui->attributesTree->setContextMenuPolicy(policy);
+}
+
+void TreeNodeInspector::addAction(QAction *action)
+{
+    d_ui->attributesTree->addAction(action);
+}
+
 QMap<QString, QString> TreeNodeInspector::selectedAttributes() const
 {
     QMap<QString,QString> pairs;
     QList<QTreeWidgetItem *> selection = d_ui->attributesTree->selectedItems();
 
-    foreach (QTreeWidgetItem *attribute, selection)
+    foreach (QTreeWidgetItem const *attribute, selection)
         pairs[attribute->data(0, Qt::DisplayRole).toString()]
           = attribute->data(1, Qt::DisplayRole).toString();
     
