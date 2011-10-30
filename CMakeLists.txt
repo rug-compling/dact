@@ -24,7 +24,7 @@ set(VERSION "0.0.4")
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)
 else()
-  set(PROGNAME dact)
+  set(PROGNAME alpino-dact)
 endif()
 
 set(GIT_REVISION ${VERSION})

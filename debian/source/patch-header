@@ -1,0 +1,5 @@
+This patch contains all the Debian-specific
+changes mixed together. To review them
+separately, please inspect the VCS history
+at git://github.com/rug-compling/dact.git
+
