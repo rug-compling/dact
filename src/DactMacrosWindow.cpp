@@ -101,7 +101,6 @@ void DactMacrosWindow::addButtonPressed()
 void DactMacrosWindow::removeButtonPressed()
 {
     QModelIndexList selectedIndexes = d_ui->macrosTable->selectionModel()->selectedRows();
-    QModelIndex index;
     
     // I want to remove multiple rows, but each time I remove a row, the indexes change.
     // Therefore, let's be creative and recalculate the indexes ourselves. Simply by
@@ -115,7 +114,7 @@ void DactMacrosWindow::removeButtonPressed()
     int n;
     int rowsBeforeRowDeleted;
     
-    foreach(index, selectedIndexes)
+    foreach(QModelIndex const &index, selectedIndexes)
     {
         for(n = 0, rowsBeforeRowDeleted = 0; n < i; ++n)
         {

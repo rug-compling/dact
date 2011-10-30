@@ -2,16 +2,19 @@
 
 QString generateQuery(QString const &base, QString const &attribute, QString const &value)
 {
+    QString condition = QString("@%1=\"%2\"").arg(attribute).arg(value);
+    
+    return generateQuery(base, condition);
+}
+
+QString generateQuery(QString const &base, QString const &condition)
+{
     int subSelectionPos = base.lastIndexOf('/');
     
     if (!subSelectionPos)
         return QString();
     
-    //qWarning() << base.mid(subSelectionPos);
-    
     int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
-    
-    QString condition = QString("@%1=\"%2\"").arg(attribute).arg(value);
     
     if (closingBracketPos == -1)
         return QString("%1[%2]").arg(base).arg(condition);

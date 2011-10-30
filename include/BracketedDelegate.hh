@@ -84,6 +84,8 @@ protected:
     \param sentence the brackets containing sentence to be parsed
     */
     QList<Chunk> parseChunks(QModelIndex const &index) const;
+
+    QString sentence(QModelIndex const &index) const;
     
 private:
     QList<Chunk> *parseSentence(QString const &sentence) const;

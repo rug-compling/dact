@@ -2,13 +2,13 @@
 #define BRACKETEDSENTENCEWIDGET_HH
 
 #include <QFile>
-#include <QLineEdit>
 #include <QList>
+#include <QTextEdit>
 #include <QString>
 
 #include "XSLTransformer.hh"
 
-class BracketedSentenceWidget : public QLineEdit
+class BracketedSentenceWidget : public QTextEdit
 {
     Q_OBJECT
     

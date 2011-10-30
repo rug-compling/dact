@@ -102,6 +102,19 @@
       </spacer>
      </item>
      <item>
+      <widget class="QProgressBar" name="activityIndicator">
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="refreshPushButton">
        <property name="text">
         <string>Refresh</string>

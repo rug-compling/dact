@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QList>
 #include <QPair>
+#include <QSharedPointer>
 
 class QueryModel : public QAbstractTableModel
 {

@@ -20,7 +20,6 @@
 
 #include <ArchiveModel.hh>
 #include <DownloadWindow.hh>
-#include <DactProgressDialog.hh>
 #include <QtIOCompressor.hh>
 #include <config.hh>
 
@@ -41,6 +40,7 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui->setupUi(this);
 
     d_ui->archiveTreeView->setModel(d_archiveModel.data());
+    d_ui->archiveTreeView->hideColumn(3);
     
     // We only enable the download button when a corpus is selected.
     d_ui->downloadPushButton->setEnabled(false);
@@ -79,6 +79,13 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
         d_inflateProgressDialog.data(), SLOT(accept()));
+    
+    connect(d_archiveModel.data(), SIGNAL(retrieving()),
+        d_ui->activityIndicator, SLOT(show()));
+    connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
+        d_ui->activityIndicator, SLOT(hide()));
+    connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
+        d_ui->activityIndicator, SLOT(hide()));
     
     refreshCorpusList();
 }

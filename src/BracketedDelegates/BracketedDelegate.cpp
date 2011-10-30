@@ -1,3 +1,5 @@
+#include <list>
+
 #include "BracketedDelegate.hh"
 #include "FilterModel.hh"
 #include "XSLTransformer.hh"
@@ -20,16 +22,16 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     {
         FilterModel const *model = dynamic_cast<FilterModel const *>(index.model());
         
-        QList<ac::CorpusReader::MarkerQuery> queries;
+        std::list<ac::CorpusReader::MarkerQuery> queries;
         
         if (model)
         {
-            ac::CorpusReader::MarkerQuery query(model->lastQuery(), "active", "1");
-            queries << query;
+            ac::CorpusReader::MarkerQuery query(model->lastQuery().toUtf8().constData(), "active", "1");
+            queries.push_back(query);
         }
         
         QString bracketed_sentence(transformXML(
-            d_corpus->readMarkQueries(filename, queries)).trimmed());
+            QString::fromUtf8(d_corpus->readMarkQueries(filename.toUtf8().constData(), queries).c_str())).trimmed());
         
         QList<Chunk> *chunks = parseSentence(bracketed_sentence);
         
@@ -126,6 +128,23 @@ QList<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString const 
     chunks->append(Chunk(depth, sentence.left(readTill), sentence.mid(readTill), "", "", ""));
     
     return chunks;
+}
+
+QString BracketedDelegate::sentence(QModelIndex const &index) const
+{
+  // This method will be used in the sizeHint() of deriving classes.
+  // Performing a full XML parse and XSLT transformation to get the sentence
+  // length is *very* wasteful. Instead, we do some regexp magic.
+
+  QString filename(index.data(Qt::UserRole).toString());
+  QString data(QString::fromUtf8(d_corpus->read(filename.toUtf8().constData()).c_str()));
+  QRegExp sentExpr("<sentence>(.*)</sentence>"); // XXX - Precompile once.
+  int pos = sentExpr.indexIn(data);
+
+  if (pos > -1)
+    return sentExpr.cap(1);
+  else
+    return QString();
 }
 
 QString BracketedDelegate::transformXML(QString const &xml) const

@@ -163,9 +163,8 @@ void DactMacrosModel::writeMacros(const QList<DactMacro> &macros) const
 QString DactMacrosModel::expand(QString const &expression)
 {
     QString query(expression);
-    DactMacro macro;
     
-    foreach (macro, d_macros)
+    foreach (DactMacro const &macro, d_macros)
         query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
     
     return query;

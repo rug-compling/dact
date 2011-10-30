@@ -14,160 +14,56 @@
    <string>Dact</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_6">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
+    <property name="spacing">
+     <number>12</number>
+    </property>
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Filter:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="HistoryLineEdit" name="filterLineEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_5">
+      <widget class="QWidget" name="treeTab">
+       <attribute name="title">
+        <string>Tree</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Entries</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Filter:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="filterLineEdit"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QListView" name="fileListWidget">
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::ExtendedSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-             <property name="uniformItemSizes">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QProgressBar" name="filterProgressBar">
-             <property name="visible">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="statisticsGroupBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="title">
-           <string>Statistics</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QFormLayout" name="statisticsLayout">
-             <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-             </property>
-             <property name="formAlignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-             </property>
-             <item row="1" column="0">
-              <widget class="QLabel" name="hitsDescLabel">
-               <property name="text">
-                <string>Hits:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="hitsLabel">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="entriesLabel">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Entries:</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
+         <widget class="DependencyTreeWidget" name="dependencyTreeWidget" native="true"/>
         </item>
        </layout>
       </widget>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Tree</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+      <widget class="QWidget" name="statisticsTab">
+       <attribute name="title">
+        <string>Statistics</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="2">
-           <widget class="QLineEdit" name="highlightLineEdit"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Highlight:</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="StatisticsWindow" name="statisticsWindow" native="true"/>
         </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Sentences</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="DactTreeView" name="treeGraphicsView" native="true"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label_1">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Sentence:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="BracketedSentenceWidget" name="sentenceWidget">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>200</horstretch>
-              <verstretch>24</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="BracketedWindow" name="sentencesWidget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -188,15 +84,19 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="RecentFilesMenu" name="menuRecentFiles">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+    </widget>
     <addaction name="openAction"/>
     <addaction name="openDirectoryAction"/>
+    <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="xmlExportAction"/>
     <addaction name="pdfExportAction"/>
     <addaction name="printAction"/>
-    <addaction name="separator"/>
-    <addaction name="preferencesAction"/>
     <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
@@ -206,6 +106,8 @@
     </property>
     <addaction name="focusFilterAction"/>
     <addaction name="focusHighlightAction"/>
+    <addaction name="separator"/>
+    <addaction name="preferencesAction"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -229,8 +131,6 @@
     </property>
     <addaction name="showMacrosWindow"/>
     <addaction name="separator"/>
-    <addaction name="showStatisticsWindow"/>
-    <addaction name="showFilterWindow"/>
     <addaction name="separator"/>
     <addaction name="downloadAction"/>
    </widget>
@@ -271,15 +171,15 @@
    <addaction name="inspectorAction"/>
   </widget>
   <widget class="TreeNodeInspector" name="inspector">
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
    <property name="windowTitle">
     <string>Inspector</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
-   </property>
    <addaction name="filterOnAttributeAction"/>
   </widget>
   <action name="quitAction">
@@ -395,22 +295,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
-   </property>
-  </action>
-  <action name="showFilterWindow">
-   <property name="text">
-    <string>Bracketed sentences…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
-   </property>
-  </action>
-  <action name="showStatisticsWindow">
-   <property name="text">
-    <string>Statistics…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="nextAction">
@@ -584,14 +468,24 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DactTreeView</class>
+   <class>StatisticsWindow</class>
    <extends>QWidget</extends>
-   <header>DactTreeView.hh</header>
+   <header>StatisticsWindow.hh</header>
   </customwidget>
   <customwidget>
-   <class>BracketedSentenceWidget</class>
+   <class>BracketedWindow</class>
+   <extends>QWidget</extends>
+   <header>BracketedWindow.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>DependencyTreeWidget</class>
+   <extends>QWidget</extends>
+   <header>DependencyTreeWidget.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>HistoryLineEdit</class>
    <extends>QFrame</extends>
-   <header>BracketedSentenceWidget.hh</header>
+   <header>HistoryLineEdit.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -599,6 +493,11 @@
    <extends>QDockWidget</extends>
    <header>TreeNodeInspector.hh</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RecentFilesMenu</class>
+   <extends>QMenu</extends>
+   <header>RecentFilesMenu.hh</header>
   </customwidget>
  </customwidgets>
  <resources>

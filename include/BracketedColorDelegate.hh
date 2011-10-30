@@ -1,7 +1,10 @@
 #ifndef BRACKETEDCOLORDELEGATE_HH
 #define BRACKETEDCOLORDELEGATE_HH
 
+#include <QSize>
+
 #include "BracketedDelegate.hh"
+
 
 class BracketedColorDelegate : public BracketedDelegate
 {

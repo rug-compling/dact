@@ -75,14 +75,20 @@ QVariant QueryModel::data(QModelIndex const &index, int role) const
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
+    if (role != Qt::DisplayRole)
+        return QVariant();
+    
+    if (orientation == Qt::Vertical)
+        return QVariant();
+    
     switch (column)
     {
         case 0:
             return tr("Value");
         case 1:
-            return tr("Hits");
+            return tr("Nodes");
         case 2:
-            return tr("Relative");
+            return tr("Percentage");
         default:
             return QVariant();
     }
@@ -184,7 +190,7 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 {
   try {
     QueryModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query),
+        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
         d_corpus->end());
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in QueryModel::getEntriesWithQuery: " << e.what();
@@ -201,7 +207,7 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         d_cancelled = false;
         
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
-            emit queryEntryFound(itr.contents(*d_corpus));
+            emit queryEntryFound(QString::fromUtf8(itr.contents(*d_corpus).c_str()));
             
         queryStopped(d_results.size(), d_results.size());
     } catch (alpinocorpus::Error const &e) {

@@ -2,14 +2,20 @@
 
 #include <QDebug>
 #include <QPainter>
+#include <QTextEdit>
 #include <QSettings>
 
 BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
 :
-    QLineEdit(parent),
+    QTextEdit(parent),
     d_stylesheet(":/stylesheets/bracketed-sentence.xsl"),
     d_transformer(d_stylesheet)
-{}
+{
+    QFontMetrics m(font());
+    int ruleHeight = m.lineSpacing();
+    setFixedHeight(2 * ruleHeight + (2 * document()->documentMargin()));
+
+}
 
 void BracketedSentenceWidget::setParse(QString const &parse)
 {

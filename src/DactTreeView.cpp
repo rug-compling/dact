@@ -41,11 +41,8 @@ DactTreeScene* DactTreeView::scene() const
 
 void DactTreeView::fitTree()
 {
-    if (!scene())
-        return;
-    
-    if (scene()->rootNode() != 0)
-        fitInView(scene()->rootNode()->boundingRect(), Qt::KeepAspectRatio);
+    if (scene())
+        fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 void DactTreeView::focusTreeNode(int direction)
@@ -126,7 +123,7 @@ void DactTreeView::fitInView(QRectF const &rect, Qt::AspectRatioMode aspectRatio
     
     // Yeah, it fits, but that doesn't mean in needs to blow up in your face.
     // So, if it is scaled beyond its original size, reset the scale to 1.0
-    if (matrix().m11() > 1.0 || matrix().m12() > 1.0)
+    if (matrix().m11() > 1.0 || matrix().m22() > 1.0)
         resetZoom();
 }
 

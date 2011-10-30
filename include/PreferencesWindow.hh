@@ -16,14 +16,18 @@ public:
     ~PreferencesWindow();
 protected:
     void keyPressEvent(QKeyEvent *event);
+
 private slots:
+    void restoreDefaultColors();
+    void restoreDefaultNetwork();
     void saveArchiveBaseUrl();
-    void saveColors();
+    void saveColorsTab();
     void selectAppFont();
     
 private:
     void applyAppFont();
-    void loadColors();
+    void loadColorsTab();
+    void loadNetworkTab();
     QSharedPointer<Ui::PreferencesWindow> d_ui;
 };
 

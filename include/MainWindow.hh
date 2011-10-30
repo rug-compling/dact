@@ -5,11 +5,14 @@
 #include <QHash>
 #include <QMainWindow>
 #include <QMutex>
+#include <QPair>
 #include <QSharedPointer>
 #include <QString>
+#include <QVector>
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
 
@@ -18,22 +21,18 @@ namespace Ui {
 }
 
 class AboutWindow;
-class BracketedWindow;
 class DownloadWindow;
 class DactMacrosModel;
 class DactMacrosWindow;
 class DactQueryHistory;
-class FilterModel;
-class StatisticsWindow;
-class DactProgressDialog;
 class PreferencesWindow;
-class FilterModel;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
 
 class QItemSelection;
 class QKeyEvent;
+class QProgressDialog;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -41,15 +40,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     
-    /*!
-     Start loading a corpus
-     \param corpusPath path to a .dz or directory with the XML files
-    */
-    void readCorpus(QString const &corpusPath);
-
-    bool readAndShowFiles(QString const &path);
-
 signals:
+    void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
     void exportError(QString const &error);
@@ -57,36 +49,30 @@ signals:
 
 public slots:
     /*!
+     Cancel a running query
+     */
+    void cancelQuery();
+
+    /*!
      Hide the main window
     */
     void close();
     
     /*!
+     Start loading a corpus
+     \param corpusPath path to a .dz or directory with the XML files
+    */
+    void readCorpus(QString const &corpusPath, bool recursive = false);
+    
+    /*!
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
-    
-    /*!
-     Instantiate (if not already instantiated) and raise the filter window, BracketedWindow.
-    */
-    void showFilterWindow();
-    
-    /*!
-     Instantiate (if not already done so) and raise the StatisticsWindow
-    */
-    void showStatisticsWindow();
-    
+            
     /*!
      Instantiate (if not already done so) and raise the DactMacrosWindow
     */
     void showMacrosWindow();
-    
-    /*!
-     Show a xml file in the main window's tree scene and select it in the list of
-     files (if it isn't hidden by the file list filter query).
-     \param filename path to xml file to be used.
-    */
-    void showFile(QString const &filename);
 
 private slots:
     /*!
@@ -113,12 +99,6 @@ private slots:
     void bracketedEntryActivated(QString const &file);
     
     /*!
-     Cancels reading the iterator in addFiles. Invoked by the open-file
-     dialog's cancel button.
-     */
-    void cancelReadCorpus();
-    
-    /*!
      Cancels the writing loop when exporting files to a corpus.
      \sa exportCorpus
      \sa writeCorpus
@@ -126,31 +106,15 @@ private slots:
     void cancelWriteCorpus();
     
     /*!
-     Listens for the resultReadyAt signal from the corpus reader. When heard, it hides
+     Listens for the finished signal from the corpus reader. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
-     the current corpus used by the bracketed window and statistics window.
+     the current corpus used by the bracketed window and statics window.
      \sa addFiles
-     \param idx files available so far. Not used by corpusRead.
     */
-    void corpusRead(int idx);
+    void corpusRead();
 
     void corpusWritten(int idx);
-    
-    /*!
-     Called when an entry was added to the model.
-     */
-    void entryFound(QString entry);
-    
-    /*!
-     Called when a file in the file list is selected (or the selection is removed.)
-     It loads the selected file (if any) and focusses on the first matching node.
-     \sa showFile
-     \sa focusFitTree
-     \param current currently selected entry
-     \param previous previous selected entry
-     */
-    void entrySelected(QItemSelection const &current, QItemSelection const &previous);
-    
+            
     /*!
      * Save currently selected sentences to DBXML file (filename obtained from
      * dialog window).
@@ -177,43 +141,17 @@ private slots:
     void filterChanged();
     
     void filterOnInspectorSelection();
-    
-    /*!
-     Focusses on the first node and zooms in on that node.
-     \sa forcusTreeNode
-     */
-    void focusFitTree();
-    
+        
     /*!
      Focus the filter query entry field
      */
     void focusFilter();
-    
-    /*!
-     Focus the highlight query entry field
-     */
-    void focusHighlight();
-    
+        
     /*!
      Opens the wiki in the default webbrowser.
      */
     void help();
-    
-    /*!
-     Called when the highlight query changed. Calls showFile to 'refresh' the
-     tree scene.
-     \sa filterChanged
-     \sa showFile
-     */
-    void highlightChanged();
-    
-    /*!
-     Selects the next entry in the file list. (This triggers the entrySelected
-     slot which subsequenly calls showFile)
-     \sa previousEntry
-     */
-    void nextEntry(bool);
-    
+            
     /*!
      Calls the open file dialog and filters on the .data.dz extension
      \sa openDirectoryCorpus
@@ -234,15 +172,11 @@ private slots:
     void preferencesWindow();
     
     /*!
-     Selects the previous entry in the file list. See nextEntry.
-     \sa nextEntry
-     */
-    void previousEntry(bool);
-    
-    /*!
      Renders the current tree scene to the printer.
      */
     void print();
+    
+    void setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path);
     
     /*!
      Changes the filter query field used to filter the file list and calls
@@ -254,40 +188,14 @@ private slots:
      \sa filterChanged
      */
     void setFilter(QString const &filter);
-    
-    /*!
-     Changes the highlight query field and calls highlightChanged.
-     \param filter the XPath query which selects the nodes to highlight
-     \sa setFilter
-     \sa highlightChanged
-     */
-    void setHighlight(QString const &filter);
-    
+
     /*!
      Displays a critical error dialog with the suplied error message.
      \sa exportError
      \sa showWriteCorpusError
      */
     void showOpenCorpusError(QString const &error);
-    
-    /*!
-     Using the sentence stylsheet transformation it generates a sentence
-     from an xml file and displays it in the sentence field below the tree
-     scene.
-     \param xml the contents of the xml file from the corpus
-     \param params key-value pairs used by the stylesheet
-     */
-    void showSentence(QString const &xml, QHash<QString, QString> const &params);
-    
-    /*!
-     Displays the xml file as a tree in the tree scene. It uses the tree styleheet
-     to transform the xml file from the corpus into something DactTreeScene can use.
-     It replaces the current DactTreeScene with a new one.
-     \param xml the contents of the xml file form the corpus
-     \param params key-value pairs used by the stylesheet
-     */
-    void showTree(QString const &xml);
-    
+        
     /*!
      Displays a critical error dialog with the supplied error message.
      \sa exportError
@@ -303,6 +211,11 @@ private slots:
      represent the row.
      */
     void statisticsEntryActivated(QString const &value, QString const &query);
+
+    /*!
+     * The tab in the main window is changed.
+     */
+    void tabChanged(int index);
     
     /*!
      When the tree scene changes because of a new tree (or new highlight query)
@@ -314,37 +227,6 @@ private slots:
      Update the state of the next/previous node buttons in the toolbar.
      */
     void updateTreeNodeButtons();
-
-    /*!
-     When the mapper failed (e.g. due to an error in the corpus reader), hide
-     the progress bar and display an error.
-     \param error error message 
-     \sa mapperStarted
-     \sa mapperProgressed
-     \sa mapperStopped
-     */
-    void mapperFailed(QString error);
-    
-    /*!
-     When the mapper (the one used to find files that match the filter query) is
-     started, this will make the progress bar visible.
-     \param totalEntries number of entries in the corpus that will be searched
-     \sa mapperFailed
-     \sa mapperStopped
-     \sa mapperProgressed
-     */
-    void mapperStarted(int totalEntries);
-    
-    /*!
-     When the mapper stopped (because it finished or was cancelled), hide the
-     progress bar.
-     \param processedEntries number of entries searched
-     \param totalEntries number of entries in the corpus
-     \sa mapperFailed
-     \sa mapperStarted
-     \sa mapperProgressed
-     */
-    void mapperStopped(int processedEntries, int totalEntries);
     
 protected:
     void changeEvent(QEvent *e);
@@ -375,7 +257,17 @@ private:
      \sa sentenceForFile
      */
     void initSentenceTransformer();
-        
+    
+    /*!
+     Initialize the tainted widget list.
+     */
+    void initTaintedWidgets();
+    
+    /*!
+     Taint all widget in the taint list.
+     */
+    void taintAllWidgets();
+    
     /*!
      Export a set of sentences as a dbxml .dact file to the given location.
      This can be run (and is run) on a different thread, and sends signals to
@@ -386,6 +278,8 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
+    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path, bool recursive = false);
+
     /*!
      Read settings like the main window position and dimensions
      */
@@ -395,9 +289,7 @@ private:
      Write settings like the main window position and dimensions
      */
     void writeSettings();
-    
-    void setModel(FilterModel *model);
-    
+        
     /*!
      * Finishes the ui loading. Its main purpose is to align the toolbar
      * correctly. If this could be done in the ui file itself...
@@ -406,19 +298,12 @@ private:
     
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
-    BracketedWindow *d_bracketedWindow;
     DownloadWindow *d_downloadWindow;
-    StatisticsWindow *d_statisticsWindow;
     DactMacrosWindow *d_macrosWindow;
-    DactProgressDialog *d_openProgressDialog;
-    DactProgressDialog *d_exportProgressDialog;
+    QProgressDialog *d_openProgressDialog;
+    QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
-    
-    /*!
-     The XPath query currently used to highlight nodes in the tree scene.
-     */
-    QString d_highlight;
-    
+        
     /*!
      The XPath query currently used for filtering files. This is after
      the macros have been expanded (so it's real XPath)
@@ -431,7 +316,7 @@ private:
      by their xpath counterparts.
      */
     QString d_filterExpr; // Stores the raw, unexpanded filter expression
-    
+        
     /*!
      The macros model. Used to store and apply macros to XPath queries.
      */
@@ -465,7 +350,7 @@ private:
      \sa d_corpusOpenFuture
      \sa corpusRead
      */
-    QFutureWatcher<void> d_corpusOpenWatcher;
+    QFutureWatcher< QPair< QSharedPointer<ac::CorpusReader>, QString> > d_corpusOpenWatcher;
 
     /*!
      \sa d_corpusWriteFuture
@@ -497,9 +382,14 @@ private:
      exported corpus.
      \sa writeCorpus
      */
-    bool d_writeCorpusCancelled;
+    bool d_writeCorpusCancelled;    
     
-    QSharedPointer<FilterModel> d_model;
+    /*!
+     Keep track of tabs/widgets that are 'tainted'. Widgets that are tainted
+     need to have their query reset when switching to their tab. This makes
+     querying of corpora a bit more lazy.
+     */
+    QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 };
 
 #endif // MAINWINDOW_H
