@@ -181,6 +181,7 @@ QString const &FilterModel::lastQuery() const
 void FilterModel::cancelQuery()
 {
     d_cancelled = true;
+    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
     d_timer->stop();
 }
@@ -221,6 +222,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         
         d_cancelled = false;
         d_hits = 0;
+        d_entryIterator = begin;
         
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
         {
