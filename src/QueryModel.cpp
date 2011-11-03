@@ -243,8 +243,8 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         d_cancelled = false;
         d_entryIterator = begin;
         
-        for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
-            emit queryEntryFound(QString::fromUtf8(itr.contents(*d_corpus).c_str()));
+        for (d_entryIterator; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
+            emit queryEntryFound(QString::fromUtf8(d_entryIterator.contents(*d_corpus).c_str()));
             
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
