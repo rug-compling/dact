@@ -70,6 +70,7 @@ private:
 
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
+    EntryIterator d_entryIterator;
     
     QHash<QString, int> d_valueIndex;
     EntryIndex d_hitsIndex;

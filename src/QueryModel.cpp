@@ -187,6 +187,7 @@ void QueryModel::runQuery(QString const &query)
 void QueryModel::cancelQuery()
 {
     d_cancelled = true;
+    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
 }
 
@@ -240,6 +241,7 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         queryStarted(0);
         
         d_cancelled = false;
+        d_entryIterator = begin;
         
         for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
             emit queryEntryFound(QString::fromUtf8(itr.contents(*d_corpus).c_str()));
