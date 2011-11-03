@@ -52,6 +52,8 @@ void StatisticsWindow::attributeChanged(int index)
 
 void StatisticsWindow::queryFailed(QString error)
 {
+    progressStopped(0, 0);
+    
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
