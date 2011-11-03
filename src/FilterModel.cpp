@@ -224,11 +224,12 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         d_hits = 0;
         d_entryIterator = begin;
         
-        for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
+        for (d_entryIterator; !d_cancelled && d_entryIterator != end;
+          ++d_entryIterator)
         {
             ++d_hits;
 
-            QString entry(QString::fromUtf8((*itr).c_str()));
+            QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
 
             // Lock the results list.
             QMutexLocker locker(&d_resultsMutex);
