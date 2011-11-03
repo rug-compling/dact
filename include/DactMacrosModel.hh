@@ -1,47 +1,52 @@
 #ifndef DACTMACROSMODEL_H
 #define DACTMACROSMODEL_H
 
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <QList>
 #include <QChar>
+#include <QFile>
+#include <QFileSystemWatcher>
 #include <QString>
 
 #include "DactMacro.hh"
 
-// This model is used by the tableview in the macros edit window. It also
-// contains the logic for loading and saving macros from the settings file.
-// This could be separated and put into another dedicated class that will
-// provide all the macro functionality like storing and applying macros.
+class DactMacrosFile;
 
-// (Should such a class be made singleton, or should an instance be carried
-// around by all the Dact* classes in a QSharedPointer, and should they
-// call the replace procedure themselves before they send a xpath query
-// to one of the XPath* or XSLT* classes?)
-
-class DactMacrosModel : public QAbstractTableModel
+class DactMacrosModel : public QAbstractItemModel
 {
     Q_OBJECT
 
+    // Make this zero or positive, and whatch the empire crumble. Seriously, don't do it.
+    static const int ROOT_ID = 1000;
+
 public:
     DactMacrosModel(QObject *parent = 0);
+    ~DactMacrosModel();
     
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
+
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
+    
     QVariant data(const QModelIndex &index, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
-    bool insertRows(int position, int rows, const QModelIndex &index);
-    bool removeRows(int position, int rows, const QModelIndex &index);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+
+    QModelIndex index(int row, int column, QModelIndex const &parent = QModelIndex()) const;
+    QModelIndex parent(QModelIndex const &parent) const;
 
     QString expand(QString const &query);
-    
-private:
-    QList<DactMacro> readMacros() const;
-    void writeMacros(const QList<DactMacro> &macros) const;
 
-    QList<DactMacro> d_macros;
-    QChar d_symbol;
+public slots:
+    void loadFile(QString const &path);
+    void loadFileDelayed(QString const &path);
+
+private:
+    void readFile(QString const &path);
+
+private:
+    QList<DactMacrosFile *> d_files;
+    QFileSystemWatcher d_watcher;
+
+    static const QChar d_symbol;
 };
 
 #endif

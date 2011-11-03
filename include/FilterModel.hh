@@ -72,6 +72,7 @@ private:
     QSharedPointer<EntryCache> d_entryCache;
     QSharedPointer<QTimer> d_timer;
     int d_lastRow;
+    EntryIterator d_entryIterator;
 };
 
 inline int FilterModel::hits() const

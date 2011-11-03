@@ -14,7 +14,7 @@ BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
     QFontMetrics m(font());
     int ruleHeight = m.lineSpacing();
     setFixedHeight(2 * ruleHeight + (2 * document()->documentMargin()));
-
+    setReadOnly(true);
 }
 
 void BracketedSentenceWidget::setParse(QString const &parse)

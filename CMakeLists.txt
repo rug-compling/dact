@@ -95,14 +95,19 @@ SET(dact_SRCS
   src/DactApplication.cpp
   src/HistoryLineEdit.cpp
   src/DactListView.cpp
-  src/DactMacrosWindow.cpp
+  src/DactMacrosFile.cpp
+  src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
-  #src/DactQueryHistory.cpp
+  src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
+  src/GlobalCopyCommand.cpp
+  src/GlobalCutCommand.cpp
+  src/GlobalEditCommand.cpp
+  src/GlobalPasteCommand.cpp
   src/MainWindow.cpp
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
@@ -135,12 +140,18 @@ SET(dact_HDRS
   include/DactColorWell.hh
   include/DactListView.hh
   include/DactMacro.hh
+  include/DactMacrosFile.hh
+  include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  include/DactMacrosWindow.hh
   include/DactQueryHistory.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
+  include/DelayedLoadFileCallback.hh
   include/FilterModel.hh
+  include/GlobalCopyCommand.hh
+  include/GlobalCutCommand.hh
+  include/GlobalEditCommand.hh
+  include/GlobalPasteCommand.hh
   include/HistoryLineEdit.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
@@ -173,15 +184,20 @@ SET(dact_MOC_HDRS
   include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/DactListView.hh
-  include/DactMacrosWindow.hh
+  include/DactMacrosFile.hh
+  include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  #include/DactQueryHistory.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
+  include/DelayedLoadFileCallback.hh
   include/HistoryLineEdit.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
+  include/GlobalCopyCommand.hh
+  include/GlobalCutCommand.hh
+  include/GlobalEditCommand.hh
+  include/GlobalPasteCommand.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
@@ -200,7 +216,6 @@ SET(dact_UI
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
-  ui/DactMacrosWindow.ui
 )
 
 SET(dact_RCS

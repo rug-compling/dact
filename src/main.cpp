@@ -54,12 +54,26 @@ int main(int argc, char *argv[])
 
         a->init();
     
-        if (a->arguments().size() > 2)
-            usage(argv[0]);
-    
-        if (a->arguments().size() == 2)
-            a->openCorpus(a->arguments().at(1));
+        QStringList corpusPaths, macroPaths;
+        
+        QStringList args = a->arguments();
+        for (int i = 1; i < args.size(); ++i)
+        {
+            if (args[i] == "-m")
+            {
+                // please do follow with a path after -m switch.
+                if (i + 1 >= args.size()) 
+                    usage(argv[0]);
+                
+                macroPaths.append(args[++i]);
+            }
+            else
+                corpusPaths.append(args[i]);
+        }
 
+        a->openCorpora(corpusPaths);
+        a->openMacros(macroPaths);
+        
         r = a->exec();
     } catch (std::logic_error const &e) {
         std::cerr << "dact: internal logic error: please report at\n"

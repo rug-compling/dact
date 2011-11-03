@@ -52,6 +52,8 @@ void StatisticsWindow::attributeChanged(int index)
 
 void StatisticsWindow::queryFailed(QString error)
 {
+    progressStopped(0, 0);
+    
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
@@ -93,6 +95,9 @@ void StatisticsWindow::setModel(QueryModel *model)
         SLOT(progressStarted(int)));
     
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
+        SLOT(progressStopped(int, int)));
+    
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
         SLOT(progressStopped(int, int)));
 }
 

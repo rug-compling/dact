@@ -1,3 +1,4 @@
+#include <QClipboard>
 #include <QDebug>
 #include <QFile>
 #include <QKeyEvent>
@@ -46,6 +47,8 @@ void BracketedWindow::cancelQuery()
 
 void BracketedWindow::queryFailed(QString error)
 {
+    progressStopped(0, 0);
+    
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
@@ -230,6 +233,40 @@ void BracketedWindow::writeSettings()
     
     // display method
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
+}
+
+void BracketedWindow::copy() const
+{
+    // Nothing loaded? Do nothing.
+    if (!d_model)
+        return;
+
+    QModelIndexList rows = d_ui->resultsList->selectionModel()->selectedRows();
+    
+    // If there is nothing selected, do nothing
+    if (rows.isEmpty())
+        return;
+    
+    BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsList->itemDelegate());
+
+    // Could not cast QAbstractItemDelegate to BracketedDelegate? Typical, but it is possible.
+    if (!delegate)
+        return;
+    
+    QStringList output;
+    
+    foreach (QModelIndex const &row, rows)
+    {
+        // This only works if the selection behavior is SelectRows
+        output << delegate->sentenceForClipboard(row)
+               << "\n";
+    }
+    
+    // Remove superfluous newline separator
+    output.removeLast();
+    
+    if (!output.isEmpty())
+        QApplication::clipboard()->setText(output.join(QString()));
 }
 
 QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)

@@ -26,11 +26,14 @@ inline bool QueryModel::HitsCompare::operator()(int one_idx, int other_idx)
 
 QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 :
-QAbstractTableModel(parent),
-d_corpus(corpus)
+    QAbstractTableModel(parent),
+    d_corpus(corpus),
+    d_entryCache(new EntryCache())
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
-            SLOT(mapperEntryFound(QString))); 
+        SLOT(mapperEntryFound(QString)));
+    connect(this, SIGNAL(queryFinished(int, int, bool)),
+        SLOT(finalizeQuery(int, int, bool)));
 }
 
 QueryModel::~QueryModel()
@@ -167,6 +170,8 @@ void QueryModel::runQuery(QString const &query)
     d_valueIndex.clear();
     d_totalHits = 0;
     
+    d_query = query;
+       
     // Do nothing if we where given a null-pointer
     if (!d_corpus)
         return;
@@ -182,18 +187,49 @@ void QueryModel::runQuery(QString const &query)
 void QueryModel::cancelQuery()
 {
     d_cancelled = true;
+    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
+}
+
+void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
+{
+    // Just to make shure, otherwise data() will go completely crazy
+    Q_ASSERT(d_hitsIndex.size() == d_results.size());
+
+    layoutChanged(); // Please, don't do this. Let's copy FilterModel's implementation.
+
+    if (!cached)
+    {
+        d_entryCache->insert(d_query, new CacheItem(d_totalHits, d_hitsIndex, d_results));
+
+        // this index is no longer needed, as it is only used for constructing d_hitsIndex
+        d_valueIndex.clear();
+    }
 }
 
 // run async, because query() starts searching immediately
 void QueryModel::getEntriesWithQuery(QString const &query)
 {
-  try {
-    QueryModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-        d_corpus->end());
-    } catch (alpinocorpus::Error const &e) {
-        qDebug() << "Error in QueryModel::getEntriesWithQuery: " << e.what();
+    try {
+        if (d_entryCache->contains(query))
+        {
+            {
+              QMutexLocker locker(&d_resultsMutex);
+              CacheItem *cachedResult = d_entryCache->object(query);
+              d_totalHits = cachedResult->hits;
+              d_hitsIndex = cachedResult->index;
+              d_results   = cachedResult->entries;
+            }
+
+            emit queryFinished(d_results.size(), d_results.size(), true);
+            return;
+        }
+
+        QueryModel::getEntries(
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+            d_corpus->end());
+    } catch (std::exception const &e) {
+        qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
     }
 }
@@ -205,12 +241,21 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         queryStarted(0);
         
         d_cancelled = false;
+        d_entryIterator = begin;
         
-        for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
-            emit queryEntryFound(QString::fromUtf8(itr.contents(*d_corpus).c_str()));
+        for (d_entryIterator; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
+            emit queryEntryFound(QString::fromUtf8(d_entryIterator.contents(*d_corpus).c_str()));
             
-        queryStopped(d_results.size(), d_results.size());
-    } catch (alpinocorpus::Error const &e) {
+        if (d_cancelled)
+            emit queryStopped(d_results.size(), d_results.size());
+        else
+            emit queryFinished(d_results.size(), d_results.size(), false);
+    }
+    // Catch d_entryIterator.interrupt()'s shockwaves of terror
+    catch (alpinocorpus::IterationInterrupted const &e) {
+        emit queryStopped(d_results.size(), d_results.size());
+    }
+    catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
     }
