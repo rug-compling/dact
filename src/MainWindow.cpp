@@ -518,7 +518,10 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
         }
     }
 
-    return QPair< ac::CorpusReader*, QString>(readers, QString("%1 corpora").arg(nLoadedCorpora));
+    return QPair< ac::CorpusReader*, QString>(readers,
+        nLoadedCorpora > 0
+            ? QString("%1 corpora").arg(nLoadedCorpora)
+            : QString());
 }
 
 QString MainWindow::deriveNameFromPath(QString const &path) const
@@ -539,7 +542,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     
     d_ui->filterLineEdit->revalidate();
         
-    if (!reader.isNull())
+    if (!reader.isNull() && !path.isNull())
     {
         setWindowTitle(QString::fromUtf8("%1 — Dact").arg(QFileInfo(path).fileName()));
         
