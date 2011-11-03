@@ -250,7 +250,12 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
             emit queryStopped(d_results.size(), d_results.size());
         else
             emit queryFinished(d_results.size(), d_results.size(), false);
-    } catch (alpinocorpus::Error const &e) {
+    }
+    // Catch d_entryIterator.interrupt()'s shockwaves of terror
+    catch (alpinocorpus::IterationInterrupted const &e) {
+        emit queryStopped(d_results.size(), d_results.size());
+    }
+    catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
     }

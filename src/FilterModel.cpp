@@ -253,7 +253,14 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
             emit queryStopped(d_results.size(), d_results.size());
         else
             emit queryFinished(d_results.size(), d_results.size(), false);
-    } catch (alpinocorpus::Error const &e) {
+    }
+    // When d_entryIterator.interrupt() is called by cancelQuery():
+    catch (alpinocorpus::IterationInterrupted const &e) {
+        emit queryStopped(d_results.size(), d_results.size());
+    }
+    // When something goes terribly terribly wrong, like entering a query
+    // that doesn't yield nodes but strings.
+    catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());
     }
