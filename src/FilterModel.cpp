@@ -181,6 +181,7 @@ QString const &FilterModel::lastQuery() const
 void FilterModel::cancelQuery()
 {
     d_cancelled = true;
+    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
     d_timer->stop();
 }
@@ -200,9 +201,17 @@ void FilterModel::getEntriesWithQuery(QString const &query)
         return;
     }
     
-    FilterModel::getEntries(
-        d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-        d_corpus->end());    
+    try {
+        FilterModel::getEntries(
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+            d_corpus->end());
+    } catch (alpinocorpus::Error const &e) {
+        qDebug() << "Alpino Error in FilterModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
+    } catch (std::exception const &e) {
+        qDebug() << "Error in FilterModel::getEntries: " << e.what();
+        emit queryFailed(e.what());
+    }
 }
 
 // run async
@@ -213,12 +222,14 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         
         d_cancelled = false;
         d_hits = 0;
+        d_entryIterator = begin;
         
-        for (EntryIterator itr(begin); !d_cancelled && itr != end; ++itr)
+        for (d_entryIterator; !d_cancelled && d_entryIterator != end;
+          ++d_entryIterator)
         {
             ++d_hits;
 
-            QString entry(QString::fromUtf8((*itr).c_str()));
+            QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
 
             // Lock the results list.
             QMutexLocker locker(&d_resultsMutex);
@@ -243,7 +254,14 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
             emit queryStopped(d_results.size(), d_results.size());
         else
             emit queryFinished(d_results.size(), d_results.size(), false);
-    } catch (alpinocorpus::Error const &e) {
+    }
+    // When d_entryIterator.interrupt() is called by cancelQuery():
+    catch (alpinocorpus::IterationInterrupted const &e) {
+        emit queryStopped(d_results.size(), d_results.size());
+    }
+    // When something goes terribly terribly wrong, like entering a query
+    // that doesn't yield nodes but strings.
+    catch (alpinocorpus::Error const &e) {
         qDebug() << "Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());
     }

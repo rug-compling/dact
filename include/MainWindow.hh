@@ -23,7 +23,6 @@ namespace Ui {
 class AboutWindow;
 class DownloadWindow;
 class DactMacrosModel;
-class DactMacrosWindow;
 class DactQueryHistory;
 class PreferencesWindow;
 class DactQueryWindow;
@@ -64,16 +63,15 @@ public slots:
     */
     void readCorpus(QString const &corpusPath, bool recursive = false);
     
+    void readCorpora(QStringList const &corpusPaths, bool recursive = false);
+
+    void readMacros(QStringList const &macroPaths);
+
     /*!
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
-            
-    /*!
-     Instantiate (if not already done so) and raise the DactMacrosWindow
-    */
-    void showMacrosWindow();
-
+    
 private slots:
     /*!
      Raise the about window
@@ -166,6 +164,8 @@ private slots:
      */
     void openDirectoryCorpus();
     
+    void openMacrosFile();
+
     /*!
      Instantiates (if not already done so) and raises the PreferencesWindow
      */
@@ -227,6 +227,8 @@ private slots:
      Update the state of the next/previous node buttons in the toolbar.
      */
     void updateTreeNodeButtons();
+
+    void setInspectorVisible(bool);
     
 protected:
     void changeEvent(QEvent *e);
@@ -278,7 +280,24 @@ private:
      */
     bool writeCorpus(QString const &filename, QList<QString> const &files);
     
-    QPair<QSharedPointer<ac::CorpusReader>, QString> createCorpusReader(QString const &path, bool recursive = false);
+    /*!
+     Given a path create one CorpusReader. In an error occurs, an openError(QString)
+     event is emitted and the pointer is a null-pointer.
+     */
+    QPair<ac::CorpusReader*, QString> createCorpusReader(QString const &path, bool recursive = false);
+
+    /*!
+     Creates one CorpusReader for all the corpora found at paths. If only one path is provided,
+     the CorpusReader will not be wrapped by a MultiCorpusReader. If opening one of the paths results
+     in an error, an openError(QString) event is emitted and the reader is not added to the wrapping list.
+     \sa createCorpusReaders
+     */
+    QPair<ac::CorpusReader*, QString> createCorpusReaders(QStringList const &paths, bool recursive = false);
+
+    /*!
+     Create a reasonable name for the corpus based on its path.
+     */
+    QString deriveNameFromPath(QString const &path) const;
 
     /*!
      Read settings like the main window position and dimensions
@@ -299,7 +318,6 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     DownloadWindow *d_downloadWindow;
-    DactMacrosWindow *d_macrosWindow;
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
@@ -350,7 +368,7 @@ private:
      \sa d_corpusOpenFuture
      \sa corpusRead
      */
-    QFutureWatcher< QPair< QSharedPointer<ac::CorpusReader>, QString> > d_corpusOpenWatcher;
+    QFutureWatcher< QPair< ac::CorpusReader*, QString> > d_corpusOpenWatcher;
 
     /*!
      \sa d_corpusWriteFuture
@@ -390,6 +408,8 @@ private:
      querying of corpora a bit more lazy.
      */
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
+
+    bool d_inspectorVisible;
 };
 
 #endif // MAINWINDOW_H

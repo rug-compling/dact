@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFuture>
+#include <QFutureSynchronizer>
 #include <QHash>
 #include <QItemSelection>
 #include <QLineEdit>
@@ -32,6 +33,7 @@
 #include <typeinfo>
 
 #include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
 #include <AboutWindow.hh>
@@ -40,7 +42,6 @@
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
-#include <DactMacrosWindow.hh>
 //#include <DactQueryHistory.hh>
 #include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
@@ -51,6 +52,10 @@
 #include <ValidityColor.hh>
 #include <ui_MainWindow.h>
 #include <Query.hh>
+
+#include <GlobalCopyCommand.hh>
+#include <GlobalCutCommand.hh>
+#include <GlobalPasteCommand.hh>
 
 #ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
@@ -63,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
-    d_macrosWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
@@ -81,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar();
 
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
+
+    d_ui->menuMacros->setModel(d_macrosModel);
     
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
@@ -103,7 +109,6 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
-    delete d_macrosWindow;
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
@@ -176,15 +181,6 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
     d_ui->filterLineEdit->setText(query);
     filterChanged();
     activateWindow();
-}
-
-void MainWindow::showMacrosWindow()
-{
-    if (d_macrosWindow == 0)
-        d_macrosWindow = new DactMacrosWindow(d_macrosModel, this, Qt::Window);
-    
-    d_macrosWindow->show();
-    d_macrosWindow->raise();
 }
 
 void MainWindow::setupUi()
@@ -279,14 +275,18 @@ void MainWindow::createActions()
         SLOT(focusNextTreeNode()));
     connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusPreviousTreeNode()));
-    connect(d_ui->showMacrosWindow, SIGNAL(triggered(bool)),
-        SLOT(showMacrosWindow()));
     connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
         SLOT(focusFilter()));
     connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusHighlight()));
     connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
+    connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
+        SLOT(openMacrosFile()));
+    
+    new GlobalCopyCommand(d_ui->globalCopyAction);
+    new GlobalCutCommand(d_ui->globalCutAction);
+    new GlobalPasteCommand(d_ui->globalPasteAction);
 }
 
 void MainWindow::filterOnInspectorSelection()
@@ -388,6 +388,23 @@ void MainWindow::openDirectoryCorpus()
     readCorpus(corpusPath, false);
 }
 
+void MainWindow::openMacrosFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open macros file", QString(),
+        "Macros file (*.*)");
+    
+    if (filePath.isNull())
+        return;
+    
+    d_macrosModel->loadFile(filePath);
+}
+
+void MainWindow::readMacros(QStringList const &fileNames)
+{
+    foreach (QString const &fileName, fileNames)
+        d_macrosModel->loadFile(fileName);
+}
+
 void MainWindow::exportPDF()
 {
     QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
@@ -427,7 +444,21 @@ void MainWindow::print()
     }
 }
 
+void MainWindow::setInspectorVisible(bool visible)
+{
+    bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
+    d_inspectorVisible = visible;
+    
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
+    d_ui->inspectorAction->setChecked(visible);
+}
+
 void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
+{
+    return readCorpora(QStringList(corpusPath), recursive);
+}
+
+void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
 {
     d_ui->dependencyTreeWidget->cancelQuery();
     d_ui->statisticsWindow->cancelQuery();
@@ -438,31 +469,64 @@ void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
         d_corpusOpenWatcher.waitForFinished();
     }
     
-    d_openProgressDialog->setWindowTitle(QString("Opening %1").arg(corpusPath));
-    d_openProgressDialog->setLabelText(QString("Opening %1").arg(corpusPath));
+    QString actionDescription = QString("Opening %1").arg(
+        corpusPaths.size() == 1
+            ? deriveNameFromPath(corpusPaths[0])
+            : QString("%1 corpora").arg(corpusPaths.size()));
+
+    d_openProgressDialog->setWindowTitle(actionDescription);
+    d_openProgressDialog->setLabelText(actionDescription);
     d_openProgressDialog->open();
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
     d_openProgressDialog->setCancelButton(0);
     
-    QFuture< QPair< QSharedPointer<ac::CorpusReader>, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReader, corpusPath, recursive);
+    QFuture< QPair< ac::CorpusReader*, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReaders, corpusPaths, recursive);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
 
-QPair< QSharedPointer<ac::CorpusReader>, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
+QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
 {
-    QSharedPointer<ac::CorpusReader> reader;
+    ac::CorpusReader* reader = 0;
     
     try {
         if (recursive)
-            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::openRecursive(path.toUtf8().constData()));
+            reader = ac::CorpusReader::openRecursive(path.toUtf8().constData());
         else
-            reader = QSharedPointer<ac::CorpusReader>(ac::CorpusReader::open(path.toUtf8().constData()));
+            reader = ac::CorpusReader::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }
     
-    return QPair< QSharedPointer<ac::CorpusReader>, QString >(reader, path);
+    return QPair< ac::CorpusReader*, QString >(reader, path);
+}
+
+QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList const &paths, bool recursive)
+{
+    // No need for the multicorpusreader if there is only one corpus to open
+    if (paths.size() == 1)
+        return createCorpusReader(paths[0], recursive);
+    
+    ac::MultiCorpusReader* readers = new ac::MultiCorpusReader();
+    int nLoadedCorpora = 0;
+
+    foreach (QString const &path, paths) {
+        QPair< ac::CorpusReader*, QString> result = createCorpusReader(path, recursive);
+        if (result.first != 0) {
+            readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
+            nLoadedCorpora++;
+        }
+    }
+
+    return QPair< ac::CorpusReader*, QString>(readers,
+        nLoadedCorpora > 0
+            ? QString("%1 corpora").arg(nLoadedCorpora)
+            : QString());
+}
+
+QString MainWindow::deriveNameFromPath(QString const &path) const
+{
+    return QFileInfo(path).baseName();
 }
 
 void MainWindow::cancelWriteCorpus()
@@ -476,27 +540,18 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     
     d_xpathValidator->setCorpusReader(reader);
     
-    // XXX - There seems to be no way to revalidate a QLineEdit
     d_ui->filterLineEdit->revalidate();
         
-    if (!reader.isNull())
+    if (!reader.isNull() && !path.isNull())
     {
-        // Show the canonical name in the window title, if it is implemented
-        // (related: alpinocorpus issue #9)
-        /*
-        if (d_corpusReader->name().isEmpty())
-            setWindowTitle("Dact");
-        else
-            setWindowTitle(QString("%1 — Dact").arg(d_corpusReader->name()));
-        */
-        
         setWindowTitle(QString::fromUtf8("%1 — Dact").arg(QFileInfo(path).fileName()));
         
         // On OS X, add the file icon to the window (and try alt-clicking it!)
         setWindowFilePath(path);
-        
-        // Add file to the recent files menu
-        d_ui->menuRecentFiles->addFile(path);
+
+        if (QFileInfo(path).exists())
+            // Add file to the recent files menu
+            d_ui->menuRecentFiles->addFile(path);
     }
     else
     {
@@ -517,9 +572,9 @@ void MainWindow::corpusRead()
 {
     d_openProgressDialog->accept();
     
-    QPair<QSharedPointer<ac::CorpusReader>, QString> result(d_corpusOpenWatcher.result());
+    QPair<ac::CorpusReader*, QString> result(d_corpusOpenWatcher.result());
     
-    setCorpusReader(result.first, result.second);
+    setCorpusReader(QSharedPointer<ac::CorpusReader>(result.first), result.second);
 }
 
 void MainWindow::corpusWritten(int idx)
@@ -540,8 +595,11 @@ void MainWindow::readSettings()
     move(pos);
     
     // Inspector
-    d_ui->inspector->setVisible(
-        settings.value("inspectorVisible", true).toBool());
+    d_inspectorVisible = settings.value("inspectorVisible", true).toBool();
+    d_ui->inspectorAction->setChecked(d_inspectorVisible);
+
+    bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
     
     d_ui->dependencyTreeWidget->readSettings();
 }
@@ -665,7 +723,7 @@ void MainWindow::writeSettings()
     settings.setValue("size", size());
     
     // Inspector
-    settings.setValue("inspectorVisible", d_ui->inspector->isVisible());
+    settings.setValue("inspectorVisible", d_inspectorVisible);
     
     d_ui->dependencyTreeWidget->writeSettings();
 }
@@ -685,6 +743,10 @@ void MainWindow::tabChanged(int index)
     d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
     d_ui->printAction->setEnabled(treeWidgetsEnabled);
     d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
+
+    // Hide inspector on other tabs
+    d_ui->inspectorAction->setEnabled(treeWidgetsEnabled);
+    d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
 
     Q_ASSERT(index < d_taintedWidgets.size());
     

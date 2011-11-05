@@ -68,6 +68,8 @@ signals:
 public slots:
     void cancelQuery();
 
+    void copy() const;
+
 private slots:
     void applyValidityColor(QString const &text);
     /*

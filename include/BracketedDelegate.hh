@@ -18,6 +18,8 @@ protected:
     
 public:
     BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent = 0);
+
+    QString sentenceForClipboard(QModelIndex const &index) const;
     
 protected:
     class Chunk
@@ -76,7 +78,7 @@ protected:
         */
         QString sentence() const;
     };
-    
+
 protected:    
     /*!
     Parses a bracketed sentence into chunks. Chunks are textparts separated by
@@ -86,9 +88,13 @@ protected:
     QList<Chunk> parseChunks(QModelIndex const &index) const;
 
     QString sentence(QModelIndex const &index) const;
+
+    QString bracketedSentence(QModelIndex const &index) const;
     
+
 private:
     QList<Chunk> *parseSentence(QString const &sentence) const;
+    
     QString transformXML(QString const &xml) const;
     
     mutable QCache<QString,QList<Chunk> > d_cache;
