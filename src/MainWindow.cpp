@@ -32,7 +32,7 @@
 #include <stdexcept>
 #include <typeinfo>
 
-#include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
@@ -249,8 +249,11 @@ void MainWindow::createActions()
         SLOT(openDirectoryCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
-    connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
-        SLOT(exportCorpus()));
+    if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
+      connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
+          SLOT(exportCorpus()));
+    else
+      d_ui->saveCorpus->setDisabled(true);
     connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
     connect(d_ui->helpAction, SIGNAL(triggered(bool)),
@@ -658,7 +661,9 @@ void MainWindow::exportCorpus()
 bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
 {
     try {
-        ac::DbCorpusWriter corpus(filename.toUtf8().constData(), true);
+        QSharedPointer<ac::CorpusWriter> corpus(
+          ac::CorpusWriter::open(filename.toUtf8().constData(), true,
+          ac::CorpusWriter::DBXML_CORPUS_WRITER));
         
         emit exportProgressMaximum(files.size());
         emit exportProgress(0);
@@ -669,7 +674,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
              end(files.constEnd());
              !d_writeCorpusCancelled && itr != end; ++itr)
         {
-            corpus.write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
+            corpus->write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
             ++progress;
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);
