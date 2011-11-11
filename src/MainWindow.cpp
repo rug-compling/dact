@@ -198,6 +198,7 @@ void MainWindow::setupUi()
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
         appleDockMenu->addAction(d_ui->openDirectoryAction);
+        appleDockMenu->addAction(d_ui->openRemoteAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
 }
@@ -247,6 +248,8 @@ void MainWindow::createActions()
         SLOT(openCorpus()));
     connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
         SLOT(openDirectoryCorpus()));
+    connect(d_ui->openRemoteAction, SIGNAL(triggered(bool)),
+        SLOT(openRemoteCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
@@ -389,6 +392,11 @@ void MainWindow::openDirectoryCorpus()
         return;
 
     readCorpus(corpusPath, false);
+}
+
+void MainWindow::openRemoteCorpus()
+{
+
 }
 
 void MainWindow::openMacrosFile()

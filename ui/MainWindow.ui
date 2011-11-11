@@ -91,6 +91,7 @@
     </widget>
     <addaction name="openAction"/>
     <addaction name="openDirectoryAction"/>
+    <addaction name="openRemoteAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
@@ -399,6 +400,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="openRemoteAction">
+   <property name="text">
+    <string>Open Remote…</string>
    </property>
   </action>
   <action name="saveCorpus">
