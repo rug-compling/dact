@@ -101,11 +101,19 @@ void DependencyTreeWidget::entrySelected(QModelIndex const &current, QModelIndex
     showFile(current.data(Qt::UserRole).toString());
     
     //focusFitTree();
+    focusFirstMatch();
 }
 
 void DependencyTreeWidget::fitTree()
 {
     d_ui->treeGraphicsView->fitTree();
+}
+
+void DependencyTreeWidget::focusFirstMatch()
+{
+    if (d_ui->treeGraphicsView->scene() &&
+        d_ui->treeGraphicsView->scene()->activeNodes().length() > 0)
+      d_ui->treeGraphicsView->focusTreeNode(1);
 }
 
 void DependencyTreeWidget::focusFitTree()

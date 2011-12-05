@@ -107,6 +107,13 @@ private slots:
      \param previous previous selected entry
      */
     void entrySelected(QModelIndex const &current, QModelIndex const &previous);
+
+    /*!
+     Focuses on the first node matching a query.
+     \sa focusNextTreeNode
+     */
+    void focusFirstMatch();
+
     
     /*!
      Focusses on the first node and zooms in on that node.
