@@ -242,6 +242,11 @@ private:
      Attaches all the signals from the ui and mapper to the various functions.
      */
     void createActions();
+
+    /*!
+     Retrieve a list of corpus extensions from the alpinocorpus library.
+    */
+    QString corpusExtensions();
     
     /*!
      Focus on the next or previous tree node in the current tree scene. It finds the
