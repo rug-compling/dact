@@ -307,7 +307,7 @@ void DependencyTreeWidget::showFile(QString const &entry)
                                                 "active", "1");
             std::list<ac::CorpusReader::MarkerQuery> queries;
             queries.push_back(query);
-            xml = QString::fromUtf8(d_corpusReader->readMarkQueries(entry.toUtf8().constData(), queries).c_str());
+            xml = QString::fromUtf8(d_corpusReader->read(entry.toUtf8().constData(), queries).c_str());
         }
         
         if (xml.size() == 0) {

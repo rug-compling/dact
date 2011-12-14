@@ -151,7 +151,7 @@ QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
     }
     
     return transformXML(
-        QString::fromUtf8(d_corpus->readMarkQueries(filename.toUtf8().constData(), queries).c_str())).trimmed();
+        QString::fromUtf8(d_corpus->read(filename.toUtf8().constData(), queries).c_str())).trimmed();
 }
 
 QString BracketedDelegate::sentenceForClipboard(QModelIndex const &index) const
