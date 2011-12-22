@@ -33,6 +33,7 @@
 #include <string>
 #include <typeinfo>
 
+#include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
@@ -64,7 +65,7 @@ extern void qt_mac_set_dock_menu(QMenu *);
 
 namespace ac = alpinocorpus;
 
-typedef std::list<ac::CorpusReader::ReaderInfo> ReaderList;
+typedef std::list<ac::CorpusReaderFactory::ReaderInfo> ReaderList;
 typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -165,7 +166,7 @@ QString MainWindow::corpusExtensions()
 {
     QStringList extensions;
 
-    ReaderList readers = ac::CorpusReader::readersAvailable();
+    ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
     for (ReaderList::const_iterator iter = readers.begin();
             iter != readers.end(); ++iter)
         for (ExtList::const_iterator extIter = iter->extensions.begin();
@@ -512,9 +513,9 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
     
     try {
         if (recursive)
-            reader = ac::CorpusReader::openRecursive(path.toUtf8().constData());
+            reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
         else
-            reader = ac::CorpusReader::open(path.toUtf8().constData());
+            reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }
