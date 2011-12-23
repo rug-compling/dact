@@ -9,6 +9,8 @@
 #include <AlpinoCorpus/Error.hh>
 #include "FilterModel.hh"
 
+namespace ac = alpinocorpus;
+
 FilterModel::FilterModel(CorpusPtr corpus, QObject *parent)
 :
     QAbstractTableModel(parent),
@@ -34,7 +36,7 @@ FilterModel::~FilterModel()
 
 int FilterModel::columnCount(QModelIndex const &index) const
 {
-    return 2;
+    return 3;
 }
 
 int FilterModel::rowCount(QModelIndex const &index) const
@@ -56,9 +58,11 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
     switch (index.column())
     {
         case 0:
-            return d_results.at(index.row()).first;            
+            return d_results.at(index.row()).name;            
         case 1:
-            return d_results.at(index.row()).second;
+            return d_results.at(index.row()).hits;
+        case 2:
+            return d_results.at(index.row()).data;
         default:
             return QVariant();
     }
@@ -85,6 +89,8 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
             return tr("File");
         case 1:
             return tr("Hits");
+        case 2:
+            return tr("Data");
         default:
             return QVariant();
     }
@@ -96,7 +102,7 @@ QModelIndex FilterModel::indexOfFile(QString const &filename) const
     int index = -1;
     for (int i = 0, size = d_results.size(); i < size; ++i)
     {
-        if (d_results.at(i).first == filename)
+        if (d_results.at(i).name == filename)
         {
             index = i;
             break;
@@ -141,7 +147,7 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
   d_timer->stop();
 }
 
-void FilterModel::runQuery(QString const &query)
+void FilterModel::runQuery(QString const &query, QString const &stylesheet)
 {
     cancelQuery(); // just in case
     
@@ -166,11 +172,18 @@ void FilterModel::runQuery(QString const &query)
     d_timer->start();
 
     if (!d_query.isEmpty())
-        d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntriesWithQuery, d_query);
-    else
-        d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-            d_corpus->begin(),
-            d_corpus->end());
+        d_entriesFuture = QtConcurrent::run(this,
+            &FilterModel::getEntriesWithQuery, d_query, stylesheet);
+    else {
+        if (stylesheet.isNull())
+            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
+                d_corpus->begin(), d_corpus->end(), false);
+        else
+            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
+                d_corpus->beginWithStylesheet(stylesheet.toUtf8().constData()),
+                d_corpus->end(), true);
+
+    }
 }
 
 QString const &FilterModel::lastQuery() const
@@ -187,7 +200,8 @@ void FilterModel::cancelQuery()
 }
 
 // run async, because query() starts searching immediately
-void FilterModel::getEntriesWithQuery(QString const &query)
+void FilterModel::getEntriesWithQuery(QString const &query,
+    QString const &stylesheet)
 {
     if (d_entryCache->contains(query)) {
         {
@@ -201,10 +215,24 @@ void FilterModel::getEntriesWithQuery(QString const &query)
         return;
     }
     
+    std::string cQuery = query.toUtf8().constData();
+
     try {
-        FilterModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            d_corpus->end());
+        if (stylesheet.isNull())
+            FilterModel::getEntries(
+                d_corpus->query(alpinocorpus::CorpusReader::XPATH,
+                    cQuery),
+                d_corpus->end(),
+                false);
+        else
+            FilterModel::getEntries(
+                d_corpus->queryWithStylesheet(alpinocorpus::CorpusReader::XPATH,
+                    query.toUtf8().constData(), stylesheet.toUtf8().constData(),
+                    std::list<ac::CorpusReader::MarkerQuery>(
+                        1, ac::CorpusReader::MarkerQuery(cQuery, "active", "1"))),
+                d_corpus->end(),
+                true);
+
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Alpino Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -215,7 +243,8 @@ void FilterModel::getEntriesWithQuery(QString const &query)
 }
 
 // run async
-void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
+void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end,
+    bool withStylesheet)
 {
     try {
         emit queryStarted(0); // we don't know how many entries will be found
@@ -240,13 +269,17 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
              * or QMap for fast lookup.
              */
             int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].first == entry)
-                ++d_results[row].second;
+            if (row >= 0 && d_results[row].name == entry)
+                ++d_results[row].hits;
             // Add found file to the list
             else
             {
                 ++row;
-                d_results.append(value_type(entry, 1));
+                if (withStylesheet)
+                    d_results.append(Entry(entry, 1,
+                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str())));
+                else
+                    d_results.append(Entry(entry, 1, QString::null));
             }
         }
         

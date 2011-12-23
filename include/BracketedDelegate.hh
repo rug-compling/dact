@@ -7,7 +7,6 @@
 #include <QModelIndex>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
-#include "XSLTransformer.hh"
 
 class BracketedDelegate : public QStyledItemDelegate
 {
@@ -94,13 +93,9 @@ protected:
 
 private:
     QList<Chunk> *parseSentence(QString const &sentence) const;
-    
-    QString transformXML(QString const &xml) const;
-    
+        
     mutable QCache<QString,QList<Chunk> > d_cache;
     CorpusReaderPtr d_corpus;
-    QFile d_stylesheet;
-    XSLTransformer d_transformer;
 };
 
 #endif
