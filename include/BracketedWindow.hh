@@ -13,7 +13,6 @@
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
-#include "XSLTransformer.hh"
 #include "ui_BracketedWindow.h"
 
 class QKeyEvent;
@@ -142,7 +141,6 @@ private:
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
-    QSharedPointer<XSLTransformer> d_sentenceTransformer;
 };
 
 #endif // DACTFILTERWINDOW_H
