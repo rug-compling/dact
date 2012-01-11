@@ -396,7 +396,7 @@ void MainWindow::openDirectoryCorpus()
 
 void MainWindow::openRemoteCorpus()
 {
-    readCorpus("http://localhost:8123/cdb", false);
+    readCorpus("http://localhost:8123/lassy-small", false);
 }
 
 void MainWindow::openMacrosFile()
