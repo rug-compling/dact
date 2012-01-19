@@ -210,7 +210,7 @@ void StatisticsWindow::startQuery()
 
     d_ui->totalHitsLabel->clear();
     
-    d_model->runQuery(QString("%1/@%2")
+    d_model->runQuery(QString("%1/(@%2/string(), '[missing attribute]')[1]")
         .arg(d_filter)
         .arg(d_ui->attributeComboBox->currentText()));
 }
