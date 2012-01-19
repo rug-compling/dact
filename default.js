@@ -48,6 +48,33 @@
 			e.preventDefault();
 		});
 	
+	function update_current_tab()
+	{
+		$('article, header').each(function() {
+			var size = $(this).height(),
+				pos = $(this).position();
+
+			// where is the current user with reading
+			var reader_pos = window.scrollY + 160;
+
+			$('a[href=#' + this.id + ']').toggleClass('current',
+				reader_pos > pos.top && reader_pos < pos.top + size);
+		});
+	}
+
+	// Don't recalculate the current tab while scrolling to prevent enormous lag.
+	var update_current_tab_timeout;
+
+	// Just wait till the scrolling is over
+	function taint_current_tab()
+	{
+		clearTimeout(update_current_tab_timeout);
+		update_current_tab_timeout = setTimeout(update_current_tab, 50);
+	}
+
+	$(window).scroll(taint_current_tab);
+	update_current_tab();
+
 	/*
 	// Experimental full screen sections. That is a lot of empty space!
 	function resize_sections() {
