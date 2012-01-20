@@ -15,9 +15,17 @@ class FilterModel : public QAbstractTableModel
 {
     Q_OBJECT
     
+    struct Entry {
+        Entry(QString nName, int nHits, QString nData) :
+            name(nName), hits(nHits), data(nData) {}
+        
+        QString name;
+        int hits;
+        QString data;  
+    };
+
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
-    typedef QPair<QString, int> value_type;
         
 public:
     FilterModel(CorpusPtr corpus, QObject *parent = 0);
@@ -29,7 +37,8 @@ public:
     int hits() const;
     QModelIndex indexOfFile(QString const &filename) const;
     
-    void runQuery(QString const &xpath_query = "");
+    void runQuery(QString const &xpath_query = "",
+        QString const &stylesheet = QString::null);
     void cancelQuery();
     QString const &lastQuery() const;
 
@@ -41,8 +50,9 @@ signals:
     void nEntriesFound(int entries, int hits);
     
 private:
-    void getEntries(EntryIterator const &begin, EntryIterator const &end);
-    void getEntriesWithQuery(QString const &query);
+    void getEntries(EntryIterator const &begin, EntryIterator const &end,
+        bool withStylesheet);
+    void getEntriesWithQuery(QString const &query, QString const &stylesheet);
     
 private slots:
     void fireDataChanged();
@@ -51,7 +61,7 @@ private slots:
     void finalizeQuery(int n, int totalEntries, bool cached);
     
 private:
-    typedef QList<value_type> EntryList;
+    typedef QList<Entry> EntryList;
     
     struct CacheItem {
         CacheItem(int newHits, EntryList newEntries) : hits(newHits), entries(newEntries) {}
@@ -64,7 +74,7 @@ private:
 
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
-    QList<value_type> d_results;
+    EntryList d_results;
     mutable QMutex d_resultsMutex;
     QString d_query;
     QFuture<void> d_entriesFuture;

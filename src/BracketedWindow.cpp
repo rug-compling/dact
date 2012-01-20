@@ -21,7 +21,6 @@
 #include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
-#include "XSLTransformer.hh"
 #include "Query.hh"
 #include "ValidityColor.hh"
 #include "ui_BracketedWindow.h"
@@ -91,6 +90,12 @@ void BracketedWindow::setModel(FilterModel *model)
 
 void BracketedWindow::startQuery()
 {
+    // XXX - only once
+    QFile file(":/stylesheets/bracketed-sentence.xsl");
+    file.open(QIODevice::ReadOnly);
+    QTextStream xslStream(&file);
+    QString stylesheet = xslStream.readAll();
+
     if (d_filter.trimmed().isEmpty())
         setModel(new FilterModel(QSharedPointer<ac::CorpusReader>()));
     else
@@ -100,7 +105,8 @@ void BracketedWindow::startQuery()
     // This will make sure no old cached data is used.
     reloadListDelegate();
 
-    d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"));
+    d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"), 
+        stylesheet);
 
 }
 

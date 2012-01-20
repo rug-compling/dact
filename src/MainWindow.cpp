@@ -30,8 +30,10 @@
 #include <iterator>
 #include <list>
 #include <stdexcept>
+#include <string>
 #include <typeinfo>
 
+#include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
@@ -62,6 +64,9 @@ extern void qt_mac_set_dock_menu(QMenu *);
 #endif
 
 namespace ac = alpinocorpus;
+
+typedef std::list<ac::CorpusReaderFactory::ReaderInfo> ReaderList;
+typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -155,6 +160,20 @@ void MainWindow::close()
 {
     writeSettings();
     QMainWindow::close();
+}
+
+QString MainWindow::corpusExtensions()
+{
+    QStringList extensions;
+
+    ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
+    for (ReaderList::const_iterator iter = readers.begin();
+            iter != readers.end(); ++iter)
+        for (ExtList::const_iterator extIter = iter->extensions.begin();
+                extIter != iter->extensions.end(); ++extIter)
+            extensions.push_back(QString("*.%1").arg(extIter->c_str()));
+
+    return extensions.join(" ");
 }
 
 void MainWindow::showDownloadWindow()
@@ -377,7 +396,7 @@ void MainWindow::initSentenceTransformer()
 void MainWindow::openCorpus()
 {
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        "Dact corpora (*.dact *.data.dz)");
+        QString("Dact corpora (%1)").arg(corpusExtensions()));
     if (corpusPath.isNull())
         return;
 
@@ -502,9 +521,9 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
     
     try {
         if (recursive)
-            reader = ac::CorpusReader::openRecursive(path.toUtf8().constData());
+            reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
         else
-            reader = ac::CorpusReader::open(path.toUtf8().constData());
+            reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }

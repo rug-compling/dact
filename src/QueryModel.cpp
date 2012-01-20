@@ -187,8 +187,8 @@ void QueryModel::runQuery(QString const &query)
 void QueryModel::cancelQuery()
 {
     d_cancelled = true;
-    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
+    d_entryIterator.interrupt();
 }
 
 void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)

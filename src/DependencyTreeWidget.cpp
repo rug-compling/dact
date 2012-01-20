@@ -101,11 +101,19 @@ void DependencyTreeWidget::entrySelected(QModelIndex const &current, QModelIndex
     showFile(current.data(Qt::UserRole).toString());
     
     //focusFitTree();
+    focusFirstMatch();
 }
 
 void DependencyTreeWidget::fitTree()
 {
     d_ui->treeGraphicsView->fitTree();
+}
+
+void DependencyTreeWidget::focusFirstMatch()
+{
+    if (d_ui->treeGraphicsView->scene() &&
+        d_ui->treeGraphicsView->scene()->activeNodes().length() > 0)
+      d_ui->treeGraphicsView->focusTreeNode(1);
 }
 
 void DependencyTreeWidget::focusFitTree()
@@ -299,7 +307,7 @@ void DependencyTreeWidget::showFile(QString const &entry)
                                                 "active", "1");
             std::list<ac::CorpusReader::MarkerQuery> queries;
             queries.push_back(query);
-            xml = QString::fromUtf8(d_corpusReader->readMarkQueries(entry.toUtf8().constData(), queries).c_str());
+            xml = QString::fromUtf8(d_corpusReader->read(entry.toUtf8().constData(), queries).c_str());
         }
         
         if (xml.size() == 0) {

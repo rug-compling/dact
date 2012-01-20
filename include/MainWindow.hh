@@ -251,6 +251,11 @@ private:
     void createActions();
 
     /*!
+     Retrieve a list of corpus extensions from the alpinocorpus library.
+    */
+    QString corpusExtensions();
+    
+    /*!
      Focus on the next or previous tree node in the current tree scene. It finds the
      currently focussed node, and then walks using direction towards the next node
      that is active (which means it matched the highlight query) When the last node
