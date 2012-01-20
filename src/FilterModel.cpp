@@ -194,8 +194,8 @@ QString const &FilterModel::lastQuery() const
 void FilterModel::cancelQuery()
 {
     d_cancelled = true;
-    d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
+    d_entryIterator.interrupt();
     d_timer->stop();
 }
 
