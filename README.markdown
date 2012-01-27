@@ -19,3 +19,8 @@ If you want to build the current stable/release version of Dact, check out the
     cmake .
     make
     make install
+
+# Limitations
+
+When a corpus reader with XPath 1.0 is used, the statistics tab does not
+provide a count of matching nodes that do not have the given attribute.
