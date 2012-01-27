@@ -163,16 +163,19 @@ void MainWindow::close()
 
 QString MainWindow::corpusExtensions()
 {
-    QStringList extensions;
+    // XXX - Bye bye, cosy old world!
+    // QStringList extensions;
+    //
+    // ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
+    // for (ReaderList::const_iterator iter = readers.begin();
+    //         iter != readers.end(); ++iter)
+    //     for (ExtList::const_iterator extIter = iter->extensions.begin();
+    //             extIter != iter->extensions.end(); ++extIter)
+    //         extensions.push_back(QString("*.%1").arg(extIter->c_str()));
+    //
+    // return extensions.join(" ");
 
-    ReaderList readers = ac::CorpusReader::readersAvailable();
-    for (ReaderList::const_iterator iter = readers.begin();
-            iter != readers.end(); ++iter)
-        for (ExtList::const_iterator extIter = iter->extensions.begin();
-                extIter != iter->extensions.end(); ++extIter)
-            extensions.push_back(QString("*.%1").arg(extIter->c_str()));
-
-    return extensions.join(" ");
+    return "*.dact";
 }
 
 void MainWindow::showDownloadWindow()
