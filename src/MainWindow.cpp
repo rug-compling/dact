@@ -216,7 +216,6 @@ void MainWindow::setupUi()
     #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
-        appleDockMenu->addAction(d_ui->openDirectoryAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
 }
@@ -264,8 +263,6 @@ void MainWindow::createActions()
         SLOT(showDownloadWindow()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
-    connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
-        SLOT(openDirectoryCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
@@ -398,16 +395,6 @@ void MainWindow::openCorpus()
         return;
 
     readCorpus(corpusPath);
-}
-
-void MainWindow::openDirectoryCorpus()
-{
-    QString corpusPath = QFileDialog::getExistingDirectory(this,
-        "Open directory corpus");
-    if (corpusPath.isNull())
-        return;
-
-    readCorpus(corpusPath, false);
 }
 
 void MainWindow::openMacrosFile()
