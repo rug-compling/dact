@@ -90,7 +90,6 @@
      </property>
     </widget>
     <addaction name="openAction"/>
-    <addaction name="openDirectoryAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
@@ -391,14 +390,6 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
-   </property>
-  </action>
-  <action name="openDirectoryAction">
-   <property name="text">
-    <string>Open Directory…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+D</string>
    </property>
   </action>
   <action name="saveCorpus">

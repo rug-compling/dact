@@ -19,7 +19,7 @@ else(APPLE)
   set(ENABLE_BUNDLE OFF)
 endif(APPLE)
 
-set(VERSION "0.0.5")
+set(VERSION "1.0.0")
 
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)

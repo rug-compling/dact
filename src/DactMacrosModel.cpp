@@ -5,7 +5,7 @@
 
 #include "DactMacrosModel.hh"
 #include "DactMacrosFile.hh"
-#include "DelayedLoadFileCallback.hh";
+#include "DelayedLoadFileCallback.hh"
 
 const QChar DactMacrosModel::d_symbol('%');
 
@@ -205,3 +205,4 @@ void DactMacrosModel::loadFileDelayed(QString const &fileName)
 {
     QTimer::singleShot(500, new DelayedLoadFileCallback(this, fileName), SLOT(invokeOnce()));
 }
+

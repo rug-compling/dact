@@ -30,9 +30,10 @@
 #include <iterator>
 #include <list>
 #include <stdexcept>
+#include <string>
 #include <typeinfo>
 
-#include <AlpinoCorpus/DbCorpusWriter.hh>
+#include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
@@ -62,6 +63,9 @@ extern void qt_mac_set_dock_menu(QMenu *);
 #endif
 
 namespace ac = alpinocorpus;
+
+typedef std::list<ac::CorpusReader::ReaderInfo> ReaderList;
+typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -157,6 +161,23 @@ void MainWindow::close()
     QMainWindow::close();
 }
 
+QString MainWindow::corpusExtensions()
+{
+    // XXX - Bye bye, cosy old world!
+    // QStringList extensions;
+    //
+    // ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
+    // for (ReaderList::const_iterator iter = readers.begin();
+    //         iter != readers.end(); ++iter)
+    //     for (ExtList::const_iterator extIter = iter->extensions.begin();
+    //             extIter != iter->extensions.end(); ++extIter)
+    //         extensions.push_back(QString("*.%1").arg(extIter->c_str()));
+    //
+    // return extensions.join(" ");
+
+    return "*.dact";
+}
+
 void MainWindow::showDownloadWindow()
 {
     if (d_downloadWindow == 0)
@@ -197,7 +218,6 @@ void MainWindow::setupUi()
     #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
-        appleDockMenu->addAction(d_ui->openDirectoryAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
 }
@@ -245,12 +265,13 @@ void MainWindow::createActions()
         SLOT(showDownloadWindow()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
-    connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
-        SLOT(openDirectoryCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
-    connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
-        SLOT(exportCorpus()));
+    if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
+      connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
+          SLOT(exportCorpus()));
+    else
+      d_ui->saveCorpus->setDisabled(true);
     connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
     connect(d_ui->helpAction, SIGNAL(triggered(bool)),
@@ -371,21 +392,11 @@ void MainWindow::initSentenceTransformer()
 void MainWindow::openCorpus()
 {
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        "Dact corpora (*.dact *.data.dz)");
+        QString("Dact corpora (%1)").arg(corpusExtensions()));
     if (corpusPath.isNull())
         return;
 
     readCorpus(corpusPath);
-}
-
-void MainWindow::openDirectoryCorpus()
-{
-    QString corpusPath = QFileDialog::getExistingDirectory(this,
-        "Open directory corpus");
-    if (corpusPath.isNull())
-        return;
-
-    readCorpus(corpusPath, false);
 }
 
 void MainWindow::openMacrosFile()
@@ -658,7 +669,9 @@ void MainWindow::exportCorpus()
 bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
 {
     try {
-        ac::DbCorpusWriter corpus(filename.toUtf8().constData(), true);
+        QSharedPointer<ac::CorpusWriter> corpus(
+          ac::CorpusWriter::open(filename.toUtf8().constData(), true,
+          ac::CorpusWriter::DBXML_CORPUS_WRITER));
         
         emit exportProgressMaximum(files.size());
         emit exportProgress(0);
@@ -669,7 +682,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
              end(files.constEnd());
              !d_writeCorpusCancelled && itr != end; ++itr)
         {
-            corpus.write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
+            corpus->write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
             ++progress;
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);

@@ -38,6 +38,7 @@ public:
     
     void runQuery(QString const &xpath_query = "");
     void cancelQuery();
+    bool validQuery(QString const &query);
     
 signals:
     void queryFailed(QString error);

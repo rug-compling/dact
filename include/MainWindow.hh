@@ -152,17 +152,9 @@ private slots:
             
     /*!
      Calls the open file dialog and filters on the .data.dz extension
-     \sa openDirectoryCorpus
      \sa readCorpus
      */
-    void openCorpus();
-    
-    /*!
-     Calls the open file dialog and filters only allows you to select directories.
-     \sa openCorpus
-     \sa readCorpus
-     */
-    void openDirectoryCorpus();
+    void openCorpus();    
     
     void openMacrosFile();
 
@@ -242,6 +234,11 @@ private:
      Attaches all the signals from the ui and mapper to the various functions.
      */
     void createActions();
+
+    /*!
+     Retrieve a list of corpus extensions from the alpinocorpus library.
+    */
+    QString corpusExtensions();
     
     /*!
      Focus on the next or previous tree node in the current tree scene. It finds the

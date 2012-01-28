@@ -209,10 +209,18 @@ void StatisticsWindow::startQuery()
     d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
-    
-    d_model->runQuery(QString("%1/@%2")
+
+    QString attrWithMissing = QString("%1/(@%2/string(), '[missing attribute]')[1]")
         .arg(d_filter)
-        .arg(d_ui->attributeComboBox->currentText()));
+        .arg(d_ui->attributeComboBox->currentText());
+    
+    if (d_model->validQuery(attrWithMissing))
+        d_model->runQuery(attrWithMissing);
+    else
+        d_model->runQuery(QString("%1/@%2")
+            .arg(d_filter)
+            .arg(d_ui->attributeComboBox->currentText()));
+
 }
 
 void StatisticsWindow::showPercentageChanged()

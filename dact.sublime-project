@@ -1,0 +1,19 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "file_exclude_patterns": [".*", "*.cmake", "CMakeCache.txt",
+                "Makefile", "install_manifest.txt", "*.cxx", "ui_*.h"],
+            "folder_exclude_patterns": ["CMakeFiles", "CMakeScripts",
+                "cmake", "build", "Debug", "Dact.*"]
+        }
+    ],
+    "settings":
+    {
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+        "ensure_newline_at_eof_on_save": true,
+        "default_line_ending": "unix"
+    }
+}

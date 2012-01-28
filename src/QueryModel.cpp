@@ -184,6 +184,12 @@ void QueryModel::runQuery(QString const &query)
             d_corpus->end());
 }
 
+bool QueryModel::validQuery(QString const &query)
+{
+    return d_corpus->isValidQuery(alpinocorpus::CorpusReader::XPATH,
+        false, query.toUtf8().constData());    
+}
+
 void QueryModel::cancelQuery()
 {
     d_cancelled = true;
