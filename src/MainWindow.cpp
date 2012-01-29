@@ -164,16 +164,19 @@ void MainWindow::close()
 
 QString MainWindow::corpusExtensions()
 {
-    QStringList extensions;
+    // XXX - Bye bye, cosy old world!
+    // QStringList extensions;
+    //
+    // ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
+    // for (ReaderList::const_iterator iter = readers.begin();
+    //         iter != readers.end(); ++iter)
+    //     for (ExtList::const_iterator extIter = iter->extensions.begin();
+    //             extIter != iter->extensions.end(); ++extIter)
+    //         extensions.push_back(QString("*.%1").arg(extIter->c_str()));
+    //
+    // return extensions.join(" ");
 
-    ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
-    for (ReaderList::const_iterator iter = readers.begin();
-            iter != readers.end(); ++iter)
-        for (ExtList::const_iterator extIter = iter->extensions.begin();
-                extIter != iter->extensions.end(); ++extIter)
-            extensions.push_back(QString("*.%1").arg(extIter->c_str()));
-
-    return extensions.join(" ");
+    return "*.dact";
 }
 
 void MainWindow::showDownloadWindow()
@@ -216,7 +219,6 @@ void MainWindow::setupUi()
     #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
-        appleDockMenu->addAction(d_ui->openDirectoryAction);
         appleDockMenu->addAction(d_ui->openRemoteAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
@@ -265,8 +267,6 @@ void MainWindow::createActions()
         SLOT(showDownloadWindow()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
-    connect(d_ui->openDirectoryAction, SIGNAL(triggered(bool)),
-        SLOT(openDirectoryCorpus()));
     connect(d_ui->openRemoteAction, SIGNAL(triggered(bool)),
         SLOT(openRemoteCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
@@ -401,16 +401,6 @@ void MainWindow::openCorpus()
         return;
 
     readCorpus(corpusPath);
-}
-
-void MainWindow::openDirectoryCorpus()
-{
-    QString corpusPath = QFileDialog::getExistingDirectory(this,
-        "Open directory corpus");
-    if (corpusPath.isNull())
-        return;
-
-    readCorpus(corpusPath, false);
 }
 
 void MainWindow::openRemoteCorpus()

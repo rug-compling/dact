@@ -152,17 +152,9 @@ private slots:
 
     /*!
      Calls the open file dialog and filters on the .data.dz extension
-     \sa openDirectoryCorpus
      \sa readCorpus
      */
     void openCorpus();
-
-    /*!
-     Calls the open file dialog and filters only allows you to select directories.
-     \sa openCorpus
-     \sa readCorpus
-     */
-    void openDirectoryCorpus();
 
     /*!
      Calls the open remote corpus dialog and ... ???
