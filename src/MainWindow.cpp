@@ -76,13 +76,10 @@ MainWindow::MainWindow(QWidget *parent) :
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
-#if 0
-    d_queryHistory(0)
-#endif
 {
     setupUi();
 
-    d_ui->filterLineEdit->readHistory("filterHistory");
+    d_ui->filterComboBox->readHistory("filterHistory");
 
     initTaintedWidgets();
 
@@ -94,12 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui->menuMacros->setModel(d_macrosModel);
     
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
-    d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-#if 0
-    d_queryHistory = QSharedPointer<DactQueryHistory>(new DactQueryHistory());
-    d_ui->filterLineEdit->setCompleter(d_queryHistory->completer());
-    d_ui->highlightLineEdit->setCompleter(d_queryHistory->completer());
-#endif
+    d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
         
     readSettings();
     
@@ -110,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    d_ui->filterLineEdit->writeHistory("filterHistory");
+    d_ui->filterComboBox->writeHistory("filterHistory");
 
     delete d_aboutWindow;
     delete d_downloadWindow;
@@ -200,7 +192,7 @@ void MainWindow::showWriteCorpusError(QString const &error)
 
 void MainWindow::statisticsEntryActivated(QString const &value, QString const &query)
 {
-    d_ui->filterLineEdit->setText(query);
+    d_ui->filterComboBox->setText(query);
     filterChanged();
     activateWindow();
 }
@@ -252,9 +244,9 @@ void MainWindow::createActions()
     connect(d_ui->sentencesWidget, SIGNAL(entryActivated(QString)),
             SLOT(bracketedEntryActivated(QString)));
     
-    connect(d_ui->filterLineEdit, SIGNAL(textChanged(QString const &)),
+    connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-    connect(d_ui->filterLineEdit, SIGNAL(returnPressed()),
+    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
         SLOT(filterChanged()));
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
@@ -353,7 +345,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::setFilter(QString const &query)
 {
-    d_ui->filterLineEdit->setText(query);
+    d_ui->filterComboBox->setText(query);
     filterChanged();
 }
 
@@ -361,7 +353,7 @@ void MainWindow::filterChanged()
 {
     QMutexLocker locker(&d_filterChangedMutex);
 
-    d_filter = d_ui->filterLineEdit->text().trimmed();
+    d_filter = d_ui->filterComboBox->text().trimmed();
 
 #if 0
     if (d_queryHistory)
@@ -375,7 +367,7 @@ void MainWindow::filterChanged()
 
 void MainWindow::focusFilter()
 {
-    d_ui->filterLineEdit->setFocus();
+    d_ui->filterComboBox->setFocus();
 }
 
 void MainWindow::initSentenceTransformer()
@@ -552,7 +544,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     
     d_xpathValidator->setCorpusReader(reader);
     
-    d_ui->filterLineEdit->revalidate();
+    d_ui->filterComboBox->revalidate();
         
     if (!reader.isNull() && !path.isNull())
     {
