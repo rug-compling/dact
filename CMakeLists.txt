@@ -94,7 +94,7 @@ SET(dact_SRCS
   src/DependencyTreeWidget.cpp
   src/DownloadWindow.cpp
   src/DactApplication.cpp
-  src/HistoryLineEdit.cpp
+  src/HistoryComboBox.cpp
   src/DactListView.cpp
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
@@ -153,7 +153,7 @@ SET(dact_HDRS
   include/GlobalCutCommand.hh
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
-  include/HistoryLineEdit.hh
+  include/HistoryComboBox.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -191,7 +191,7 @@ SET(dact_MOC_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
-  include/HistoryLineEdit.hh
+  include/HistoryComboBox.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
