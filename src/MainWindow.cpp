@@ -249,6 +249,8 @@ void MainWindow::createActions()
         SLOT(applyValidityColor(QString const &)));
     connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
         SLOT(filterChanged()));
+    connect(d_ui->filterComboBox->lineEdit(), SIGNAL(returnPressed()),
+        SLOT(filterChanged()));
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
@@ -397,7 +399,7 @@ void MainWindow::openCorpus()
 
 void MainWindow::openRemoteCorpus()
 {
-    readCorpus("http://localhost:8123/lassy-small", false);
+    readCorpus("http://localhost:8123/cdb", false);
 }
 
 void MainWindow::openMacrosFile()
