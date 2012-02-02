@@ -47,6 +47,9 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     
     connect(d_ui->archiveBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveArchiveBaseUrl()));
+
+    connect(d_ui->serverBaseUrlLineEdit, SIGNAL(editingFinished()),
+        SLOT(saveServerBaseUrl()));
         
     connect(d_ui->restoreDefaultColorsButton, SIGNAL(clicked()),
         SLOT(restoreDefaultColors()));
@@ -120,12 +123,20 @@ void PreferencesWindow::loadNetworkTab()
     QSettings settings;
     d_ui->archiveBaseUrlLineEdit->setText(
         settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+    d_ui->serverBaseUrlLineEdit->setText(
+        settings.value(SERVER_BASEURL_KEY, DEFAULT_SERVER_BASEURL).toString());
 }
 
 void PreferencesWindow::saveArchiveBaseUrl()
 {
     QSettings settings;
     settings.setValue(ARCHIVE_BASEURL_KEY, d_ui->archiveBaseUrlLineEdit->text());
+}
+
+void PreferencesWindow::saveServerBaseUrl()
+{
+    QSettings settings;
+    settings.setValue(SERVER_BASEURL_KEY, d_ui->serverBaseUrlLineEdit->text());
 }
 
 void PreferencesWindow::saveColorsTab()
@@ -173,6 +184,7 @@ void PreferencesWindow::restoreDefaultNetwork()
     QSettings settings;
     
     settings.remove(ARCHIVE_BASEURL_KEY);
+    settings.remove(SERVER_BASEURL_KEY);
     
     loadNetworkTab();
 }
