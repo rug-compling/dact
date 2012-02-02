@@ -55,6 +55,8 @@
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
+#include <config.hh>
+
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
 #include <GlobalPasteCommand.hh>
@@ -399,7 +401,11 @@ void MainWindow::openCorpus()
 
 void MainWindow::openRemoteCorpus()
 {
-    readCorpus("http://localhost:8123/cdb", false);
+    QSettings settings;
+    QString baseUrl =
+      settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString();
+
+    readCorpus(baseUrl + "/cdb", false);
 }
 
 void MainWindow::openMacrosFile()

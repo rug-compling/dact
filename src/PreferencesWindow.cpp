@@ -149,7 +149,6 @@ void PreferencesWindow::saveRemoteBaseUrl()
     settings.setValue(REMOTE_BASEURL_KEY, d_ui->remoteBaseUrlLineEdit->text());
 }
 
-
 void PreferencesWindow::saveColorsTab()
 {
     QSettings settings;
