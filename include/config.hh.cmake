@@ -7,5 +7,7 @@
 
 QString const ARCHIVE_BASEURL_KEY("archiveBaseUrl");
 QString const DEFAULT_ARCHIVE_BASEURL("http://www.let.rug.nl/dekok/corpora");
+QString const REMOTE_BASEURL_KEY("remoteBaseUrl");
+QString const DEFAULT_REMOTE_BASEURL("http://localhost:8000");
 
 #endif // DACT_CONFIG_HH
