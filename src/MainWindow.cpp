@@ -189,15 +189,15 @@ void MainWindow::showRemoteWindow()
 {
     if (d_remoteWindow == 0) {
         d_remoteWindow = new RemoteWindow(this, Qt::Window);
-        connect(d_remoteWindow, SIGNAL(openRemote(QString)),
-                this, SLOT(openRemoteCorpus(QString)));
+        connect(d_remoteWindow, SIGNAL(openRemote(QString const &)),
+                this, SLOT(openRemoteCorpus(QString const &)));
     }
 
     d_remoteWindow->show();
     d_remoteWindow->raise();
 }
 
-void MainWindow::openRemoteCorpus(QString url)
+void MainWindow::openRemoteCorpus(QString const &url)
 {
     readCorpus(url);
 }

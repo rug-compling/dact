@@ -50,8 +50,6 @@ private:
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     QVector<ArchiveEntry> d_corpora;
 
-    QString d_lable2;
-
 };
 
 inline ArchiveEntry const &ArchiveModel::entryAtRow(int row)

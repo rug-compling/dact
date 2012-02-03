@@ -1,6 +1,3 @@
-// TODO: remove this line
-#include <iostream>
-
 #include <QByteArray>
 #include <QIODevice>
 #include <QMetaEnum>
@@ -84,9 +81,8 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
     else if (role == Qt::UserRole)
         switch (index.column())
         {
-            //TODO: restore this?
-            //case 3:
-            //    return corpus.checksum;
+            case 3:
+                return corpus.checksum;
         }
 
     return QVariant();

@@ -20,7 +20,6 @@ class QIODevice;
 class QNetworkAccessManager;
 class QNetworkReply;
 class QKeyEvent;
-class QProgressDialog;
 class QTreeWidgetItem;
 
 class RemoteWindow : public QWidget {
@@ -30,23 +29,14 @@ public:
     ~RemoteWindow();
 
 signals:
-    void inflateCanceled();
-    void inflateError(QString error);
-    void inflateFinished();
-    void inflateProgressed(int value);
-    void openRemote(QString url);
+    void openRemote(QString const &url);
 
 private slots:
     void archiveNetworkError(QString error);
     void archiveProcessingError(QString error);
     void archiveRetrieved();
-    void cancelInflate();
-    void corpusReplyFinished(QNetworkReply *reply);
     void remoteCanceled();
-    void inflate(QIODevice *dev);
-    void inflateHandleError(QString error);
     void remote();
-    void remoteProgress(qint64 progress, qint64 maximum);
     void refreshCorpusList();
     void rowChanged(QModelIndex const &current, QModelIndex const &previous);
 
@@ -59,13 +49,9 @@ private:
     QSharedPointer<Ui::RemoteWindow> d_ui;
     QSharedPointer<ArchiveModel> d_archiveModel;
     QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;
-    QSharedPointer<QProgressDialog> d_remoteProgressDialog;
-    QSharedPointer<QProgressDialog> d_inflateProgressDialog;
     QString d_baseUrl;
-    QString d_filename;
-    QString d_hash;
+    QString d_url;
     QNetworkReply *d_reply;
-    volatile bool d_cancelInflate;
 };
 
 #endif // REMOTEWINDOW_H

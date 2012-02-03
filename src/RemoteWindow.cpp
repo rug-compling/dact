@@ -1,7 +1,5 @@
 #include <QChar>
 #include <QByteArray>
-#include <QCryptographicHash>
-#include <QFileDialog>
 #include <QKeyEvent>
 #include <QList>
 #include <QMessageBox>
@@ -9,8 +7,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QProgressDialog>
-#include <QRegExp>
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
@@ -20,7 +16,6 @@
 
 #include <ArchiveModel.hh>
 #include <RemoteWindow.hh>
-#include <QtIOCompressor.hh>
 #include <config.hh>
 
 #include <ui_RemoteWindow.h>
@@ -32,10 +27,8 @@ RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui(QSharedPointer<Ui::RemoteWindow>(new Ui::RemoteWindow)),
     d_archiveModel(new ArchiveModel(tr("Sentences"))),
     d_corpusAccessManager(new QNetworkAccessManager),
-    d_remoteProgressDialog(new QProgressDialog(this)),
-    d_inflateProgressDialog(new QProgressDialog(this)),
     d_reply(0),
-    d_cancelInflate(false)
+    d_url(0)
 {
     d_ui->setupUi(this);
 
@@ -46,13 +39,6 @@ RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui->openPushButton->setEnabled(false);
     d_ui->informationGroupBox->setEnabled(false);
 
-    d_remoteProgressDialog->setWindowTitle("Downloading corpus");
-    d_remoteProgressDialog->setRange(0, 100);
-    
-    d_inflateProgressDialog->setWindowTitle("Decompressing corpus");
-    d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
-    d_inflateProgressDialog->setRange(0, 100);
-    
     connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
         SLOT(archiveNetworkError(QString)));
     connect(d_archiveModel.data(), SIGNAL(processingError(QString)),
@@ -63,22 +49,10 @@ RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
         SLOT(rowChanged(QModelIndex const &, QModelIndex const &)));
     connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
             SLOT(archiveRetrieved()));
-    connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
-        SLOT(corpusReplyFinished(QNetworkReply*)));
-    connect(d_remoteProgressDialog.data(), SIGNAL(canceled()),
-        SLOT(remoteCanceled()));
-    connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
-            SLOT(cancelInflate()));
     connect(d_ui->refreshPushButton, SIGNAL(clicked()),
         SLOT(refreshCorpusList()));
     connect(d_ui->openPushButton, SIGNAL(clicked()),
         SLOT(remote()));
-    connect(this, SIGNAL(inflateProgressed(int)),
-        d_inflateProgressDialog.data(), SLOT(setValue(int)));
-    connect(this, SIGNAL(inflateError(QString)),
-        SLOT(inflateHandleError(QString)));
-    connect(this, SIGNAL(inflateFinished()),
-        d_inflateProgressDialog.data(), SLOT(accept()));
     
     connect(d_archiveModel.data(), SIGNAL(retrieving()),
         d_ui->activityIndicator, SLOT(show()));
@@ -119,37 +93,6 @@ void RemoteWindow::archiveRetrieved()
     d_ui->archiveTreeView->resizeColumnToContents(3);
 }
 
-void RemoteWindow::corpusReplyFinished(QNetworkReply *reply)
-{
-    d_reply = 0;
-    QNetworkReply::NetworkError error = reply->error();
-    if (error != QNetworkReply::NoError)
-    {
-        reply->deleteLater();
-
-        if (error == QNetworkReply::OperationCanceledError) 
-            return;
-        
-        QString errorValue(networkErrorToString(error));
-        
-        QMessageBox box(QMessageBox::Warning, "Failed to download corpus",
-                        QString("Downloading of corpus failed with error: %1").arg(errorValue),
-                        QMessageBox::Ok);
-        
-        d_remoteProgressDialog->accept();
-        
-        box.exec();
-
-        return;
-    }
-    
-    d_remoteProgressDialog->accept();
-    d_inflateProgressDialog->setValue(0);
-    d_inflateProgressDialog->open();
-    
-    QtConcurrent::run(this, &RemoteWindow::inflate, reply);
-}
-
 void RemoteWindow::remote()
 {
     QItemSelectionModel *selectionModel =
@@ -163,93 +106,17 @@ void RemoteWindow::remote()
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
     
     QSettings settings;
-    QString url = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString() + "/" + entry.name;
+    d_url = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString() + "/" + entry.name;
 
     hide();
 
-    emit openRemote(url);
+    emit openRemote(d_url);
 }
 
 void RemoteWindow::remoteCanceled()
 {
     Q_ASSERT(d_reply != 0);
     d_reply->abort();
-}
-
-void RemoteWindow::remoteProgress(qint64 progress, qint64 maximum)
-{
-    if (maximum == 0)
-        return;
-    
-    d_remoteProgressDialog->setValue((progress * 100) / maximum);
-}
-
-void RemoteWindow::inflate(QIODevice *dev)
-{
-    qint64 initAvailable = dev->bytesAvailable();
-        
-    QtIOCompressor data(dev);
-    data.setStreamFormat(QtIOCompressor::GzipFormat);
-    if (!data.open(QIODevice::ReadOnly))
-    {
-        dev->deleteLater();
-        emit inflateError("could not compressed data stream.");
-        return;
-    }
-    
-    QFile out(d_filename);
-    if (!out.open(QIODevice::WriteOnly))
-    {
-        dev->deleteLater();
-        emit inflateError("could not open output file for writing.");
-        return;
-    }
-    
-    // We'll check whether the uncompressed data matches the given hash.
-    QCryptographicHash sha1(QCryptographicHash::Sha1);
-    
-    while (!data.atEnd() && !d_cancelInflate) {
-        emit inflateProgressed(static_cast<int>(
-            ((initAvailable - dev->bytesAvailable()) * 100) / initAvailable));
-        QByteArray newData = data.read(65535);
-        sha1.addData(newData);
-        out.write(newData);
-    }
-    
-    dev->deleteLater();
-
-    if (d_cancelInflate) {
-        d_cancelInflate = false;
-        out.remove();
-        emit inflateCanceled();
-        return;
-    }
-    
-    QString hash(sha1.result().toHex());
-    
-    if (hash != d_hash) {
-        out.remove();
-        emit inflateError("invalid checksum, data was corrupted.");
-    }
-    
-    emit inflateFinished();
-    
-}
-
-void RemoteWindow::cancelInflate()
-{
-    d_cancelInflate = true;
-}
-
-void RemoteWindow::inflateHandleError(QString error)
-{
-    d_inflateProgressDialog->accept();
-    
-    QMessageBox box(QMessageBox::Warning, "Failed to decompress corpus",
-                    QString("Could not decompress corpus: %1").arg(error),
-                    QMessageBox::Ok);
-    
-    box.exec();
 }
 
 void RemoteWindow::keyPressEvent(QKeyEvent *event)

@@ -25,6 +25,8 @@
 
 #include <ui_DownloadWindow.h>
 
+QString const DOWNLOAD_EXTENSION(".dact.gz");
+
 DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
@@ -163,8 +165,8 @@ void DownloadWindow::download()
     QString name = entry.name;
     QString hash = entry.checksum;
     
-    QString corpusName = name;
-    QString finalCorpusName = name;
+    QString corpusName = name + DOWNLOAD_EXTENSION;
+    QString finalCorpusName = name + ".dact";
     
     QString filename(QFileDialog::getSaveFileName(this,
         "Download corpus", finalCorpusName, "*.dact"));
