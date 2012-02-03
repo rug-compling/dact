@@ -117,6 +117,7 @@ SET(dact_SRCS
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
+  src/Workspace.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/generateQuery.cpp
@@ -166,6 +167,7 @@ SET(dact_HDRS
   include/TreeNode.hh
   include/TreeNodeInspector.hh
   include/ValidityColor.hh
+  include/Workspace.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh
 )  
