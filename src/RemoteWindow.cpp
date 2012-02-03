@@ -27,8 +27,7 @@ RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui(QSharedPointer<Ui::RemoteWindow>(new Ui::RemoteWindow)),
     d_archiveModel(new ArchiveModel(tr("Sentences"))),
     d_corpusAccessManager(new QNetworkAccessManager),
-    d_reply(0),
-    d_url(0)
+    d_reply(0)
 {
     d_ui->setupUi(this);
 
