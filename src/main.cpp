@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
                 corpusPaths.append(args[i]);
         }
 
-        a->openCorpora(corpusPaths);
+        //a->openCorpora(corpusPaths);
         a->openMacros(macroPaths);
         
         r = a->exec();
