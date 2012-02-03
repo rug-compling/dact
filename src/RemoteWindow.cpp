@@ -19,18 +19,20 @@
 #include <QtDebug>
 
 #include <ArchiveModel.hh>
-#include <DownloadWindow.hh>
+#include <RemoteWindow.hh>
 #include <QtIOCompressor.hh>
 #include <config.hh>
 
-#include <ui_DownloadWindow.h>
+#include <ui_RemoteWindow.h>
 
-DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
+QString const REMOTE_EXTENSION(".dact.gz");
+
+RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
-    d_archiveModel(new ArchiveModel),
+    d_ui(QSharedPointer<Ui::RemoteWindow>(new Ui::RemoteWindow)),
+    d_archiveModel(new ArchiveModel(tr("Sentences"))),
     d_corpusAccessManager(new QNetworkAccessManager),
-    d_downloadProgressDialog(new QProgressDialog(this)),
+    d_remoteProgressDialog(new QProgressDialog(this)),
     d_inflateProgressDialog(new QProgressDialog(this)),
     d_reply(0),
     d_cancelInflate(false)
@@ -38,14 +40,14 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui->setupUi(this);
 
     d_ui->archiveTreeView->setModel(d_archiveModel.data());
-    d_ui->archiveTreeView->hideColumn(2);
+    d_ui->archiveTreeView->hideColumn(1);
     
-    // We only enable the download button when a corpus is selected.
-    d_ui->downloadPushButton->setEnabled(false);
+    // We only enable the remote button when a corpus is selected.
+    d_ui->openPushButton->setEnabled(false);
     d_ui->informationGroupBox->setEnabled(false);
 
-    d_downloadProgressDialog->setWindowTitle("Downloading corpus");
-    d_downloadProgressDialog->setRange(0, 100);
+    d_remoteProgressDialog->setWindowTitle("Downloading corpus");
+    d_remoteProgressDialog->setRange(0, 100);
     
     d_inflateProgressDialog->setWindowTitle("Decompressing corpus");
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
@@ -63,14 +65,14 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
             SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
-    connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
-        SLOT(downloadCanceled()));
+    connect(d_remoteProgressDialog.data(), SIGNAL(canceled()),
+        SLOT(remoteCanceled()));
     connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
             SLOT(cancelInflate()));
     connect(d_ui->refreshPushButton, SIGNAL(clicked()),
         SLOT(refreshCorpusList()));
-    connect(d_ui->downloadPushButton, SIGNAL(clicked()),
-        SLOT(download()));
+    connect(d_ui->openPushButton, SIGNAL(clicked()),
+        SLOT(remote()));
     connect(this, SIGNAL(inflateProgressed(int)),
         d_inflateProgressDialog.data(), SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
@@ -88,11 +90,11 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     refreshCorpusList();
 }
 
-DownloadWindow::~DownloadWindow()
+RemoteWindow::~RemoteWindow()
 {
 }
 
-void DownloadWindow::archiveNetworkError(QString error)
+void RemoteWindow::archiveNetworkError(QString error)
 {
     QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
         QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
@@ -101,7 +103,7 @@ void DownloadWindow::archiveNetworkError(QString error)
     box.exec();
 }
 
-void DownloadWindow::archiveProcessingError(QString error)
+void RemoteWindow::archiveProcessingError(QString error)
 {
     QMessageBox box(QMessageBox::Warning, "Could not process archive index",
                     QString("Could not process the index of the archive: %1").arg(error),
@@ -110,14 +112,14 @@ void DownloadWindow::archiveProcessingError(QString error)
     box.exec();
 }
 
-void DownloadWindow::archiveRetrieved()
+void RemoteWindow::archiveRetrieved()
 {
     d_ui->archiveTreeView->resizeColumnToContents(0);
-    d_ui->archiveTreeView->resizeColumnToContents(1);
+    d_ui->archiveTreeView->resizeColumnToContents(2);
     d_ui->archiveTreeView->resizeColumnToContents(3);
 }
 
-void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
+void RemoteWindow::corpusReplyFinished(QNetworkReply *reply)
 {
     d_reply = 0;
     QNetworkReply::NetworkError error = reply->error();
@@ -134,21 +136,21 @@ void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
                         QString("Downloading of corpus failed with error: %1").arg(errorValue),
                         QMessageBox::Ok);
         
-        d_downloadProgressDialog->accept();
+        d_remoteProgressDialog->accept();
         
         box.exec();
 
         return;
     }
     
-    d_downloadProgressDialog->accept();
+    d_remoteProgressDialog->accept();
     d_inflateProgressDialog->setValue(0);
     d_inflateProgressDialog->open();
     
-    QtConcurrent::run(this, &DownloadWindow::inflate, reply);
+    QtConcurrent::run(this, &RemoteWindow::inflate, reply);
 }
 
-void DownloadWindow::download()
+void RemoteWindow::remote()
 {
     QItemSelectionModel *selectionModel =
       d_ui->archiveTreeView->selectionModel();
@@ -163,8 +165,8 @@ void DownloadWindow::download()
     QString name = entry.name;
     QString hash = entry.checksum;
     
-    QString corpusName = name;
-    QString finalCorpusName = name;
+    QString corpusName = name + REMOTE_EXTENSION;
+    QString finalCorpusName = name + ".dact";
     
     QString filename(QFileDialog::getSaveFileName(this,
         "Download corpus", finalCorpusName, "*.dact"));
@@ -176,33 +178,33 @@ void DownloadWindow::download()
         d_hash = hash;
     }
     
-    d_downloadProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
-    d_downloadProgressDialog->reset();
-    d_downloadProgressDialog->open();
+    d_remoteProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
+    d_remoteProgressDialog->reset();
+    d_remoteProgressDialog->open();
     
     QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
     QNetworkRequest request(corpusUrl);    
     d_reply = d_corpusAccessManager->get(request);
         
-    connect(d_reply, SIGNAL(downloadProgress(qint64, qint64)),
-        SLOT(downloadProgress(qint64, qint64)));
+    connect(d_reply, SIGNAL(remoteProgress(qint64, qint64)),
+        SLOT(remoteProgress(qint64, qint64)));
 }
 
-void DownloadWindow::downloadCanceled()
+void RemoteWindow::remoteCanceled()
 {
     Q_ASSERT(d_reply != 0);
     d_reply->abort();
 }
 
-void DownloadWindow::downloadProgress(qint64 progress, qint64 maximum)
+void RemoteWindow::remoteProgress(qint64 progress, qint64 maximum)
 {
     if (maximum == 0)
         return;
     
-    d_downloadProgressDialog->setValue((progress * 100) / maximum);
+    d_remoteProgressDialog->setValue((progress * 100) / maximum);
 }
 
-void DownloadWindow::inflate(QIODevice *dev)
+void RemoteWindow::inflate(QIODevice *dev)
 {
     qint64 initAvailable = dev->bytesAvailable();
         
@@ -254,12 +256,12 @@ void DownloadWindow::inflate(QIODevice *dev)
     
 }
 
-void DownloadWindow::cancelInflate()
+void RemoteWindow::cancelInflate()
 {
     d_cancelInflate = true;
 }
 
-void DownloadWindow::inflateHandleError(QString error)
+void RemoteWindow::inflateHandleError(QString error)
 {
     d_inflateProgressDialog->accept();
     
@@ -270,7 +272,7 @@ void DownloadWindow::inflateHandleError(QString error)
     box.exec();
 }
 
-void DownloadWindow::keyPressEvent(QKeyEvent *event)
+void RemoteWindow::keyPressEvent(QKeyEvent *event)
 {
     // Close window on ESC and CMD + W.
     if (event->key() == Qt::Key_Escape
@@ -283,43 +285,37 @@ void DownloadWindow::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
 }
 
-void DownloadWindow::refreshCorpusList()
+void RemoteWindow::refreshCorpusList()
 {
     QSettings settings;
-    d_baseUrl = settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString();
+    d_baseUrl = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString();
     
-    d_archiveModel->setUrl(QUrl(QString("%1/index.xml").arg(d_baseUrl)));
+    d_archiveModel->setUrl(QUrl(QString("%1/corpora").arg(d_baseUrl)));
 }
 
-void DownloadWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)
+void RemoteWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
     Q_UNUSED(previous);
     
     if (current.isValid()) {
-        d_ui->downloadPushButton->setEnabled(true);
+        d_ui->openPushButton->setEnabled(true);
         d_ui->informationGroupBox->setEnabled(true);
         
         // Retrieve the active entry.
         int row = current.row();
         ArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
         
-        // Show detailed information.
-        if (entry.sentences == 0)
-            d_ui->sentenceCountLabel->setText("unknown");
-        else
-            d_ui->sentenceCountLabel->setText(QString("%L1").arg(entry.sentences));
         d_ui->descriptionTextBrowser->setText(entry.longDescription);
     }
     else {
-        d_ui->downloadPushButton->setEnabled(false);
+        d_ui->openPushButton->setEnabled(false);
         d_ui->informationGroupBox->setEnabled(false);
         
-        d_ui->sentenceCountLabel->clear();
         d_ui->descriptionTextBrowser->clear();
     }
 }
 
-QString DownloadWindow::networkErrorToString(QNetworkReply::NetworkError error)
+QString RemoteWindow::networkErrorToString(QNetworkReply::NetworkError error)
 {
     QString errorValue;
     QMetaObject meta = QNetworkReply::staticMetaObject;

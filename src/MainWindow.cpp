@@ -40,6 +40,7 @@
 
 #include <AboutWindow.hh>
 #include <DownloadWindow.hh>
+#include <RemoteWindow.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -55,7 +56,7 @@
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
-#include <config.hh>
+//#include <config.hh>
 
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
@@ -75,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
+    d_remoteWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
@@ -108,6 +110,7 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
+    delete d_remoteWindow;
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
@@ -180,6 +183,15 @@ void MainWindow::showDownloadWindow()
 
     d_downloadWindow->show();
     d_downloadWindow->raise();
+}
+
+void MainWindow::showRemoteWindow()
+{
+    if (d_remoteWindow == 0)
+        d_remoteWindow = new RemoteWindow(this, Qt::Window);
+
+    d_remoteWindow->show();
+    d_remoteWindow->raise();
 }
 
 void MainWindow::showOpenCorpusError(QString const &error)
@@ -261,10 +273,10 @@ void MainWindow::createActions()
         SLOT(aboutDialog()));
     connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
         SLOT(showDownloadWindow()));
+    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
+        SLOT(showRemoteWindow()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
-    connect(d_ui->openRemoteAction, SIGNAL(triggered(bool)),
-        SLOT(openRemoteCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
@@ -397,15 +409,6 @@ void MainWindow::openCorpus()
         return;
 
     readCorpus(corpusPath);
-}
-
-void MainWindow::openRemoteCorpus()
-{
-    QSettings settings;
-    QString baseUrl =
-      settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString();
-
-    readCorpus(baseUrl + "/cdb", false);
 }
 
 void MainWindow::openMacrosFile()

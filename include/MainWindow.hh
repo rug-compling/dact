@@ -22,6 +22,7 @@ namespace Ui {
 
 class AboutWindow;
 class DownloadWindow;
+class RemoteWindow;
 class DactMacrosModel;
 class DactQueryHistory;
 class PreferencesWindow;
@@ -71,6 +72,11 @@ public slots:
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
+
+    /*!
+     Instantiate (if not already instantiated) and raise the remote window.
+     */
+    void showRemoteWindow();
 
 private slots:
     /*!
@@ -155,13 +161,6 @@ private slots:
      \sa readCorpus
      */
     void openCorpus();
-
-    /*!
-     Calls the open remote corpus dialog and ... ???
-     \sa openRemoteCorpus ???
-     \sa readCorpus
-     */
-    void openRemoteCorpus();
 
     void openMacrosFile();
 
@@ -322,6 +321,7 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     DownloadWindow *d_downloadWindow;
+    RemoteWindow *d_remoteWindow;
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;

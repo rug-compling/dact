@@ -97,7 +97,7 @@
      </property>
     </widget>
     <addaction name="openAction"/>
-    <addaction name="openRemoteAction"/>
+    <addaction name="remoteAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
@@ -400,7 +400,7 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="openRemoteAction">
+  <action name="remoteAction">
    <property name="text">
     <string>Open Remote…</string>
    </property>

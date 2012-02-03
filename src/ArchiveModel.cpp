@@ -1,3 +1,6 @@
+// TODO: remove this line
+#include <iostream>
+
 #include <QByteArray>
 #include <QIODevice>
 #include <QMetaEnum>
@@ -62,15 +65,18 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             case 1:
                 return QString("%1 MB").arg(corpus.size);
             case 2:
+                return QString("%1").arg(corpus.sentences);
+            case 3:
                 return corpus.description;
             default:
                 return QVariant();
         }
     else if (role == Qt::TextAlignmentRole)
-        // Left-align all but the corpus size.
+        // Left-align all but the corpus size and sentence count.
         switch (index.column())
         {
             case 1:
+            case 2:
                 return Qt::AlignRight;
             default:
                 return Qt::AlignLeft;
@@ -78,8 +84,9 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
     else if (role == Qt::UserRole)
         switch (index.column())
         {
-            case 3:
-                return corpus.checksum;
+            //TODO: restore this?
+            //case 3:
+            //    return corpus.checksum;
         }
 
     return QVariant();
@@ -99,6 +106,8 @@ QVariant ArchiveModel::headerData(int column, Qt::Orientation orientation,
     case 1:
       return tr("Size");
     case 2:
+      return tr("Sentences");
+    case 3:
       return tr("Description");
     default:
       return QVariant();
@@ -181,12 +190,12 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         
         QString name(childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filename")));
 
-        // Only accept dact.gz entries.
-        if (name.isNull() || !name.endsWith(DOWNLOAD_EXTENSION))
+        if (name.isNull())
             continue;
         
         // Chop the extension, we do not want to bother users.
-        name.chop(DOWNLOAD_EXTENSION.length());
+        if (name.endsWith(DOWNLOAD_EXTENSION))
+            name.chop(DOWNLOAD_EXTENSION.length());
         
         // Retrieve and verify file size.
         QString fileSizeStr = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filesize"));
