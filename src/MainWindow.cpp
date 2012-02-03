@@ -187,11 +187,19 @@ void MainWindow::showDownloadWindow()
 
 void MainWindow::showRemoteWindow()
 {
-    if (d_remoteWindow == 0)
+    if (d_remoteWindow == 0) {
         d_remoteWindow = new RemoteWindow(this, Qt::Window);
+        connect(d_remoteWindow, SIGNAL(openRemote(QString)),
+                this, SLOT(openRemoteCorpus(QString)));
+    }
 
     d_remoteWindow->show();
     d_remoteWindow->raise();
+}
+
+void MainWindow::openRemoteCorpus(QString url)
+{
+    readCorpus(url);
 }
 
 void MainWindow::showOpenCorpusError(QString const &error)
@@ -225,7 +233,7 @@ void MainWindow::setupUi()
     #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
-        appleDockMenu->addAction(d_ui->openRemoteAction);
+        appleDockMenu->addAction(d_ui->remoteAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
 }

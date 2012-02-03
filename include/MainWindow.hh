@@ -78,6 +78,8 @@ public slots:
      */
     void showRemoteWindow();
 
+    void openRemoteCorpus(QString url);
+
 private slots:
     /*!
      Raise the about window

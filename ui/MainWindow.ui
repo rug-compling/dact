@@ -84,7 +84,7 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>22</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -402,7 +402,10 @@
   </action>
   <action name="remoteAction">
    <property name="text">
-    <string>Open Remote…</string>
+    <string>Open &amp;Remote…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="saveCorpus">

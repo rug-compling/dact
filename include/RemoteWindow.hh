@@ -34,6 +34,7 @@ signals:
     void inflateError(QString error);
     void inflateFinished();
     void inflateProgressed(int value);
+    void openRemote(QString url);
 
 private slots:
     void archiveNetworkError(QString error);
@@ -51,10 +52,10 @@ private slots:
 
 protected:
     void keyPressEvent(QKeyEvent *event);
-        
+
 private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
-    
+
     QSharedPointer<Ui::RemoteWindow> d_ui;
     QSharedPointer<ArchiveModel> d_archiveModel;
     QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;

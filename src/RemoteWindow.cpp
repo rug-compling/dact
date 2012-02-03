@@ -162,32 +162,12 @@ void RemoteWindow::remote()
 
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
     
-    QString name = entry.name;
-    QString hash = entry.checksum;
-    
-    QString corpusName = name + REMOTE_EXTENSION;
-    QString finalCorpusName = name + ".dact";
-    
-    QString filename(QFileDialog::getSaveFileName(this,
-        "Download corpus", finalCorpusName, "*.dact"));
-    
-    if (filename.isNull())
-        return;
-    else {
-        d_filename = filename;
-        d_hash = hash;
-    }
-    
-    d_remoteProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
-    d_remoteProgressDialog->reset();
-    d_remoteProgressDialog->open();
-    
-    QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
-    QNetworkRequest request(corpusUrl);    
-    d_reply = d_corpusAccessManager->get(request);
-        
-    connect(d_reply, SIGNAL(remoteProgress(qint64, qint64)),
-        SLOT(remoteProgress(qint64, qint64)));
+    QSettings settings;
+    QString url = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString() + "/" + entry.name;
+
+    hide();
+
+    emit openRemote(url);
 }
 
 void RemoteWindow::remoteCanceled()
