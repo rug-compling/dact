@@ -68,6 +68,8 @@ public slots:
 
     void readMacros(QStringList const &macroPaths);
 
+    void saveWorkspaceAs();
+
     /*!
      Instantiate (if not already instantiated) and raise the download window.
      */

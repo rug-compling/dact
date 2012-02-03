@@ -99,6 +99,8 @@
     <addaction name="openAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
+    <addaction name="saveWorkspaceAsAction"/>
+    <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="xmlExportAction"/>
     <addaction name="pdfExportAction"/>
@@ -483,6 +485,11 @@
   <action name="globalPasteAction">
    <property name="text">
     <string>Paste</string>
+   </property>
+  </action>
+  <action name="saveWorkspaceAsAction">
+   <property name="text">
+    <string>Save workspace as...</string>
    </property>
   </action>
  </widget>

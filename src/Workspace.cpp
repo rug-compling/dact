@@ -1,7 +1,8 @@
+#include <stdexcept>
+
 #include <QSettings>
 #include <QStringList>
 #include <QtDebug>
-
 
 #include <Workspace.hh>
 
@@ -72,6 +73,15 @@ void Workspace::saveAs(QString const &filename)
 {
     d_settings = QSharedPointer<QSettings>(
         new QSettings(filename, QSettings::IniFormat));
+
+
+    if (!d_settings->isWritable()) {
+        d_settings = QSharedPointer<QSettings>(
+            new QSettings());
+
+        throw std::runtime_error("Could not open workspace file for writing.");
+    }
+
     save();
 }
 

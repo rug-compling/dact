@@ -310,6 +310,8 @@ void MainWindow::createActions()
         SLOT(filterOnInspectorSelection()));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
+    connect(d_ui->saveWorkspaceAsAction, SIGNAL(triggered()),
+        SLOT(saveWorkspaceAs()));
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
@@ -423,6 +425,20 @@ void MainWindow::readMacros(QStringList const &fileNames)
 {
     foreach (QString const &fileName, fileNames)
         d_macrosModel->loadFile(fileName);
+}
+
+void MainWindow::saveWorkspaceAs()
+{
+  QString wsFilename = QFileDialog::getSaveFileName(this,
+      "Save workspace", QString(), "*.dact-workspace");
+  if (wsFilename.isNull())
+    return;
+
+  try {
+      d_workspace->saveAs(wsFilename);
+  } catch (std::runtime_error &e) {
+      QMessageBox::critical(this, "Save workspace error", e.what());
+  }
 }
 
 void MainWindow::exportPDF()
