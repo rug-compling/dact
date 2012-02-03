@@ -62,7 +62,7 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             case 1:
                 return QString("%1 MB").arg(corpus.size);
             case 2:
-                return QString("%1").arg(corpus.sentences);
+                return QString("%L2").arg(corpus.sentences);
             case 3:
                 return corpus.description;
             default:
