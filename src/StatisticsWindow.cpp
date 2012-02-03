@@ -103,7 +103,7 @@ void StatisticsWindow::setModel(QueryModel *model)
 
 void StatisticsWindow::updateResultsTotalCount()
 {
-    d_ui->totalHitsLabel->setText(QString("%L2").arg(d_model->totalHits()));
+    d_ui->totalHitsLabel->setText(QString("%L1").arg(d_model->totalHits()));
 }
 
 void StatisticsWindow::applyValidityColor(QString const &)
