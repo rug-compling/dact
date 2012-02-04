@@ -23,6 +23,7 @@ HistoryComboBox::~HistoryComboBox()
 
 void HistoryComboBox::readHistory(Workspace *workspace)
 {
+  clear();
   QStringList history = workspace->history();
   insertItems(count(), history);
 }
