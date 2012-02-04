@@ -14,7 +14,7 @@ HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
   setEditable(true);
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
-  setMaxCount(64);
+  //setMaxCount(64);
 }
 
 HistoryComboBox::~HistoryComboBox()
