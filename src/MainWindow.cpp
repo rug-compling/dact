@@ -104,8 +104,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    // Save workspace state
     d_ui->filterComboBox->writeHistory(d_workspace);
-
     d_workspace->save();
 
     delete d_aboutWindow;
@@ -436,6 +436,10 @@ void MainWindow::openWorkspace()
         QMessageBox::critical(this, "Workspace opening error", e.what());
         return;
     }
+
+    // Save workspace state
+    d_ui->filterComboBox->writeHistory(d_workspace);
+    d_workspace->save();
 
     delete d_workspace;
     d_workspace = newWs;
