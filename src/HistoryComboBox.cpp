@@ -15,6 +15,10 @@ HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
   //setMaxCount(64);
+  
+
+  connect(lineEdit(), SIGNAL(returnPressed()),
+      SLOT(returnPressed()));
 }
 
 HistoryComboBox::~HistoryComboBox()
@@ -25,6 +29,12 @@ void HistoryComboBox::readHistory(Workspace *workspace)
 {
   QStringList history = workspace->history();
   insertItems(count(), history);
+}
+
+void HistoryComboBox::returnPressed()
+{
+  if (text().trimmed().isEmpty())
+    emit activated(QString(""));
 }
 
 void HistoryComboBox::revalidate()
