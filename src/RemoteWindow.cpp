@@ -137,7 +137,7 @@ void RemoteWindow::refreshCorpusList()
     QSettings settings;
     d_baseUrl = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString();
     
-    d_archiveModel->setUrl(QUrl(QString("%1/corpora").arg(d_baseUrl)));
+    d_archiveModel->setUrl(QUrl(QString("%1/corpora?xml=1").arg(d_baseUrl)));
 }
 
 void RemoteWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)
