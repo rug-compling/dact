@@ -81,8 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     setupUi();
 
-    d_ui->filterComboBox->readHistory(d_workspace);
-
     initTaintedWidgets();
 
     // Ensure that we have a status bar.
@@ -101,13 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
     createActions();
 
-    QString corpusPath = d_workspace->corpus();
-    if (!corpusPath.isNull())
-        readCorpus(corpusPath);
-
-    QString macrosFilename = d_workspace->macrosFilename();
-    if (!macrosFilename.isNull())
-        d_macrosModel->loadFile(macrosFilename);
+    activateWorkspace();
 }
 
 MainWindow::~MainWindow()
@@ -310,6 +302,8 @@ void MainWindow::createActions()
         SLOT(filterOnInspectorSelection()));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
+    connect(d_ui->openWorkspaceAction, SIGNAL(triggered()),
+        SLOT(openWorkspace()));
     connect(d_ui->saveWorkspaceAsAction, SIGNAL(triggered()),
         SLOT(saveWorkspaceAs()));
     
@@ -425,6 +419,41 @@ void MainWindow::readMacros(QStringList const &fileNames)
 {
     foreach (QString const &fileName, fileNames)
         d_macrosModel->loadFile(fileName);
+}
+
+void MainWindow::openWorkspace()
+{
+    QString wsFilename = QFileDialog::getOpenFileName(this, "Open workspace", QString(),
+        "Workspace (*.dact-workspace)");
+    
+    if (wsFilename.isNull())
+        return;
+
+    Workspace *newWs;
+    try {
+        newWs = new Workspace(wsFilename);
+    } catch (std::runtime_error &e) {
+        QMessageBox::critical(this, "Workspace opening error", e.what());
+        return;
+    }
+
+    delete d_workspace;
+    d_workspace = newWs;
+
+    activateWorkspace();
+}
+
+void MainWindow::activateWorkspace()
+{
+    d_ui->filterComboBox->readHistory(d_workspace);
+
+    QString corpusPath = d_workspace->corpus();
+    if (!corpusPath.isNull())
+        readCorpus(corpusPath);
+
+    QString macrosFilename = d_workspace->macrosFilename();
+    if (!macrosFilename.isNull())
+        d_macrosModel->loadFile(macrosFilename);
 }
 
 void MainWindow::saveWorkspaceAs()

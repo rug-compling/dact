@@ -57,6 +57,8 @@ public slots:
      Hide the main window
     */
     void close();
+
+    void openWorkspace();
     
     /*!
      Start loading a corpus
@@ -233,6 +235,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    void activateWorkspace();
+
     /*!
      Attaches all the signals from the ui and mapper to the various functions.
      */

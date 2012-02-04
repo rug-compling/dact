@@ -99,6 +99,7 @@
     <addaction name="openAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
+    <addaction name="openWorkspaceAction"/>
     <addaction name="saveWorkspaceAsAction"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
@@ -490,6 +491,11 @@
   <action name="saveWorkspaceAsAction">
    <property name="text">
     <string>Save workspace as...</string>
+   </property>
+  </action>
+  <action name="openWorkspaceAction">
+   <property name="text">
+    <string>Open workspace...</string>
    </property>
   </action>
  </widget>

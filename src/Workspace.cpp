@@ -15,6 +15,13 @@ Workspace::Workspace() :
 Workspace::Workspace(QString const &filename) :
     d_settings(new QSettings(filename, QSettings::IniFormat))
 {
+    if (!d_settings->isWritable()) {
+        d_settings = QSharedPointer<QSettings>(
+            new QSettings());
+
+        throw std::runtime_error("Could not open workspace file for reading.");
+    }
+
     readWorkspace();
 }
 
@@ -85,8 +92,7 @@ void Workspace::saveAs(QString const &filename)
     save();
 }
 
-
-QString Workspace::setCorpus(QString const &filename)
+void Workspace::setCorpus(QString const &filename)
 {
     d_corpus = filename;
 }

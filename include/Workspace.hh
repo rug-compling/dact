@@ -34,7 +34,7 @@ public:
 
     void saveAs(QString const &filename);
 
-    QString setCorpus(QString const &filename);
+    void setCorpus(QString const &filename);
     
     void setHistory(QStringList const &history);
 
