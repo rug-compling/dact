@@ -71,7 +71,7 @@ typedef std::list<std::string> ExtList;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent, Qt::Window | Qt::WindowSystemMenuHint),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
-    d_aboutWindow(new AboutWindow(this, Qt::Window)),
+    d_aboutWindow(new AboutWindow(this, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)),
     d_downloadWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
