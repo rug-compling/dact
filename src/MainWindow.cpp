@@ -49,7 +49,6 @@
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
 #include <TreeNode.hh>
-#include <Workspace.hh>
 #include <XPathValidator.hh>
 #include <XSLTransformer.hh>
 #include <ValidityColor.hh>
@@ -76,12 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
     d_downloadWindow(0),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
-    d_preferencesWindow(0),
-    d_workspace(new Workspace)
+    d_preferencesWindow(0)
 {
     setupUi();
 
-    d_ui->filterComboBox->readHistory(d_workspace);
+    d_ui->filterComboBox->readHistory("filterHistory");
 
     initTaintedWidgets();
 
@@ -100,28 +98,17 @@ MainWindow::MainWindow(QWidget *parent) :
     initSentenceTransformer();
     
     createActions();
-
-    QString corpusPath = d_workspace->corpus();
-    if (!corpusPath.isNull())
-        readCorpus(corpusPath);
-
-    QString macrosFilename = d_workspace->macrosFilename();
-    if (!macrosFilename.isNull())
-        d_macrosModel->loadFile(macrosFilename);
 }
 
 MainWindow::~MainWindow()
 {
-    d_ui->filterComboBox->writeHistory(d_workspace);
-
-    d_workspace->save();
+    d_ui->filterComboBox->writeHistory("filterHistory");
 
     delete d_aboutWindow;
     delete d_downloadWindow;
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
-    delete d_workspace;
 }
 
 void MainWindow::aboutDialog()
@@ -412,9 +399,6 @@ void MainWindow::openMacrosFile()
     
     if (filePath.isNull())
         return;
-
-    if (d_workspace->macrosFilename() != filePath)
-        d_workspace->setMacrosFilename(filePath); // XXX - too early?
     
     d_macrosModel->loadFile(filePath);
 }
@@ -475,9 +459,6 @@ void MainWindow::setInspectorVisible(bool visible)
 
 void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
 {
-    if (d_workspace->corpus() != corpusPath)
-        d_workspace->setCorpus(corpusPath); // XXX - to early?
-
     return readCorpora(QStringList(corpusPath), recursive);
 }
 

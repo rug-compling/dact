@@ -6,7 +6,6 @@
 #include <QStringList>
 
 class QWidget;
-class Workspace;
 
 class HistoryComboBox : public QComboBox
 {
@@ -15,8 +14,8 @@ public:
     HistoryComboBox(QWidget *parent = 0, QString settingsKey = QString());
     virtual ~HistoryComboBox();
     
-    void readHistory(Workspace *workspace);
-    void writeHistory(Workspace *workspace);
+    void readHistory(QString const &settingsKey);
+    void writeHistory(QString const &settingsKey);
 
     void revalidate();
     QString text() const;

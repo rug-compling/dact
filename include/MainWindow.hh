@@ -28,7 +28,6 @@ class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
-class Workspace;
 
 class QItemSelection;
 class QKeyEvent;
@@ -319,12 +318,6 @@ private:
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;
-
-    /*!
-     * The workspace. This is used to save various state that should
-     * survive launches of Dact.
-     */
-    Workspace *d_workspace;
         
     /*!
      The XPath query currently used for filtering files. This is after
@@ -385,7 +378,6 @@ private:
      something from the corpus.
      */
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-
     
     /*!
      Current tree scene, used to display tree xml as a interactive visual tree.

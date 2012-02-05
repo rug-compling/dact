@@ -6,7 +6,6 @@
 #include <QtDebug>
 
 #include <HistoryComboBox.hh>
-#include <Workspace.hh>
 
 HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
   QComboBox(parent)
@@ -25,10 +24,19 @@ HistoryComboBox::~HistoryComboBox()
 {
 }
 
-void HistoryComboBox::readHistory(Workspace *workspace)
+void HistoryComboBox::readHistory(QString const &settingsKey)
 {
-  QStringList history = workspace->history();
-  insertItems(count(), history);
+  if (!settingsKey.isEmpty()) {
+    QSettings settings;
+    QVariant value = settings.value(settingsKey, QStringList());
+
+    if (value.type() == QVariant::StringList) {
+      QStringList history(value.toStringList());
+      insertItems(count(), history);
+    }
+    else
+      qWarning() << "Read history, but it is not a QStringList.";
+  }
 }
 
 void HistoryComboBox::returnPressed()
@@ -46,21 +54,24 @@ void HistoryComboBox::revalidate()
 
 QString HistoryComboBox::text() const
 {
-    return currentText();
+  return currentText();
 }
 
 void HistoryComboBox::setText(QString const &newText)
 {
-    lineEdit()->setText(newText);
-    insertItem(0, newText);
+  lineEdit()->setText(newText);
+  insertItem(0, newText);
 }
 
-void HistoryComboBox::writeHistory(Workspace *workspace)
+void HistoryComboBox::writeHistory(QString const &settingsKey)
 {
+  if (!settingsKey.isEmpty()) {
     QStringList history;
 
     for (int i = 0; i < count(); ++i)
       history << itemText(i);
 
-    workspace->setHistory(history);
+    QSettings settings;
+    settings.setValue(settingsKey, history);
+  }
 }
