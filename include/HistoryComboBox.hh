@@ -21,6 +21,7 @@ public:
     QString text() const;
 
 public slots:
+    virtual void returnPressed();
     virtual void setText(QString const &newText);
 
 };

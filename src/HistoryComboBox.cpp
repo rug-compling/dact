@@ -13,7 +13,11 @@ HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
   setEditable(true);
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
-  setMaxCount(64);
+  //setMaxCount(64);
+  
+
+  connect(lineEdit(), SIGNAL(returnPressed()),
+      SLOT(returnPressed()));
 }
 
 HistoryComboBox::~HistoryComboBox()
@@ -33,6 +37,12 @@ void HistoryComboBox::readHistory(QString const &settingsKey)
     else
       qWarning() << "Read history, but it is not a QStringList.";
   }
+}
+
+void HistoryComboBox::returnPressed()
+{
+  if (text().trimmed().isEmpty())
+    emit activated(QString(""));
 }
 
 void HistoryComboBox::revalidate()
