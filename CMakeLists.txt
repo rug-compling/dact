@@ -19,7 +19,7 @@ else(APPLE)
   set(ENABLE_BUNDLE OFF)
 endif(APPLE)
 
-set(VERSION "1.0.0")
+set(VERSION "1.0.1")
 
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)
@@ -28,10 +28,6 @@ else()
 endif()
 
 set(GIT_REVISION ${VERSION})
-#exec_program(git
-#  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
-#  OUTPUT_VARIABLE GIT_REVISION 
-#)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
@@ -77,7 +73,7 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
+find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 # Dact sources
