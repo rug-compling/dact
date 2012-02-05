@@ -69,7 +69,7 @@ typedef std::list<ac::CorpusReaderFactory::ReaderInfo> ReaderList;
 typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+    QMainWindow(parent, Qt::Window | Qt::WindowSystemMenuHint),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
