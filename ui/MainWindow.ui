@@ -35,6 +35,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        </property>
        </widget>
       </item>
      </layout>
@@ -84,7 +87,7 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
