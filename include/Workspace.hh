@@ -42,7 +42,7 @@ public:
 
 
 private:
-    void readWorkspace();
+    void readWorkspace(bool defaultWs = false);
 
     QSharedPointer<QSettings> d_settings;
 

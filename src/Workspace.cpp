@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include <QFileInfo>
 #include <QSettings>
 #include <QStringList>
 #include <QtDebug>
@@ -9,7 +10,7 @@
 Workspace::Workspace() :
     d_settings(new QSettings)
 {
-    readWorkspace();
+    readWorkspace(true);
 }
 
 Workspace::Workspace(QString const &filename) :
@@ -44,11 +45,16 @@ QString Workspace::macrosFilename()
     return d_macrosFilename;
 }
 
-void Workspace::readWorkspace()
+void Workspace::readWorkspace(bool defaultWs)
 {
     QVariant value = d_settings->value("corpus", QString());
-    if (value.type() == QVariant::String)
+    if (value.type() == QVariant::String) {
         d_corpus = value.toString();
+
+        QFileInfo corpusInfo(d_corpus);
+        if (defaultWs && !d_corpus.startsWith("http://") && !corpusInfo.exists())
+          d_corpus = QString();
+    }
     else
         qWarning() << "Read corpus name, but it is not a QString.";
 
