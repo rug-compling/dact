@@ -70,7 +70,13 @@ QList<DactMacro> DactMacrosFile::read(QFile &file) const
         DactMacro macro;
         macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
         macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
-            closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
+          closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
+
+        // Apply substitutions
+        for (QList<DactMacro>::const_iterator iter = macros.begin();
+            iter != macros.end(); ++iter)
+          macro.replacement = macro.replacement.replace("%" + iter->pattern + "%", iter->replacement);
+
         macros.append(macro);
 
         cursor = closing_quotes_pos + d_end_replacement_symbol.size();
