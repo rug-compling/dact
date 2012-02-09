@@ -242,6 +242,7 @@ void DependencyTreeWidget::setFilter(QString const &filter)
 {
     d_filter = filter;
     d_treeShown = false;
+    d_file = QString();
     
     if (d_filter.isEmpty()) {
         d_ui->hitsDescLabel->hide();
