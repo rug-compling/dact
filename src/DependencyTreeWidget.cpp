@@ -76,8 +76,8 @@ void DependencyTreeWidget::copy()
 }
 
 void DependencyTreeWidget::nEntriesFound(int entries, int hits) {
-    d_ui->entriesLabel->setText(QString::number(entries));
-    d_ui->hitsLabel->setText(QString::number(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
     
     if (!d_treeShown) {
         d_ui->fileListWidget->selectionModel()->clear();
@@ -187,8 +187,8 @@ void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
     // have been cached. If so, it doesn't emit a signal for every entry.
     int entries = d_model->rowCount(QModelIndex());
     int hits = d_model->hits();
-    d_ui->entriesLabel->setText(QString::number(entries));
-    d_ui->hitsLabel->setText(QString::number(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
     
     if (!d_file.isNull())
     {

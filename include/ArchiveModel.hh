@@ -49,6 +49,7 @@ private:
     QUrl d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     QVector<ArchiveEntry> d_corpora;
+
 };
 
 inline ArchiveEntry const &ArchiveModel::entryAtRow(int row)

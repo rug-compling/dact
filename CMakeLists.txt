@@ -80,6 +80,8 @@ endif()
 find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
@@ -114,6 +116,7 @@ SET(dact_SRCS
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
   src/RecentFilesMenu.cpp
+  src/RemoteWindow.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
@@ -162,6 +165,7 @@ SET(dact_HDRS
   include/Query.hh
   include/QueryModel.hh
   include/RecentFilesMenu.hh
+  include/RemoteWindow.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -203,6 +207,7 @@ SET(dact_MOC_HDRS
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/RecentFilesMenu.hh
+  include/RemoteWindow.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
   include/XPathValidator.hh
@@ -215,6 +220,7 @@ SET(dact_UI
   ui/DownloadWindow.ui
   ui/MainWindow.ui
   ui/PreferencesWindow.ui
+  ui/RemoteWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
 )
