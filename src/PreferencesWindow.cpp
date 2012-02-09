@@ -16,6 +16,11 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 {
     d_ui->setupUi(this);
 
+#ifndef USE_REMOTE_CORPUS
+    d_ui->groupBox_x->hide();
+#endif
+
+
 #ifndef __APPLE__
     applyAppFont();
 

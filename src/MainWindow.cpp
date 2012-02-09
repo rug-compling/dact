@@ -56,7 +56,7 @@
 #include <ui_MainWindow.h>
 #include <Query.hh>
 
-//#include <config.hh>
+#include <config.hh>
 
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
@@ -82,6 +82,10 @@ MainWindow::MainWindow(QWidget *parent) :
     d_preferencesWindow(0)
 {
     setupUi();
+
+#ifndef USE_REMOTE_CORPUS
+    d_ui->menuFile->removeAction(d_ui->remoteAction);
+#endif
 
     d_ui->filterComboBox->readHistory("filterHistory");
 

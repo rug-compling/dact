@@ -5,6 +5,8 @@
 
 #define GIT_REVISION "${GIT_REVISION}"
 
+#cmakedefine USE_REMOTE_CORPUS
+
 QString const ARCHIVE_BASEURL_KEY("archiveBaseUrl");
 QString const DEFAULT_ARCHIVE_BASEURL("http://www.let.rug.nl/dekok/corpora");
 QString const REMOTE_BASEURL_KEY("remoteBaseUrl");
