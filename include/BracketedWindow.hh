@@ -18,6 +18,7 @@
 class QKeyEvent;
 class QModelIndex;
 class QStyledItemDelegate;
+class QTextStream;
 
 /*!
  It is still called the bracketed window because it showed the sentences with brackets
@@ -67,7 +68,9 @@ signals:
 public slots:
     void cancelQuery();
 
-    void copy() const;
+    void copy();
+    void exportSelection();
+
 
 private slots:
     void applyValidityColor(QString const &text);
@@ -130,6 +133,7 @@ private:
     void setModel(FilterModel* model);
     void readSettings();
     void writeSettings();
+    void selectionAsCSV(QTextStream &output);
     
     static QStyledItemDelegate* colorDelegateFactory(CorpusReaderPtr);
     static QStyledItemDelegate* visibilityDelegateFactory(CorpusReaderPtr);

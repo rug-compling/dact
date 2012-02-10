@@ -1,6 +1,7 @@
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
+#include <QFileDialog>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
@@ -8,6 +9,7 @@
 #include <QPoint>
 #include <QSettings>
 #include <QSize>
+#include <QTextStream>
 #include <QVector>
 
 #include <stdexcept>
@@ -241,7 +243,44 @@ void BracketedWindow::writeSettings()
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
 }
 
-void BracketedWindow::copy() const
+void BracketedWindow::copy()
+{
+    QString output;
+    QTextStream textstream(&output, QIODevice::WriteOnly | QIODevice::Text);
+
+    selectionAsCSV(textstream);
+
+    if (!output.isEmpty())
+        QApplication::clipboard()->setText(output);
+}
+
+void BracketedWindow::exportSelection()
+{
+    QString filename(QFileDialog::getSaveFileName(this,
+        "Export selection",
+        QString(), "*.txt"));
+
+    QFile file(filename);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this,
+            tr("Error exporting selection"),
+            tr("Could open file for writing."),
+            QMessageBox::Ok);
+        
+        return;
+    }
+
+    QTextStream textstream(&file);
+    
+    textstream.setGenerateByteOrderMark(true);
+    selectionAsCSV(textstream);
+
+    file.close();
+}
+
+void BracketedWindow::selectionAsCSV(QTextStream &output)
 {
     // Nothing loaded? Do nothing.
     if (!d_model)
@@ -259,20 +298,14 @@ void BracketedWindow::copy() const
     if (!delegate)
         return;
     
-    QStringList output;
-    
     foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
         output << delegate->sentenceForClipboard(row)
-               << "\n";
+               << '\n';
     }
-    
-    // Remove superfluous newline separator
-    output.removeLast();
-    
-    if (!output.isEmpty())
-        QApplication::clipboard()->setText(output.join(QString()));
+
+    output.flush();
 }
 
 QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)
