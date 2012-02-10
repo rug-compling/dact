@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QLineEdit>
+#include <QComboBox>
 
 #include "DactMacrosMenu.hh"
 
@@ -99,6 +100,9 @@ void DactMacrosMenu::macroActionTriggered()
 	
 	if (QLineEdit *focussedLineEdit = qobject_cast<QLineEdit *>(QApplication::focusWidget()))
 		focussedLineEdit->insert(action->data().toString());
+	
+	else if (QComboBox *focussedComboBox = qobject_cast<QComboBox *>(QApplication::focusWidget()))
+		focussedComboBox->lineEdit()->insert(action->data().toString());
 }
 
 void DactMacrosMenu::reloadActionTriggered()
