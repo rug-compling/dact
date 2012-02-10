@@ -224,8 +224,10 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
         output
             << separator
             << d_model->data(row.sibling(row.row(), 1)).toString() // count
-            << "\r\n";
+            << '\n';
     }
+
+    output.flush();
 }
 
 void StatisticsWindow::showPercentage(bool show)
