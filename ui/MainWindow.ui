@@ -143,9 +143,9 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="downloadAction"/>
+    <addaction name="separator"/>
+    <addaction name="clearHistoryAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -497,6 +497,11 @@
     <string>Paste</string>
    </property>
   </action>
+  <action name="clearHistoryAction">
+   <property name="text">
+    <string>Clear query history</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -573,6 +578,12 @@
      <y>360</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>clearHistoryAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clearQueryHistory()</slot>
   </connection>
  </connections>
 </ui>

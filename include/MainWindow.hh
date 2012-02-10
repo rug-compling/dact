@@ -117,6 +117,11 @@ private slots:
     void cancelWriteCorpus();
 
     /*!
+     Clears the query history of the query input combobox.
+     */
+    void clearQueryHistory();
+
+    /*!
      Listens for the finished signal from the corpus reader. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.

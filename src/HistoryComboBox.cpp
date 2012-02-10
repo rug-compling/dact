@@ -24,6 +24,11 @@ HistoryComboBox::~HistoryComboBox()
 {
 }
 
+void HistoryComboBox::clearHistory()
+{
+  clear();
+}
+
 void HistoryComboBox::readHistory(QString const &settingsKey)
 {
   if (!settingsKey.isEmpty()) {

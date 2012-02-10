@@ -16,6 +16,7 @@ public:
     
     void readHistory(QString const &settingsKey);
     void writeHistory(QString const &settingsKey);
+    void clearHistory();
 
     void revalidate();
     QString text() const;

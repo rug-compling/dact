@@ -167,6 +167,11 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+void MainWindow::clearQueryHistory()
+{
+    d_ui->filterComboBox->clearHistory();
+}
+
 void MainWindow::close()
 {
     writeSettings();
