@@ -38,9 +38,13 @@
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
+#include <config.hh>
+
 #include <AboutWindow.hh>
 #include <DownloadWindow.hh>
+#ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
+#endif // USE_REMOTE_CORPUS
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -55,8 +59,6 @@
 #include <ValidityColor.hh>
 #include <ui_MainWindow.h>
 #include <Query.hh>
-
-#include <config.hh>
 
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
@@ -76,7 +78,9 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
+#ifdef USE_REMOTE_CORPUS
     d_remoteWindow(0),
+#endif // USE_REMOTE_CORPUS
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0)
@@ -114,7 +118,9 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
+#ifdef USE_REMOTE_CORPUS
     delete d_remoteWindow;
+#endif // USE_REMOTE_CORPUS
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
@@ -189,6 +195,7 @@ void MainWindow::showDownloadWindow()
     d_downloadWindow->raise();
 }
 
+#ifdef USE_REMOTE_CORPUS
 void MainWindow::showRemoteWindow()
 {
     if (d_remoteWindow == 0) {
@@ -205,6 +212,7 @@ void MainWindow::openRemoteCorpus(QString const &url)
 {
     readCorpus(url);
 }
+#endif // USE_REMOTE_CORPUS
 
 void MainWindow::showOpenCorpusError(QString const &error)
 {
@@ -285,8 +293,10 @@ void MainWindow::createActions()
         SLOT(aboutDialog()));
     connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
         SLOT(showDownloadWindow()));
+#ifdef USE_REMOTE_CORPUS
     connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
         SLOT(showRemoteWindow()));
+#endif // USE_REMOTE_CORPUS
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),

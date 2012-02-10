@@ -15,6 +15,7 @@
 #include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
+#include "config.hh"
 
 namespace Ui {
     class MainWindow;
@@ -22,7 +23,9 @@ namespace Ui {
 
 class AboutWindow;
 class DownloadWindow;
+#ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
+#endif // USE_REMOTE_CORPUS
 class DactMacrosModel;
 class DactQueryHistory;
 class PreferencesWindow;
@@ -73,12 +76,14 @@ public slots:
      */
     void showDownloadWindow();
 
+#ifdef USE_REMOTE_CORPUS
     /*!
      Instantiate (if not already instantiated) and raise the remote window.
      */
     void showRemoteWindow();
 
     void openRemoteCorpus(QString const &url);
+#endif // USE_REMOTE_CORPUS
 
 private slots:
     /*!
@@ -323,7 +328,9 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     DownloadWindow *d_downloadWindow;
+#ifdef USE_REMOTE_CORPUS
     RemoteWindow *d_remoteWindow;
+#endif // USE_REMOTE_CORPUS
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
     PreferencesWindow *d_preferencesWindow;

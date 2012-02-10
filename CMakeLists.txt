@@ -116,7 +116,6 @@ SET(dact_SRCS
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
   src/RecentFilesMenu.cpp
-  src/RemoteWindow.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
@@ -165,7 +164,6 @@ SET(dact_HDRS
   include/Query.hh
   include/QueryModel.hh
   include/RecentFilesMenu.hh
-  include/RemoteWindow.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -207,7 +205,6 @@ SET(dact_MOC_HDRS
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/RecentFilesMenu.hh
-  include/RemoteWindow.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
   include/XPathValidator.hh
@@ -220,7 +217,6 @@ SET(dact_UI
   ui/DownloadWindow.ui
   ui/MainWindow.ui
   ui/PreferencesWindow.ui
-  ui/RemoteWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
 )
@@ -228,6 +224,17 @@ SET(dact_UI
 SET(dact_RCS
   resources/dact.qrc
 )
+
+if(USE_REMOTE_CORPUS)
+  list(APPEND dact_HEADERS
+    include/RemoteWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/RemoteWindow.hh)
+  list(APPEND dact_SRCS
+    src/RemoteWindow.cpp)
+  list(APPEND dact_UI
+    ui/RemoteWindow.ui)
+endif()
 
 if(WIN32)
   set(dact_SRCS
