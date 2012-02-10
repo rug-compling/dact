@@ -80,6 +80,11 @@ void DactMacrosMenu::reload()
 		QAction *reloadAction = menu->addAction("Reload file");
 		reloadAction->setData(macroIndex.data(Qt::UserRole).toString());
 		connect(reloadAction, SIGNAL(triggered()), SLOT(reloadActionTriggered()));
+
+		// An unload menu action, which removes the macro file from the model.
+		QAction *unloadAction = menu->addAction("Close file");
+		unloadAction->setData(macroIndex.data(Qt::UserRole).toString());
+		connect(unloadAction, SIGNAL(triggered()), SLOT(unloadActionTriggered()));
 	}
 
 	// Insert all the menus we collected at the top of this menu.
@@ -116,4 +121,17 @@ void DactMacrosMenu::reloadActionTriggered()
 	}
 
 	d_model->loadFile(action->data().toString());
+}
+
+void DactMacrosMenu::unloadActionTriggered()
+{
+	QAction *action = qobject_cast<QAction *>(sender());
+
+	if (!action)
+	{
+		qDebug() << "Could not cast the sender of the unloadActionTriggered event to a QAction pointer";
+		return;
+	}
+
+	d_model->unloadFile(action->data().toString());
 }

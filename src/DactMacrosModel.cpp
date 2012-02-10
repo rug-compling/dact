@@ -166,6 +166,19 @@ void DactMacrosModel::loadFile(QString const &path)
     readFile(path);
 }
 
+void DactMacrosModel::unloadFile(QString const &fileName)
+{
+    for (int i = 0; i < d_files.size(); ++i)
+    {
+        if (d_files[i]->file().fileName() == fileName)
+        {
+            d_files.removeAt(i);
+            dataChanged(index(i, 0), index(i, 0));
+            break;
+        }
+    }
+}
+
 void DactMacrosModel::readFile(QString const &fileName)
 {
     int i;
