@@ -1,12 +1,14 @@
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
+#include <QFileDialog>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPoint>
 #include <QSettings>
 #include <QSize>
+#include <QTextStream>
 
 #include <algorithm>
 #include <stdexcept>
@@ -119,12 +121,41 @@ void StatisticsWindow::cancelQuery()
         d_model->cancelQuery();
 }
 
-void StatisticsWindow::copy() const
+void StatisticsWindow::copy()
 {
-    QString csv = selectionAsCSV("\t");
+    QString csv;
+    QTextStream textstream(&csv, QIODevice::WriteOnly | QIODevice::Text);
+
+    selectionAsCSV(textstream, "\t");
 
     if (!csv.isEmpty())
         QApplication::clipboard()->setText(csv);
+}
+
+void StatisticsWindow::exportSelection()
+{
+    QString filename(QFileDialog::getSaveFileName(this,
+        "Export selection",
+        QString(), "*.csv"));
+
+    QFile file(filename);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this,
+            tr("Error exporting selection"),
+            tr("Could open file for writing."),
+            QMessageBox::Ok);
+        
+        return;
+    }
+
+    QTextStream textstream(&file);
+    
+    textstream.setGenerateByteOrderMark(true);
+    selectionAsCSV(textstream, ";", true);
+
+    file.close();
 }
 
 void StatisticsWindow::createActions()
@@ -170,33 +201,31 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
     emit entryActivated(data, query);
 }
 
-QString StatisticsWindow::selectionAsCSV(QString const &separator) const
+void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes) const
 {
     // If there is no model attached (e.g. no corpus loaded) do nothing
     if (!d_model)
-        return QString();
+        return;
     
     QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
     
     // If there is nothing selected, do nothing
     if (rows.isEmpty())
-        return QString();
-    
-    QStringList output;
+        return;
     
     foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
-        output << d_model->data(row).toString() // value
-               << separator
-               << d_model->data(row.sibling(row.row(), 1)).toString() // count
-               << "\n";
+        if (escape_quotes)
+            output << '"' << d_model->data(row).toString().replace("\"", "\"\"") << '"'; // value
+        else
+            output << d_model->data(row).toString();
+        
+        output
+            << separator
+            << d_model->data(row.sibling(row.row(), 1)).toString() // count
+            << "\r\n";
     }
-    
-    // Remove superfluous newline separator
-    output.removeLast();
-    
-    return output.join(QString());
 }
 
 void StatisticsWindow::showPercentage(bool show)
