@@ -809,7 +809,7 @@ void MainWindow::tabChanged(int index)
 
     if (d_taintedWidgets[index].second)
     {
-        d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter));
+        d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter), d_filter);
         d_taintedWidgets[index].second = false;
     }
 }

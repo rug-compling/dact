@@ -60,8 +60,10 @@ void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader
     d_corpusReader = corpusReader;    
 }
 
-void BracketedWindow::setFilter(QString const &filter)
+void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter)
 {
+    Q_UNUSED(raw_filter);
+    
     d_filter = filter;
     startQuery();
 }

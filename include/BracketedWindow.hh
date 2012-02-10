@@ -50,7 +50,7 @@ public:
      into this window when opened for the first time.
      \param text XPath query
      */
-    void setFilter(QString const &text);
+    void setFilter(QString const &text, QString const &raw_filter);
     
     /*!
      Return the current active filter. Used by the main window to highlight the nodes

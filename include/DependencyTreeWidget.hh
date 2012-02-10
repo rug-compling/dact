@@ -76,7 +76,7 @@ public slots:
      */
     void previousEntry(bool);
     
-    void setFilter(QString const &filter);
+    void setFilter(QString const &filter, QString const &raw_filter);
     
     void showFile(QString const &entry);
     

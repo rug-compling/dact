@@ -72,8 +72,10 @@ void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
     setModel(new QueryModel(corpusReader));
 }
 
-void StatisticsWindow::setFilter(QString const &filter)
+void StatisticsWindow::setFilter(QString const &filter, QString const &raw_filter)
 {
+    Q_UNUSED(raw_filter);
+
     d_filter = filter;
     startQuery();
 }

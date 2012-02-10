@@ -235,7 +235,7 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
     return d_ui->fileListWidget->selectionModel();
 }
 
-void DependencyTreeWidget::setFilter(QString const &filter)
+void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_filter)
 {
     d_filter = filter;
     d_treeShown = false;
@@ -251,7 +251,7 @@ void DependencyTreeWidget::setFilter(QString const &filter)
         d_ui->hitsLabel->show();
     }
 
-    setHighlight(d_filter);
+    setHighlight(raw_filter);
     
     d_model->runQuery(d_filter);
 }

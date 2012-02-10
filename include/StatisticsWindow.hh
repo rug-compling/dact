@@ -28,7 +28,7 @@ public:
     ~StatisticsWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
-    void setFilter(QString const &text);
+    void setFilter(QString const &text, QString const &raw_text);
     void setAggregateAttribute(QString const &text);
     void showPercentage(bool show);
     void selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes = false) const;
