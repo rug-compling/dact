@@ -20,15 +20,12 @@
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
-    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel())),
-    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
+    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel()))
 {
     d_ui->setupUi(this);
     
     addConnections();
     
-    d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);
@@ -278,6 +275,13 @@ void DependencyTreeWidget::setModel(FilterModel *model)
     connect(d_ui->fileListWidget->selectionModel(),
             SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             SLOT(entrySelected(QModelIndex,QModelIndex)));
+}
+
+void DependencyTreeWidget::setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel)
+{
+    d_macrosModel = macrosModel;
+    d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
+    d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
 }
 
 void DependencyTreeWidget::setHighlight(QString const &query)

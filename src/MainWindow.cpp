@@ -105,6 +105,10 @@ MainWindow::MainWindow(QWidget *parent) :
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
 
+    // the dependency tree widget needs to know about our macros model
+    // for the highlight queries and query validation for that same field.
+    d_ui->dependencyTreeWidget->setMacrosModel(d_macrosModel);
+
     readSettings();
 
     initSentenceTransformer();
