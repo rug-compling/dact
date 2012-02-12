@@ -32,8 +32,8 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
     d_archiveModel(new ArchiveModel),
     d_corpusAccessManager(new QNetworkAccessManager),
-    d_downloadProgressDialog(new QProgressDialog(this)),
-    d_inflateProgressDialog(new QProgressDialog(this)),
+    d_downloadProgressDialog(new QProgressDialog()),
+    d_inflateProgressDialog(new QProgressDialog()),
     d_reply(0),
     d_cancelInflate(false)
 {
