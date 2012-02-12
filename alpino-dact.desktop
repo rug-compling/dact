@@ -7,3 +7,4 @@ Icon=dact-espresso
 Terminal=false
 Type=Application
 Categories=Education;Science;
+MimeType=application/dact

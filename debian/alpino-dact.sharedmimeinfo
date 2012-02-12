@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="application/dact">
+    <sub-class-of type="application/octet-stream"/>
+    <comment>Dact corpus</comment>
+    <generic-icon name="application-dact"/>
+    <glob pattern="*.dact"/>
+  </mime-type>
+</mime-info>

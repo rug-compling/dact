@@ -275,6 +275,7 @@ install(TARGETS ${PROGNAME}
 if(UNIX AND NOT APPLE)
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/alpino-dact.desktop" DESTINATION share/applications)
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/dact-espresso.svg" DESTINATION share/icons/hicolor/scalable/apps)
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/dact-corpus.svg" DESTINATION share/icons/hicolor/scalable/mimetypes RENAME "application-dact.svg")
 endif(UNIX AND NOT APPLE)
 
 # OS X bundle creation
