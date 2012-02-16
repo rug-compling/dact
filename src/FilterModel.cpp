@@ -139,12 +139,12 @@ void FilterModel::lastDataChanged(int n, int totalEntries)
 
 void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
 {
+  d_timer->stop();
+
   if (cached)
     return;
 
   lastDataChanged(n, totalEntries);
-
-  d_timer->stop();
 }
 
 void FilterModel::runQuery(QString const &query, QString const &stylesheet)
