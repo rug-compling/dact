@@ -17,8 +17,7 @@ Workspace::Workspace(QString const &filename) :
     d_settings(new QSettings(filename, QSettings::IniFormat))
 {
     if (!d_settings->isWritable()) {
-        d_settings = QSharedPointer<QSettings>(
-            new QSettings());
+        d_settings = QSharedPointer<QSettings>(new QSettings());
 
         throw std::runtime_error("Could not open workspace file for reading.");
     }
@@ -59,16 +58,10 @@ void Workspace::readWorkspace(bool defaultWs)
         qWarning() << "Read corpus name, but it is not a QString.";
 
     value = d_settings->value("macrosFilenames", QStringList());
-    if (value.type() == QVariant::StringList)
-        d_macrosFilenames = value.toStringList();
-    else
-        qWarning() << "Read macro filenames, but it is not a QStringList.";
+    d_macrosFilenames = value.toStringList();
 
     value = d_settings->value("filterHistory", QStringList());
-    if (value.type() == QVariant::StringList)
-        d_history = value.toStringList();
-    else
-        qWarning() << "Read history, but it is not a QStringList.";
+    d_history = value.toStringList();
 }
 
 void Workspace::save()
@@ -87,8 +80,7 @@ void Workspace::saveAs(QString const &filename)
         new QSettings(filename, QSettings::IniFormat));
 
     if (!d_settings->isWritable()) {
-        d_settings = QSharedPointer<QSettings>(
-            new QSettings());
+        d_settings = QSharedPointer<QSettings>(new QSettings());
 
         throw std::runtime_error("Could not open workspace file for writing.");
     }

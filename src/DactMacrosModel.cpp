@@ -184,8 +184,14 @@ void DactMacrosModel::unloadFile(QString const &fileName)
     {
         if (d_files[i]->file().fileName() == fileName)
         {
+            delete d_files[i];
             d_files.removeAt(i);
+
+            d_watcher.removePath(fileName);
+            fileUnloaded(fileName);
+            
             dataChanged(index(i, 0), index(i, 0));
+            
             break;
         }
     }
@@ -228,7 +234,19 @@ QString DactMacrosModel::expand(QString const &expression)
 
 void DactMacrosModel::reset()
 {
-    // XXX todo
+    for (int i = 0; i < d_files.size(); ++i)
+    {
+        // Stop watching the file
+        d_watcher.removePath(d_files[i]->file().fileName());
+
+        // Delete the resource
+        delete d_files[i];
+    }
+
+    int last_row = d_files.size() - 1;
+    d_files.clear();
+
+    dataChanged(index(0, 0), index(last_row, 0));
 }
 
 void DactMacrosModel::loadFileDelayed(QString const &fileName)
