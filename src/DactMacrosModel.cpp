@@ -158,12 +158,24 @@ QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
     return createIndex(index.internalId(), 0, ROOT_ID);
 }
 
+QStringList DactMacrosModel::loadedFiles() const
+{
+    QStringList paths;
+
+    foreach (DactMacrosFile const *file, d_files)
+        paths << file->file().fileName();
+    
+    return paths;
+}
+
 void DactMacrosModel::loadFile(QString const &path)
 {
     if (!d_watcher.files().contains(path))
         d_watcher.addPath(path);
     
     readFile(path);
+
+    fileLoaded(path);
 }
 
 void DactMacrosModel::readFile(QString const &fileName)
@@ -199,6 +211,11 @@ QString DactMacrosModel::expand(QString const &expression)
             query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
     
     return query;
+}
+
+void DactMacrosModel::reset()
+{
+    // XXX todo
 }
 
 void DactMacrosModel::loadFileDelayed(QString const &fileName)

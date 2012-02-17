@@ -40,9 +40,9 @@ QStringList Workspace::history()
     return d_history;
 }
 
-QString Workspace::macrosFilename()
+QStringList Workspace::macrosFilenames()
 {
-    return d_macrosFilename;
+    return d_macrosFilenames;
 }
 
 void Workspace::readWorkspace(bool defaultWs)
@@ -58,11 +58,11 @@ void Workspace::readWorkspace(bool defaultWs)
     else
         qWarning() << "Read corpus name, but it is not a QString.";
 
-    value = d_settings->value("macrosFilename", QString());
-    if (value.type() == QVariant::String)
-        d_macrosFilename = value.toString();
+    value = d_settings->value("macrosFilenames", QStringList());
+    if (value.type() == QVariant::StringList)
+        d_macrosFilenames = value.toStringList();
     else
-        qWarning() << "Read macro filename, but it is not a QString.";
+        qWarning() << "Read macro filenames, but it is not a QStringList.";
 
     value = d_settings->value("filterHistory", QStringList());
     if (value.type() == QVariant::StringList)
@@ -76,8 +76,7 @@ void Workspace::save()
     if (!d_corpus.isNull())
         d_settings->setValue("corpus", d_corpus);
     
-    if (!d_macrosFilename.isNull())
-        d_settings->setValue("macrosFilename", d_macrosFilename);
+    d_settings->setValue("macrosFilenames", d_macrosFilenames);
 
     d_settings->setValue("filterHistory", d_history);
 }
@@ -86,7 +85,6 @@ void Workspace::saveAs(QString const &filename)
 {
     d_settings = QSharedPointer<QSettings>(
         new QSettings(filename, QSettings::IniFormat));
-
 
     if (!d_settings->isWritable()) {
         d_settings = QSharedPointer<QSettings>(
@@ -108,7 +106,7 @@ void Workspace::setHistory(QStringList const &history)
     d_history = history;
 }
 
-void Workspace::setMacrosFilename(QString const &filename)
+void Workspace::setMacrosFilenames(QStringList const &filenames)
 {
-    d_macrosFilename = filename;
+    d_macrosFilenames = filenames;
 }

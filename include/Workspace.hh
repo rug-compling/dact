@@ -28,7 +28,7 @@ public:
 
     QStringList history();
 
-    QString macrosFilename();
+    QStringList macrosFilenames();
 
     void save();
 
@@ -38,7 +38,7 @@ public:
     
     void setHistory(QStringList const &history);
 
-    void setMacrosFilename(QString const &filename);
+    void setMacrosFilenames(QStringList const &filenames);
 
 
 private:
@@ -47,7 +47,7 @@ private:
     QSharedPointer<QSettings> d_settings;
 
     QString d_corpus;
-    QString d_macrosFilename;
+    QStringList d_macrosFilenames;
     QStringList d_history;
 };
 

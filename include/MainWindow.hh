@@ -227,6 +227,8 @@ private slots:
 
     void setInspectorVisible(bool);
     
+    void saveMacrosToWorkspace();
+
 protected:
     void changeEvent(QEvent *e);
     /*!

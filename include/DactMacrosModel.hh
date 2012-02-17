@@ -35,6 +35,14 @@ public:
 
     QString expand(QString const &query);
 
+    void reset();
+
+    QStringList loadedFiles() const;
+
+signals:
+    void fileLoaded(QString);
+    void fileUnloaded(QString);
+
 public slots:
     void loadFile(QString const &path);
     void loadFileDelayed(QString const &path);

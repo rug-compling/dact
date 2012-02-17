@@ -306,6 +306,11 @@ void MainWindow::createActions()
         SLOT(openWorkspace()));
     connect(d_ui->saveWorkspaceAsAction, SIGNAL(triggered()),
         SLOT(saveWorkspaceAs()));
+
+    connect(d_macrosModel.data(), SIGNAL(fileLoaded(QString)),
+        SLOT(saveMacrosToWorkspace()));
+    connect(d_macrosModel.data(), SIGNAL(fileUnloaded(QString)),
+        SLOT(saveMacrosToWorkspace()));
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
@@ -409,9 +414,6 @@ void MainWindow::openMacrosFile()
     if (filePath.isNull())
         return;
 
-    if (d_workspace->macrosFilename() != filePath)
-        d_workspace->setMacrosFilename(filePath); // XXX - too early?
-    
     d_macrosModel->loadFile(filePath);
 }
 
@@ -454,10 +456,10 @@ void MainWindow::activateWorkspace()
     QString corpusPath = d_workspace->corpus();
     if (!corpusPath.isNull())
         readCorpus(corpusPath);
-
-    QString macrosFilename = d_workspace->macrosFilename();
-    if (!macrosFilename.isNull())
-        d_macrosModel->loadFile(macrosFilename);
+    
+    d_macrosModel->reset();
+    foreach (QString const &macroFilename, d_workspace->macrosFilenames())
+        d_macrosModel->loadFile(macroFilename);
 }
 
 void MainWindow::saveWorkspaceAs()
@@ -472,6 +474,12 @@ void MainWindow::saveWorkspaceAs()
   } catch (std::runtime_error &e) {
       QMessageBox::critical(this, "Save workspace error", e.what());
   }
+}
+
+void MainWindow::saveMacrosToWorkspace()
+{
+    // assumption: the model that send the event is our current macrosmodel
+    d_workspace->setMacrosFilenames(d_macrosModel->loadedFiles());
 }
 
 void MainWindow::exportPDF()
