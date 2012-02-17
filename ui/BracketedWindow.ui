@@ -43,6 +43,7 @@
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <addaction name="copyResultsAction"/>
+     <addaction name="exportResultsAction"/>
     </widget>
    </item>
    <item>
@@ -62,6 +63,14 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::WidgetShortcut</enum>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="exportResultsAction">
+   <property name="text">
+    <string>Export selection…</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
@@ -93,6 +102,12 @@
      <y>20</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>exportResultsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>BracketedWindow</receiver>
+   <slot>exportSelection()</slot>
   </connection>
  </connections>
 </ui>

@@ -20,15 +20,12 @@
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
-    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel())),
-    d_xpathValidator(QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel)))
+    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel()))
 {
     d_ui->setupUi(this);
     
     addConnections();
     
-    d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
-
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);
@@ -76,8 +73,8 @@ void DependencyTreeWidget::copy()
 }
 
 void DependencyTreeWidget::nEntriesFound(int entries, int hits) {
-    d_ui->entriesLabel->setText(QString::number(entries));
-    d_ui->hitsLabel->setText(QString::number(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
     
     if (!d_treeShown) {
         d_ui->fileListWidget->selectionModel()->clear();
@@ -187,8 +184,8 @@ void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
     // have been cached. If so, it doesn't emit a signal for every entry.
     int entries = d_model->rowCount(QModelIndex());
     int hits = d_model->hits();
-    d_ui->entriesLabel->setText(QString::number(entries));
-    d_ui->hitsLabel->setText(QString::number(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
     
     if (!d_file.isNull())
     {
@@ -238,10 +235,11 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
     return d_ui->fileListWidget->selectionModel();
 }
 
-void DependencyTreeWidget::setFilter(QString const &filter)
+void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_filter)
 {
     d_filter = filter;
     d_treeShown = false;
+    d_file = QString();
     
     if (d_filter.isEmpty()) {
         d_ui->hitsDescLabel->hide();
@@ -253,7 +251,7 @@ void DependencyTreeWidget::setFilter(QString const &filter)
         d_ui->hitsLabel->show();
     }
 
-    setHighlight(d_filter);
+    setHighlight(raw_filter);
     
     d_model->runQuery(d_filter);
 }
@@ -277,6 +275,13 @@ void DependencyTreeWidget::setModel(FilterModel *model)
     connect(d_ui->fileListWidget->selectionModel(),
             SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             SLOT(entrySelected(QModelIndex,QModelIndex)));
+}
+
+void DependencyTreeWidget::setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel)
+{
+    d_macrosModel = macrosModel;
+    d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
+    d_ui->highlightLineEdit->setValidator(d_xpathValidator.data());
 }
 
 void DependencyTreeWidget::setHighlight(QString const &query)

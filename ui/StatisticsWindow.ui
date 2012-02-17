@@ -88,6 +88,7 @@
       <bool>false</bool>
      </attribute>
      <addaction name="copyResultsAction"/>
+     <addaction name="exportResultsAction"/>
     </widget>
    </item>
    <item>
@@ -158,6 +159,14 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="exportResultsAction">
+   <property name="text">
+    <string>Export selection…</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
@@ -182,6 +191,12 @@
      <y>20</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>exportResultsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>StatisticsWindow</receiver>
+   <slot>exportSelection()</slot>
   </connection>
  </connections>
 </ui>

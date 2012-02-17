@@ -9,6 +9,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "CorpusWidget.hh"
+#include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "ui_DependencyTreeWidget.h"
@@ -28,6 +29,7 @@ public:
     QItemSelectionModel *selectionModel();
     
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
+    void setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel);
     void readSettings();
     void renderTree(QPainter *painter);
     
@@ -74,7 +76,7 @@ public slots:
      */
     void previousEntry(bool);
     
-    void setFilter(QString const &filter);
+    void setFilter(QString const &filter, QString const &raw_filter);
     
     void showFile(QString const &entry);
     

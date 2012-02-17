@@ -17,11 +17,13 @@ public:
     
     void readHistory(Workspace *workspace);
     void writeHistory(Workspace *workspace);
+    void clearHistory();
 
     void revalidate();
     QString text() const;
 
 public slots:
+    virtual void returnPressed();
     virtual void setText(QString const &newText);
 
 };

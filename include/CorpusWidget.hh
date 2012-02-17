@@ -14,7 +14,7 @@ public:
     CorpusWidget(QWidget *parent = 0) : QWidget(parent) {}
     virtual ~CorpusWidget() {}
 public slots:
-    virtual void setFilter(QString const &filter) = 0;
+    virtual void setFilter(QString const &filter, QString const &raw_filter) = 0;
     virtual void cancelQuery() = 0;
     virtual void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpus) = 0;
 };

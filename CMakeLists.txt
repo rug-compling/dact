@@ -80,6 +80,8 @@ endif()
 find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
@@ -224,6 +226,17 @@ SET(dact_UI
 SET(dact_RCS
   resources/dact.qrc
 )
+
+if(USE_REMOTE_CORPUS)
+  list(APPEND dact_HEADERS
+    include/RemoteWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/RemoteWindow.hh)
+  list(APPEND dact_SRCS
+    src/RemoteWindow.cpp)
+  list(APPEND dact_UI
+    ui/RemoteWindow.ui)
+endif()
 
 if(WIN32)
   set(dact_SRCS

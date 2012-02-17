@@ -19,6 +19,7 @@ namespace Ui {
 class QueryModel;
 class StatisticsWindowResultsRow;
 class QKeyEvent;
+class QTextStream;
 
 class StatisticsWindow : public CorpusWidget {
     Q_OBJECT
@@ -27,17 +28,18 @@ public:
     ~StatisticsWindow();
     // When a new treebank is loaded into the main window, the corpus is switched and the results will be updated.
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
-    void setFilter(QString const &text);
+    void setFilter(QString const &text, QString const &raw_text);
     void setAggregateAttribute(QString const &text);
     void showPercentage(bool show);
-    QString selectionAsCSV(QString const &separator = "") const;
+    void selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes = false) const;
 
 signals:
     void entryActivated(QString, QString);
 
 public slots:
     void cancelQuery();
-    void copy() const;
+    void copy();
+    void exportSelection();
 
 private slots:
     void applyValidityColor(QString const &text);

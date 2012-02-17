@@ -12,8 +12,6 @@
 
   <xsl:output method="text" encoding="UTF-8"/>
 
-  <xsl:param name='filename'/>
-
   <xsl:variable name="selectedNodes" select="//node[@active='1']"/>
   <xsl:variable name="words" select="str:tokenize(/*/sentence)"/>
 
@@ -29,8 +27,6 @@
   <xsl:variable name="bpositions" select="exsl:node-set($bpositions-rtf)"/>
 
   <xsl:template match="/">
-    <xsl:value-of select="$filename"/>
-    <xsl:text>&#x9;</xsl:text>
     <xsl:for-each select="$words">
       <xsl:variable name="wordpos" select="position()"/>
       <xsl:for-each select="$bpositions/begin[.=$wordpos]">

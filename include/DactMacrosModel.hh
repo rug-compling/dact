@@ -46,6 +46,7 @@ signals:
 public slots:
     void loadFile(QString const &path);
     void loadFileDelayed(QString const &path);
+    void unloadFile(QString const &path);
 
 private:
     void readFile(QString const &path);

@@ -38,8 +38,13 @@
 #include <AlpinoCorpus/MultiCorpusReader.hh>
 #include <AlpinoCorpus/Error.hh>
 
+#include <config.hh>
+
 #include <AboutWindow.hh>
 #include <DownloadWindow.hh>
+#ifdef USE_REMOTE_CORPUS
+#include <RemoteWindow.hh>
+#endif // USE_REMOTE_CORPUS
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -74,12 +79,19 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
+#ifdef USE_REMOTE_CORPUS
+    d_remoteWindow(0),
+#endif // USE_REMOTE_CORPUS
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
     d_preferencesWindow(0),
     d_workspace(new Workspace)
 {
     setupUi();
+
+#ifndef USE_REMOTE_CORPUS
+    d_ui->menuFile->removeAction(d_ui->remoteAction);
+#endif
 
     initTaintedWidgets();
 
@@ -89,14 +101,18 @@ MainWindow::MainWindow(QWidget *parent) :
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
 
     d_ui->menuMacros->setModel(d_macrosModel);
-    
+
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
-        
+
+    // the dependency tree widget needs to know about our macros model
+    // for the highlight queries and query validation for that same field.
+    d_ui->dependencyTreeWidget->setMacrosModel(d_macrosModel);
+
     readSettings();
-    
+
     initSentenceTransformer();
-    
+
     createActions();
 
     activateWorkspace();
@@ -110,6 +126,9 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
+#ifdef USE_REMOTE_CORPUS
+    delete d_remoteWindow;
+#endif // USE_REMOTE_CORPUS
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
     delete d_preferencesWindow;
@@ -153,6 +172,11 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+void MainWindow::clearQueryHistory()
+{
+    d_ui->filterComboBox->clearHistory();
+}
+
 void MainWindow::close()
 {
     writeSettings();
@@ -180,10 +204,29 @@ void MainWindow::showDownloadWindow()
 {
     if (d_downloadWindow == 0)
         d_downloadWindow = new DownloadWindow(this, Qt::Window);
-    
+
     d_downloadWindow->show();
     d_downloadWindow->raise();
 }
+
+#ifdef USE_REMOTE_CORPUS
+void MainWindow::showRemoteWindow()
+{
+    if (d_remoteWindow == 0) {
+        d_remoteWindow = new RemoteWindow(this, Qt::Window);
+        connect(d_remoteWindow, SIGNAL(openRemote(QString const &)),
+                this, SLOT(openRemoteCorpus(QString const &)));
+    }
+
+    d_remoteWindow->show();
+    d_remoteWindow->raise();
+}
+
+void MainWindow::openRemoteCorpus(QString const &url)
+{
+    readCorpus(url);
+}
+#endif // USE_REMOTE_CORPUS
 
 void MainWindow::showOpenCorpusError(QString const &error)
 {
@@ -205,17 +248,18 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
 void MainWindow::setupUi()
 {
     d_ui->setupUi(this);
-    
+
     // Move a spacer between the buttons and the inspector action button
     // This will align the inspection action button to the right
     QWidget *spacer = new QWidget(d_ui->mainToolBar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d_ui->mainToolBar->addWidget(spacer);
     d_ui->mainToolBar->addAction(d_ui->inspectorAction);
-    
+
     #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
+        appleDockMenu->addAction(d_ui->remoteAction);
         qt_mac_set_dock_menu(appleDockMenu);
     #endif
 }
@@ -226,31 +270,33 @@ void MainWindow::createActions()
         SLOT(corpusRead()));
     connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
         SLOT(corpusWritten(int)));
-    
+
     connect(this, SIGNAL(exportError(QString const &)),
         SLOT(showWriteCorpusError(QString const &)));
-    
+
     connect(this, SIGNAL(openError(QString const &)),
         SLOT(showOpenCorpusError(QString const &)));
-    
+
     // listen to selection changes to update the next/prev node buttons accordingly.
     connect(d_ui->dependencyTreeWidget, SIGNAL(sceneChanged(DactTreeScene*)),
             SLOT(treeChanged(DactTreeScene*)));
-    
+
     connect(d_exportProgressDialog, SIGNAL(canceled()),
         SLOT(cancelWriteCorpus()));
     connect(this, SIGNAL(exportProgressMaximum(int)), d_exportProgressDialog, SLOT(setMaximum(int)));
     connect(this, SIGNAL(exportProgress(int)), d_exportProgressDialog, SLOT(setValue(int)));
     connect(this, SIGNAL(queryCancelRequest()), SLOT(cancelQuery()),
         Qt::QueuedConnection);
-    
+
     connect(d_ui->statisticsWindow, SIGNAL(entryActivated(QString, QString)),
             SLOT(statisticsEntryActivated(QString const &, QString const &)));
     connect(d_ui->sentencesWidget, SIGNAL(entryActivated(QString)),
             SLOT(bracketedEntryActivated(QString)));
-    
+
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
+    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
+        SLOT(filterChanged()));
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(returnPressed()),
         SLOT(filterChanged()));
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
@@ -261,6 +307,10 @@ void MainWindow::createActions()
         SLOT(aboutDialog()));
     connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
         SLOT(showDownloadWindow()));
+#ifdef USE_REMOTE_CORPUS
+    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
+        SLOT(showRemoteWindow()));
+#endif // USE_REMOTE_CORPUS
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
@@ -302,6 +352,7 @@ void MainWindow::createActions()
         SLOT(filterOnInspectorSelection()));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
+    
     connect(d_ui->openWorkspaceAction, SIGNAL(triggered()),
         SLOT(openWorkspace()));
     connect(d_ui->saveWorkspaceAsAction, SIGNAL(triggered()),
@@ -321,14 +372,14 @@ void MainWindow::filterOnInspectorSelection()
 {
     QString query = d_filter.isEmpty() ? "//node" : d_filter;
     QMap<QString,QString> attributes = d_ui->inspector->selectedAttributes();
-    
+
     if (attributes.size() < 1)
         return;
-    
+
     for (QMap<QString,QString>::const_iterator itr(attributes.constBegin()),
         end(attributes.constEnd()); itr != end; itr++)
         query = ::generateQuery(query, itr.key(), itr.value());
-    
+
     setFilter(query);
 }
 
@@ -410,7 +461,7 @@ void MainWindow::openMacrosFile()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open macros file", QString(),
         "Macros file (*.*)");
-    
+
     if (filePath.isNull())
         return;
 
@@ -496,7 +547,7 @@ void MainWindow::exportPDF()
 
     // If you are asking for an empty PDF, you will get it ;).
     d_ui->dependencyTreeWidget->renderTree(&painter);
-    
+
     painter.end();
 }
 
@@ -525,16 +576,13 @@ void MainWindow::setInspectorVisible(bool visible)
 {
     bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
     d_inspectorVisible = visible;
-    
+
     d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
     d_ui->inspectorAction->setChecked(visible);
 }
 
 void MainWindow::readCorpus(QString const &corpusPath, bool recursive)
 {
-    if (d_workspace->corpus() != corpusPath)
-        d_workspace->setCorpus(corpusPath); // XXX - to early?
-
     return readCorpora(QStringList(corpusPath), recursive);
 }
 
@@ -543,12 +591,12 @@ void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
     d_ui->dependencyTreeWidget->cancelQuery();
     d_ui->statisticsWindow->cancelQuery();
     d_ui->sentencesWidget->cancelQuery();
-    
+
     if (d_corpusOpenWatcher.isRunning()) {
         d_corpusOpenWatcher.cancel();
         d_corpusOpenWatcher.waitForFinished();
     }
-    
+
     QString actionDescription = QString("Opening %1").arg(
         corpusPaths.size() == 1
             ? deriveNameFromPath(corpusPaths[0])
@@ -560,7 +608,7 @@ void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
     d_openProgressDialog->setCancelButton(0);
-    
+
     QFuture< QPair< ac::CorpusReader*, QString> > corpusOpenFuture = QtConcurrent::run(this, &MainWindow::createCorpusReaders, corpusPaths, recursive);
     d_corpusOpenWatcher.setFuture(corpusOpenFuture);
 }
@@ -568,7 +616,7 @@ void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
 QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const &path, bool recursive)
 {
     ac::CorpusReader* reader = 0;
-    
+
     try {
         if (recursive)
             reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
@@ -577,7 +625,7 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
     }
-    
+
     return QPair< ac::CorpusReader*, QString >(reader, path);
 }
 
@@ -586,7 +634,7 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     // No need for the multicorpusreader if there is only one corpus to open
     if (paths.size() == 1)
         return createCorpusReader(paths[0], recursive);
-    
+
     ac::MultiCorpusReader* readers = new ac::MultiCorpusReader();
     int nLoadedCorpora = 0;
 
@@ -617,19 +665,20 @@ void MainWindow::cancelWriteCorpus()
 void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path)
 {
     d_corpusReader = reader;
-    
+
     d_xpathValidator->setCorpusReader(reader);
-    
+
     d_ui->filterComboBox->revalidate();
-        
+
     if (!reader.isNull() && !path.isNull())
     {
-        setWindowTitle(QString::fromUtf8("%1 — Dact").arg(QFileInfo(path).fileName()));
-        
+        setWindowTitle(QString::fromUtf8("%1%2 -- Dact").arg((path.startsWith("http://") || path.startsWith("https://")) ? "remote: " : "",
+                                                             QFileInfo(path).fileName()));
+
         // On OS X, add the file icon to the window (and try alt-clicking it!)
         setWindowFilePath(path);
 
-        if (QFileInfo(path).exists())
+        if (QFileInfo(path).exists() || path.startsWith("http://") || path.startsWith("https://"))
             // Add file to the recent files menu
             d_ui->menuRecentFiles->addFile(path);
     }
@@ -643,7 +692,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     d_ui->dependencyTreeWidget->switchCorpus(d_corpusReader);
     d_ui->statisticsWindow->switchCorpus(d_corpusReader);
     d_ui->sentencesWidget->switchCorpus(d_corpusReader);
-    
+
     //taintAllWidgets();
     tabChanged(d_ui->mainTabWidget->currentIndex());
 }
@@ -651,9 +700,9 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 void MainWindow::corpusRead()
 {
     d_openProgressDialog->accept();
-    
+
     QPair<ac::CorpusReader*, QString> result(d_corpusOpenWatcher.result());
-    
+
     setCorpusReader(QSharedPointer<ac::CorpusReader>(result.first), result.second);
 }
 
@@ -673,14 +722,14 @@ void MainWindow::readSettings()
 
     // Move.
     move(pos);
-    
+
     // Inspector
     d_inspectorVisible = settings.value("inspectorVisible", true).toBool();
     d_ui->inspectorAction->setChecked(d_inspectorVisible);
 
     bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
     d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
-    
+
     d_ui->dependencyTreeWidget->readSettings();
 }
 
@@ -701,7 +750,7 @@ void MainWindow::exportCorpus()
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
         QString(), "*.dact"));
-    
+
     if (!filename.isNull())
     {
         d_exportProgressDialog->setWindowTitle(selectionOnly ? "Exporting selection" : "Exporting corpus");
@@ -709,13 +758,13 @@ void MainWindow::exportCorpus()
             .arg(selectionOnly ? "selection" : "corpus")
             .arg(filename));
         d_exportProgressDialog->open();
-        
+
         // Since we make a copy of the current selection, this action doesn't really need to block
         // any interaction with the gui as long as the corpusreader supports simultanious reading
         // and writing.
-        
+
         QList<QString> files;
-        
+
         if (selectionOnly)
         {
             foreach (QModelIndex const &item, selectionModel->selectedRows())
@@ -725,10 +774,10 @@ void MainWindow::exportCorpus()
             for (ac::CorpusReader::EntryIterator iter = d_corpusReader->begin();
                     iter != d_corpusReader->end(); ++iter)
                 files.push_back(QString::fromUtf8((*iter).c_str()));
-        
+
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
-        
+
         QFuture<bool> corpusWriterFuture =
             QtConcurrent::run(this, &MainWindow::writeCorpus, filename, files);
         d_corpusWriteWatcher.setFuture(corpusWriterFuture);
@@ -741,12 +790,12 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
         QSharedPointer<ac::CorpusWriter> corpus(
           ac::CorpusWriter::open(filename.toUtf8().constData(), true,
           ac::CorpusWriter::DBXML_CORPUS_WRITER));
-        
+
         emit exportProgressMaximum(files.size());
         emit exportProgress(0);
         int percent = files.size() / 100;
         int progress = 0;
-            
+
         for (QList<QString>::const_iterator itr(files.constBegin()),
              end(files.constEnd());
              !d_writeCorpusCancelled && itr != end; ++itr)
@@ -763,7 +812,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
         emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
         return false;
     }
-    
+
     return true;
 }
 
@@ -771,19 +820,19 @@ void MainWindow::exportXML()
 {
     if (!d_corpusReader || d_ui->dependencyTreeWidget->selectionModel()->selectedIndexes().size() < 1)
         return;
-    
+
     QModelIndex index(d_ui->dependencyTreeWidget->selectionModel()->selectedIndexes()[0]);
     QString file(index.data(Qt::UserRole).toString());
-    
+
     QString targetName(QFileDialog::getSaveFileName(this,
         QString("Export %1").arg(file),
         file, "*.xml"));
-    
+
     if (targetName.isNull())
         return;
-    
+
     QFile target(targetName);
-    
+
     if (!target.open(QIODevice::WriteOnly))
     {
         QMessageBox::critical(this,
@@ -791,7 +840,7 @@ void MainWindow::exportXML()
             "Could not open file for writing");
         return;
     }
-    
+
     target.write(d_corpusReader->read(file.toUtf8().constData()).c_str());
     target.close();
 }
@@ -803,17 +852,17 @@ void MainWindow::writeSettings()
     // Window geometry
     settings.setValue("pos", pos());
     settings.setValue("size", size());
-    
+
     // Inspector
     settings.setValue("inspectorVisible", d_inspectorVisible);
-    
+
     d_ui->dependencyTreeWidget->writeSettings();
 }
 
 void MainWindow::tabChanged(int index)
 {
     bool treeWidgetsEnabled = index == 0 ? true : false;
-    
+
     d_ui->previousAction->setEnabled(treeWidgetsEnabled);
     d_ui->nextAction->setEnabled(treeWidgetsEnabled);
     d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
@@ -831,10 +880,10 @@ void MainWindow::tabChanged(int index)
     d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
 
     Q_ASSERT(index < d_taintedWidgets.size());
-    
+
     if (d_taintedWidgets[index].second)
     {
-        d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter));
+        d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter), d_filter);
         d_taintedWidgets[index].second = false;
     }
 }
@@ -852,7 +901,7 @@ void MainWindow::treeChanged(DactTreeScene *scene)
     {
         connect(scene, SIGNAL(selectionChanged()),
             SLOT(updateTreeNodeButtons()));
-        
+
         connect(scene, SIGNAL(selectionChanged(TreeNode const *)),
             d_ui->inspector, SLOT(inspect(TreeNode const *)));
     }
@@ -865,13 +914,13 @@ void MainWindow::updateTreeNodeButtons()
     bool nodesBeforeFocussedNode = false;
     bool nodesAfterFocussedNode = false;
     bool focussedNodePassed = false;
-    
+
     if (d_ui->dependencyTreeWidget->scene())
         foreach(TreeNode const *node, d_ui->dependencyTreeWidget->scene()->nodes())
         {
             if (node->hasFocus())
                 focussedNodePassed = true;
-    
+
             else if (node->isActive())
             {
                 if (!focussedNodePassed)
@@ -880,7 +929,7 @@ void MainWindow::updateTreeNodeButtons()
                     nodesAfterFocussedNode = true;
             }
         }
-    
+
     // When focussedNodePassed is false, none of the nodes has focus. Then what
     // is the "next" node? Therefore use nodesBeforeFocussedUpdate when none of
     // the nodes is focussed, which will be true if at least one node is active.
