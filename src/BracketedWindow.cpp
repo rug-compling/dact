@@ -109,6 +109,11 @@ void BracketedWindow::startQuery()
     // This will make sure no old cached data is used.
     reloadListDelegate();
 
+    // It would be better to get only those trees with maching nodes that
+    // have a @cat or @root attribute. But it turns out to be very slow
+    // with some queries... So, instead, we add this restriction to the
+    // stylesheet.
+    //
     //d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"), 
     //    stylesheet);
     d_model->runQuery(d_filter, stylesheet);
