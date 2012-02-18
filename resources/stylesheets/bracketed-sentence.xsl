@@ -12,7 +12,8 @@
 
   <xsl:output method="text" encoding="UTF-8"/>
 
-  <xsl:variable name="selectedNodes" select="//node[@active='1']"/>
+  <xsl:variable name="selectedNodes" select="//node[@active='1' and (@cat or
+    @root)]"/>
   <xsl:variable name="words" select="str:tokenize(/*/sentence)"/>
 
   <!-- Result Tree Fragment, geen node-set -->

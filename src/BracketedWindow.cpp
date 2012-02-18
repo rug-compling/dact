@@ -109,8 +109,9 @@ void BracketedWindow::startQuery()
     // This will make sure no old cached data is used.
     reloadListDelegate();
 
-    d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"), 
-        stylesheet);
+    //d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"), 
+    //    stylesheet);
+    d_model->runQuery(d_filter, stylesheet);
 
 }
 
