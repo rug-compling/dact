@@ -249,7 +249,7 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         d_cancelled = false;
         d_entryIterator = begin;
         
-        for (d_entryIterator; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
+        for (; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
             emit queryEntryFound(QString::fromUtf8(d_entryIterator.contents(*d_corpus).c_str()));
             
         if (d_cancelled)
