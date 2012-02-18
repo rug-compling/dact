@@ -89,7 +89,6 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
                 return QVariant();
         }
     }
-
     // Are we pointing to a specific macro-file?
     else if (index.internalId() >= 0 && index.internalId() < d_files.size())
     {
@@ -122,11 +121,8 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
     }
 
     // What is happening here?!
-    else
-    {
-        //qDebug() << "Data asking for" << index.internalId() << index.row() << index.column() << "which does not exist";
-        return QVariant();
-    }
+    //qDebug() << "Data asking for" << index.internalId() << index.row() << index.column() << "which does not exist";
+    return QVariant();
 }
 
 QModelIndex DactMacrosModel::index(int row, int column, QModelIndex const &parent) const

@@ -253,7 +253,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
         d_hits = 0;
         d_entryIterator = begin;
         
-        for (d_entryIterator; !d_cancelled && d_entryIterator != end;
+        for (; !d_cancelled && d_entryIterator != end;
           ++d_entryIterator)
         {
             ++d_hits;
