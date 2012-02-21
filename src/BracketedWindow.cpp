@@ -268,6 +268,9 @@ void BracketedWindow::exportSelection()
         "Export selection",
         QString(), "*.txt"));
 
+    if (filename.isNull())
+        return;
+
     QFile file(filename);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))

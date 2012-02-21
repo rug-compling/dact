@@ -140,6 +140,9 @@ void StatisticsWindow::exportSelection()
         "Export selection",
         QString(), "*.csv"));
 
+    if (filename.isNull())
+        return;
+
     QFile file(filename);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
