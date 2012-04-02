@@ -123,6 +123,45 @@ void StatisticsWindow::cancelQuery()
         d_model->cancelQuery();
 }
 
+
+void StatisticsWindow::saveAs()
+{
+    /*
+    QFileDialog dialog(this);
+    dialog.setNameFilter(tr("Text (*.txt);;Excel (*.xml *.xsl);;CSV (*.csv)"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setLabelText(QFileDialog::Accept, tr("Save"));
+    dialog.setConfirmOverwrite(true);
+
+
+    QString filename;
+    if (dialog.exec())
+        filename = dialog.selectedFiles()[0];
+    */
+
+    QString filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Excel (*.xml *.xsl);;CSV (*.csv)")));
+
+    if (! filename.length())
+        return;
+
+    QFileInfo qf(filename);
+    QString ext = qf.completeSuffix();
+
+    if (ext == "" || ext == "txt") {
+        //std::cerr << "Text" << std::endl;
+    } else if (ext == "xml" || ext == "xsl") {
+        //std::cerr << "Excel" << std::endl;
+    } else if (ext == "csv") {
+        //std::cerr << "CSV" << std::endl;
+    } else {
+        QMessageBox::critical(this,
+                              tr("Unknown file format"),
+                              tr("Cannot save file. Unknown file name extension: %1").arg(ext),
+                              QMessageBox::Ok);
+    }
+}
+
+
 void StatisticsWindow::copy()
 {
     QString csv;

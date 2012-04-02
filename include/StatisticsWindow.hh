@@ -40,6 +40,7 @@ public slots:
     void cancelQuery();
     void copy();
     void exportSelection();
+    void saveAs();
 
 private slots:
     void applyValidityColor(QString const &text);

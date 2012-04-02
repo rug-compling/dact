@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <stdexcept>
 
 #include <QClipboard>
@@ -50,6 +52,11 @@ void DependencyTreeWidget::cancelQuery()
 {
     if (d_model)
         d_model->cancelQuery();
+}
+
+void DependencyTreeWidget::saveAs()
+{
+    std::cerr << "Dependency Tree Widget Save As" << std::endl;
 }
 
 void DependencyTreeWidget::copy()

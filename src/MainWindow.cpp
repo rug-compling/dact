@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
@@ -204,6 +206,22 @@ void MainWindow::showDownloadWindow()
     d_downloadWindow->raise();
 }
 
+void MainWindow::saveAs()
+{
+    switch (d_ui->mainTabWidget->currentIndex()) {
+    case 0:
+        d_ui->dependencyTreeWidget->saveAs();
+        break;
+    case 1:
+        d_ui->statisticsWindow->saveAs();
+        break;
+    case 2:
+        d_ui->sentencesWidget->saveAs();
+        break;
+    }
+}
+
+
 #ifdef USE_REMOTE_CORPUS
 void MainWindow::showRemoteWindow()
 {
@@ -310,6 +328,8 @@ void MainWindow::createActions()
         SLOT(openCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
+    connect(d_ui->saveAsAction, SIGNAL(triggered(bool)),
+        SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
       connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
           SLOT(exportCorpus()));

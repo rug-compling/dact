@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
@@ -243,6 +245,12 @@ void BracketedWindow::writeSettings()
     
     // display method
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
+}
+
+
+void BracketedWindow::saveAs()
+{
+    std::cerr << "Bracketed Window Save As" << std::endl;
 }
 
 void BracketedWindow::copy()

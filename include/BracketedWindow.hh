@@ -70,6 +70,7 @@ public slots:
 
     void copy();
     void exportSelection();
+    void saveAs();
 
 
 private slots:
