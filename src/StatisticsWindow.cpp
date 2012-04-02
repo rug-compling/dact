@@ -198,6 +198,11 @@ void StatisticsWindow::saveAs()
             << "<Workbook\n"
             << "    xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
             << "    xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n"
+            << "  <Styles>\n"
+            << "    <Style ss:ID=\"s01\">\n"
+            << "      <NumberFormat ss:Format=\"0.0\"/>\n"
+            << "    </Style>\n"
+            << "  </Styles>\n"
             << "  <Worksheet ss:Name=\"Sheet1\">\n"
             << "    <Table>\n";
 
@@ -213,9 +218,9 @@ void StatisticsWindow::saveAs()
             out << count << "\t" << perc << "%\t" << lbl << "\n";
         else if (xml)
             out << "      <Row>\n"
-                << "	<Cell><Data ss:Type=\"String\">" << lbl.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") << "</Data></Cell>\n"
-                << "	<Cell><Data ss:Type=\"Number\">" << count << "</Data></Cell>\n"
-                << "	<Cell><Data ss:Type=\"Number\">" << perc << "</Data></Cell>\n"
+                << "        <Cell><Data ss:Type=\"String\">" << lbl.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") << "</Data></Cell>\n"
+                << "        <Cell><Data ss:Type=\"Number\">" << count << "</Data></Cell>\n"
+                << "        <Cell ss:StyleID=\"s01\" ss:Formula=\"=RC[-1]/SUM(R[" << -i << "]C[-1]:R[" << nlines - 1 - i << "]C[-1])*100\"/>\n"
                 << "      </Row>\n";
         else if (csv)
             out << "\"" << lbl.replace("\"", "\"\"")  << "\",\"" << count << "\",\"" << perc << "\"\n";
@@ -223,7 +228,10 @@ void StatisticsWindow::saveAs()
     }
 
     if (xml)
-        out << "    </Table>\n"
+        out << "      <Row>\n"
+            << "        <Cell ss:Index=\"2\" ss:Formula=\"=SUM(R[" << -nlines << "]C:R[-1]C)\"/>\n"
+            << "      </Row>\n"
+            << "    </Table>\n"
             << "  </Worksheet>\n"
             << "</Workbook>\n";
 
