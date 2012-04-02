@@ -35,7 +35,7 @@ StatisticsWindow::StatisticsWindow(QWidget *parent) :
     createActions();
     readNodeAttributes();
     readSettings();
-    
+
     // Pick a sane default attribute.
     int idx = d_ui->attributeComboBox->findText("word");
     if (idx != -1)
@@ -57,7 +57,7 @@ void StatisticsWindow::attributeChanged(int index)
 void StatisticsWindow::queryFailed(QString error)
 {
     progressStopped(0, 0);
-    
+
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
@@ -66,9 +66,9 @@ void StatisticsWindow::queryFailed(QString error)
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
-    
+
     //d_xpathValidator->setCorpusReader(d_corpusReader);
-    
+
     setModel(new QueryModel(corpusReader));
 }
 
@@ -93,16 +93,16 @@ void StatisticsWindow::setModel(QueryModel *model)
 
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
-    
+
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
         SLOT(updateResultsTotalCount()));
-    
+
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         SLOT(progressStarted(int)));
-    
+
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
-    
+
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
         SLOT(progressStopped(int, int)));
 }
@@ -126,39 +126,107 @@ void StatisticsWindow::cancelQuery()
 
 void StatisticsWindow::saveAs()
 {
-    /*
-    QFileDialog dialog(this);
-    dialog.setNameFilter(tr("Text (*.txt);;Excel (*.xml *.xsl);;CSV (*.csv)"));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setLabelText(QFileDialog::Accept, tr("Save"));
-    dialog.setConfirmOverwrite(true);
+    int
+        nlines = d_model->rowCount(QModelIndex());
 
+    if (nlines == 0)
+        return;
 
-    QString filename;
-    if (dialog.exec())
-        filename = dialog.selectedFiles()[0];
-    */
-
-    QString filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Excel (*.xml *.xsl);;CSV (*.csv)")));
+    QString
+        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Excel (*.xml);;CSV (*.csv)")));
 
     if (! filename.length())
         return;
 
-    QFileInfo qf(filename);
-    QString ext = qf.completeSuffix();
+    bool
+        txt = false,
+        xml = false,
+        csv = false;
 
-    if (ext == "" || ext == "txt") {
-        //std::cerr << "Text" << std::endl;
-    } else if (ext == "xml" || ext == "xsl") {
-        //std::cerr << "Excel" << std::endl;
-    } else if (ext == "csv") {
-        //std::cerr << "CSV" << std::endl;
-    } else {
+    QFileInfo
+        qf(filename);
+    QString
+        ext = qf.completeSuffix();
+
+    if (ext == "" || ext == "txt")
+        txt = true;
+    else if (ext == "xml")
+        xml = true;
+    else if (ext == "csv")
+        csv = true;
+    else {
         QMessageBox::critical(this,
                               tr("Unknown file format"),
                               tr("Cannot save file. Unknown file name extension: %1").arg(ext),
                               QMessageBox::Ok);
+        return;
     }
+
+    QFile
+        data(filename);
+    if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
+        QMessageBox::critical(this,
+                              tr("Save file error"),
+                              tr("Cannot save file %1 (error code %2)").arg(filename).arg(data.error()),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    QString
+        lbl;
+    qreal
+        perc;
+    int
+        count;
+    QTextStream
+        out(&data);
+
+    out.setCodec("UTF-8");
+    out.setRealNumberNotation(QTextStream::FixedNotation);
+
+    if (txt) {
+        out.setRealNumberPrecision(1);
+        out << tr("Corpus") << ":\t" << d_corpusReader->name().c_str() << "\n"
+            << tr("Filter") << ":\t" << d_filter << "\n"
+            << tr("Attribute") << ":\t" << d_ui->attributeComboBox->currentText() << "\n"
+            << tr("Total hits") << ":\t" << d_model->totalHits() << "\n\n";
+    }
+
+    if (xml) {
+        out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            << "<?mso-application progid=\"Excel.Sheet\"?>\n"
+            << "<Workbook\n"
+            << "    xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
+            << "    xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n"
+            << "  <Worksheet ss:Name=\"Sheet1\">\n"
+            << "    <Table>\n";
+
+    }
+
+    nlines = d_model->rowCount(QModelIndex()); // again, just in case there is more now
+    for (int i = 0; i < nlines; i++) {
+        lbl = d_model->data(d_model->index(i, 0)).toString();
+        count = d_model->data(d_model->index(i, 1)).toInt();
+        perc = d_model->data(d_model->index(i, 2)).toReal() * 100.0;
+
+        if (txt)
+            out << count << "\t" << perc << "%\t" << lbl << "\n";
+        else if (xml)
+            out << "      <Row>\n"
+                << "	<Cell><Data ss:Type=\"String\">" << lbl.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") << "</Data></Cell>\n"
+                << "	<Cell><Data ss:Type=\"Number\">" << count << "</Data></Cell>\n"
+                << "	<Cell><Data ss:Type=\"Number\">" << perc << "</Data></Cell>\n"
+                << "      </Row>\n";
+        else if (csv)
+            out << "\"" << lbl.replace("\"", "\"\"")  << "\",\"" << count << "\",\"" << perc << "\"\n";
+
+    }
+
+    if (xml)
+        out << "    </Table>\n"
+            << "  </Worksheet>\n"
+            << "</Workbook>\n";
+
 }
 
 
@@ -190,12 +258,12 @@ void StatisticsWindow::exportSelection()
             tr("Error exporting selection"),
             tr("Could open file for writing."),
             QMessageBox::Ok);
-        
+
         return;
     }
 
     QTextStream textstream(&file);
-    
+
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream, ";", true);
 
@@ -205,22 +273,22 @@ void StatisticsWindow::exportSelection()
 void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
-   
+
     // Requires initialized UI.
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTable->verticalHeader()->hide();
     d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
     d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
-    
+
     // Only allow valid xpath queries to be submitted
     //d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-        
+
     // When a row is activated, generate a query to be used in the main window to
     // filter all the results so only the results which are accumulated in this
     // row will be shown.
     connect(d_ui->resultsTable, SIGNAL(activated(QModelIndex const &)),
         SLOT(generateQuery(QModelIndex const &)));
-    
+
     // Toggle percentage column checkbox (is this needed?)
     connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
         SLOT(showPercentageChanged()));
@@ -236,12 +304,12 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
 
     if (data == MISSING_ATTRIBUTE)
       return;
-    
+
     QString query = ::generateQuery(
         d_filter,
         d_ui->attributeComboBox->currentText(),
         data);
-    
+
     emit entryActivated(data, query);
 }
 
@@ -250,13 +318,13 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
     // If there is no model attached (e.g. no corpus loaded) do nothing
     if (!d_model)
         return;
-    
+
     QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
-    
+
     // If there is nothing selected, do nothing
     if (rows.isEmpty())
         return;
-    
+
     foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
@@ -264,7 +332,7 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
             output << '"' << d_model->data(row).toString().replace("\"", "\"\"") << '"'; // value
         else
             output << d_model->data(row).toString();
-        
+
         output
             << separator
             << d_model->data(row.sibling(row.row(), 1)).toString() // count
@@ -294,7 +362,7 @@ void StatisticsWindow::startQuery()
         .arg(d_filter)
         .arg(d_ui->attributeComboBox->currentText())
         .arg(MISSING_ATTRIBUTE);
-    
+
     if (d_model->validQuery(attrWithMissing))
         d_model->runQuery(attrWithMissing);
     else
