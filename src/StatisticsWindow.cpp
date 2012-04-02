@@ -227,6 +227,14 @@ void StatisticsWindow::saveAs()
             << "  </Worksheet>\n"
             << "</Workbook>\n";
 
+    data.close();
+
+    QMessageBox::information(this,
+                             tr("File saved"),
+                             tr("File saved as %1").arg(filename),
+                             QMessageBox::Ok);
+
+
 }
 
 
