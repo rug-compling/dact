@@ -189,6 +189,7 @@ void StatisticsWindow::saveAs()
         out << tr("Corpus") << ":\t" << d_corpusReader->name().c_str() << "\n"
             << tr("Filter") << ":\t" << d_filter << "\n"
             << tr("Attribute") << ":\t" << d_ui->attributeComboBox->currentText() << "\n"
+            << tr("Variants") << ":\t" << nlines << "\n"
             << tr("Total hits") << ":\t" << d_model->totalHits() << "\n\n";
     }
 
@@ -203,7 +204,7 @@ void StatisticsWindow::saveAs()
             << "      <NumberFormat ss:Format=\"0.0\"/>\n"
             << "    </Style>\n"
             << "  </Styles>\n"
-            << "  <Worksheet ss:Name=\"Sheet1\">\n"
+            << "  <Worksheet ss:Name=\"Details\">\n"
             << "    <Table>\n";
 
     }
@@ -218,7 +219,7 @@ void StatisticsWindow::saveAs()
             out << count << "\t" << perc << "%\t" << lbl << "\n";
         else if (xml)
             out << "      <Row>\n"
-                << "        <Cell><Data ss:Type=\"String\">" << lbl.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") << "</Data></Cell>\n"
+                << "        <Cell><Data ss:Type=\"String\">" << XMLescape(lbl) << "</Data></Cell>\n"
                 << "        <Cell><Data ss:Type=\"Number\">" << count << "</Data></Cell>\n"
                 << "        <Cell ss:StyleID=\"s01\" ss:Formula=\"=RC[-1]/SUM(R[" << -i << "]C[-1]:R[" << nlines - 1 - i << "]C[-1])*100\"/>\n"
                 << "      </Row>\n";
@@ -230,6 +231,30 @@ void StatisticsWindow::saveAs()
     if (xml)
         out << "      <Row>\n"
             << "        <Cell ss:Index=\"2\" ss:Formula=\"=SUM(R[" << -nlines << "]C:R[-1]C)\"/>\n"
+            << "      </Row>\n"
+            << "    </Table>\n"
+            << "  </Worksheet>\n"
+            << "  <Worksheet ss:Name=\"Overview\">\n"
+            << "    <Table>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Corpus")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_corpusReader->name()) << "</Data></Cell>\n"
+            << "      </Row>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Filter")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_filter) << "</Data></Cell>\n"
+            << "      </Row>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Attribute")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_ui->attributeComboBox->currentText()) << "</Data></Cell>\n"
+            << "      </Row>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Variants")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"Number\">" << nlines << "</Data></Cell>\n"
+            << "      </Row>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Total hits")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"Number\">" << d_model->totalHits() << "</Data></Cell>\n"
             << "      </Row>\n"
             << "    </Table>\n"
             << "  </Worksheet>\n"
@@ -491,4 +516,14 @@ void StatisticsWindow::writeSettings()
     // Window geometry
     settings.setValue("query_pos", pos());
     settings.setValue("query_size", size());
+}
+
+QString StatisticsWindow::XMLescape(QString s)
+{
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+}
+
+QString StatisticsWindow::XMLescape(std::string s)
+{
+    return XMLescape(QString(s.c_str()));
 }
