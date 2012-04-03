@@ -1,4 +1,5 @@
 #include <QClipboard>
+#include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -129,6 +130,9 @@ void StatisticsWindow::cancelQuery()
 
 void StatisticsWindow::saveAs()
 {
+    if (d_model.isNull())
+        return;
+
     int
         nlines = d_model->rowCount(QModelIndex());
 
@@ -176,7 +180,8 @@ void StatisticsWindow::saveAs()
     }
 
     QString
-        lbl;
+        lbl,
+        date(QDateTime::currentDateTime().toLocalTime().toString());
     qreal
         perc;
     int
@@ -193,7 +198,8 @@ void StatisticsWindow::saveAs()
             << tr("Filter") << ":\t" << d_filter << "\n"
             << tr("Attribute") << ":\t" << d_ui->attributeComboBox->currentText() << "\n"
             << tr("Variants") << ":\t" << nlines << "\n"
-            << tr("Total hits") << ":\t" << d_model->totalHits() << "\n\n";
+            << tr("Total hits") << ":\t" << d_model->totalHits() << "\n"
+            << tr("Date") << ":\t" << date << "\n\n";
     }
 
     if (xml) {
@@ -209,7 +215,6 @@ void StatisticsWindow::saveAs()
             << "  </Styles>\n"
             << "  <Worksheet ss:Name=\"Details\">\n"
             << "    <Table>\n";
-
     }
 
     nlines = d_model->rowCount(QModelIndex()); // again, just in case there is more now
@@ -217,7 +222,6 @@ void StatisticsWindow::saveAs()
         lbl = d_model->data(d_model->index(i, 0)).toString();
         count = d_model->data(d_model->index(i, 1)).toInt();
         perc = d_model->data(d_model->index(i, 2)).toReal() * 100.0;
-
         if (txt)
             out << count << "\t" << perc << "%\t" << lbl << "\n";
         else if (xml)
@@ -228,7 +232,6 @@ void StatisticsWindow::saveAs()
                 << "      </Row>\n";
         else if (csv)
             out << "\"" << lbl.replace("\"", "\"\"")  << "\",\"" << count << "\",\"" << perc << "\"\n";
-
     }
 
     if (xml)
@@ -258,6 +261,10 @@ void StatisticsWindow::saveAs()
             << "      <Row>\n"
             << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Total hits")) << ":</Data></Cell>\n"
             << "        <Cell><Data ss:Type=\"Number\">" << d_model->totalHits() << "</Data></Cell>\n"
+            << "      </Row>\n"
+            << "      <Row>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Date")) << ":</Data></Cell>\n"
+            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(date) << "</Data></Cell>\n"
             << "      </Row>\n"
             << "    </Table>\n"
             << "  </Worksheet>\n"
@@ -396,7 +403,6 @@ void StatisticsWindow::startQuery()
 {
     setReady(1, false);
 
-
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
 
     d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
@@ -439,7 +445,10 @@ void StatisticsWindow::progressChanged(int n, int total)
 void StatisticsWindow::progressStopped(int n, int total)
 {
     d_ui->filterProgress->setVisible(false);
-    setReady(1, d_model->rowCount(QModelIndex()) ? true : false);
+    if (d_model.isNull())
+        setReady(1, false);
+    else
+        setReady(1, d_model->rowCount(QModelIndex()) ? true : false);
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
