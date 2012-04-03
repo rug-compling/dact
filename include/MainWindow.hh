@@ -87,6 +87,8 @@ public slots:
 
     void saveAs();
 
+    void setReady(int tabindex, bool isready);
+
 private slots:
     /*!
      Raise the about window
@@ -430,6 +432,9 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
+
+    bool d_ready[3];
+
 };
 
 #endif // MAINWINDOW_H

@@ -49,9 +49,10 @@ StatisticsWindow::~StatisticsWindow()
 
 void StatisticsWindow::attributeChanged(int index)
 {
-  Q_UNUSED(index);
-  if (!d_model.isNull())
-    startQuery();
+    Q_UNUSED(index);
+    setReady(1, false);
+    if (!d_model.isNull())
+        startQuery();
 }
 
 void StatisticsWindow::queryFailed(QString error)
@@ -65,6 +66,7 @@ void StatisticsWindow::queryFailed(QString error)
 
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
+    setReady(1, false);
     d_corpusReader = corpusReader;
 
     //d_xpathValidator->setCorpusReader(d_corpusReader);
@@ -78,6 +80,7 @@ void StatisticsWindow::setFilter(QString const &filter, QString const &raw_filte
 
     d_filter = filter;
     startQuery();
+
 }
 
 void StatisticsWindow::setAggregateAttribute(QString const &detail)
@@ -391,6 +394,9 @@ void StatisticsWindow::showPercentage(bool show)
 
 void StatisticsWindow::startQuery()
 {
+    setReady(1, false);
+
+
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
 
     d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
@@ -433,6 +439,7 @@ void StatisticsWindow::progressChanged(int n, int total)
 void StatisticsWindow::progressStopped(int n, int total)
 {
     d_ui->filterProgress->setVisible(false);
+    setReady(1, d_model->rowCount(QModelIndex()) ? true : false);
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
