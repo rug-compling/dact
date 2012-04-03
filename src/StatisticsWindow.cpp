@@ -231,7 +231,7 @@ void StatisticsWindow::saveAs()
                 << "        <Cell ss:StyleID=\"s01\" ss:Formula=\"=RC[-1]/SUM(R[" << -i << "]C[-1]:R[" << nlines - 1 - i << "]C[-1])*100\"/>\n"
                 << "      </Row>\n";
         else if (csv)
-            out << "\"" << lbl.replace("\"", "\"\"")  << "\",\"" << count << "\",\"" << perc << "\"\n";
+            out << "\"" << lbl.replace("\"", "\"\"")  << "\"," << count << "," << perc << "\n";
     }
 
     if (xml)
