@@ -98,6 +98,7 @@ SET(dact_SRCS
   src/DactApplication.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
+  src/DactListView3.cpp
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
@@ -142,6 +143,7 @@ SET(dact_HDRS
   include/DactApplication.hh
   include/DactColorWell.hh
   include/DactListView.hh
+  include/DactListView3.hh
   include/DactMacro.hh
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
@@ -187,6 +189,7 @@ SET(dact_MOC_HDRS
   include/DependencyTreeWidget.hh
   include/DownloadWindow.hh
   include/DactListView.hh
+  include/DactListView3.hh
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh

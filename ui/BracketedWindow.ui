@@ -32,7 +32,7 @@
     </layout>
    </item>
    <item>
-    <widget class="DactListView" name="resultsList" native="true">
+    <widget class="DactListView3" name="resultsList" native="true">
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
@@ -80,9 +80,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DactListView</class>
+   <class>DactListView3</class>
    <extends>QWidget</extends>
-   <header>DactListView.hh</header>
+   <header>DactListView3.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

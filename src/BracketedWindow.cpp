@@ -75,6 +75,9 @@ void BracketedWindow::setModel(FilterModel *model)
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->resultsList->setModel(d_model.data());
     
+    d_ui->resultsList->setColumnHidden(1, true);
+    d_ui->resultsList->horizontalHeader()->setStretchLastSection(true);
+
     /*
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
         this, SLOT(updateResultsTotalCount()));
@@ -182,8 +185,8 @@ void BracketedWindow::listDelegateChanged(int index)
         return;
     }
     
-    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegate();
-    d_ui->resultsList->setItemDelegate(d_listDelegateFactories[delegateIndex](d_corpusReader));
+    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegateForColumn(2);
+    d_ui->resultsList->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
     delete prevItemDelegate;
 }
 
