@@ -10,9 +10,9 @@
 
 #include "DactListView3.hh"
 
-void DactListView3::setItemDelegate(QAbstractItemDelegate* delegate)
+void DactListView3::setItemDelegateForColumn(int column, QAbstractItemDelegate* delegate)
 {
-    QAbstractItemView::setItemDelegate(delegate);
+    QAbstractItemView::setItemDelegateForColumn(column, delegate);
 
     if (model() == 0)
         return;
@@ -25,3 +25,4 @@ void DactListView3::setItemDelegate(QAbstractItemDelegate* delegate)
     dataChanged(topLeft, bottomRight);
 
 }
+

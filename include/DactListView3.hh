@@ -14,10 +14,7 @@ public:
     DactListView3(QWidget *parent = 0) : QTableView(parent) {};
 
     // Overrides QListWidget::setItemDelegate to call dataChanged() afterwards.
-    void setItemDelegate(QAbstractItemDelegate* delegate);
+    void setItemDelegateForColumn(int column, QAbstractItemDelegate* delegate);
 };
 
 #endif
-
-
-
