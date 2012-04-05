@@ -140,7 +140,7 @@ void StatisticsWindow::saveAs()
         return;
 
     QString
-        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Excel (*.xml);;CSV (*.csv)")));
+        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)")));
 
     if (! filename.length())
         return;
@@ -164,7 +164,7 @@ void StatisticsWindow::saveAs()
     else {
         QMessageBox::critical(this,
                               tr("Unknown file format"),
-                              tr("Cannot save file. Unknown file name extension: %1").arg(ext),
+                              tr("Unknown file name extension: .%1\nMust be one of: .txt .xml .csv").arg(ext),
                               QMessageBox::Ok);
         return;
     }
