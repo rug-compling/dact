@@ -127,7 +127,6 @@ private slots:
 
     void showFilenamesChanged();
 
-
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 

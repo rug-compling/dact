@@ -80,10 +80,14 @@ void BracketedWindow::setModel(FilterModel *model)
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
 
-    d_ui->resultsTable->setColumnHidden(1, true);
-    // d_ui->resultsTable->horizontalHeader()->setStretchLastSection(true);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
+    //d_ui->resultsTable->setColumnHidden(1, true);
+
+    //d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+    //d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
+    //d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
+
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    d_ui->resultsTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     /*
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
@@ -160,6 +164,7 @@ void BracketedWindow::createActions()
 void BracketedWindow::showFilenames(bool show)
 {
    d_ui->resultsTable->setColumnHidden(0, !show);
+   d_ui->resultsTable->setColumnHidden(1, !show);
    d_ui->filenamesCheckBox->setChecked(show);
 }
 
@@ -185,9 +190,8 @@ void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 
 void BracketedWindow::entryActivated(QModelIndex const &index)
 {
-    emit entryActivated(index.data(Qt::UserRole).toString());
+    emit entryActivated(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
 }
-
 
 void BracketedWindow::addListDelegate(QString const &name, DelegateFactory factory)
 {
@@ -210,6 +214,7 @@ void BracketedWindow::listDelegateChanged(int index)
     QAbstractItemDelegate* prevItemDelegate = d_ui->resultsTable->itemDelegateForColumn(2);
     d_ui->resultsTable->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
     delete prevItemDelegate;
+    d_ui->resultsTable->resizeRowsToContents();
 }
 
 void BracketedWindow::initListDelegates()
