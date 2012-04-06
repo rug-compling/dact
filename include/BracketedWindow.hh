@@ -1,5 +1,5 @@
-#ifndef DACTFILTERWINDOW_H
-#define DACTFILTERWINDOW_H
+#ifndef DACTBRACKETEDWINDOW_H
+#define DACTBRACKETEDWINDOW_H
 
 #include <QCloseEvent>
 #include <QHash>
@@ -154,4 +154,4 @@ private:
     QSharedPointer<FilterModel> d_model;
 };
 
-#endif // DACTFILTERWINDOW_H
+#endif // DACTBRACKETEDWINDOW_H

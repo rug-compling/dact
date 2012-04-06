@@ -78,12 +78,12 @@ void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter
 void BracketedWindow::setModel(FilterModel *model)
 {
     d_model = QSharedPointer<FilterModel>(model);
-    d_ui->resultsList->setModel(d_model.data());
+    d_ui->resultsTable->setModel(d_model.data());
 
-    d_ui->resultsList->setColumnHidden(1, true);
-    // d_ui->resultsList->horizontalHeader()->setStretchLastSection(true);
-    d_ui->resultsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
-    d_ui->resultsList->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
+    d_ui->resultsTable->setColumnHidden(1, true);
+    // d_ui->resultsTable->horizontalHeader()->setStretchLastSection(true);
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     /*
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
@@ -141,7 +141,7 @@ void BracketedWindow::createActions()
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     */
 
-    QObject::connect(d_ui->resultsList,
+    QObject::connect(d_ui->resultsTable,
         // itemActivated is triggered by a single click on some systems
         // where this is the configured behavior: it can be annoying.
         // But it also enables using [enter] to raise the main window
@@ -159,7 +159,7 @@ void BracketedWindow::createActions()
 
 void BracketedWindow::showFilenames(bool show)
 {
-   d_ui->resultsList->setColumnHidden(0, !show);
+   d_ui->resultsTable->setColumnHidden(0, !show);
    d_ui->filenamesCheckBox->setChecked(show);
 }
 
@@ -207,8 +207,8 @@ void BracketedWindow::listDelegateChanged(int index)
         return;
     }
 
-    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegateForColumn(2);
-    d_ui->resultsList->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
+    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsTable->itemDelegateForColumn(2);
+    d_ui->resultsTable->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
     delete prevItemDelegate;
 }
 
@@ -335,13 +335,13 @@ void BracketedWindow::selectionAsCSV(QTextStream &output)
     if (!d_model)
         return;
 
-    QModelIndexList rows = d_ui->resultsList->selectionModel()->selectedRows();
+    QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
 
     // If there is nothing selected, do nothing
     if (rows.isEmpty())
         return;
 
-    BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsList->itemDelegate());
+    BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsTable->itemDelegate());
 
     // Could not cast QAbstractItemDelegate to BracketedDelegate? Typical, but it is possible.
     if (!delegate)

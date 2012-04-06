@@ -8,9 +8,9 @@
 #include <QString>
 #include <QStringList>
 
-#include "DactListView3.hh"
+#include "DactTableView.hh"
 
-void DactListView3::setItemDelegateForColumn(int column, QAbstractItemDelegate* delegate)
+void DactTableView::setItemDelegateForColumn(int column, QAbstractItemDelegate* delegate)
 {
     QAbstractItemView::setItemDelegateForColumn(column, delegate);
 
