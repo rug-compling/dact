@@ -54,7 +54,7 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
         || index.row() < 0
         || !(role == Qt::DisplayRole || role == Qt::UserRole))
         return QVariant();
-    
+
     switch (index.column())
     {
         case 0:
@@ -122,9 +122,13 @@ void FilterModel::fireDataChanged()
       rows = d_results.size();
     }
 
-    emit dataChanged(index(d_lastRow, 0), index(rows, 1));
+    emit layoutAboutToBeChanged();
+
+    emit dataChanged(index(d_lastRow, 0), index(rows, 3));
     emit nEntriesFound(rows, d_hits);
     
+    emit layoutChanged();
+
     d_lastRow = rows - 1;
 }
 
@@ -248,7 +252,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
 {
     try {
         emit queryStarted(0); // we don't know how many entries will be found
-        
+
         d_cancelled = false;
         d_hits = 0;
         d_entryIterator = begin;
