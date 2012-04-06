@@ -81,7 +81,9 @@ void BracketedWindow::setModel(FilterModel *model)
     d_ui->resultsList->setModel(d_model.data());
 
     d_ui->resultsList->setColumnHidden(1, true);
-    d_ui->resultsList->horizontalHeader()->setStretchLastSection(true);
+    // d_ui->resultsList->horizontalHeader()->setStretchLastSection(true);
+    d_ui->resultsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+    d_ui->resultsList->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     /*
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
