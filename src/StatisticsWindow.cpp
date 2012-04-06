@@ -164,7 +164,11 @@ void StatisticsWindow::saveAs()
     else {
         QMessageBox::critical(this,
                               tr("Unknown file format"),
-                              tr("Unknown file name extension: .%1\nMust be one of: .txt .xml .csv").arg(ext),
+                              tr("Unknown file name extension") + QString(": .%1\n").arg(ext) +
+                              "Extension must be one of:\n"
+                              "    .txt  for Text\n"
+                              "    .xml  for Microsoft Excel 2003 XML\n"
+                              "    .csv  for CSV",
                               QMessageBox::Ok);
         return;
     }
