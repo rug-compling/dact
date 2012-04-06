@@ -122,8 +122,10 @@ void FilterModel::fireDataChanged()
       rows = d_results.size();
     }
 
+    emit layoutAboutToBeChanged();
     emit dataChanged(index(d_lastRow, 0), index(rows, 1));
     emit nEntriesFound(rows, d_hits);
+    emit layoutChanged();
     
     d_lastRow = rows - 1;
 }
