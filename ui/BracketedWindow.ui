@@ -70,9 +70,9 @@
      </item>
      <item>
        <widget class="QProgressBar" name="filterProgressBar">
-	 <property name="visible">
-	   <bool>false</bool>
-	 </property>
+         <property name="visible">
+           <bool>false</bool>
+         </property>
        </widget>
      </item>
     </layout>
