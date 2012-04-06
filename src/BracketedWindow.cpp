@@ -36,10 +36,15 @@ BracketedWindow::BracketedWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow))
 {
     d_ui->setupUi(this);
-    
+
     initListDelegates();
     createActions();
-    //readSettings();
+    readSettings();
+}
+
+BracketedWindow::~BracketedWindow()
+{
+    writeSettings();
 }
 
 void BracketedWindow::cancelQuery()
@@ -51,7 +56,7 @@ void BracketedWindow::cancelQuery()
 void BracketedWindow::queryFailed(QString error)
 {
     progressStopped(0, 0);
-    
+
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
@@ -59,13 +64,13 @@ void BracketedWindow::queryFailed(QString error)
 
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
-    d_corpusReader = corpusReader;    
+    d_corpusReader = corpusReader;
 }
 
 void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter)
 {
     Q_UNUSED(raw_filter);
-    
+
     d_filter = filter;
     startQuery();
 }
@@ -74,7 +79,7 @@ void BracketedWindow::setModel(FilterModel *model)
 {
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->resultsList->setModel(d_model.data());
-    
+
     d_ui->resultsList->setColumnHidden(1, true);
     d_ui->resultsList->horizontalHeader()->setStretchLastSection(true);
 
@@ -85,13 +90,13 @@ void BracketedWindow::setModel(FilterModel *model)
 
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
-    
+
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         SLOT(progressStarted(int)));
-    
+
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
-    
+
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
             SLOT(progressFinished(int, int, bool)));
 
@@ -114,9 +119,10 @@ void BracketedWindow::startQuery()
     // This will make sure no old cached data is used.
     reloadListDelegate();
 
-    d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"), 
+    d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"),
         stylesheet);
 
+    showFilenamesChanged();
 }
 
 void BracketedWindow::applyValidityColor(QString const &)
@@ -132,8 +138,8 @@ void BracketedWindow::createActions()
         this,
         SLOT(entrySelected(QListWidgetItem*,QListWidgetItem*)));
     */
-    
-    QObject::connect(d_ui->resultsList, 
+
+    QObject::connect(d_ui->resultsList,
         // itemActivated is triggered by a single click on some systems
         // where this is the configured behavior: it can be annoying.
         // But it also enables using [enter] to raise the main window
@@ -144,6 +150,20 @@ void BracketedWindow::createActions()
 
     QObject::connect(d_ui->listDelegateComboBox, SIGNAL(currentIndexChanged(int)),
         this, SLOT(listDelegateChanged(int)));
+
+    connect(d_ui->filenamesCheckBox, SIGNAL(toggled(bool)),
+        SLOT(showFilenamesChanged()));
+}
+
+void BracketedWindow::showFilenames(bool show)
+{
+   d_ui->resultsList->setColumnHidden(0, !show);
+   d_ui->filenamesCheckBox->setChecked(show);
+}
+
+void BracketedWindow::showFilenamesChanged()
+{
+    showFilenames(d_ui->filenamesCheckBox->isChecked());
 }
 
 /*
@@ -151,9 +171,9 @@ void BracketedWindow::entrySelected(QListWidgetItem *current, QListWidgetItem *)
 {
     if (current == 0)
         return;
-    
+
     emit currentEntryChanged(current->data(Qt::UserRole).toString());
-    
+
     // Raises this window again when using cursor keys after using
     // [enter] to raise the main window.
     raise();
@@ -176,7 +196,7 @@ void BracketedWindow::addListDelegate(QString const &name, DelegateFactory facto
 void BracketedWindow::listDelegateChanged(int index)
 {
     int delegateIndex = d_ui->listDelegateComboBox->itemData(index, Qt::UserRole).toInt();
-    
+
     if (delegateIndex >= d_listDelegateFactories.size())
     {
         qWarning() << QString("Trying to select a list delegate (%1) beyond the boundary "
@@ -184,7 +204,7 @@ void BracketedWindow::listDelegateChanged(int index)
                              .arg(delegateIndex).arg(d_listDelegateFactories.size());
         return;
     }
-    
+
     QAbstractItemDelegate* prevItemDelegate = d_ui->resultsList->itemDelegateForColumn(2);
     d_ui->resultsList->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
     delete prevItemDelegate;
@@ -194,7 +214,7 @@ void BracketedWindow::initListDelegates()
 {
     addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
     addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
-    addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);   
+    addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);
 }
 
 void BracketedWindow::reloadListDelegate()
@@ -235,17 +255,28 @@ void BracketedWindow::closeEvent(QCloseEvent *event)
 void BracketedWindow::readSettings()
 {
     QSettings settings;
-    
+
+    bool show = settings.value("bracketed_show_filenames", true).toBool();
+    showFilenames(show);
+
+
+    /*
+
     // restore last selected display method
     int delegateIndex = settings.value("filter_list_delegate", 0).toInt();
     listDelegateChanged(delegateIndex);
     d_ui->listDelegateComboBox->setCurrentIndex(delegateIndex);
+
+    */
+
 }
 
 void BracketedWindow::writeSettings()
 {
     QSettings settings;
-    
+
+    settings.setValue("bracketed_show_filenames", d_ui->filenamesCheckBox->isChecked());
+
     // display method
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
 }
@@ -284,12 +315,12 @@ void BracketedWindow::exportSelection()
             tr("Error exporting selection"),
             tr("Could open file for writing."),
             QMessageBox::Ok);
-        
+
         return;
     }
 
     QTextStream textstream(&file);
-    
+
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream);
 
@@ -303,17 +334,17 @@ void BracketedWindow::selectionAsCSV(QTextStream &output)
         return;
 
     QModelIndexList rows = d_ui->resultsList->selectionModel()->selectedRows();
-    
+
     // If there is nothing selected, do nothing
     if (rows.isEmpty())
         return;
-    
+
     BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsList->itemDelegate());
 
     // Could not cast QAbstractItemDelegate to BracketedDelegate? Typical, but it is possible.
     if (!delegate)
         return;
-    
+
     foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
