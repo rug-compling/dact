@@ -320,6 +320,8 @@ void MainWindow::createActions()
 
     connect(d_ui->statisticsWindow, SIGNAL(setReady(int, bool)),
             SLOT(setReady(int, bool)));
+    connect(d_ui->sentencesWidget, SIGNAL(setReady(int, bool)),
+            SLOT(setReady(int, bool)));
 
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));

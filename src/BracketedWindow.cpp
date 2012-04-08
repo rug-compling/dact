@@ -1,5 +1,4 @@
-#include <iostream>
-
+#include <QDateTime>
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
@@ -64,6 +63,7 @@ void BracketedWindow::queryFailed(QString error)
 
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
+    setReady(2, false);
     d_corpusReader = corpusReader;
 }
 
@@ -71,6 +71,7 @@ void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter
 {
     Q_UNUSED(raw_filter);
 
+    setReady(2, false);
     d_filter = filter;
     startQuery();
 }
@@ -231,6 +232,7 @@ void BracketedWindow::reloadListDelegate()
 
 void BracketedWindow::progressStarted(int totalEntries)
 {
+    setReady(2, false);
     d_ui->filterProgressBar->setMinimum(0);
     d_ui->filterProgressBar->setMaximum(totalEntries);
     d_ui->filterProgressBar->setValue(0);
@@ -251,6 +253,10 @@ void BracketedWindow::progressFinished(int processedEntries, int totalEntries, b
 void BracketedWindow::progressStopped(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setVisible(false);
+    if (d_model.isNull())
+        setReady(2, false);
+    else
+        setReady(2, d_model->rowCount(QModelIndex()) ? true : false);
 }
 
 void BracketedWindow::closeEvent(QCloseEvent *event)
@@ -286,12 +292,6 @@ void BracketedWindow::writeSettings()
 
     // display method
     settings.setValue("filter_list_delegate", d_ui->listDelegateComboBox->currentIndex());
-}
-
-
-void BracketedWindow::saveAs()
-{
-    std::cerr << "Bracketed Window Save As" << std::endl;
 }
 
 void BracketedWindow::copy()
@@ -375,4 +375,275 @@ QStyledItemDelegate* BracketedWindow::visibilityDelegateFactory(CorpusReaderPtr 
 QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory(CorpusReaderPtr reader)
 {
     return new BracketedKeywordInContextDelegate(reader);
+}
+
+void BracketedWindow::saveAs()
+{
+
+    int
+        nlines = d_model->rowCount(QModelIndex());
+
+    if (nlines == 0)
+        return;
+
+    QString
+        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)")));
+
+    if (! filename.length())
+        return;
+
+    bool
+        txt = false,
+        html = false;
+
+    QFileInfo
+        qf(filename);
+    QString
+        ext = qf.completeSuffix();
+
+    if (ext == "" || ext == "txt")
+        txt = true;
+    else if (ext == "html" || ext == "htm")
+        html = true;
+    else {
+        QMessageBox::critical(this,
+                              tr("Unknown file format"),
+                              tr("Unknown file name extension") + QString(": .%1\n").arg(ext) +
+                              "Extension must be one of:\n"
+                              "    .txt         for Text\n"
+                              "    .html .htm   for HTML\n",
+                              QMessageBox::Ok);
+        return;
+    }
+
+    QFile
+        data(filename);
+    if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
+        QMessageBox::critical(this,
+                              tr("Save file error"),
+                              tr("Cannot save file %1 (error code %2)").arg(filename).arg(data.error()),
+                              QMessageBox::Ok);
+        return;
+    }
+
+
+
+    QString
+        lbl,
+        date(QDateTime::currentDateTime().toLocalTime().toString());
+    qreal
+        perc;
+    int
+        count;
+    QTextStream
+        out(&data);
+
+    out.setCodec("UTF-8");
+
+    if (txt)
+        out << tr("Corpus") << ":\t" << d_corpusReader->name().c_str() << "\n"
+            << tr("Filter") << ":\t" << d_filter << "\n"
+            << tr("Date") << ":\t" << date << "\n"
+            << "\n";
+
+    if (html) {
+        out << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
+            << "<html>\n"
+            << "  <head>\n"
+            << "    <title></title>\n"
+            << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n";
+
+        if (d_ui->listDelegateComboBox->currentIndex() == 0)
+            out << "<style type=\"text/css\">\n"
+                << "<!--\n"
+                << "body { background-color: #fff; color: #000; }\n"
+                << "div.show, div.hide {\n"
+                << "  margin-top: 2em;\n"
+                << "}\n"
+                << "div.show a.show,\n"
+                << "div.hide a.hide {\n"
+                << "  display: none;\n"
+                << "  visibility: hidden;\n"
+                << "}\n"
+                << "div.hide a.show,\n"
+                << "div.show a.hide {\n"
+                << "  padding: .4em .6em;\n"
+                << "  border: 1px solid #808080;\n"
+                << "  text-decoration: none;\n"
+                << "  color: black;\n"
+                << "}\n"
+                << "a.show:hover, a.hide:hover {\n"
+                << "  background-color: #c0c0FF;\n"
+                << "}\n"
+                << "div.hide dt,\n"
+                << "div.hide a.hide {\n"
+                << "  display: none;\n"
+                << "  visibility: hidden;\n"
+                << "}\n"
+                << "div.hide a.show {\n"
+                << "  display: inline;\n"
+                << "  visibility: visible;\n"
+                << "}\n"
+                << "div.hide dd {\n"
+                << "  margin-left: 0px;\n"
+                << "  margin-bottom: .5em;\n"
+                << "}\n"
+                << "div.show a.show {\n"
+                << "  display: none;\n"
+                << "  visibility: hidden;\n"
+                << "}\n"
+                << "div.show a.hide {\n"
+                << "  display: inline;\n"
+                << "  visibility: visible;\n"
+                << "}\n"
+                << ".l1 { background-color: #ddd; }\n"
+                << ".l2 { background-color: #aaa; }\n"
+                << ".l3 { background-color: #777; }\n"
+                << ".l4 { background-color: #444; color: #fff; }\n"
+                << ".l5 { background-color: #000; color: #ccc; }\n"
+                << "-->\n"
+                << "</style>\n"
+                << "<script language=\"JavaScript\"><!--\n"
+                << "function show() {\n"
+                << "  document.getElementById('main').className = 'show';\n"
+                << "}\n"
+                << "function hide() {\n"
+                << "  document.getElementById('main').className = 'hide';\n"
+                << "}\n"
+                << "//--></script>\n";
+        out << "  </head>\n"
+            << "  <body>\n"
+            << "    <table>\n"
+            << "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
+            << "    </table>\n"
+            << "\n";
+    }
+
+    switch (d_ui->listDelegateComboBox->currentIndex()) {
+    case 0:
+        saveAsSentences(out, txt, html);
+        break;
+    case 1:
+        saveAsMatches(out, txt, html);
+        break;
+    case 2:
+        saveAsContext(out, txt, html);
+        break;
+    }
+
+    if (html)
+        out << "  </body>\n"
+            << "</html>\n";
+
+
+    data.close();
+
+    QMessageBox::information(this,
+                             tr("File saved"),
+                             tr("File saved as %1").arg(filename),
+                             QMessageBox::Ok);
+
+}
+
+void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
+{
+    size_t
+        nlines;
+
+    bool
+        filenames = d_ui->filenamesCheckBox->isChecked();
+
+    if (txt) {
+        nlines = d_model->rowCount(QModelIndex());
+        for (size_t i = 0; i < nlines; i++) {
+            if (filenames)
+                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\t"
+                    << d_model->data(d_model->index(i, 1), Qt::DisplayRole).toInt() << "\t";
+            out << d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed() << "\n";
+        }
+    }
+
+    if (html) {
+        out << "<div id=\"main\" class=\"" << (filenames ? "show" : "hide") << "\">\n"
+            << "<a href=\"javascript:show()\" class=\"show\">" << tr("show filenames") << "</a>\n"
+            << "<a href=\"javascript:hide()\" class=\"hide\">" << tr("hide filenames") << "</a>\n"
+            << "<p>\n"
+            << "<dl>\n";
+
+        nlines = d_model->rowCount(QModelIndex());
+        for (size_t i = 0; i < nlines; i++) {
+            out << "<dt>" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << " ["
+                << d_model->data(d_model->index(i, 1), Qt::DisplayRole).toInt() << "]\n"
+                << "<dd>";
+            saveAsColorString(out, HTMLescape(d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString()).trimmed());
+            out << "\n";
+        }
+
+        out << "</dl>\n"
+            << "</div>\n";
+    }
+}
+
+void BracketedWindow::saveAsColorString(QTextStream &out, QString s)
+{
+    int level = 0,
+        lvl2 = 0;
+    QString w;
+
+    QStringList list = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+    for (int i = 0; i < list.size(); ++i) {
+        w = list.at(i);
+        while (w.startsWith("[")) {
+            level++;
+            out << "<span class=\"l" << level << "\">";
+            w = w.right(w.size() - 1);
+        }
+        lvl2 = 0;
+        while (w.endsWith("]")) {
+            lvl2++;
+            w = w.left(w.size() - 1);
+        }
+        out << w;
+        for (int j = 0; j < lvl2; j++)
+            out << "</span>";
+        out << " ";
+        level -= lvl2;
+    }
+
+}
+
+void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
+{
+    if (txt) {
+        out << "TO DO\n";
+    }
+
+    if (html) {
+        out << "TO DO\n";
+    }
+}
+
+void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
+{
+    if (txt) {
+        out << "TO DO\n";
+    }
+
+    if (html) {
+        out << "TO DO\n";
+    }
+}
+
+
+QString BracketedWindow::HTMLescape(QString s)
+{
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+}
+
+QString BracketedWindow::HTMLescape(std::string s)
+{
+    return HTMLescape(QString(s.c_str()));
 }

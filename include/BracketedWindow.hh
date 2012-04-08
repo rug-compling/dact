@@ -68,6 +68,8 @@ signals:
      */
     void entryActivated(QString file);
 
+    void setReady(int, bool);
+
 public slots:
     void cancelQuery();
 
@@ -140,6 +142,14 @@ private:
     void readSettings();
     void writeSettings();
     void selectionAsCSV(QTextStream &output);
+
+    void saveAsSentences(QTextStream &out, bool txt, bool html);
+    void saveAsMatches(QTextStream &out, bool txt, bool html);
+    void saveAsContext(QTextStream &out, bool txt, bool html);
+    void saveAsColorString(QTextStream &out, QString s);
+
+    static QString HTMLescape(QString);
+    static QString HTMLescape(std::string);
 
     static QStyledItemDelegate* colorDelegateFactory(CorpusReaderPtr);
     static QStyledItemDelegate* visibilityDelegateFactory(CorpusReaderPtr);
