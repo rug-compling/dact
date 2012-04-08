@@ -65,6 +65,8 @@ private:
     void readSettings();
     void writeSettings();
     void setModel(QueryModel *model);
+    static QString HTMLescape(QString);
+    static QString HTMLescape(std::string);
     static QString XMLescape(QString);
     static QString XMLescape(std::string);
     

@@ -140,13 +140,14 @@ void StatisticsWindow::saveAs()
         return;
 
     QString
-        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)")));
+        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)")));
 
     if (! filename.length())
         return;
 
     bool
         txt = false,
+        html = false,
         xml = false,
         csv = false;
 
@@ -157,6 +158,8 @@ void StatisticsWindow::saveAs()
 
     if (ext == "" || ext == "txt")
         txt = true;
+    else if (ext == "html" || ext == "htm")
+        html = true;
     else if (ext == "xml")
         xml = true;
     else if (ext == "csv")
@@ -166,9 +169,10 @@ void StatisticsWindow::saveAs()
                               tr("Unknown file format"),
                               tr("Unknown file name extension") + QString(": .%1\n").arg(ext) +
                               "Extension must be one of:\n"
-                              "    .txt  for Text\n"
-                              "    .xml  for Microsoft Excel 2003 XML\n"
-                              "    .csv  for CSV",
+                              "    .txt         for Text\n"
+                              "    .html .htm   for HTML\n"
+                              "    .xml         for Microsoft Excel 2003 XML\n"
+                              "    .csv         for CSV",
                               QMessageBox::Ok);
         return;
     }
@@ -206,7 +210,28 @@ void StatisticsWindow::saveAs()
             << tr("Date") << ":\t" << date << "\n\n";
     }
 
-    if (xml) {
+    if (html) {
+        out.setRealNumberPrecision(1);
+        out << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
+            << "<html>\n"
+            << "  <head>\n"
+            << "    <title></title>\n"
+            << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n"
+            << "  </head>\n"
+            << "  <body>\n"
+            << "    <table>\n"
+            << "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Attribute")) << ":</td><td>" << HTMLescape(d_ui->attributeComboBox->currentText()) << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Variants")) << ":</td><td>" << nlines << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Total hits")) << ":</td><td>" << d_model->totalHits() << "</td></tr>\n"
+            << "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
+            << "    </table>\n"
+            << "    <p>\n"
+            << "    <table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n";
+    }
+
+    if (xml)
         out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             << "<?mso-application progid=\"Excel.Sheet\"?>\n"
             << "<Workbook\n"
@@ -219,7 +244,7 @@ void StatisticsWindow::saveAs()
             << "  </Styles>\n"
             << "  <Worksheet ss:Name=\"Details\">\n"
             << "    <Table>\n";
-    }
+
 
     nlines = d_model->rowCount(QModelIndex()); // again, just in case there is more now
     for (int i = 0; i < nlines; i++) {
@@ -228,6 +253,12 @@ void StatisticsWindow::saveAs()
         perc = d_model->data(d_model->index(i, 2)).toReal() * 100.0;
         if (txt)
             out << count << "\t" << perc << "%\t" << lbl << "\n";
+        else if (html)
+            out << "      <tr>\n"
+                << "        <td align=\"right\">" << count << "</td>\n"
+                << "        <td align=\"right\">" << perc << "%</td>\n"
+                << "        <td>" << HTMLescape(lbl) << "</td>\n"
+                << "      </tr>\n";
         else if (xml)
             out << "      <Row>\n"
                 << "        <Cell><Data ss:Type=\"String\">" << XMLescape(lbl) << "</Data></Cell>\n"
@@ -237,6 +268,11 @@ void StatisticsWindow::saveAs()
         else if (csv)
             out << "\"" << lbl.replace("\"", "\"\"")  << "\"," << count << "," << perc << "\n";
     }
+
+    if (html)
+        out << "    </table>\n"
+            << "  </body>\n"
+            << "</html>\n";
 
     if (xml)
         out << "      <Row>\n"
@@ -546,4 +582,14 @@ QString StatisticsWindow::XMLescape(QString s)
 QString StatisticsWindow::XMLescape(std::string s)
 {
     return XMLescape(QString(s.c_str()));
+}
+
+QString StatisticsWindow::HTMLescape(QString s)
+{
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+}
+
+QString StatisticsWindow::HTMLescape(std::string s)
+{
+    return HTMLescape(QString(s.c_str()));
 }
