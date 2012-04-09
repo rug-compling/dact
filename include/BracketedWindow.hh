@@ -161,6 +161,7 @@ private:
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
+    QString squeeze(QString const s);
 };
 
 #endif // DACTBRACKETEDWINDOW_H

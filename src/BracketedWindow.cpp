@@ -447,78 +447,78 @@ void BracketedWindow::saveAs()
             << "\n";
 
     if (html) {
-        out << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
-            << "<html>\n"
-            << "  <head>\n"
-            << "    <title></title>\n"
-            << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n";
+        out <<
+            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
+            "<html>\n"
+            "  <head>\n"
+            "    <title></title>\n"
+            "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n"
+            "<style type=\"text/css\">\n"
+            "<!--\n"
+            "body { background-color: #fff; color: #000; }\n"
+            "body.show a.show,\n"
+            "body.hide a.hide {\n"
+            "  display: none;\n"
+            "  visibility: hidden;\n"
+            "}\n"
+            "body.hide a.show,\n"
+            "body.show a.hide {\n"
+            "  padding: .4em .6em;\n"
+            "  border: 1px solid #808080;\n"
+            "  text-decoration: none;\n"
+            "  color: black;\n"
+            "}\n"
+            "a.show:hover, a.hide:hover {\n"
+            "  background-color: #c0c0FF;\n"
+            "}\n"
+            "body.hide dt,\n"
+            "body.hide a.hide {\n"
+            "  display: none;\n"
+            "  visibility: hidden;\n"
+            "}\n"
+            "body.hide a.show {\n"
+            "  display: inline;\n"
+            "  visibility: visible;\n"
+            "}\n"
+            "body.hide dd {\n"
+            "  margin-left: 0px;\n"
+            "  margin-bottom: .5em;\n"
+            "}\n"
+            "body.show a.show {\n"
+            "  display: none;\n"
+            "  visibility: hidden;\n"
+            "}\n"
+            "body.show a.hide {\n"
+            "  display: inline;\n"
+            "  visibility: visible;\n"
+            "}\n"
+            ".l1 { background-color: #ddd; }\n"
+            ".l2 { background-color: #aaa; }\n"
+            ".l3 { background-color: #777; }\n"
+            ".l4 { background-color: #444; color: #fff; }\n"
+            ".l5 { background-color: #000; color: #ccc; }\n"
+            "-->\n"
+            "</style>\n"
+            "<script language=\"JavaScript\"><!--\n"
+            "function show() {\n"
+            "  document.getElementById('main').className = 'show';\n"
+            "}\n"
+            "function hide() {\n"
+            "  document.getElementById('main').className = 'hide';\n"
+            "}\n"
+            "//--></script>\n"
+            "  </head>\n"
+            "  <body id=\"main\" class=\"" << (d_ui->filenamesCheckBox->isChecked() ? "show" : "hide") << "\">\n"
+            "    <table>\n"
+            "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
+            "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
+            "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
+            "    </table>\n"
+            "    <p>\n"
+            "    <a href=\"javascript:show()\" class=\"show\">" << tr("show filenames") << "</a>\n"
+            "    <a href=\"javascript:hide()\" class=\"hide\">" << tr("hide filenames") << "</a>\n"
+            "    <p>\n";
 
-        if (d_ui->listDelegateComboBox->currentIndex() == 0)
-            out << "<style type=\"text/css\">\n"
-                << "<!--\n"
-                << "body { background-color: #fff; color: #000; }\n"
-                << "div.show, div.hide {\n"
-                << "  margin-top: 2em;\n"
-                << "}\n"
-                << "div.show a.show,\n"
-                << "div.hide a.hide {\n"
-                << "  display: none;\n"
-                << "  visibility: hidden;\n"
-                << "}\n"
-                << "div.hide a.show,\n"
-                << "div.show a.hide {\n"
-                << "  padding: .4em .6em;\n"
-                << "  border: 1px solid #808080;\n"
-                << "  text-decoration: none;\n"
-                << "  color: black;\n"
-                << "}\n"
-                << "a.show:hover, a.hide:hover {\n"
-                << "  background-color: #c0c0FF;\n"
-                << "}\n"
-                << "div.hide dt,\n"
-                << "div.hide a.hide {\n"
-                << "  display: none;\n"
-                << "  visibility: hidden;\n"
-                << "}\n"
-                << "div.hide a.show {\n"
-                << "  display: inline;\n"
-                << "  visibility: visible;\n"
-                << "}\n"
-                << "div.hide dd {\n"
-                << "  margin-left: 0px;\n"
-                << "  margin-bottom: .5em;\n"
-                << "}\n"
-                << "div.show a.show {\n"
-                << "  display: none;\n"
-                << "  visibility: hidden;\n"
-                << "}\n"
-                << "div.show a.hide {\n"
-                << "  display: inline;\n"
-                << "  visibility: visible;\n"
-                << "}\n"
-                << ".l1 { background-color: #ddd; }\n"
-                << ".l2 { background-color: #aaa; }\n"
-                << ".l3 { background-color: #777; }\n"
-                << ".l4 { background-color: #444; color: #fff; }\n"
-                << ".l5 { background-color: #000; color: #ccc; }\n"
-                << "-->\n"
-                << "</style>\n"
-                << "<script language=\"JavaScript\"><!--\n"
-                << "function show() {\n"
-                << "  document.getElementById('main').className = 'show';\n"
-                << "}\n"
-                << "function hide() {\n"
-                << "  document.getElementById('main').className = 'hide';\n"
-                << "}\n"
-                << "//--></script>\n";
-        out << "  </head>\n"
-            << "  <body>\n"
-            << "    <table>\n"
-            << "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
-            << "    </table>\n"
-            << "\n";
     }
 
     switch (d_ui->listDelegateComboBox->currentIndex()) {
@@ -535,7 +535,7 @@ void BracketedWindow::saveAs()
 
     if (html)
         out << "  </body>\n"
-            << "</html>\n";
+               "</html>\n";
 
 
     data.close();
@@ -566,11 +566,8 @@ void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
     }
 
     if (html) {
-        out << "<div id=\"main\" class=\"" << (filenames ? "show" : "hide") << "\">\n"
-            << "<a href=\"javascript:show()\" class=\"show\">" << tr("show filenames") << "</a>\n"
-            << "<a href=\"javascript:hide()\" class=\"hide\">" << tr("hide filenames") << "</a>\n"
-            << "<p>\n"
-            << "<dl>\n";
+
+        out << "<dl>\n";
 
         nlines = d_model->rowCount(QModelIndex());
         for (size_t i = 0; i < nlines; i++) {
@@ -581,8 +578,8 @@ void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
             out << "\n";
         }
 
-        out << "</dl>\n"
-            << "</div>\n";
+        out << "</dl>\n";
+
     }
 }
 
@@ -617,13 +614,58 @@ void BracketedWindow::saveAsColorString(QTextStream &out, QString s)
 
 void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
 {
-    if (txt) {
-        out << "TO DO\n";
+    int
+        i,
+        i1,
+        i2,
+        nlines = d_model->rowCount(QModelIndex());
+    bool
+        filenames = d_ui->filenamesCheckBox->isChecked();
+    std::map<int, int>
+        parts;
+    std::map<int,int>::iterator
+        it;
+    QRegExp
+        re("\\[[^\\[\\]]*\\]");
+
+    if (html)
+        out << "<dl>\n";
+
+    for (i = 0; i < nlines; i++) {
+        QString s = d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed();
+        parts.clear();
+        for (;;) {
+            i1 = s.indexOf(re);
+            if (i1 < 0)
+                break;
+            i2 = s.indexOf("]", i1);
+            parts[i1] = i2;
+            s[i1] = ' ';
+            s[i2] = ' ';
+        }
+
+        if (txt) {
+            if (filenames)
+                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\n";
+            for (it = parts.begin(); it != parts.end(); it++) {
+                if (filenames)
+                    out << "\t";
+                out << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
+            }
+        }
+
+        if (html) {
+            out << "<dt>" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << "\n";
+            for (it = parts.begin(); it != parts.end(); it++)
+                out << "<dd>" << HTMLescape(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
+        }
+
     }
 
-    if (html) {
-        out << "TO DO\n";
-    }
+    if (html)
+        out << "</dl>\n";
+
+
 }
 
 void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
@@ -646,4 +688,9 @@ QString BracketedWindow::HTMLescape(QString s)
 QString BracketedWindow::HTMLescape(std::string s)
 {
     return HTMLescape(QString(s.c_str()));
+}
+
+QString BracketedWindow::squeeze(QString const s)
+{
+    return s.trimmed().replace(QRegExp("\\s+"), " ");
 }
