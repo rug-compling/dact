@@ -472,6 +472,7 @@ void BracketedWindow::saveAs()
             "  background-color: #c0c0FF;\n"
             "}\n"
             "body.hide dt,\n"
+            "body.hide div.f,\n"
             "body.hide a.hide {\n"
             "  display: none;\n"
             "  visibility: hidden;\n"
@@ -497,6 +498,8 @@ void BracketedWindow::saveAs()
             ".l3 { background-color: #777; }\n"
             ".l4 { background-color: #444; color: #fff; }\n"
             ".l5 { background-color: #000; color: #ccc; }\n"
+            "b { color: #80e; }\n"
+            "table { border-bottom: 1px solid #ccc; }\n"
             "-->\n"
             "</style>\n"
             "<script language=\"JavaScript\"><!--\n"
@@ -670,12 +673,63 @@ void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
 
 void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
 {
-    if (txt) {
-        out << "TO DO\n";
-    }
+    int
+        i,
+        i1,
+        i2,
+        nlines = d_model->rowCount(QModelIndex());
+    bool
+        filenames = d_ui->filenamesCheckBox->isChecked();
+    std::map<int, int>
+        parts;
+    std::map<int,int>::iterator
+        it;
+    QRegExp
+        re("\\[[^\\[\\]]*\\]");
+    QString
+        prefix = filenames ? "\t" : "";
 
-    if (html) {
-        out << "TO DO\n";
+    for (i = 0; i < nlines; i++) {
+        QString s = d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed();
+        parts.clear();
+        for (;;) {
+            i1 = s.indexOf(re);
+            if (i1 < 0)
+                break;
+            i2 = s.indexOf("]", i1);
+            parts[i1] = i2;
+            s[i1] = ' ';
+            s[i2] = ' ';
+        }
+
+        if (txt) {
+            if (filenames)
+                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\n";
+            for (it = parts.begin(); it != parts.end(); it++) {
+                out << prefix << squeeze(s.left((*it).first)) << "\n";
+                /*
+                out << prefix << "\t" << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1).toUpper()) << " " <<
+                    squeeze(s.mid((*it).second)) << "\n";
+                */
+                out << prefix << "\t" << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
+                out << prefix << "\t\t" << squeeze(s.mid((*it).second)) << "\n";
+            }
+        }
+
+        if (html) {
+            out << "<div class=\"f\">" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << "</div>\n"
+                << "<table width=\"100%\">\n";
+            for (it = parts.begin(); it != parts.end(); it++)
+                out << "<tr valign=\"top\"><td width=\"40%\" align=\"right\">"
+                    << HTMLescape(s.left((*it).first))
+                    << "</td><td><b>"
+                    << HTMLescape(s.mid((*it).first, (*it).second - (*it).first + 1))
+                    << "</b> "
+                    << HTMLescape(s.mid((*it).second))
+                    << "</td></tr>\n";
+            out << "</table>\n";
+
+        }
     }
 }
 
