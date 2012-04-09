@@ -502,6 +502,18 @@ void BracketedWindow::saveAs()
             "table { border-bottom: 1px solid #ccc; }\n"
             "-->\n"
             "</style>\n"
+            "<!--[if !IE]> -->\n"
+            "<style>\n"
+            "td.l, td.r {\n"
+            "  white-space: nowrap;\n"
+            "  overflow: hidden;\n"
+            "   max-width: 100px;\n"
+            "}\n"
+            "td.l {\n"
+            "  direction: rtl;\n"
+            "}\n"
+            "</style>\n"
+            "<!-- <![endif]-->\n"
             "<script language=\"JavaScript\"><!--\n"
             "function show() {\n"
             "  document.getElementById('main').className = 'show';\n"
@@ -720,9 +732,9 @@ void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
             out << "<div class=\"f\">" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << "</div>\n"
                 << "<table width=\"100%\">\n";
             for (it = parts.begin(); it != parts.end(); it++)
-                out << "<tr valign=\"top\"><td width=\"40%\" align=\"right\">"
+                out << "<tr><td width=\"40%\" align=\"right\" valign=\"top\" class=\"l\">"
                     << HTMLescape(s.left((*it).first))
-                    << "</td><td><b>"
+                    << "</td><td valign=\"bottom\" class=\"r\"><b>"
                     << HTMLescape(s.mid((*it).first, (*it).second - (*it).first + 1))
                     << "</b> "
                     << HTMLescape(s.mid((*it).second))
