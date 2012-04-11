@@ -156,7 +156,7 @@ void StatisticsWindow::saveAs()
     QString
         ext = qf.completeSuffix();
 
-    if (ext == "" || ext == "txt")
+    if (ext == "txt")
         txt = true;
     else if (ext == "html" || ext == "htm")
         html = true;
@@ -167,7 +167,10 @@ void StatisticsWindow::saveAs()
     else {
         QMessageBox::critical(this,
                               tr("Unknown file format"),
-                              tr("Unknown file name extension") + QString(": .%1\n").arg(ext) +
+                              (ext == ""
+                               ? tr("Missing file name extension")
+                               : (tr("Unknown file name extension") + QString(": .%1").arg(ext))) +
+                              "\n"
                               "Extension must be one of:\n"
                               "    .txt         for Text\n"
                               "    .html .htm   for HTML\n"
