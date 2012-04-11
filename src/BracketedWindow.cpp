@@ -89,6 +89,10 @@ void BracketedWindow::setModel(FilterModel *model)
 
     d_ui->resultsTable->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     d_ui->resultsTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    d_ui->resultsTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    // disables horizontal jumping when a sentence is selected
+    d_ui->resultsTable->setAutoScroll(false);
 
     /*
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
@@ -379,6 +383,8 @@ QStyledItemDelegate* BracketedWindow::keywordInContextDelegateFactory(CorpusRead
 
 void BracketedWindow::saveAs()
 {
+    if (d_model.isNull())
+        return;
 
     int
         nlines = d_model->rowCount(QModelIndex());
@@ -387,37 +393,32 @@ void BracketedWindow::saveAs()
         return;
 
     QString
-        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)")));
+        filename;
+    QStringList
+        filenames;
 
+    QFileDialog::QFileDialog
+        fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)"));
+    fd.setAcceptMode(QFileDialog::AcceptSave);
+    fd.setConfirmOverwrite(true);
+    fd.setLabelText(QFileDialog::Accept, tr("Save"));
+    if (fd.exec())
+        filenames = fd.selectedFiles();
+    else
+        return;
+    if (filenames.size() < 1)
+        return;
+    filename = filenames[0];
     if (! filename.length())
         return;
 
     bool
         txt = false,
         html = false;
-
-    QFileInfo
-        qf(filename);
-    QString
-        ext = qf.completeSuffix();
-
-    if (ext == "txt")
+    if (fd.selectedNameFilter().contains("*.txt"))
         txt = true;
-    else if (ext == "html" || ext == "htm")
+    else
         html = true;
-    else {
-        QMessageBox::critical(this,
-                              tr("Unknown file format"),
-                              (ext == ""
-                               ? tr("Missing file name extension")
-                               : (tr("Unknown file name extension") + QString(": .%1").arg(ext))) +
-                              "\n"
-                              "Extension must be one of:\n"
-                              "    .txt         for Text\n"
-                              "    .html .htm   for HTML\n",
-                              QMessageBox::Ok);
-        return;
-    }
 
     QFile
         data(filename);
@@ -428,8 +429,6 @@ void BracketedWindow::saveAs()
                               QMessageBox::Ok);
         return;
     }
-
-
 
     QString
         lbl,
@@ -496,11 +495,12 @@ void BracketedWindow::saveAs()
             "  display: inline;\n"
             "  visibility: visible;\n"
             "}\n"
-            ".l1 { background-color: #ddd; }\n"
-            ".l2 { background-color: #aaa; }\n"
-            ".l3 { background-color: #777; }\n"
-            ".l4 { background-color: #444; color: #fff; }\n"
-            ".l5 { background-color: #000; color: #ccc; }\n"
+            "dd span { color: #FFF; }\n"
+            ".l1 { background-color: #7FCDBB; }\n"
+            ".l2 { background-color: #41B6C4; }\n"
+            ".l3 { background-color: #1D91C0; }\n"
+            ".l4 { background-color: #225EA8; }\n"
+            ".l5 { background-color: #0C2C84; }\n"
             "b { color: #80e; }\n"
             "table { border-bottom: 1px solid #ccc; }\n"
             "-->\n"

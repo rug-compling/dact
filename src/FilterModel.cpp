@@ -49,6 +49,12 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
     QMutexLocker locker(&d_resultsMutex);
 
+    if (role == Qt::TextAlignmentRole)
+        if (index.column() == 1)
+            return (Qt::AlignTop + Qt::AlignHCenter);
+        else
+            return Qt::AlignTop;
+
     if (!index.isValid()
         || index.row() >= d_results.size()
         || index.row() < 0

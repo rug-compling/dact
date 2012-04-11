@@ -140,8 +140,22 @@ void StatisticsWindow::saveAs()
         return;
 
     QString
-        filename(QFileDialog::getSaveFileName(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)")));
+        filename;
+    QStringList
+        filenames;
 
+    QFileDialog::QFileDialog
+        fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)"));
+    fd.setAcceptMode(QFileDialog::AcceptSave);
+    fd.setConfirmOverwrite(true);
+    fd.setLabelText(QFileDialog::Accept, tr("Save"));
+    if (fd.exec())
+        filenames = fd.selectedFiles();
+    else
+        return;
+    if (filenames.size() < 1)
+        return;
+    filename = filenames[0];
     if (! filename.length())
         return;
 
@@ -150,35 +164,14 @@ void StatisticsWindow::saveAs()
         html = false,
         xml = false,
         csv = false;
-
-    QFileInfo
-        qf(filename);
-    QString
-        ext = qf.completeSuffix();
-
-    if (ext == "txt")
+    if (fd.selectedNameFilter().contains("*.txt"))
         txt = true;
-    else if (ext == "html" || ext == "htm")
+    else if (fd.selectedNameFilter().contains("*.html"))
         html = true;
-    else if (ext == "xml")
+    else if (fd.selectedNameFilter().contains("*.xml"))
         xml = true;
-    else if (ext == "csv")
+    else
         csv = true;
-    else {
-        QMessageBox::critical(this,
-                              tr("Unknown file format"),
-                              (ext == ""
-                               ? tr("Missing file name extension")
-                               : (tr("Unknown file name extension") + QString(": .%1").arg(ext))) +
-                              "\n"
-                              "Extension must be one of:\n"
-                              "    .txt         for Text\n"
-                              "    .html .htm   for HTML\n"
-                              "    .xml         for Microsoft Excel 2003 XML\n"
-                              "    .csv         for CSV",
-                              QMessageBox::Ok);
-        return;
-    }
 
     QFile
         data(filename);
