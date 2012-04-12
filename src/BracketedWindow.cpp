@@ -386,19 +386,15 @@ void BracketedWindow::saveAs()
     if (d_model.isNull())
         return;
 
-    int
-        nlines = d_model->rowCount(QModelIndex());
+    int nlines = d_model->rowCount(QModelIndex());
 
     if (nlines == 0)
         return;
 
-    QString
-        filename;
-    QStringList
-        filenames;
+    QString filename;
+    QStringList filenames;
 
-    QFileDialog::QFileDialog
-        fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)"));
+    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
@@ -412,16 +408,14 @@ void BracketedWindow::saveAs()
     if (! filename.length())
         return;
 
-    bool
-        txt = false,
-        html = false;
+    bool txt = false;
+    bool html = false;
     if (fd.selectedNameFilter().contains("*.txt"))
         txt = true;
     else
         html = true;
 
-    QFile
-        data(filename);
+    QFile data(filename);
     if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
         QMessageBox::critical(this,
                               tr("Save file error"),
@@ -430,15 +424,11 @@ void BracketedWindow::saveAs()
         return;
     }
 
-    QString
-        lbl,
-        date(QDateTime::currentDateTime().toLocalTime().toString());
-    qreal
-        perc;
-    int
-        count;
-    QTextStream
-        out(&data);
+    QString lbl;
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    qreal perc;
+    int count;
+    QTextStream out(&data);
 
     out.setCodec("UTF-8");
 
@@ -567,11 +557,9 @@ void BracketedWindow::saveAs()
 
 void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
 {
-    size_t
-        nlines;
+    size_t nlines;
 
-    bool
-        filenames = d_ui->filenamesCheckBox->isChecked();
+    bool filenames = d_ui->filenamesCheckBox->isChecked();
 
     if (txt) {
         nlines = d_model->rowCount(QModelIndex());
@@ -603,8 +591,8 @@ void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
 
 void BracketedWindow::saveAsColorString(QTextStream &out, QString s)
 {
-    int level = 0,
-        lvl2 = 0;
+    int level = 0;
+    int lvl2 = 0;
     QString w;
 
     QStringList list = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
@@ -632,19 +620,12 @@ void BracketedWindow::saveAsColorString(QTextStream &out, QString s)
 
 void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
 {
-    int
-        i,
-        i1,
-        i2,
-        nlines = d_model->rowCount(QModelIndex());
-    bool
-        filenames = d_ui->filenamesCheckBox->isChecked();
-    std::map<int, int>
-        parts;
-    std::map<int,int>::iterator
-        it;
-    QRegExp
-        re("\\[[^\\[\\]]*\\]");
+    int i, i1, i2;
+    int nlines = d_model->rowCount(QModelIndex());
+    bool filenames = d_ui->filenamesCheckBox->isChecked();
+    std::map<int, int> parts;
+    std::map<int,int>::iterator it;
+    QRegExp re("\\[[^\\[\\]]*\\]");
 
     if (html)
         out << "<dl>\n";
@@ -688,21 +669,13 @@ void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
 
 void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
 {
-    int
-        i,
-        i1,
-        i2,
-        nlines = d_model->rowCount(QModelIndex());
-    bool
-        filenames = d_ui->filenamesCheckBox->isChecked();
-    std::map<int, int>
-        parts;
-    std::map<int,int>::iterator
-        it;
-    QRegExp
-        re("\\[[^\\[\\]]*\\]");
-    QString
-        prefix = filenames ? "\t" : "";
+    int i, i1, i2;
+    int nlines = d_model->rowCount(QModelIndex());
+    bool filenames = d_ui->filenamesCheckBox->isChecked();
+    std::map<int, int> parts;
+    std::map<int,int>::iterator it;
+    QRegExp re("\\[[^\\[\\]]*\\]");
+    QString prefix = filenames ? "\t" : "";
 
     for (i = 0; i < nlines; i++) {
         QString s = d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed();

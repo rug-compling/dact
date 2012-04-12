@@ -133,19 +133,15 @@ void StatisticsWindow::saveAs()
     if (d_model.isNull())
         return;
 
-    int
-        nlines = d_model->rowCount(QModelIndex());
+    int nlines = d_model->rowCount(QModelIndex());
 
     if (nlines == 0)
         return;
 
-    QString
-        filename;
-    QStringList
-        filenames;
+    QString filename;
+    QStringList filenames;
 
-    QFileDialog::QFileDialog
-        fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)"));
+    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
@@ -159,11 +155,10 @@ void StatisticsWindow::saveAs()
     if (! filename.length())
         return;
 
-    bool
-        txt = false,
-        html = false,
-        xml = false,
-        csv = false;
+    bool txt = false;
+    bool html = false;
+    bool xml = false;
+    bool csv = false;
     if (fd.selectedNameFilter().contains("*.txt"))
         txt = true;
     else if (fd.selectedNameFilter().contains("*.html"))
@@ -173,8 +168,7 @@ void StatisticsWindow::saveAs()
     else
         csv = true;
 
-    QFile
-        data(filename);
+    QFile data(filename);
     if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
         QMessageBox::critical(this,
                               tr("Save file error"),
@@ -183,15 +177,11 @@ void StatisticsWindow::saveAs()
         return;
     }
 
-    QString
-        lbl,
-        date(QDateTime::currentDateTime().toLocalTime().toString());
-    qreal
-        perc;
-    int
-        count;
-    QTextStream
-        out(&data);
+    QString lbl;
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    qreal perc;
+    int count;
+    QTextStream out(&data);
 
     out.setCodec("UTF-8");
     out.setRealNumberNotation(QTextStream::FixedNotation);
