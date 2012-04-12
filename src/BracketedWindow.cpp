@@ -350,7 +350,7 @@ void BracketedWindow::selectionAsCSV(QTextStream &output)
     if (rows.isEmpty())
         return;
 
-    BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsTable->itemDelegate());
+    BracketedDelegate* delegate = dynamic_cast<BracketedDelegate*>(d_ui->resultsTable->itemDelegateForColumn(2));
 
     // Could not cast QAbstractItemDelegate to BracketedDelegate? Typical, but it is possible.
     if (!delegate)
