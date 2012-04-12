@@ -306,6 +306,7 @@ void StatisticsWindow::saveAs()
             << "  </Worksheet>\n"
             << "</Workbook>\n";
 
+    out.flush();
     data.close();
 
     QMessageBox::information(this,

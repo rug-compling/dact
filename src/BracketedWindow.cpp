@@ -555,7 +555,7 @@ void BracketedWindow::saveAs()
         out << "  </body>\n"
                "</html>\n";
 
-
+    out.flush();
     data.close();
 
     QMessageBox::information(this,
