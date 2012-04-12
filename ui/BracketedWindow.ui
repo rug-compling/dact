@@ -48,6 +48,15 @@
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
      <addaction name="copyResultsAction"/>
      <addaction name="exportResultsAction"/>
     </widget>
@@ -111,7 +120,7 @@
  <customwidgets>
   <customwidget>
    <class>DactTableView</class>
-   <extends>QWidget</extends>
+   <extends>QTableView</extends>
    <header>DactTableView.hh</header>
   </customwidget>
  </customwidgets>
