@@ -36,6 +36,7 @@ public:
 signals:
     void entryActivated(QString, QString);
     void setReady(int, bool);
+    void statusMessage(QString);
 
 public slots:
     void cancelQuery();

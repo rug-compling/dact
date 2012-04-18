@@ -548,6 +548,8 @@ void BracketedWindow::saveAs()
     out.flush();
     data.close();
 
+    emit statusMessage(tr("File saved as %1").arg(filename));
+
     /*
     QMessageBox::information(this,
                              tr("File saved"),

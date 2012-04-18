@@ -69,6 +69,7 @@ signals:
     void entryActivated(QString file);
 
     void setReady(int, bool);
+    void statusMessage(QString);
 
 public slots:
     void cancelQuery();

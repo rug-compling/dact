@@ -88,6 +88,7 @@ public slots:
     void saveAs();
 
     void setReady(int tabindex, bool isready);
+    void statusMessage(QString message);
 
 private slots:
     /*!
