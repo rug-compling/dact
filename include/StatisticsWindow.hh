@@ -76,6 +76,7 @@ private:
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<QueryModel> d_model;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+    QString d_lastfilterchoice;
 };
 
 #endif // DACTQUERYWINDOW_H

@@ -163,6 +163,7 @@ private:
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
     QString squeeze(QString const s);
+    QString d_lastfilterchoice;
 };
 
 #endif // DACTBRACKETEDWINDOW_H

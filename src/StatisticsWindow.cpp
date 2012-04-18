@@ -145,6 +145,8 @@ void StatisticsWindow::saveAs()
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
+    if (d_lastfilterchoice.size())
+        fd.selectNameFilter(d_lastfilterchoice);
     if (fd.exec())
         filenames = fd.selectedFiles();
     else
@@ -159,11 +161,12 @@ void StatisticsWindow::saveAs()
     bool html = false;
     bool xml = false;
     bool csv = false;
-    if (fd.selectedNameFilter().contains("*.txt"))
+    d_lastfilterchoice = fd.selectedNameFilter();
+    if (d_lastfilterchoice.contains("*.txt"))
         txt = true;
-    else if (fd.selectedNameFilter().contains("*.html"))
+    else if (d_lastfilterchoice.contains("*.html"))
         html = true;
-    else if (fd.selectedNameFilter().contains("*.xml"))
+    else if (d_lastfilterchoice.contains("*.xml"))
         xml = true;
     else
         csv = true;

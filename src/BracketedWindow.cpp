@@ -398,6 +398,8 @@ void BracketedWindow::saveAs()
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
+    if (d_lastfilterchoice.size())
+        fd.selectNameFilter(d_lastfilterchoice);
     if (fd.exec())
         filenames = fd.selectedFiles();
     else
@@ -410,7 +412,8 @@ void BracketedWindow::saveAs()
 
     bool txt = false;
     bool html = false;
-    if (fd.selectedNameFilter().contains("*.txt"))
+    d_lastfilterchoice = fd.selectedNameFilter();
+    if (d_lastfilterchoice.contains("*.txt"))
         txt = true;
     else
         html = true;
