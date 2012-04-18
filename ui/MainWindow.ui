@@ -103,6 +103,8 @@
     <addaction name="remoteAction"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="separator"/>
+    <addaction name="saveAsAction"/>
+    <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="xmlExportAction"/>
     <addaction name="pdfExportAction"/>
@@ -418,12 +420,17 @@
     <string>Ctrl+R</string>
    </property>
   </action>
-  <action name="saveCorpus">
+  <action name="saveAsAction">
    <property name="text">
-    <string>Export to corpus…</string>
+    <string>&amp;Save as…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="saveCorpus">
+   <property name="text">
+    <string>Export to corpus…</string>
    </property>
   </action>
   <action name="preferencesAction">

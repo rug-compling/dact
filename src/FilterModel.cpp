@@ -49,16 +49,22 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
     QMutexLocker locker(&d_resultsMutex);
 
+    if (role == Qt::TextAlignmentRole)
+        if (index.column() == 1)
+            return (Qt::AlignTop + Qt::AlignHCenter);
+        else
+            return Qt::AlignTop;
+
     if (!index.isValid()
         || index.row() >= d_results.size()
         || index.row() < 0
         || !(role == Qt::DisplayRole || role == Qt::UserRole))
         return QVariant();
-    
+
     switch (index.column())
     {
         case 0:
-            return d_results.at(index.row()).name;            
+            return d_results.at(index.row()).name;
         case 1:
             return d_results.at(index.row()).hits;
         case 2:
@@ -82,7 +88,7 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
     if (orientation != Qt::Horizontal
         || role != Qt::DisplayRole)
         return QVariant();
-    
+
     switch (column)
     {
         case 0:
@@ -108,23 +114,25 @@ QModelIndex FilterModel::indexOfFile(QString const &filename) const
             break;
         }
     }
-    
+
     return createIndex(index, 0);
 }
 
 void FilterModel::fireDataChanged()
 {
     // @TODO make this more robust so no assumption is required.
-   
+
     int rows;
     {
       QMutexLocker locker(&d_resultsMutex);
       rows = d_results.size();
     }
 
-    emit dataChanged(index(d_lastRow, 0), index(rows, 1));
+    emit layoutAboutToBeChanged();
+    emit dataChanged(index(d_lastRow, 0), index(rows - 1, 2));
     emit nEntriesFound(rows, d_hits);
-    
+    emit layoutChanged();
+
     d_lastRow = rows - 1;
 }
 
@@ -150,22 +158,22 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
 void FilterModel::runQuery(QString const &query, QString const &stylesheet)
 {
     cancelQuery(); // just in case
-    
+
     int size;
     {
       QMutexLocker locker(&d_resultsMutex);
       size = d_results.size();
       d_results.clear();
     }
-    
+
     emit dataChanged(index(0, 0), index(size, 0));
-    
+
     d_query = query;
-    
+
     // Do nothing if this is a dummy filter model with a stupid null pointer
     if (!d_corpus)
         return;
-   
+
     d_timer->setInterval(100);
     d_timer->setSingleShot(false);
     d_lastRow = 0;
@@ -214,7 +222,7 @@ void FilterModel::getEntriesWithQuery(QString const &query,
         emit queryFinished(d_results.size(), d_results.size(), true);
         return;
     }
-    
+
     std::string cQuery = query.toUtf8().constData();
 
     try {
@@ -248,11 +256,11 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
 {
     try {
         emit queryStarted(0); // we don't know how many entries will be found
-        
+
         d_cancelled = false;
         d_hits = 0;
         d_entryIterator = begin;
-        
+
         for (; !d_cancelled && d_entryIterator != end;
           ++d_entryIterator)
         {
@@ -282,7 +290,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
                     d_results.append(Entry(entry, 1, QString::null));
             }
         }
-        
+
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
         else

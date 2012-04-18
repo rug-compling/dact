@@ -101,6 +101,7 @@ SET(dact_SRCS
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
+  src/DactTableView.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
@@ -147,6 +148,7 @@ SET(dact_HDRS
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactTableView.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -190,6 +192,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
+  include/DactTableView.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh

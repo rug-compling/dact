@@ -85,6 +85,10 @@ public slots:
     void openRemoteCorpus(QString const &url);
 #endif // USE_REMOTE_CORPUS
 
+    void saveAs();
+
+    void setReady(int tabindex, bool isready);
+
 private slots:
     /*!
      Raise the about window
@@ -257,7 +261,7 @@ private:
      Retrieve a list of corpus extensions from the alpinocorpus library.
     */
     QString corpusExtensions();
-    
+
     /*!
      Focus on the next or previous tree node in the current tree scene. It finds the
      currently focussed node, and then walks using direction towards the next node
@@ -428,6 +432,9 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
+
+    bool d_ready[3];
+
 };
 
 #endif // MAINWINDOW_H

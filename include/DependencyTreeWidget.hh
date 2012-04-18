@@ -43,6 +43,7 @@ signals:
     
 public slots:
     void cancelQuery();
+    void saveAs();
     
     /*!
      Focus the highlight query entry field

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
@@ -114,6 +116,11 @@ MainWindow::MainWindow(QWidget *parent) :
     initSentenceTransformer();
 
     createActions();
+
+    d_ready[0] = false;
+    d_ready[1] = false;
+    d_ready[2] = false;
+    d_ui->saveAsAction->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -204,6 +211,29 @@ void MainWindow::showDownloadWindow()
     d_downloadWindow->raise();
 }
 
+void MainWindow::saveAs()
+{
+    switch (d_ui->mainTabWidget->currentIndex()) {
+    case 0:
+        d_ui->dependencyTreeWidget->saveAs();
+        break;
+    case 1:
+        d_ui->statisticsWindow->saveAs();
+        break;
+    case 2:
+        d_ui->sentencesWidget->saveAs();
+        break;
+    }
+}
+
+void MainWindow::setReady(int tabindex, bool isready)
+{
+    d_ready[tabindex] = isready;
+    if (tabindex == d_ui->mainTabWidget->currentIndex())
+        d_ui->saveAsAction->setEnabled(isready);
+}
+
+
 #ifdef USE_REMOTE_CORPUS
 void MainWindow::showRemoteWindow()
 {
@@ -288,6 +318,11 @@ void MainWindow::createActions()
     connect(d_ui->sentencesWidget, SIGNAL(entryActivated(QString)),
             SLOT(bracketedEntryActivated(QString)));
 
+    connect(d_ui->statisticsWindow, SIGNAL(setReady(int, bool)),
+            SLOT(setReady(int, bool)));
+    connect(d_ui->sentencesWidget, SIGNAL(setReady(int, bool)),
+            SLOT(setReady(int, bool)));
+
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
     connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
@@ -310,6 +345,8 @@ void MainWindow::createActions()
         SLOT(openCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
+    connect(d_ui->saveAsAction, SIGNAL(triggered(bool)),
+        SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
       connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
           SLOT(exportCorpus()));
@@ -812,6 +849,8 @@ void MainWindow::tabChanged(int index)
         d_taintedWidgets[index].first->setFilter(d_macrosModel->expand(d_filter), d_filter);
         d_taintedWidgets[index].second = false;
     }
+
+    d_ui->saveAsAction->setEnabled(d_ready[index]);
 }
 
 void MainWindow::taintAllWidgets()
