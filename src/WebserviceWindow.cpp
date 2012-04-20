@@ -109,9 +109,58 @@ int WebserviceWindow::countSentences(QString const &sentences)
 void WebserviceWindow::readResponse()
 {
     // Peek to see if there is a complete sentence to be read
+    size_t bufferSize = d_reply->bytesAvailable();
+    char *buffer = new char[bufferSize];
+    d_reply->peek(buffer, bufferSize);
 
-    // If so, read it and insert it into the corpuswriter
+    // Convert the buffer to a string for easy access
+    // TODO how about utf8-characters?
+    QString bufferString(buffer);
+    int bufferOffset = 0;
 
+    // Search for complete sentences in the peeked buffer
+    QRegExp sentencePattern("<alpino_ds([^>]*)>(.+?)</alpino_ds>");
+    int pos;
+    while ((pos = sentencePattern.indexIn(bufferString, bufferOffset)) != -1)
+    {
+        // If the match is not in front, read (skip) the data in front of it
+        // till it is in front.
+        if (pos != 0) {
+            d_reply->read(pos);
+            bufferOffset += pos;
+        }
+
+        // Read the sentence from the real stream, incrementing its internal pointer
+        QString sentence(d_reply->read(sentencePattern.matchedLength()));
+        bufferOffset += sentencePattern.matchedLength();
+
+        // Deal with the sentence itself.
+        receiveSentence(sentence);
+    }
+
+    delete[] buffer;
+}
+
+void WebserviceWindow::receiveSentence(QString const &sentence)
+{
+    // Insert the sentence into the corpuswriter
+    QRegExp idPattern("<alpino_ds[^>]* id=\"([^\"]+)\"");
+
+    // Find the name in the first element.
+    if (idPattern.indexIn(sentence) == -1)
+        return; // TODO big fat warning error (or pretty error recovery)
+
+    QString name(idPattern.capturedTexts().at(1));
+
+    d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
+
+    d_numberOfSentencesReceived++;
+
+    updateProgressDialog();
+}
+
+void WebserviceWindow::updateProgressDialog()
+{
     // Update progress dialog.
     d_progressDialog->setLabelText(tr("Parsing sentence %1 of %2")
         .arg(d_numberOfSentencesReceived)

@@ -76,6 +76,8 @@ private:
     void loadSentencesFile(QString const &filename);
 
     int countSentences(QString const &);
+    void receiveSentence(QString const &);
+    void updateProgressDialog();
 };
 
 #endif
