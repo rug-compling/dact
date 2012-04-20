@@ -1,5 +1,9 @@
 #include <QDebug>
+#include <QFile>
+#include <QFileDialog>
 #include <QNetworkAccessManager>
+#include <QStringList>
+#include <QTextStream>
 
 #include <WebserviceWindow.hh>
 #include <ui_WebserviceWindow.h>
@@ -18,7 +22,26 @@ WebserviceWindow::~WebserviceWindow()
 
 void WebserviceWindow::openSentencesFile()
 {
-    qDebug() << "Open sentences file!";
+    QStringList files = QFileDialog::getOpenFileNames(this, tr("Load sentences"),
+        QString(), tr("Text files (*.txt)"));
+
+    clearSentencesField();
+
+    foreach (QString const &filename, files)
+        loadSentencesFile(filename);
+}
+
+void WebserviceWindow::clearSentencesField()
+{
+    d_ui->sentencesField->clear();
+}
+
+void WebserviceWindow::loadSentencesFile(QString const &filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QTextStream instream(&file);
+    d_ui->sentencesField->appendPlainText(instream.readAll());
 }
 
 void WebserviceWindow::parseSentences()

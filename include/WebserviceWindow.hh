@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QSharedPointer>
+#include <QString>
 // #include <QNetworkReply>
 
 namespace Ui {
@@ -37,6 +38,9 @@ private:
     QSharedPointer<Ui::WebserviceWindow> d_ui;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     // QNetworkReply *d_reply;
+
+    void clearSentencesField();
+    void loadSentencesFile(QString const &filename);
 };
 
 #endif
