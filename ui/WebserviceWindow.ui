@@ -69,5 +69,12 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>WebserviceWindow</receiver>
+   <slot>hide()</slot>
+  </connection>
+ </connections>
 </ui>
