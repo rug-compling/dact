@@ -220,6 +220,12 @@ void MainWindow::showWebserviceWindow()
     {
         d_webserviceWindow = new WebserviceWindow(this, Qt::Window);
         d_webserviceWindow->setWindowModality(Qt::WindowModal);
+
+        // When parsing is finished and the trees are received, load the freshly
+        // created corpus.
+        connect(d_webserviceWindow,
+            SIGNAL(parseSentencesFinished(QString)),
+            SLOT(readCorpus(QString)));
     }
 
     d_webserviceWindow->show();
