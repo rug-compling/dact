@@ -126,6 +126,9 @@ void WebserviceWindow::finishResponse()
     d_reply->deleteLater();
     d_reply = 0;
 
+    // Also close the corpus writer
+    d_corpus.clear();
+
     // Hide the dialog
     d_progressDialog->accept();
 
