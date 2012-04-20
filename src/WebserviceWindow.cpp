@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QNetworkAccessManager>
 
 #include <WebserviceWindow.hh>
@@ -13,4 +14,14 @@ WebserviceWindow::WebserviceWindow(QWidget *parent, Qt::WindowFlags f) :
 
 WebserviceWindow::~WebserviceWindow()
 {
+}
+
+void WebserviceWindow::openSentencesFile()
+{
+    qDebug() << "Open sentences file!";
+}
+
+void WebserviceWindow::parseSentences()
+{
+    qDebug() << "Parse sentences!";
 }

@@ -76,5 +76,17 @@
    <receiver>WebserviceWindow</receiver>
    <slot>hide()</slot>
   </connection>
+  <connection>
+   <sender>loadFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>WebserviceWindow</receiver>
+   <slot>openSentencesFile()</slot>
+  </connection>
+  <connection>
+   <sender>parseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>WebserviceWindow</receiver>
+   <slot>parseSentences()</slot>
+  </connection>
  </connections>
 </ui>

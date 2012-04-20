@@ -18,6 +18,21 @@ public:
     WebserviceWindow(QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~WebserviceWindow();
 
+signals:
+    void parseSentencesFinished(QString corpus);
+
+private slots:
+    /*!
+     * Ask the user which plain text file(s) to load into the sentences text field.
+     */
+    void openSentencesFile();
+
+    /*!
+     * Ask the user where to save the parsed sentences and send the sentences
+     * to the webservice.
+     */
+    void parseSentences();
+
 private:
     QSharedPointer<Ui::WebserviceWindow> d_ui;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
