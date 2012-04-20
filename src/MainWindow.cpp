@@ -44,6 +44,7 @@
 
 #include <AboutWindow.hh>
 #include <DownloadWindow.hh>
+#include <WebserviceWindow.hh>
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
@@ -80,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
+    d_webserviceWindow(0),
 #ifdef USE_REMOTE_CORPUS
     d_remoteWindow(0),
 #endif // USE_REMOTE_CORPUS
@@ -129,6 +131,7 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
+    delete d_webserviceWindow;
 #ifdef USE_REMOTE_CORPUS
     delete d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -209,6 +212,18 @@ void MainWindow::showDownloadWindow()
 
     d_downloadWindow->show();
     d_downloadWindow->raise();
+}
+
+void MainWindow::showWebserviceWindow()
+{
+    if (d_webserviceWindow == 0)
+    {
+        d_webserviceWindow = new WebserviceWindow(this, Qt::Window);
+        d_webserviceWindow->setWindowModality(Qt::WindowModal);
+    }
+
+    d_webserviceWindow->show();
+    d_webserviceWindow->raise();
 }
 
 void MainWindow::saveAs()

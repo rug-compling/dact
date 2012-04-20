@@ -146,6 +146,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="downloadAction"/>
+    <addaction name="webserviceAction"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
    </widget>
@@ -486,6 +487,11 @@
     <string>Ctrl+G</string>
    </property>
   </action>
+  <action name="webserviceAction">
+   <property name="text">
+    <string>Parse sentences...</string>
+   </property>
+  </action>
   <action name="filterOnAttributeAction">
    <property name="text">
     <string>Filter on attribute</string>
@@ -632,6 +638,12 @@
      <y>329</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>webserviceAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showWebserviceWindow()</slot>
   </connection>
  </connections>
 </ui>
