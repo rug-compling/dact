@@ -1,4 +1,12 @@
+#include <cstring>
+#include <iostream>
 #include <list>
+
+extern "C" {
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlreader.h>
+}
 
 #include "BracketedDelegate.hh"
 #include "FilterModel.hh"
@@ -11,7 +19,7 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
     d_corpus(corpus)
 {}
 
-QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
+std::list<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
 {
     QString filename(index.data(Qt::UserRole).toString());
 
@@ -19,7 +27,7 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     {
         QString bracketed_sentence(bracketedSentence(index));
 
-        QList<Chunk> *chunks = parseSentence(bracketed_sentence);
+        std::list<Chunk> *chunks = parseSentence(bracketed_sentence);
 
         d_cache.insert(filename, chunks);
     }
@@ -27,91 +35,83 @@ QList<BracketedDelegate::Chunk> BracketedDelegate::parseChunks(QModelIndex const
     return *d_cache[filename];
 }
 
-QList<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString const &sentence) const
-{
-    QList<Chunk> *chunks = new QList<Chunk>;
-    QRegExp brackets("\\[|\\]");
-
-    int depth = 0, pos = -1, readTill = 0;
-
-    while ((pos = sentence.indexOf(brackets, readTill)) != -1)
-    {
-        // reading one char less on the left and right to omit the bracktes surrounding the match.
-        // @TODO use xml for this instead of silly brackets. Maybe even merge this parser with the
-        // one in DactTreeScene and keep theses parsed trees in memory to speed things up.
-
-        // @TODO this code is quite a mess. This could be a lot more elegant. I hope…
-
-        // search backwards for the opening bracket of this match by stepping over the submatches
-        int openingBracketPos = readTill;
-        int subMatches = 0;
-        while (openingBracketPos > 0)
-        {
-            openingBracketPos = sentence.lastIndexOf(brackets, openingBracketPos - 1);
-
-            if (openingBracketPos == -1)
-            {
-                openingBracketPos = 0;
-                break;
+void BracketedDelegate::processTree(xmlNode *node, size_t depth, std::list<Chunk> *chunks) const {
+    for (; node; node = node->next) {
+        // Element node, recurse, increase depth.
+        if (node->type == XML_ELEMENT_NODE &&
+                std::strcmp(reinterpret_cast<char const *>(node->name), "bracket") == 0)
+            processTree(node->children, depth + 1, chunks);
+        else if (node->type == XML_TEXT_NODE) {
+            xmlChar *cText = xmlNodeGetContent(node->parent);
+            QString text;
+            if (cText != NULL) {
+                text = QString::fromUtf8(reinterpret_cast<const char *>(cText));
+                xmlFree(cText);
             }
 
-            if (sentence[openingBracketPos] == ']')
-            {
-                ++subMatches;
+            // Get text right of this bracket (including subbrackets): traverse
+            // up the tree, getting the right context of every node.
+            QStringList rightList;
+            xmlNode *ancestor = node->parent;
+            while (ancestor != NULL) {
+                for (xmlNode *right = ancestor->next; right; right = right->next)
+                {
+                    cText = xmlNodeGetContent(right);
+                    if (cText != NULL) {
+                        rightList.append(QString::fromUtf8(reinterpret_cast<const char *>(cText)));
+                        xmlFree(cText);
+                    }
+                }
+                ancestor = ancestor->parent;
             }
-            else if(sentence[openingBracketPos] == '[')
-            {
-                if (!subMatches)
-                    break;
-                else
-                    --subMatches;
-            }
+
+            chunks->push_back(Chunk(depth, QString(),
+                QString::fromUtf8(reinterpret_cast<const char *>(node->content)),
+                text, QString(), rightList.join(" ")));
         }
-
-        // find the closing bracket for this level of the match
-        int closingBracketPos = pos - 1; // -1 because then we first look at pos. If pos is ], no need to look further.
-        subMatches = 0;
-        while (closingBracketPos < sentence.length())
-        {
-            closingBracketPos = sentence.indexOf(brackets, closingBracketPos + 1);
-
-            if (closingBracketPos == -1)
-            {
-                closingBracketPos = pos;
-                break;
-            }
-
-            if (sentence[closingBracketPos] == '[')
-            {
-                ++subMatches;
-            }
-            else if(sentence[closingBracketPos] == ']')
-            {
-                if (!subMatches)
-                    break;
-                else
-                    --subMatches;
-            }
-        }
-
-
-        chunks->append(Chunk(depth,
-            sentence.left(readTill == 0 ? readTill : readTill - 1),
-            sentence.mid(readTill, pos - readTill),
-            sentence.mid(openingBracketPos + 1, closingBracketPos - openingBracketPos - 1), // -1 to omit the closing bracket
-            sentence.mid(pos + 1),
-            sentence.mid(closingBracketPos + 1))); // +1 to omit the closing bracket
-
-        readTill = pos + 1;
-
-        if (sentence[pos] == '[')
-            ++depth;
-
-        else if (sentence[pos] == ']')
-            --depth;
     }
 
-    chunks->append(Chunk(depth, sentence.left(readTill), sentence.mid(readTill), "", "", ""));
+}
+
+
+std::list<BracketedDelegate::Chunk> *BracketedDelegate::parseSentence(QString sentence) const
+{
+    sentence.replace("\n", "");
+    sentence = sentence.simplified();
+    QByteArray xmlData(sentence.toUtf8());
+
+    xmlDocPtr doc;
+    doc = xmlReadMemory(xmlData.constData(), xmlData.size(), NULL, NULL, 0);
+    if (doc == NULL) {}
+
+    // We get the sentence node, we should process its children.
+    xmlNode *sentenceNode = xmlDocGetRootElement(doc);
+    if (sentenceNode == NULL)
+        return new std::list<Chunk>;
+
+    xmlNode *node = sentenceNode->children;
+
+    std::list<Chunk> *chunks = new std::list<Chunk>;
+
+    processTree(node, 0, chunks);
+
+    xmlFreeDoc(doc);
+
+    // Fill left context.
+    QString left;
+    for (std::list<Chunk>::iterator iter = chunks->begin();
+            iter != chunks->end(); ++iter) {
+        iter->setLeft(left);
+        left += iter->text();
+    }
+
+    // Fill right context.
+    QString right;
+    for (std::list<Chunk>::reverse_iterator iter = chunks->rbegin();
+            iter != chunks->rend(); ++iter) {
+        iter->setRight(right);
+        right.prepend(iter->text());
+    }
 
     return chunks;
 }
@@ -163,7 +163,7 @@ QString BracketedDelegate::sentenceForClipboard(QModelIndex const &index) const
     return bracketedSentence(index);
 }
 
-BracketedDelegate::Chunk::Chunk(int depth, QString const &left, QString const &text, QString const &fullText, QString const &right, QString const &remainingRight)
+BracketedDelegate::Chunk::Chunk(size_t depth, QString const &left, QString const &text, QString const &fullText, QString const &right, QString const &remainingRight)
 :
     d_depth(depth),
     d_left(left),
@@ -173,7 +173,7 @@ BracketedDelegate::Chunk::Chunk(int depth, QString const &left, QString const &t
     d_remainingRight(remainingRight)
 {}
 
-int BracketedDelegate::Chunk::depth() const
+size_t BracketedDelegate::Chunk::depth() const
 {
     return d_depth;
 }
@@ -182,6 +182,22 @@ QString const &BracketedDelegate::Chunk::left() const
 {
     return d_left;
 }
+
+void BracketedDelegate::Chunk::setLeft(QString const &left)
+{
+    d_left = left;
+}
+
+void BracketedDelegate::Chunk::setRemainingRight(QString const &right)
+{
+    d_remainingRight = right;
+}
+
+void BracketedDelegate::Chunk::setRight(QString const &right)
+{
+    d_right = right;
+}
+
 
 QString const &BracketedDelegate::Chunk::text() const
 {

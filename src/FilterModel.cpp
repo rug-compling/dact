@@ -1,5 +1,6 @@
 #include <QCache>
 #include <QDebug>
+#include <QDateTime>
 #include <QString>
 #include <QStringList>
 #include <QtConcurrentRun>
@@ -72,6 +73,40 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
         default:
             return QVariant();
     }
+}
+
+QString FilterModel::asXML() const
+{
+    QStringList docList;
+    docList.append("<entries>");
+
+    docList.append("<entriesinfo>");
+    docList.append(QString("<corpus>%1</corpus>")
+        .arg(d_corpus->name().c_str()));
+    docList.append(QString("<filter>%1</filter>").arg(d_query));
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    docList.append(QString("<date>%1</date>").arg(date));
+    docList.append("</entriesinfo>");
+
+    int count = rowCount(QModelIndex());
+    for (size_t i = 0; i < count; i++) {
+        QString filename = data(index(i, 0), Qt::DisplayRole).toString();
+        QString count = data(index(i, 1), Qt::DisplayRole).toString();
+        QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
+            .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+
+        QString line = QString("<entry><filename>%1</filename><count>%2</count>%3</entry>")
+            .arg(filename)
+            .arg(count)
+            .arg(xmlData);
+
+        docList.append(line);
+    }
+    docList.append("</entries>");
+
+    QString doc = docList.join("\n");
+
+    return doc;
 }
 
 void FilterModel::finalizeQuery(int n, int totalEntries, bool cached)

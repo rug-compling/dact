@@ -1,8 +1,8 @@
-#include <QDateTime>
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QHash>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QList>
@@ -12,6 +12,7 @@
 #include <QSize>
 #include <QTextStream>
 #include <QVector>
+#include <XSLTransformer.hh>
 
 #include <stdexcept>
 #include <typeinfo>
@@ -116,7 +117,7 @@ void BracketedWindow::setModel(FilterModel *model)
 void BracketedWindow::startQuery()
 {
     // XXX - only once
-    QFile file(":/stylesheets/bracketed-sentence.xsl");
+    QFile file(":/stylesheets/bracketed-sentence-xml.xsl");
     file.open(QIODevice::ReadOnly);
     QTextStream xslStream(&file);
     QString stylesheet = xslStream.readAll();
@@ -410,13 +411,12 @@ void BracketedWindow::saveAs()
     if (! filename.length())
         return;
 
-    bool txt = false;
-    bool html = false;
+    OutputFormat format;
     d_lastfilterchoice = fd.selectedNameFilter();
     if (d_lastfilterchoice.contains("*.txt"))
-        txt = true;
+        format = FormatText;
     else
-        html = true;
+        format = FormatHTML;
 
     QFile data(filename);
     if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -427,126 +427,40 @@ void BracketedWindow::saveAs()
         return;
     }
 
-    QString lbl;
-    QString date(QDateTime::currentDateTime().toLocalTime().toString());
-    qreal perc;
-    int count;
     QTextStream out(&data);
-
     out.setCodec("UTF-8");
 
-    if (txt)
-        out << tr("Corpus") << ":\t" << d_corpusReader->name().c_str() << "\n"
-            << tr("Filter") << ":\t" << d_filter << "\n"
-            << tr("Date") << ":\t" << date << "\n"
-            << "\n";
+    QString xmlEntries = d_model->asXML();
 
-    if (html) {
-        out <<
-            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
-            "<html>\n"
-            "  <head>\n"
-            "    <title></title>\n"
-            "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n"
-            "<style type=\"text/css\">\n"
-            "<!--\n"
-            "body { background-color: #fff; color: #000; }\n"
-            "body.show a.show,\n"
-            "body.hide a.hide {\n"
-            "  display: none;\n"
-            "  visibility: hidden;\n"
-            "}\n"
-            "body.hide a.show,\n"
-            "body.show a.hide {\n"
-            "  padding: .4em .6em;\n"
-            "  border: 1px solid #808080;\n"
-            "  text-decoration: none;\n"
-            "  color: black;\n"
-            "}\n"
-            "a.show:hover, a.hide:hover {\n"
-            "  background-color: #c0c0FF;\n"
-            "}\n"
-            "body.hide dt,\n"
-            "body.hide div.f,\n"
-            "body.hide a.hide {\n"
-            "  display: none;\n"
-            "  visibility: hidden;\n"
-            "}\n"
-            "body.hide a.show {\n"
-            "  display: inline;\n"
-            "  visibility: visible;\n"
-            "}\n"
-            "body.hide dd {\n"
-            "  margin-left: 0px;\n"
-            "  margin-bottom: .5em;\n"
-            "}\n"
-            "body.show a.show {\n"
-            "  display: none;\n"
-            "  visibility: hidden;\n"
-            "}\n"
-            "body.show a.hide {\n"
-            "  display: inline;\n"
-            "  visibility: visible;\n"
-            "}\n"
-            "dd span { color: #FFF; }\n"
-            ".l1 { background-color: #7FCDBB; }\n"
-            ".l2 { background-color: #41B6C4; }\n"
-            ".l3 { background-color: #1D91C0; }\n"
-            ".l4 { background-color: #225EA8; }\n"
-            ".l5 { background-color: #0C2C84; }\n"
-            "b { color: #80e; }\n"
-            "table { border-bottom: 1px solid #ccc; }\n"
-            "-->\n"
-            "</style>\n"
-            "<!--[if !IE]> -->\n"
-            "<style>\n"
-            "td.l, td.r {\n"
-            "  white-space: nowrap;\n"
-            "  overflow: hidden;\n"
-            "   max-width: 100px;\n"
-            "}\n"
-            "td.l {\n"
-            "  direction: rtl;\n"
-            "}\n"
-            "</style>\n"
-            "<!-- <![endif]-->\n"
-            "<script language=\"JavaScript\"><!--\n"
-            "function show() {\n"
-            "  document.getElementById('main').className = 'show';\n"
-            "}\n"
-            "function hide() {\n"
-            "  document.getElementById('main').className = 'hide';\n"
-            "}\n"
-            "//--></script>\n"
-            "  </head>\n"
-            "  <body id=\"main\" class=\"" << (d_ui->filenamesCheckBox->isChecked() ? "show" : "hide") << "\">\n"
-            "    <table>\n"
-            "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
-            "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
-            "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
-            "    </table>\n"
-            "    <p>\n"
-            "    <a href=\"javascript:show()\" class=\"show\">" << tr("show filenames") << "</a>\n"
-            "    <a href=\"javascript:hide()\" class=\"hide\">" << tr("hide filenames") << "</a>\n"
-            "    <p>\n";
-
-    }
+    QSharedPointer<QFile> stylesheet;
 
     switch (d_ui->listDelegateComboBox->currentIndex()) {
     case 0:
-        saveAsSentences(out, txt, html);
+        if (format == FormatText)
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-sentence-text.xsl"));
+        else
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-sentence-html.xsl"));
         break;
     case 1:
-        saveAsMatches(out, txt, html);
+        if (format == FormatText)
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-match-text.xsl"));
+        else
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-match-html.xsl"));
         break;
     case 2:
-        saveAsContext(out, txt, html);
+        if (format == FormatText)
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-kwic-text.xsl"));
+        else
+            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-kwic-html.xsl"));
         break;
     }
 
-    if (html)
-        out << "  </body>\n"
-               "</html>\n";
+    XSLTransformer::ParamHash params;
+    if (d_ui->filenamesCheckBox->isChecked())
+        params["showFilenames"] = "1";
+
+    XSLTransformer trans(*stylesheet);
+    out << trans.transform(xmlEntries, params);
 
     out.flush();
     data.close();
@@ -559,186 +473,4 @@ void BracketedWindow::saveAs()
                              tr("File saved as %1").arg(filename),
                              QMessageBox::Ok);
     */
-}
-
-void BracketedWindow::saveAsSentences(QTextStream &out, bool txt, bool html)
-{
-    size_t nlines;
-
-    bool filenames = d_ui->filenamesCheckBox->isChecked();
-
-    if (txt) {
-        nlines = d_model->rowCount(QModelIndex());
-        for (size_t i = 0; i < nlines; i++) {
-            if (filenames)
-                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\t"
-                    << d_model->data(d_model->index(i, 1), Qt::DisplayRole).toInt() << "\t";
-            out << d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed() << "\n";
-        }
-    }
-
-    if (html) {
-
-        out << "<dl>\n";
-
-        nlines = d_model->rowCount(QModelIndex());
-        for (size_t i = 0; i < nlines; i++) {
-            out << "<dt>" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << " ["
-                << d_model->data(d_model->index(i, 1), Qt::DisplayRole).toInt() << "]\n"
-                << "<dd>";
-            saveAsColorString(out, HTMLescape(d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString()).trimmed());
-            out << "\n";
-        }
-
-        out << "</dl>\n";
-
-    }
-}
-
-void BracketedWindow::saveAsColorString(QTextStream &out, QString s)
-{
-    int level = 0;
-    int lvl2 = 0;
-    QString w;
-
-    QStringList list = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-
-    for (int i = 0; i < list.size(); ++i) {
-        w = list.at(i);
-        while (w.startsWith("[")) {
-            level++;
-            out << "<span class=\"l" << level << "\">";
-            w = w.right(w.size() - 1);
-        }
-        lvl2 = 0;
-        while (w.endsWith("]")) {
-            lvl2++;
-            w = w.left(w.size() - 1);
-        }
-        out << w;
-        for (int j = 0; j < lvl2; j++)
-            out << "</span>";
-        out << " ";
-        level -= lvl2;
-    }
-
-}
-
-void BracketedWindow::saveAsMatches(QTextStream &out, bool txt, bool html)
-{
-    int i, i1, i2;
-    int nlines = d_model->rowCount(QModelIndex());
-    bool filenames = d_ui->filenamesCheckBox->isChecked();
-    std::map<int, int> parts;
-    std::map<int,int>::iterator it;
-    QRegExp re("\\[[^\\[\\]]*\\]");
-
-    if (html)
-        out << "<dl>\n";
-
-    for (i = 0; i < nlines; i++) {
-        QString s = d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed();
-        parts.clear();
-        for (;;) {
-            i1 = s.indexOf(re);
-            if (i1 < 0)
-                break;
-            i2 = s.indexOf("]", i1);
-            parts[i1] = i2;
-            s[i1] = ' ';
-            s[i2] = ' ';
-        }
-
-        if (txt) {
-            if (filenames)
-                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\n";
-            for (it = parts.begin(); it != parts.end(); it++) {
-                if (filenames)
-                    out << "\t";
-                out << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
-            }
-        }
-
-        if (html) {
-            out << "<dt>" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << "\n";
-            for (it = parts.begin(); it != parts.end(); it++)
-                out << "<dd>" << HTMLescape(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
-        }
-
-    }
-
-    if (html)
-        out << "</dl>\n";
-
-
-}
-
-void BracketedWindow::saveAsContext(QTextStream &out, bool txt, bool html)
-{
-    int i, i1, i2;
-    int nlines = d_model->rowCount(QModelIndex());
-    bool filenames = d_ui->filenamesCheckBox->isChecked();
-    std::map<int, int> parts;
-    std::map<int,int>::iterator it;
-    QRegExp re("\\[[^\\[\\]]*\\]");
-    QString prefix = filenames ? "\t" : "";
-
-    for (i = 0; i < nlines; i++) {
-        QString s = d_model->data(d_model->index(i, 2), Qt::DisplayRole).toString().trimmed();
-        parts.clear();
-        for (;;) {
-            i1 = s.indexOf(re);
-            if (i1 < 0)
-                break;
-            i2 = s.indexOf("]", i1);
-            parts[i1] = i2;
-            s[i1] = ' ';
-            s[i2] = ' ';
-        }
-
-        if (txt) {
-            if (filenames)
-                out << d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString() << "\n";
-            for (it = parts.begin(); it != parts.end(); it++) {
-                out << prefix << squeeze(s.left((*it).first)) << "\n";
-                /*
-                out << prefix << "\t" << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1).toUpper()) << " " <<
-                    squeeze(s.mid((*it).second)) << "\n";
-                */
-                out << prefix << "\t" << squeeze(s.mid((*it).first, (*it).second - (*it).first + 1)) << "\n";
-                out << prefix << "\t\t" << squeeze(s.mid((*it).second)) << "\n";
-            }
-        }
-
-        if (html) {
-            out << "<div class=\"f\">" << HTMLescape(d_model->data(d_model->index(i, 0), Qt::DisplayRole).toString()) << "</div>\n"
-                << "<table width=\"100%\">\n";
-            for (it = parts.begin(); it != parts.end(); it++)
-                out << "<tr><td width=\"40%\" align=\"right\" valign=\"top\" class=\"l\">"
-                    << HTMLescape(s.left((*it).first))
-                    << "</td><td valign=\"bottom\" class=\"r\"><b>"
-                    << HTMLescape(s.mid((*it).first, (*it).second - (*it).first + 1))
-                    << "</b> "
-                    << HTMLescape(s.mid((*it).second))
-                    << "</td></tr>\n";
-            out << "</table>\n";
-
-        }
-    }
-}
-
-
-QString BracketedWindow::HTMLescape(QString s)
-{
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-}
-
-QString BracketedWindow::HTMLescape(std::string s)
-{
-    return HTMLescape(QString(s.c_str()));
-}
-
-QString BracketedWindow::squeeze(QString const s)
-{
-    return s.trimmed().replace(QRegExp("\\s+"), " ");
 }

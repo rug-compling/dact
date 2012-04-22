@@ -1,12 +1,16 @@
 #ifndef BRACKETEDDELEGATE_HH
 #define BRACKETEDDELEGATE_HH
 
+#include <list>
+
 #include <QCache>
 #include <QFile>
-#include <QList>
 #include <QModelIndex>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
+
+struct _xmlNode;
+typedef struct _xmlNode xmlNode;
 
 class BracketedDelegate : public QStyledItemDelegate
 {
@@ -23,7 +27,7 @@ public:
 protected:
     class Chunk
     {
-        int d_depth;
+        size_t d_depth;
         QString d_left;
         QString d_text;
         QString d_fullText;
@@ -36,20 +40,35 @@ protected:
          \param depth depth of the match (is it a match in a match in a match
          etc.) 1 or higher means the chunk is part of something that matched.
          */
-        Chunk(int depth, QString const &left, QString const &text,
+        Chunk(size_t depth, QString const &left, QString const &text,
             QString const &fullText, QString const &right,
             QString const &remainingRight);
         /*!
         Returns the depth of a chunk. Depth = 0 means this chunk is not part of
         a matching node in the tree.
         */
-        int depth() const;
+        size_t depth() const;
         
         /*!
         Returns all the text left of the chunk.
         */
         QString const &left() const;
-        
+
+        /*!
+        Set the text left of the chunk.
+        */
+        void setLeft(QString const &left);
+
+        /*!
+        Set the text right of the chunk.
+        */
+        void setRemainingRight(QString const &right);
+
+        /*!
+        Set the text right of the text chunk.
+        */
+        void setRight(QString const &right);
+
         /*!
         Returns all the text of the chunk itself.
         */
@@ -84,7 +103,7 @@ protected:
     open and closing brackets.
     \param sentence the brackets containing sentence to be parsed
     */
-    QList<Chunk> parseChunks(QModelIndex const &index) const;
+    std::list<Chunk> parseChunks(QModelIndex const &index) const;
 
     QString sentence(QModelIndex const &index) const;
 
@@ -92,9 +111,10 @@ protected:
     
 
 private:
-    QList<Chunk> *parseSentence(QString const &sentence) const;
+    std::list<Chunk> *parseSentence(QString sentence) const;
+    void processTree(xmlNode *node, size_t depth, std::list<Chunk> *chunks) const;
         
-    mutable QCache<QString,QList<Chunk> > d_cache;
+    mutable QCache<QString,std::list<Chunk> > d_cache;
     CorpusReaderPtr d_corpus;
 };
 

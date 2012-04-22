@@ -134,6 +134,8 @@ protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
+    enum OutputFormat {FormatText, FormatHTML};
+
     void addListDelegate(QString const &name, DelegateFactory);
     void updateResults();
     void createActions();
@@ -143,14 +145,6 @@ private:
     void readSettings();
     void writeSettings();
     void selectionAsCSV(QTextStream &output);
-
-    void saveAsSentences(QTextStream &out, bool txt, bool html);
-    void saveAsMatches(QTextStream &out, bool txt, bool html);
-    void saveAsContext(QTextStream &out, bool txt, bool html);
-    void saveAsColorString(QTextStream &out, QString s);
-
-    static QString HTMLescape(QString);
-    static QString HTMLescape(std::string);
 
     static QStyledItemDelegate* colorDelegateFactory(CorpusReaderPtr);
     static QStyledItemDelegate* visibilityDelegateFactory(CorpusReaderPtr);
@@ -162,7 +156,6 @@ private:
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
-    QString squeeze(QString const s);
     QString d_lastfilterchoice;
 };
 

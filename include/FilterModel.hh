@@ -30,6 +30,7 @@ class FilterModel : public QAbstractTableModel
 public:
     FilterModel(CorpusPtr corpus, QObject *parent = 0);
     ~FilterModel();
+    QString asXML() const;
     int columnCount(QModelIndex const &index) const;
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;
