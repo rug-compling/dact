@@ -70,7 +70,6 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
     QMutexLocker locker(&d_resultsMutex);
     switch (index.column())
     {
-        QMutexLocker locker(&d_resultsMutex);
         case 0:
             return d_results.at(index.row()).name;
         case 1:
