@@ -149,10 +149,14 @@
           <xsl:apply-templates select="." mode="kwic"/>
         </xsl:when>
         <xsl:when test="$outputType = 'match'">
-          <xsl:apply-templates select="." mode="match" />
+          <dl>
+            <xsl:apply-templates select="." mode="match" />
+          </dl>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="." mode="sentence" />
+          <dl>
+            <xsl:apply-templates select="." mode="sentence" />
+          </dl>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:template>
