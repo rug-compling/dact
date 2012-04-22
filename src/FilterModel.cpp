@@ -48,22 +48,29 @@ int FilterModel::rowCount(QModelIndex const &index) const
 
 QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
-    QMutexLocker locker(&d_resultsMutex);
-
     if (role == Qt::TextAlignmentRole)
         if (index.column() == 1)
             return (Qt::AlignTop + Qt::AlignHCenter);
         else
             return Qt::AlignTop;
 
+
+    size_t nResults;
+    {
+        QMutexLocker locker(&d_resultsMutex);
+        nResults = d_results.size();
+    }
+
     if (!index.isValid()
-        || index.row() >= d_results.size()
+        || index.row() >= nResults
         || index.row() < 0
         || !(role == Qt::DisplayRole || role == Qt::UserRole))
         return QVariant();
 
+    QMutexLocker locker(&d_resultsMutex);
     switch (index.column())
     {
+        QMutexLocker locker(&d_resultsMutex);
         case 0:
             return d_results.at(index.row()).name;
         case 1:
@@ -303,26 +310,29 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
 
             QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
 
-            // Lock the results list.
-            QMutexLocker locker(&d_resultsMutex);
-
             /*
              * WARNING: This assumes all the hits per result only occur right after
              * each other, never shuffled. Otherwise we might want to change to QHash
              * or QMap for fast lookup.
              */
             int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].name == entry)
+            if (row >= 0 && d_results[row].name == entry) {
+                QMutexLocker locker(&d_resultsMutex);
                 ++d_results[row].hits;
+            }
             // Add found file to the list
             else
             {
                 ++row;
-                if (withStylesheet)
-                    d_results.append(Entry(entry, 1,
-                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str())));
-                else
+                if (withStylesheet) {
+                    QString contents =
+                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str());
+                    d_results.append(Entry(entry, 1, contents));
+                }
+                else {
+                    QMutexLocker locker(&d_resultsMutex);
                     d_results.append(Entry(entry, 1, QString::null));
+                }
             }
         }
 
