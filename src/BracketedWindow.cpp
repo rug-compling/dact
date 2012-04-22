@@ -434,28 +434,25 @@ void BracketedWindow::saveAs()
 
     QSharedPointer<QFile> stylesheet;
 
+    if (format == FormatText)
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-text.xsl"));
+    else
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-html.xsl"));
+
+    XSLTransformer::ParamHash params;
+
     switch (d_ui->listDelegateComboBox->currentIndex()) {
     case 0:
-        if (format == FormatText)
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-sentence-text.xsl"));
-        else
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-sentence-html.xsl"));
+        params["outputType"] = "'sentence'";
         break;
     case 1:
-        if (format == FormatText)
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-match-text.xsl"));
-        else
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-match-html.xsl"));
+        params["outputType"] = "'match'";
         break;
     case 2:
-        if (format == FormatText)
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-kwic-text.xsl"));
-        else
-            stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/bracketed-kwic-html.xsl"));
+        params["outputType"] = "'kwic'";
         break;
     }
 
-    XSLTransformer::ParamHash params;
     if (d_ui->filenamesCheckBox->isChecked())
         params["showFilenames"] = "1";
 

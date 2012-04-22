@@ -7,6 +7,8 @@
   xmlns:set="http://exslt.org/sets"
   extension-element-prefixes="str exsl set">
 
+  <xsl:param name="outputType" select="sentence" />
+
   <xsl:strip-space elements="entry"/>
 
   <xsl:output method="xml" encoding="UTF-8"
@@ -141,18 +143,78 @@
       </tr>
     </xsl:template>
 
-    <xsl:template match="sentence">
-      <xsl:apply-templates select="bracket" />
+    <xsl:template match="entry">
+      <xsl:choose>
+        <xsl:when test="$outputType = 'kwic'">
+          <xsl:apply-templates select="." mode="kwic"/>
+        </xsl:when>
+        <xsl:when test="$outputType = 'match'">
+          <xsl:apply-templates select="." mode="match" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="." mode="sentence" />
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="entry">
+    <!-- Sentence -->
+
+    <xsl:template match="entry" mode="sentence">
+      <dt><xsl:value-of select="filename/text()" /> [<xsl:value-of select="count/text()" />]</dt>
+      <dd>
+        <xsl:apply-templates select="sentence" mode="sentence">
+          <xsl:with-param name="depth" select="1"/>
+        </xsl:apply-templates>
+      </dd>
+    </xsl:template>
+
+    <xsl:template match="bracket" mode="sentence">
+      <xsl:param name="depth"/>
+
+      <span>
+        <xsl:attribute name="class">
+          <xsl:text>l</xsl:text>
+          <xsl:value-of select="$depth" />
+        </xsl:attribute>
+        <xsl:apply-templates mode="sentence">
+          <xsl:with-param name="depth" select="$depth + 1"/>
+        </xsl:apply-templates>
+      </span>
+    </xsl:template>
+
+    <!-- Match -->
+
+    <xsl:template match="sentence" mode="match">
+      <xsl:apply-templates select="bracket" mode="match" />
+    </xsl:template>
+
+    <xsl:template match="entry" mode="match">
+      <dt><xsl:value-of select="filename/text()" /></dt>
+      <xsl:apply-templates select="sentence" mode="match"/>
+    </xsl:template>
+
+    <xsl:template match="bracket" mode="match">
+        <dd>
+          <xsl:value-of select="."/>
+        </dd>
+        <xsl:apply-templates select="bracket" mode="match"/>
+    </xsl:template>
+
+
+    <!-- KWIC -->
+
+    <xsl:template match="sentence" mode="kwic">
+      <xsl:apply-templates select="bracket" mode="kwic"/>
+    </xsl:template>
+
+    <xsl:template match="entry" mode="kwic">
       <div class="f"><xsl:value-of select="filename/text()" /></div>
       <table width="100%">
-        <xsl:apply-templates select="sentence" />
+        <xsl:apply-templates select="sentence" mode="kwic"/>
       </table>
     </xsl:template>
 
-    <xsl:template match="bracket">
+    <xsl:template match="bracket" mode="kwic">
       <xsl:variable name="sentTextNodes" select="exsl:node-set(ancestor::sentence//text())"/>
         <tr>
           <td width="40%" align="right" valign="top" class="l">
@@ -165,7 +227,7 @@
             <xsl:value-of select="str:concat(set:trailing($sentTextNodes,descendant-or-self::*[last()]/text()))" />
           </td>
         </tr>
-        <xsl:apply-templates select="bracket" />
+        <xsl:apply-templates select="bracket" mode="kwic" />
     </xsl:template>
 
   </xsl:stylesheet>
