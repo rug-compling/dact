@@ -72,6 +72,11 @@ public slots:
     void readMacros(QStringList const &macroPaths);
 
     /*!
+     The save state of a widget was modified.
+    */
+    void saveStateChanged();
+
+    /*!
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();
@@ -87,7 +92,6 @@ public slots:
 
     void saveAs();
 
-    void setReady(int tabindex, bool isready);
     void statusMessage(QString message);
 
 private slots:
@@ -433,9 +437,6 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
-
-    bool d_ready[3];
-
 };
 
 #endif // MAINWINDOW_H

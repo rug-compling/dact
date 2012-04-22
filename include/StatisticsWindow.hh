@@ -31,11 +31,11 @@ public:
     void setFilter(QString const &text, QString const &raw_text);
     void setAggregateAttribute(QString const &text);
     void showPercentage(bool show);
+    bool saveEnabled() const;
     void selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes = false) const;
 
 signals:
     void entryActivated(QString, QString);
-    void setReady(int, bool);
     void statusMessage(QString);
 
 public slots:

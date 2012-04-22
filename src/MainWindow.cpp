@@ -117,9 +117,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createActions();
 
-    d_ready[0] = false;
-    d_ready[1] = false;
-    d_ready[2] = false;
     d_ui->saveAsAction->setEnabled(false);
 }
 
@@ -226,11 +223,11 @@ void MainWindow::saveAs()
     }
 }
 
-void MainWindow::setReady(int tabindex, bool isready)
+void MainWindow::saveStateChanged()
 {
-    d_ready[tabindex] = isready;
-    if (tabindex == d_ui->mainTabWidget->currentIndex())
-        d_ui->saveAsAction->setEnabled(isready);
+    CorpusWidget *widget = dynamic_cast<CorpusWidget *>(
+       QObject::sender());
+    d_ui->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
 
@@ -318,10 +315,10 @@ void MainWindow::createActions()
     connect(d_ui->sentencesWidget, SIGNAL(entryActivated(QString)),
             SLOT(bracketedEntryActivated(QString)));
 
-    connect(d_ui->statisticsWindow, SIGNAL(setReady(int, bool)),
-            SLOT(setReady(int, bool)));
-    connect(d_ui->sentencesWidget, SIGNAL(setReady(int, bool)),
-            SLOT(setReady(int, bool)));
+    connect(d_ui->statisticsWindow, SIGNAL(saveStateChanged()),
+            SLOT(saveStateChanged()));
+    connect(d_ui->sentencesWidget, SIGNAL(saveStateChanged()),
+            SLOT(saveStateChanged()));
     connect(d_ui->statisticsWindow, SIGNAL(statusMessage(QString)),
             SLOT(statusMessage(QString)));
     connect(d_ui->sentencesWidget, SIGNAL(statusMessage(QString)),
@@ -854,7 +851,7 @@ void MainWindow::tabChanged(int index)
         d_taintedWidgets[index].second = false;
     }
 
-    d_ui->saveAsAction->setEnabled(d_ready[index]);
+    d_ui->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
 }
 
 void MainWindow::taintAllWidgets()

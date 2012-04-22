@@ -32,6 +32,8 @@ public:
     void setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel);
     void readSettings();
     void renderTree(QPainter *painter);
+
+    bool saveEnabled() const;
     
     // XXX - hack, kill asap
     DactTreeScene *scene();

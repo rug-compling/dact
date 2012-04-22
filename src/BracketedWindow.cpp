@@ -64,15 +64,14 @@ void BracketedWindow::queryFailed(QString error)
 
 void BracketedWindow::switchCorpus(QSharedPointer<ac::CorpusReader> corpusReader)
 {
-    setReady(2, false);
     d_corpusReader = corpusReader;
+    emit saveStateChanged();
 }
 
 void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter)
 {
     Q_UNUSED(raw_filter);
 
-    setReady(2, false);
     d_filter = filter;
     startQuery();
 }
@@ -81,6 +80,8 @@ void BracketedWindow::setModel(FilterModel *model)
 {
     d_model = QSharedPointer<FilterModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
+
+    emit saveStateChanged();
 
     //d_ui->resultsTable->setColumnHidden(1, true);
 
@@ -243,7 +244,6 @@ void BracketedWindow::reloadListDelegate()
 
 void BracketedWindow::progressStarted(int totalEntries)
 {
-    setReady(2, false);
     d_ui->filterProgressBar->setMinimum(0);
     d_ui->filterProgressBar->setMaximum(totalEntries);
     d_ui->filterProgressBar->setValue(0);
@@ -264,10 +264,7 @@ void BracketedWindow::progressFinished(int processedEntries, int totalEntries, b
 void BracketedWindow::progressStopped(int processedEntries, int totalEntries)
 {
     d_ui->filterProgressBar->setVisible(false);
-    if (d_model.isNull())
-        setReady(2, false);
-    else
-        setReady(2, d_model->rowCount(QModelIndex()) ? true : false);
+    emit saveStateChanged();
 }
 
 void BracketedWindow::closeEvent(QCloseEvent *event)
@@ -468,4 +465,14 @@ void BracketedWindow::saveAs()
                              tr("File saved as %1").arg(filename),
                              QMessageBox::Ok);
     */
+}
+
+bool BracketedWindow::saveEnabled() const
+{
+    if (d_model.isNull())
+        return false;
+    if (d_model->rowCount(QModelIndex()) == 0)
+        return false;
+
+    return true;
 }

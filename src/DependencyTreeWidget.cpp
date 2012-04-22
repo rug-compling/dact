@@ -59,6 +59,11 @@ void DependencyTreeWidget::saveAs()
     std::cerr << "Dependency Tree Widget Save As" << std::endl;
 }
 
+bool DependencyTreeWidget::saveEnabled() const
+{
+    return false;
+}
+
 void DependencyTreeWidget::copy()
 {
     if (!d_model)

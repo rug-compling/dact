@@ -46,6 +46,8 @@ public:
      */
     void switchCorpus(CorpusReaderPtr corpusReader);
 
+    bool saveEnabled() const;
+
     /*!
      Set the query filter. Used by the main window to copy the current filter query
      into this window when opened for the first time.
@@ -68,7 +70,6 @@ signals:
      */
     void entryActivated(QString file);
 
-    void setReady(int, bool);
     void statusMessage(QString);
 
 public slots:
