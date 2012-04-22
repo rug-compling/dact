@@ -136,7 +136,8 @@ protected:
 private:
     enum OutputFormat {FormatText, FormatHTML};
 
-    void addListDelegate(QString const &name, DelegateFactory);
+    void addOutputType(QString const &outputType, QString const &description,
+        DelegateFactory factory);
     void updateResults();
     void createActions();
     void initListDelegates();
@@ -151,7 +152,8 @@ private:
     static QStyledItemDelegate* keywordInContextDelegateFactory(CorpusReaderPtr);
 
     QString d_filter;
-    QList<DelegateFactory>d_listDelegateFactories;
+    QList<DelegateFactory> d_listDelegateFactories;
+    QList<QString> d_outputTypes;
     QSharedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;

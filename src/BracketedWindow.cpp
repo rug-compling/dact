@@ -199,9 +199,12 @@ void BracketedWindow::entryActivated(QModelIndex const &index)
     emit entryActivated(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
 }
 
-void BracketedWindow::addListDelegate(QString const &name, DelegateFactory factory)
+void BracketedWindow::addOutputType(QString const &outputType,
+    QString const &description, DelegateFactory factory)
 {
-    d_ui->listDelegateComboBox->addItem(name, d_listDelegateFactories.size());
+    d_outputTypes.append(outputType);
+    d_ui->listDelegateComboBox->addItem(description,
+        d_listDelegateFactories.size());
     d_listDelegateFactories.append(factory);
 }
 
@@ -225,9 +228,12 @@ void BracketedWindow::listDelegateChanged(int index)
 
 void BracketedWindow::initListDelegates()
 {
-    addListDelegate("Complete sentence", &BracketedWindow::colorDelegateFactory);
-    addListDelegate("Only matches", &BracketedWindow::visibilityDelegateFactory);
-    addListDelegate("Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);
+    addOutputType("sentence", "Complete sentence",
+        &BracketedWindow::colorDelegateFactory);
+    addOutputType("match", "Only matches",
+        &BracketedWindow::visibilityDelegateFactory);
+    addOutputType("kwic",
+        "Keyword in Context", &BracketedWindow::keywordInContextDelegateFactory);
 }
 
 void BracketedWindow::reloadListDelegate()
@@ -441,17 +447,9 @@ void BracketedWindow::saveAs()
 
     XSLTransformer::ParamHash params;
 
-    switch (d_ui->listDelegateComboBox->currentIndex()) {
-    case 0:
-        params["outputType"] = "'sentence'";
-        break;
-    case 1:
-        params["outputType"] = "'match'";
-        break;
-    case 2:
-        params["outputType"] = "'kwic'";
-        break;
-    }
+    int idx = d_ui->listDelegateComboBox->currentIndex();
+    int outputIdx = d_ui->listDelegateComboBox->itemData(idx, Qt::UserRole).toInt();
+    params["outputType"] = QString("'%1'").arg(d_outputTypes[outputIdx]);
 
     if (d_ui->filenamesCheckBox->isChecked())
         params["showFilenames"] = "1";
