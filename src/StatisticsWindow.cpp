@@ -156,19 +156,17 @@ void StatisticsWindow::saveAs()
     if (! filename.length())
         return;
 
-    bool txt = false;
-    bool html = false;
-    bool xml = false;
-    bool csv = false;
+    QSharedPointer<QFile> stylesheet;
+
     d_lastfilterchoice = fd.selectedNameFilter();
     if (d_lastfilterchoice.contains("*.txt"))
-        txt = true;
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-text.xsl"));
     else if (d_lastfilterchoice.contains("*.html"))
-        html = true;
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-html.xsl"));
     else if (d_lastfilterchoice.contains("*.xls"))
-        xml = true;
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-officexml.xsl"));
     else
-        csv = true;
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-csv.xsl"));
 
     QFile data(filename);
     if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -179,137 +177,19 @@ void StatisticsWindow::saveAs()
         return;
     }
 
-    QString lbl;
-    QString date(QDateTime::currentDateTime().toLocalTime().toString());
-    qreal perc;
-    int count;
     QTextStream out(&data);
 
     out.setCodec("UTF-8");
-    out.setRealNumberNotation(QTextStream::FixedNotation);
 
-    if (txt) {
-        out.setRealNumberPrecision(1);
-        out << tr("Corpus") << ":\t" << d_corpusReader->name().c_str() << "\n"
-            << tr("Filter") << ":\t" << d_filter << "\n"
-            << tr("Attribute") << ":\t" << d_ui->attributeComboBox->currentText() << "\n"
-            << tr("Variants") << ":\t" << nlines << "\n"
-            << tr("Total hits") << ":\t" << d_model->totalHits() << "\n"
-            << tr("Date") << ":\t" << date << "\n\n";
-    }
+    QString xmlStats = d_model->asXML();
 
-    if (html) {
-        out.setRealNumberPrecision(1);
-        out << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n"
-            << "<html>\n"
-            << "  <head>\n"
-            << "    <title></title>\n"
-            << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n"
-            << "  </head>\n"
-            << "  <body>\n"
-            << "    <table>\n"
-            << "      <tr><td>" << HTMLescape(tr("Corpus"))  << ":</td><td>" << HTMLescape(d_corpusReader->name()) << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Filter"))  << ":</td><td>" << HTMLescape(d_filter) << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Attribute")) << ":</td><td>" << HTMLescape(d_ui->attributeComboBox->currentText()) << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Variants")) << ":</td><td>" << nlines << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Total hits")) << ":</td><td>" << d_model->totalHits() << "</td></tr>\n"
-            << "      <tr><td>" << HTMLescape(tr("Date"))  << ":</td><td>" << HTMLescape(date) << "</td></tr>\n"
-            << "    </table>\n"
-            << "    <p>\n"
-            << "    <table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n";
-    }
-
-    if (xml)
-        out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            << "<?mso-application progid=\"Excel.Sheet\"?>\n"
-            << "<Workbook\n"
-            << "    xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
-            << "    xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\n"
-            << "  <Styles>\n"
-            << "    <Style ss:ID=\"s01\">\n"
-            << "      <NumberFormat ss:Format=\"0.0\"/>\n"
-            << "    </Style>\n"
-            << "  </Styles>\n"
-            << "  <Worksheet ss:Name=\"Details\">\n"
-            << "    <Table>\n";
-
-
-    nlines = d_model->rowCount(QModelIndex()); // again, just in case there is more now
-    for (int i = 0; i < nlines; i++) {
-        lbl = d_model->data(d_model->index(i, 0)).toString();
-        count = d_model->data(d_model->index(i, 1)).toInt();
-        perc = d_model->data(d_model->index(i, 2)).toReal() * 100.0;
-        if (txt)
-            out << count << "\t" << perc << "%\t" << lbl << "\n";
-        else if (html)
-            out << "      <tr>\n"
-                << "        <td align=\"right\">" << count << "</td>\n"
-                << "        <td align=\"right\">" << perc << "%</td>\n"
-                << "        <td>" << HTMLescape(lbl) << "</td>\n"
-                << "      </tr>\n";
-        else if (xml)
-            out << "      <Row>\n"
-                << "        <Cell><Data ss:Type=\"String\">" << XMLescape(lbl) << "</Data></Cell>\n"
-                << "        <Cell><Data ss:Type=\"Number\">" << count << "</Data></Cell>\n"
-                << "        <Cell ss:StyleID=\"s01\" ss:Formula=\"=RC[-1]/SUM(R[" << -i << "]C[-1]:R[" << nlines - 1 - i << "]C[-1])*100\"/>\n"
-                << "      </Row>\n";
-        else if (csv)
-            out << "\"" << lbl.replace("\"", "\"\"")  << "\"," << count << "," << perc << "\n";
-    }
-
-    if (html)
-        out << "    </table>\n"
-            << "  </body>\n"
-            << "</html>\n";
-
-    if (xml)
-        out << "      <Row>\n"
-            << "        <Cell ss:Index=\"2\" ss:Formula=\"=SUM(R[" << -nlines << "]C:R[-1]C)\"/>\n"
-            << "      </Row>\n"
-            << "    </Table>\n"
-            << "  </Worksheet>\n"
-            << "  <Worksheet ss:Name=\"Overview\">\n"
-            << "    <Table>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Corpus")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_corpusReader->name()) << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Filter")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_filter) << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Attribute")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(d_ui->attributeComboBox->currentText()) << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Variants")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"Number\">" << nlines << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Total hits")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"Number\">" << d_model->totalHits() << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "      <Row>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(tr("Date")) << ":</Data></Cell>\n"
-            << "        <Cell><Data ss:Type=\"String\">" << XMLescape(date) << "</Data></Cell>\n"
-            << "      </Row>\n"
-            << "    </Table>\n"
-            << "  </Worksheet>\n"
-            << "</Workbook>\n";
+    XSLTransformer trans(*stylesheet);
+    out << trans.transform(xmlStats);
 
     out.flush();
     data.close();
 
     emit statusMessage(tr("File saved as %1").arg(filename));
-
-    /*
-    QMessageBox::information(this,
-                             tr("File saved"),
-                             tr("File saved as %1").arg(filename),
-                             QMessageBox::Ok);
-    */
-
 }
 
 
