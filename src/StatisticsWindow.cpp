@@ -140,7 +140,7 @@ void StatisticsWindow::saveAs()
     QString filename;
     QStringList filenames;
 
-    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xml);;CSV (*.csv)"));
+    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xls);;CSV (*.csv)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
@@ -165,7 +165,7 @@ void StatisticsWindow::saveAs()
         txt = true;
     else if (d_lastfilterchoice.contains("*.html"))
         html = true;
-    else if (d_lastfilterchoice.contains("*.xml"))
+    else if (d_lastfilterchoice.contains("*.xls"))
         xml = true;
     else
         csv = true;
