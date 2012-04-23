@@ -9,6 +9,8 @@
 #include <AlpinoCorpus/Error.hh>
 #include "QueryModel.hh"
 
+QString const QueryModel::MISSING_ATTRIBUTE("[missing attribute]");
+
 QueryModel::HitsCompare::HitsCompare(QueryModel const &parent)
 :
     d_parent(parent)
@@ -57,7 +59,7 @@ QString QueryModel::asXML() const
     outList.append(QString("<filter>%1</filter>")
         .arg(d_query));
     outList.append(QString("<attribute>%1</attribute>")
-        .arg(d_query));
+        .arg(d_attribute));
     outList.append(QString("<variants>%1</variants>")
         .arg(rows));
     outList.append(QString("<hits>%1</hits>")
@@ -116,6 +118,23 @@ QVariant QueryModel::data(QModelIndex const &index, int role) const
         default:
             return QVariant();
     }
+}
+
+QString QueryModel::expandQuery(QString const &query,
+    QString const &attribute) const
+{
+    QString expandedQuery = QString("%1/(@%2/string(), '%3')[1]")
+        .arg(query)
+        .arg(attribute)
+        .arg(MISSING_ATTRIBUTE);
+
+    // Not all corpus readers support this styntax.
+    if (!validQuery(expandedQuery))
+        expandedQuery = QString("%1/@%2")
+            .arg(query)
+            .arg(attribute);
+
+    return expandedQuery;
 }
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
@@ -198,7 +217,7 @@ void QueryModel::mapperEntryFound(QString entry)
     emit dataChanged(index(idx, 0), index(idx + 1, 2));
 }
 
-void QueryModel::runQuery(QString const &query)
+void QueryModel::runQuery(QString const &query, QString const &attribute)
 {
     cancelQuery(); // just in case
     
@@ -213,20 +232,22 @@ void QueryModel::runQuery(QString const &query)
     d_totalHits = 0;
     
     d_query = query;
+    d_attribute = attribute;
        
     // Do nothing if we where given a null-pointer
     if (!d_corpus)
         return;
     
     if (!query.isEmpty())
-        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
+        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
+            expandQuery(query, attribute));
     else
         d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntries,
             d_corpus->begin(),
             d_corpus->end());
 }
 
-bool QueryModel::validQuery(QString const &query)
+bool QueryModel::validQuery(QString const &query) const
 {
     return d_corpus->isValidQuery(alpinocorpus::CorpusReader::XPATH,
         false, query.toUtf8().constData());    

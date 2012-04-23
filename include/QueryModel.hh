@@ -28,18 +28,21 @@ private:
     };
     
 public:
+    static QString const MISSING_ATTRIBUTE;
+
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
     ~QueryModel();
     QString asXML() const;
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
+    QString expandQuery(QString const &query, QString const &attribute) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     inline int totalHits() const { return d_totalHits; }
     
-    void runQuery(QString const &xpath_query = "");
+    void runQuery(QString const &query, QString const &attribute);
     void cancelQuery();
-    bool validQuery(QString const &query);
+    bool validQuery(QString const &query) const;
     
 signals:
     void queryFailed(QString error);
@@ -79,6 +82,7 @@ private:
     QList<value_type> d_results;
     int d_totalHits;
     QFuture<void> d_entriesFuture;
+    QString d_attribute;
     QString d_query;
 
     mutable QMutex d_resultsMutex;
