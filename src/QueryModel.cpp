@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <QDateTime>
 #include <QDebug>
+#include <QStringList>
 #include <QtConcurrentRun>
 
 #include <algorithm>
@@ -39,6 +41,46 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 QueryModel::~QueryModel()
 {
     cancelQuery();
+}
+
+QString QueryModel::asXML() const
+{
+    int rows = rowCount(QModelIndex());
+
+    // TODO: Remove selected attribute from the filter...
+
+    QStringList outList;
+    outList.append("<statistics>");
+    outList.append("<statisticsinfo>");
+    outList.append(QString("<corpus>%1</corpus>")
+        .arg(d_corpus->name().c_str()));
+    outList.append(QString("<filter>%1</filter>")
+        .arg(d_query));
+    outList.append(QString("<attribute>%1</attribute>")
+        .arg(d_query));
+    outList.append(QString("<variants>%1</variants>")
+        .arg(rows));
+    outList.append(QString("<hits>%1</hits>")
+        .arg(totalHits()));
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    outList.append(QString("<date>%1</date>")
+        .arg(date));
+    outList.append("</statisticsinfo>");
+
+    for (int i = 0; i < rows; ++i) {
+        outList.append("<statistic>");
+        outList.append(QString("<value>%1</value>")
+            .arg(data(index(i, 0)).toString()));
+        outList.append(QString("<frequency>%1</frequency>")
+            .arg(data(index(i, 1)).toString()));
+        outList.append(QString("<percentage>%1</percentage>")
+            .arg(data(index(i, 2)).toDouble() * 100.0, 0, 'f', 1));
+        outList.append("</statistic>");
+    }
+
+    outList.append("</statistics>");
+
+    return outList.join("\n");
 }
 
 int QueryModel::columnCount(QModelIndex const &index) const

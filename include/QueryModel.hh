@@ -30,6 +30,7 @@ private:
 public:
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
     ~QueryModel();
+    QString asXML() const;
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
