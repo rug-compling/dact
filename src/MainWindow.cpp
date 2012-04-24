@@ -230,6 +230,11 @@ void MainWindow::saveStateChanged()
     d_ui->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
+void MainWindow::setToolbarVisible(bool visible)
+{
+    d_ui->mainToolBar->setVisible(visible);
+    d_ui->toolbarAction->setChecked(visible);
+}
 
 #ifdef USE_REMOTE_CORPUS
 void MainWindow::showRemoteWindow()
@@ -385,6 +390,11 @@ void MainWindow::createActions()
         SLOT(filterOnInspectorSelection()));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
+    connect(d_ui->toolbarAction, SIGNAL(toggled(bool)),
+        SLOT(setToolbarVisible(bool)));
+    connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
+        SLOT(setToolbarVisible(bool)));
+
 
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
@@ -691,6 +701,9 @@ void MainWindow::readSettings()
     d_inspectorVisible = settings.value("inspectorVisible", true).toBool();
     d_ui->inspectorAction->setChecked(d_inspectorVisible);
 
+    bool toolbarVisible = settings.value("toolbarVisible", true).toBool();
+    d_ui->toolbarAction->setChecked(toolbarVisible);
+
     bool treeWidgetsEnabled = d_ui->mainTabWidget->currentIndex() == 0;
     d_ui->inspector->setVisible(treeWidgetsEnabled && d_inspectorVisible);
 
@@ -819,6 +832,9 @@ void MainWindow::writeSettings()
 
     // Inspector
     settings.setValue("inspectorVisible", d_inspectorVisible);
+
+    // Toolbar
+    settings.setValue("toolbarVisible", d_ui->mainToolBar->isVisible());
 
     d_ui->dependencyTreeWidget->writeSettings();
 }

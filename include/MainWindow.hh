@@ -77,6 +77,11 @@ public slots:
     void saveStateChanged();
 
     /*!
+     Toggle toolbar visibility.
+    */
+    void setToolbarVisible(bool visible);
+
+    /*!
      Instantiate (if not already instantiated) and raise the download window.
      */
     void showDownloadWindow();

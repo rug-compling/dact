@@ -140,6 +140,7 @@
     <addaction name="nextTreeNodeAction"/>
     <addaction name="separator"/>
     <addaction name="inspectorAction"/>
+    <addaction name="toolbarAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -522,6 +523,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="toolbarAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
