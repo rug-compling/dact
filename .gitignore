@@ -1,6 +1,7 @@
 # Vim temporaries
 .*.swp
 .*.swo
+*.un~
 
 # Object files etc.
 dact
