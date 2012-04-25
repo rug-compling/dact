@@ -103,8 +103,7 @@ void WebserviceWindow::parseSentences()
 
 int WebserviceWindow::countSentences(QString const &sentences)
 {
-    // TODO maybe this is a bit too optimistic, and should we prune empty lines.
-    return sentences.count('\n');
+    return sentences.split('\n', QString::SkipEmptyParts).size();
 }
 
 void WebserviceWindow::readResponse()
