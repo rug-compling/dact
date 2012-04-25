@@ -88,7 +88,8 @@ void WebserviceWindow::parseSentences()
 
     // Send the request
     QNetworkRequest request(QString("http://145.100.57.148/bin/alpino"));
-    // TODO: set content-type header.
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain;charset=UTF-8");
+    request.setHeader(QNetworkRequest::ContentLengthHeader, sentences.size());
     d_reply = d_accessManager->post(request, sentences.toUtf8());
 
     // Connect all the event handlers to the response
@@ -136,8 +137,7 @@ void WebserviceWindow::readResponse()
     int pos;
     while ((pos = sentencePattern.indexIn(bufferString, bufferOffset)) != -1)
     {
-        // If the match is not in front, read (skip) the data in front of it
-        // till it is in front.
+        // If the match is not in front, read (skip) the data in front of it till it is.
         if (pos != 0) {
             // FIXME pos is in characters, but utf8. Reading bytes, and that's why this is probably horribly broken!
             d_reply->read(pos);
@@ -181,7 +181,9 @@ void WebserviceWindow::updateProgressDialog()
         .arg(d_numberOfSentencesReceived)
         .arg(d_numberOfSentences));
 
-    d_progressDialog->setValue(d_numberOfSentencesReceived);
+    // For some reason, qt crashes on the last update. Race condition maybe? Skip it for now.
+    if (d_numberOfSentencesReceived < d_numberOfSentences)
+        d_progressDialog->setValue(d_numberOfSentencesReceived);
 }
 
 void WebserviceWindow::finishResponse()
