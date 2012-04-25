@@ -5,9 +5,11 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QProgressDialog>
+#include <QSettings>
 #include <QStringList>
 #include <QTextStream>
 
+#include <config.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
 
 #include <WebserviceWindow.hh>
@@ -87,7 +89,8 @@ void WebserviceWindow::parseSentences()
     d_progressDialog->open();
 
     // Send the request
-    QNetworkRequest request(QString("http://145.100.57.148/bin/alpino"));
+    QSettings settings;
+    QNetworkRequest request(settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain;charset=UTF-8");
     request.setHeader(QNetworkRequest::ContentLengthHeader, sentences.size());
     d_reply = d_accessManager->post(request, sentences.toUtf8());
