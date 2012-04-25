@@ -21,8 +21,10 @@ private slots:
     void restoreDefaultColors();
     void restoreDefaultNetwork();
     void restoreDefaultRemote();
+    void restoreDefaultWebservice();
     void saveArchiveBaseUrl();
     void saveRemoteBaseUrl();
+    void saveWebserviceBaseUrl();
     void saveColorsTab();
     void selectAppFont();
     

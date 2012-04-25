@@ -120,6 +120,7 @@ SET(dact_SRCS
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
+  src/WebserviceWindow.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/generateQuery.cpp
@@ -170,6 +171,7 @@ SET(dact_HDRS
   include/TreeNode.hh
   include/TreeNodeInspector.hh
   include/ValidityColor.hh
+  include/WebserviceWindow.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh
 )  
@@ -210,6 +212,7 @@ SET(dact_MOC_HDRS
   include/RecentFilesMenu.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
+  include/WebserviceWindow.hh
   include/XPathValidator.hh
 )
 
@@ -222,6 +225,7 @@ SET(dact_UI
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
+  ui/WebserviceWindow.ui
 )
 
 SET(dact_RCS

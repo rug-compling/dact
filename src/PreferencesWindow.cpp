@@ -57,6 +57,9 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     connect(d_ui->remoteBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveRemoteBaseUrl()));
 
+    connect(d_ui->webserviceBaseUrlLineEdit, SIGNAL(editingFinished()),
+        SLOT(saveWebserviceBaseUrl()));
+
     connect(d_ui->restoreDefaultColorsButton, SIGNAL(clicked()),
         SLOT(restoreDefaultColors()));
 
@@ -65,6 +68,9 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
     connect(d_ui->restoreDefaultRemoteButton, SIGNAL(clicked()),
         SLOT(restoreDefaultRemote()));
+
+    connect(d_ui->restoreDefaultWebserviceButton, SIGNAL(clicked()),
+        SLOT(restoreDefaultWebservice()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -133,6 +139,9 @@ void PreferencesWindow::loadNetworkTab()
     QSettings settings;
     d_ui->archiveBaseUrlLineEdit->setText(
         settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+
+    d_ui->webserviceBaseUrlLineEdit->setText(
+        settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
 }
 
 void PreferencesWindow::loadRemoteTab()
@@ -152,6 +161,12 @@ void PreferencesWindow::saveRemoteBaseUrl()
 {
     QSettings settings;
     settings.setValue(REMOTE_BASEURL_KEY, d_ui->remoteBaseUrlLineEdit->text());
+}
+
+void PreferencesWindow::saveWebserviceBaseUrl()
+{
+    QSettings settings;
+    settings.setValue(WEBSERVICE_BASEURL_KEY, d_ui->webserviceBaseUrlLineEdit->text());
 }
 
 void PreferencesWindow::saveColorsTab()
@@ -210,6 +225,15 @@ void PreferencesWindow::restoreDefaultRemote()
     settings.remove(REMOTE_BASEURL_KEY);
 
     loadRemoteTab();
+}
+
+void PreferencesWindow::restoreDefaultWebservice()
+{
+    QSettings settings;
+
+    settings.remove(WEBSERVICE_BASEURL_KEY);
+
+    loadNetworkTab();
 }
 
 void PreferencesWindow::keyPressEvent(QKeyEvent *event)
