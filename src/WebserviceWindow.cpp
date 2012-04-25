@@ -92,7 +92,7 @@ void WebserviceWindow::parseSentences()
     QSettings settings;
     QNetworkRequest request(settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain;charset=UTF-8");
-    request.setHeader(QNetworkRequest::ContentLengthHeader, sentences.size());
+    request.setHeader(QNetworkRequest::ContentLengthHeader, sentences.toUtf8().size());
     d_reply = d_accessManager->post(request, sentences.toUtf8());
 
     // Connect all the event handlers to the response
@@ -131,26 +131,30 @@ void WebserviceWindow::readResponse()
 
     // Convert the peeked buffer to a string for easy access
     QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
-    int bufferOffset = 0;
+    int bufferCharOffset = 0;
 
     // Search for a complete sentences in the peeked buffer
     QRegExp sentencePattern("<alpino_ds([^>]*)>(.+)</alpino_ds>", Qt::CaseInsensitive);
     sentencePattern.setMinimal(true); // Make quantifiers non-greedy; match one sentence at a time.
 
-    int pos;
-    while ((pos = sentencePattern.indexIn(bufferString, bufferOffset)) != -1)
+    int charPos;
+    while ((charPos = sentencePattern.indexIn(bufferString, bufferCharOffset)) != -1)
     {
         // If the match is not in front, read (skip) the data in front of it till it is.
-        if (pos != 0) {
-            // FIXME pos is in characters, but utf8. Reading bytes, and that's why this is probably horribly broken!
-            d_reply->read(pos);
-            bufferOffset += pos;
+        if (charPos != 0)
+        {
+            // charPos is in utf8 characters, but we are reading bytes. Therefore, let's convert them.
+            int bytePos = bufferString.midRef(bufferCharOffset, charPos).toUtf8().size();
+            d_reply->read(bytePos);
+
+            bufferCharOffset += charPos;
         }
 
-        // Read the sentence from the real stream, incrementing its internal pointer
-        // FIXME again, sentencePattern.matchedLength returns in characters (I assume!?) but we read bytes
-        QString sentence(QString::fromUtf8(d_reply->read(sentencePattern.matchedLength())));
-        bufferOffset += sentencePattern.matchedLength();
+        // Read the sentence from the real stream, incrementing its internal pointer.
+        // Again, the length is in characters, but we read bytes from d_reply. Converting again.
+        int byteLength = bufferString.midRef(bufferCharOffset, sentencePattern.matchedLength()).toUtf8().size();
+        QString sentence(QString::fromUtf8(d_reply->read(byteLength)));
+        bufferCharOffset += sentencePattern.matchedLength();
 
         // Deal with the sentence itself.
         receiveSentence(sentence);
