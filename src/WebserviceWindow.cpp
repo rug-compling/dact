@@ -114,8 +114,8 @@ void WebserviceWindow::readResponse()
     d_reply->peek(buffer, bufferSize);
 
     // Convert the buffer to a string for easy access
-    // TODO how about utf8-characters?
     QString bufferString(buffer);
+    QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
     int bufferOffset = 0;
 
     // Search for complete sentences in the peeked buffer
@@ -127,6 +127,7 @@ void WebserviceWindow::readResponse()
         // till it is in front.
         if (pos != 0) {
             d_reply->read(pos);
+            // FIXME pos is in characters, but utf8. Reading bytes, and that's why this is probably horribly broken!
             bufferOffset += pos;
         }
 
