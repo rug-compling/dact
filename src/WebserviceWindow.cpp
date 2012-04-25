@@ -75,6 +75,7 @@ void WebserviceWindow::parseSentences()
     // Get sentences and count them for progress updates
     QString sentences(d_ui->sentencesField->toPlainText());
     d_numberOfSentences = countSentences(sentences);
+    d_progressDialog->setRange(0, d_numberOfSentences);
     d_numberOfSentencesReceived = 0;
 
     // Hide the sentences dialog
@@ -179,6 +180,8 @@ void WebserviceWindow::updateProgressDialog()
     d_progressDialog->setLabelText(tr("Parsing sentence %1 of %2")
         .arg(d_numberOfSentencesReceived)
         .arg(d_numberOfSentences));
+
+    d_progressDialog->setValue(d_numberOfSentencesReceived);
 }
 
 void WebserviceWindow::finishResponse()
