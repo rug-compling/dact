@@ -87,6 +87,7 @@ void WebserviceWindow::parseSentences()
 
     // Send the request
     QNetworkRequest request(QString("http://145.100.57.148/bin/alpino"));
+    // TODO: set content-type header.
     d_reply = d_accessManager->post(request, sentences.toUtf8());
 
     // Connect all the event handlers to the response
@@ -111,28 +112,41 @@ void WebserviceWindow::readResponse()
     // Peek to see if there is a complete sentence to be read
     size_t bufferSize = d_reply->bytesAvailable();
     char *buffer = new char[bufferSize];
-    d_reply->peek(buffer, bufferSize);
+    int bytesPeeked = d_reply->peek(buffer, bufferSize);
 
-    // Convert the buffer to a string for easy access
-    QString bufferString(buffer);
+    // Did peeking succeed? If not, don't continue.
+    if (bytesPeeked == -1)
+    {
+        qDebug() << "Peeking response stream failed";
+        return;
+    }
+
+    // Meh, nothing to read.
+    if (bytesPeeked == 0)
+        return;
+
+    // Convert the peeked buffer to a string for easy access
     QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
     int bufferOffset = 0;
 
-    // Search for complete sentences in the peeked buffer
-    QRegExp sentencePattern("<alpino_ds([^>]*)>(.+?)</alpino_ds>");
+    // Search for a complete sentences in the peeked buffer
+    QRegExp sentencePattern("<alpino_ds([^>]*)>(.+)</alpino_ds>", Qt::CaseInsensitive);
+    sentencePattern.setMinimal(true); // Make quantifiers non-greedy; match one sentence at a time.
+
     int pos;
     while ((pos = sentencePattern.indexIn(bufferString, bufferOffset)) != -1)
     {
         // If the match is not in front, read (skip) the data in front of it
         // till it is in front.
         if (pos != 0) {
-            d_reply->read(pos);
             // FIXME pos is in characters, but utf8. Reading bytes, and that's why this is probably horribly broken!
+            d_reply->read(pos);
             bufferOffset += pos;
         }
 
         // Read the sentence from the real stream, incrementing its internal pointer
-        QString sentence(d_reply->read(sentencePattern.matchedLength()));
+        // FIXME again, sentencePattern.matchedLength returns in characters (I assume!?) but we read bytes
+        QString sentence(QString::fromUtf8(d_reply->read(sentencePattern.matchedLength())));
         bufferOffset += sentencePattern.matchedLength();
 
         // Deal with the sentence itself.
@@ -170,8 +184,6 @@ void WebserviceWindow::updateProgressDialog()
 
 void WebserviceWindow::finishResponse()
 {
-    qDebug() << "finishResponse";
-
     // Reset the reply pointer, since the request is no longer active.
     d_reply->deleteLater();
     d_reply = 0;
@@ -201,8 +213,6 @@ void WebserviceWindow::errorResponse(QNetworkReply::NetworkError error)
 
 void WebserviceWindow::cancelResponse()
 {
-    qDebug() << "cancelResponse";
-
     if (d_reply)
         d_reply->abort();
 }
