@@ -77,7 +77,7 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
+find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
