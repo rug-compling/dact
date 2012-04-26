@@ -20,6 +20,10 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     d_ui->groupBox_x->hide();
 #endif
 
+#ifndef USE_WEBSERVICE
+    d_ui->groupBoxWebservice->hide();
+#endif
+
 
 #ifndef __APPLE__
     applyAppFont();

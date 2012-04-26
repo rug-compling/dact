@@ -44,7 +44,9 @@
 
 #include <AboutWindow.hh>
 #include <DownloadWindow.hh>
+#ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
+#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
@@ -81,7 +83,9 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
     d_downloadWindow(0),
+#ifdef USE_WEBSERVICE
     d_webserviceWindow(0),
+#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     d_remoteWindow(0),
 #endif // USE_REMOTE_CORPUS
@@ -90,6 +94,10 @@ MainWindow::MainWindow(QWidget *parent) :
     d_preferencesWindow(0)
 {
     setupUi();
+
+#ifndef USE_WEBSERVICE
+    d_ui->menuTools->removeAction(d_ui->webserviceAction);
+#endif
 
 #ifndef USE_REMOTE_CORPUS
     d_ui->menuFile->removeAction(d_ui->remoteAction);
@@ -128,7 +136,9 @@ MainWindow::~MainWindow()
 
     delete d_aboutWindow;
     delete d_downloadWindow;
+#ifdef USE_WEBSERVICE
     delete d_webserviceWindow;
+#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     delete d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -211,6 +221,7 @@ void MainWindow::showDownloadWindow()
     d_downloadWindow->raise();
 }
 
+#ifdef USE_WEBSERVICE
 void MainWindow::showWebserviceWindow()
 {
     if (d_webserviceWindow == 0)
@@ -228,6 +239,7 @@ void MainWindow::showWebserviceWindow()
     d_webserviceWindow->show();
     d_webserviceWindow->raise();
 }
+#endif // USE_WEBSERVICE
 
 void MainWindow::saveAs()
 {
@@ -417,6 +429,10 @@ void MainWindow::createActions()
         SLOT(setToolbarVisible(bool)));
     connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
         SLOT(setToolbarVisible(bool)));
+    #ifdef USE_WEBSERVICE
+    connect(d_ui->webserviceAction, SIGNAL(triggered()),
+        SLOT(showWebserviceWindow()));
+    #endif // USE_WEBSERVICE
 
 
     new GlobalCopyCommand(d_ui->globalCopyAction);

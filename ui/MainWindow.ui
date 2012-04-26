@@ -651,11 +651,5 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>webserviceAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showWebserviceWindow()</slot>
-  </connection>
  </connections>
 </ui>
