@@ -132,6 +132,19 @@ void BracketedWindow::startQuery()
     // This will make sure no old cached data is used.
     reloadListDelegate();
 
+
+    // This would be the correct manner to execute the query:
+    //
+    //d_model->runQuery(generateQuery(d_filter, "(@cat or @root)"),
+    //  stylesheet);
+    //
+    // However, in some cases this will result in an insanely slow
+    // query (#68). So, we now execute the query as-is, and in the
+    // stylesheets only use the matching nodes that have a @cat or
+    // @root attribute. Theoretically, this could lead to the addition
+    // of sentences to the model where nothing is bracketed. If this
+    // happens, this is the place to start looking.
+
     d_model->runQuery(d_filter, stylesheet);
 
     showFilenamesChanged();
