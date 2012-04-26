@@ -214,11 +214,10 @@ void WebserviceWindow::finishResponse()
 
 void WebserviceWindow::errorResponse(QNetworkReply::NetworkError error)
 {
-    // TODO show human readable error.
     QMessageBox box(QMessageBox::Warning,
         tr("Failed to receive sentences"),
         tr("Could not receive sentences: %1")
-            .arg("Something something"),
+            .arg(d_reply->errorString()),
         QMessageBox::Ok);
 }
 
