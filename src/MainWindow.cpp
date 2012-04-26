@@ -366,7 +366,9 @@ void MainWindow::createActions()
 
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
+//    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
+//        SLOT(filterChanged()));
+    connect(d_ui->filterComboBox, SIGNAL(returnOrClick()),
         SLOT(filterChanged()));
     //connect(d_ui->filterComboBox->lineEdit(), SIGNAL(returnPressed()),
     //    SLOT(filterChanged()));

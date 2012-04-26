@@ -1,6 +1,8 @@
+#include <QAbstractItemView>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QModelIndex>
 #include <QSettings>
 #include <QVariant>
 #include <QtDebug>
@@ -14,10 +16,15 @@ HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
   //setMaxCount(64);
-  
+
 
   connect(lineEdit(), SIGNAL(returnPressed()),
       SLOT(returnPressed()));
+
+  // Does not work, weirdly enough...
+  //connect(view(),
+  //    SIGNAL(activated(QModelIndex const &)),
+  //    SLOT(itemClicked()));
 }
 
 HistoryComboBox::~HistoryComboBox()
@@ -27,6 +34,11 @@ HistoryComboBox::~HistoryComboBox()
 void HistoryComboBox::clearHistory()
 {
   clear();
+}
+
+void HistoryComboBox::itemClicked()
+{
+  emit returnOrClick();
 }
 
 void HistoryComboBox::readHistory(QString const &settingsKey)
@@ -46,8 +58,12 @@ void HistoryComboBox::readHistory(QString const &settingsKey)
 
 void HistoryComboBox::returnPressed()
 {
-  if (text().trimmed().isEmpty())
+  QString compact = text().trimmed();
+
+  if (compact.isEmpty())
     emit activated(QString(""));
+
+  emit returnOrClick();
 }
 
 void HistoryComboBox::revalidate()

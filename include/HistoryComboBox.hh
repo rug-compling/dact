@@ -21,7 +21,11 @@ public:
     void revalidate();
     QString text() const;
 
+signals:
+    void returnOrClick();
+
 public slots:
+    virtual void itemClicked();
     virtual void returnPressed();
     virtual void setText(QString const &newText);
 
