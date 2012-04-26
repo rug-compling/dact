@@ -95,6 +95,7 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
+  src/Chunk.cpp
   src/DependencyTreeWidget.cpp
   src/DownloadWindow.cpp
   src/DactApplication.cpp
