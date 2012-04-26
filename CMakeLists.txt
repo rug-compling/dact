@@ -82,6 +82,8 @@ INCLUDE(${QT_USE_FILE})
 
 option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
 
+option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
+
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
@@ -120,7 +122,6 @@ SET(dact_SRCS
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
-  src/WebserviceWindow.cpp
   src/XPathValidator.cpp
   src/XSLTransformer.cpp
   src/generateQuery.cpp
@@ -171,7 +172,6 @@ SET(dact_HDRS
   include/TreeNode.hh
   include/TreeNodeInspector.hh
   include/ValidityColor.hh
-  include/WebserviceWindow.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh
 )  
@@ -212,7 +212,6 @@ SET(dact_MOC_HDRS
   include/RecentFilesMenu.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
-  include/WebserviceWindow.hh
   include/XPathValidator.hh
 )
 
@@ -225,7 +224,6 @@ SET(dact_UI
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
-  ui/WebserviceWindow.ui
 )
 
 SET(dact_RCS
@@ -241,6 +239,17 @@ if(USE_REMOTE_CORPUS)
     src/RemoteWindow.cpp)
   list(APPEND dact_UI
     ui/RemoteWindow.ui)
+endif()
+
+if(USE_WEBSERVICE)
+  list(APPEND dact_HEADERS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_SRCS
+    src/WebserviceWindow.cpp)
+  list(APPEND dact_UI
+    ui/WebserviceWindow.ui)
 endif()
 
 if(WIN32)

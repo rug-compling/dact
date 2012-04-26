@@ -26,7 +26,9 @@ class DownloadWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
+#ifdef USE_WEBSERVICE
 class WebserviceWindow;
+#endif // USE_WEBSERVICE
 class DactMacrosModel;
 class DactQueryHistory;
 class PreferencesWindow;
@@ -88,10 +90,12 @@ public slots:
      */
     void showDownloadWindow();
 
+#ifdef USE_WEBSERVICE
     /*!
      Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
      */
     void showWebserviceWindow();
+#endif // USE_WEBSERVICE
 
 #ifdef USE_REMOTE_CORPUS
     /*!
@@ -359,7 +363,9 @@ private:
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
     DownloadWindow *d_downloadWindow;
+#ifdef USE_WEBSERVICE
     WebserviceWindow *d_webserviceWindow;
+#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     RemoteWindow *d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
