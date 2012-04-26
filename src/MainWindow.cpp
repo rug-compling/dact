@@ -315,6 +315,8 @@ void MainWindow::setupUi()
 void MainWindow::createActions()
 {
     connect(&d_corpusOpenWatcher, SIGNAL(finished()),
+        SLOT(corporaRead()));
+    connect(this, SIGNAL(corpusReaderCreated()),
         SLOT(corpusRead()));
     connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
         SLOT(corpusWritten(int)));
@@ -599,6 +601,8 @@ void MainWindow::readCorpora(QStringList const &corpusPaths, bool recursive)
 
     d_openProgressDialog->setWindowTitle(actionDescription);
     d_openProgressDialog->setLabelText(actionDescription);
+    d_openProgressDialog->setRange(0, corpusPaths.size());
+    d_openProgressDialog->setValue(0);
     d_openProgressDialog->open();
 
     // Opening a corpus cannot be cancelled, but reading it (iterating the iterator) can.
@@ -638,6 +642,7 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
         if (result.first != 0) {
             readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
             nLoadedCorpora++;
+            emit corpusReaderCreated();
         }
     }
 
@@ -692,13 +697,19 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     tabChanged(d_ui->mainTabWidget->currentIndex());
 }
 
-void MainWindow::corpusRead()
+void MainWindow::corporaRead()
 {
     d_openProgressDialog->accept();
 
     QPair<ac::CorpusReader*, QString> result(d_corpusOpenWatcher.result());
 
     setCorpusReader(QSharedPointer<ac::CorpusReader>(result.first), result.second);
+}
+
+void MainWindow::corpusRead()
+{
+    int v = d_openProgressDialog->value();
+    d_openProgressDialog->setValue(v + 1);    
 }
 
 void MainWindow::corpusWritten(int idx)

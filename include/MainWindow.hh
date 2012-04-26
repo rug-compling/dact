@@ -45,6 +45,7 @@ public:
     ~MainWindow();
 
 signals:
+    void corpusReaderCreated();
     void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
@@ -142,11 +143,16 @@ private slots:
     void clearQueryHistory();
 
     /*!
-     Listens for the finished signal from the corpus reader. When heard, it hides
+     Listens for the finished signal from the corpus readers. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.
      \sa addFiles
     */
+    void corporaRead();
+
+    /*!
+     One out of multiple corpora is read. Updates the opening progressbar.
+     */
     void corpusRead();
 
     void corpusWritten(int idx);
