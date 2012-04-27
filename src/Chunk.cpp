@@ -1,3 +1,4 @@
+#include <cstring>
 #include <list>
 #include <QString>
 #include <QStringList>
