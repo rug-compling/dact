@@ -133,6 +133,22 @@ void WebserviceWindow::readResponse()
     QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
     int bufferCharOffset = 0;
 
+    {
+        QRegExp treebankPattern("<treebank[^>]+sentences=\"([0-9]+)\"[^>]*>");
+        treebankPattern.setMinimal(true);
+        if (treebankPattern.indexIn(bufferString, 0) != -1)
+        {
+            bool ok;
+            int nSents = treebankPattern.cap(1).toInt(&ok);
+
+            if (ok)
+            {
+                d_numberOfSentences = nSents;
+                d_progressDialog->setRange(0, d_numberOfSentences);
+            }
+        }
+    }
+
     // Search for a complete sentences in the peeked buffer
     QRegExp sentencePattern("<alpino_ds([^>]*)>(.+)</alpino_ds>", Qt::CaseInsensitive);
     sentencePattern.setMinimal(true); // Make quantifiers non-greedy; match one sentence at a time.
