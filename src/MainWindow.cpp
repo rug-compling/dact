@@ -569,7 +569,13 @@ void MainWindow::exportPDF()
 void MainWindow::preferencesWindow()
 {
     if (d_preferencesWindow == 0)
+    {
         d_preferencesWindow = new PreferencesWindow(this);
+
+        // Propagate preference changes...
+        connect(d_preferencesWindow, SIGNAL(colorChanged()),
+                d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
+    }
 
     d_preferencesWindow->show();
     d_preferencesWindow->raise();

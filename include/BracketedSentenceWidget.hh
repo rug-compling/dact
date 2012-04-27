@@ -17,6 +17,9 @@ public:
     BracketedSentenceWidget(QWidget *parent = 0);
     void setParse(QString const &parse);
 
+public slots:
+	void colorChanged();
+
 private:
 	void loadSettings();
     QString transformXML(QString const &xml) const;

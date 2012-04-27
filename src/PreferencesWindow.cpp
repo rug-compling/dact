@@ -192,6 +192,8 @@ void PreferencesWindow::saveColorsTab()
     settings.beginGroup("CompleteSentence");
     settings.setValue("background", d_ui->completeSentencesBackgroundColor->color());
     settings.endGroup();
+
+    emit colorChanged();
 }
 
 void PreferencesWindow::restoreDefaultColors()

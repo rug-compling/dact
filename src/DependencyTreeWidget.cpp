@@ -48,6 +48,12 @@ void DependencyTreeWidget::applyValidityColor(QString const &)
     ::applyValidityColor(sender());
 }
 
+BracketedSentenceWidget *DependencyTreeWidget::sentenceWidget()
+{
+    return d_ui->sentenceWidget;
+}
+
+
 void DependencyTreeWidget::cancelQuery()
 {
     if (d_model)

@@ -21,6 +21,12 @@ BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
     loadSettings();
 }
 
+void BracketedSentenceWidget::colorChanged()
+{
+    loadSettings();
+    updateText();
+}
+
 void BracketedSentenceWidget::loadSettings()
 {
     QSettings settings;
