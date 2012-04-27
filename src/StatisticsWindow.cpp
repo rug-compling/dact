@@ -138,12 +138,12 @@ void StatisticsWindow::saveAs()
     QString filename;
     QStringList filenames;
 
-    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm);;Microsoft Excel 2003 XML (*.xls);;CSV (*.csv)"));
+    QFileDialog::QFileDialog fd(this, tr("Save"), QString(), tr("Microsoft Excel 2003 XML (*.xls);;Text (*.txt);;HTML (*.html *.htm);;CSV (*.csv)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
-    if (d_lastfilterchoice.size())
-        fd.selectNameFilter(d_lastfilterchoice);
+    if (d_lastFilterChoice.size())
+        fd.selectNameFilter(d_lastFilterChoice);
     if (fd.exec())
         filenames = fd.selectedFiles();
     else
@@ -156,12 +156,12 @@ void StatisticsWindow::saveAs()
 
     QSharedPointer<QFile> stylesheet;
 
-    d_lastfilterchoice = fd.selectedNameFilter();
-    if (d_lastfilterchoice.contains("*.txt"))
+    d_lastFilterChoice = fd.selectedNameFilter();
+    if (d_lastFilterChoice.contains("*.txt"))
         stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-text.xsl"));
-    else if (d_lastfilterchoice.contains("*.html"))
+    else if (d_lastFilterChoice.contains("*.html"))
         stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-html.xsl"));
-    else if (d_lastfilterchoice.contains("*.xls"))
+    else if (d_lastFilterChoice.contains("*.xls"))
         stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-officexml.xsl"));
     else
         stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-csv.xsl"));
