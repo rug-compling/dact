@@ -74,7 +74,7 @@ signals:
 
 public slots:
     void cancelQuery();
-
+    void colorChanged();
     void copy();
     void exportSelection();
     void saveAs();

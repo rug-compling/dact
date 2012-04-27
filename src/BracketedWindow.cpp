@@ -53,6 +53,11 @@ void BracketedWindow::cancelQuery()
         d_model->cancelQuery();
 }
 
+void BracketedWindow::colorChanged()
+{
+    reloadListDelegate();
+}
+
 void BracketedWindow::queryFailed(QString error)
 {
     progressStopped(0, 0);

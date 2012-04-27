@@ -575,6 +575,8 @@ void MainWindow::preferencesWindow()
         // Propagate preference changes...
         connect(d_preferencesWindow, SIGNAL(colorChanged()),
                 d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
+        connect(d_preferencesWindow, SIGNAL(colorChanged()),
+                d_ui->sentencesWidget, SLOT(colorChanged()));
     }
 
     d_preferencesWindow->show();
