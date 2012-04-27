@@ -80,9 +80,9 @@ endif()
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
-option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
 
-option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
+option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
 SET(dact_SRCS
