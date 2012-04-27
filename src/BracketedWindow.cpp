@@ -294,9 +294,8 @@ void BracketedWindow::readSettings()
 {
     QSettings settings;
 
-    bool show = settings.value("bracketed_show_filenames", true).toBool();
+    bool show = settings.value("bracketed_show_filenames", false).toBool();
     showFilenames(show);
-
 
     /*
 
