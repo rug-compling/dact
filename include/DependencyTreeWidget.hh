@@ -25,6 +25,9 @@ class DependencyTreeWidget : public CorpusWidget
 public:
     DependencyTreeWidget(QWidget *parent);
     
+    // Provide access to the sentence widget.
+    BracketedSentenceWidget *sentenceWidget();
+
     // XXX - do we want this?
     QItemSelectionModel *selectionModel();
     

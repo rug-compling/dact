@@ -17,6 +17,9 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 
+signals:
+    void colorChanged(); // More fine-grained???
+
 private slots:
     void restoreDefaultColors();
     void restoreDefaultNetwork();
