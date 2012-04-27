@@ -147,6 +147,16 @@ private slots:
     void clearQueryHistory();
 
     /*!
+      Convert a compact corpus to a Dact corpus.
+     */
+    void convertCompactCorpus();
+
+    /*!
+      Convert a directory corpus to a Dact corpus.
+     */
+    void convertDirectoryCorpus();
+
+    /*!
      Listens for the finished signal from the corpus readers. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.
@@ -278,6 +288,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    void convertCorpus(QString const &path);
+
     /*!
      Attaches all the signals from the ui and mapper to the various functions.
      */
@@ -323,7 +335,8 @@ private:
      \sa exportProgress
      \sa exportError
      */
-    bool writeCorpus(QString const &filename, QList<QString> const &files);
+    bool writeCorpus(QString const &filename, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+        QList<QString> const &files);
 
     /*!
      Given a path create one CorpusReader. In an error occurs, an openError(QString)

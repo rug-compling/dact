@@ -195,6 +195,65 @@ void MainWindow::close()
     QMainWindow::close();
 }
 
+void MainWindow::convertCompactCorpus()
+{
+
+    QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
+        QString("Compact corpora (*.data.dz)"));
+    if (corpusPath.isNull())
+        return;
+
+    convertCorpus(corpusPath);
+}
+
+void MainWindow::convertCorpus(QString const &convertPath)
+{
+    QString newPath(QFileDialog::getSaveFileName(this,
+        "New Dact corpus", QString(), "*.dact"));
+
+    if (newPath.isNull())
+        return;
+
+    QSharedPointer<ac::CorpusReader> corpusReader;
+    try {
+        corpusReader = QSharedPointer<ac::CorpusReader>(
+            ac::CorpusReaderFactory::open(convertPath.toUtf8().constData()));
+    }
+    catch (std::runtime_error const &e)
+    {
+        emit openError(e.what());
+        return;
+    }
+
+    d_exportProgressDialog->setWindowTitle("Converting corpus");
+    d_exportProgressDialog->setLabelText(QString("Writing corpus to:\n%1")
+        .arg(newPath));
+    d_exportProgressDialog->open();
+
+    QList<QString> files;
+    for (ac::CorpusReader::EntryIterator iter = corpusReader->begin();
+            iter != corpusReader->end(); ++iter)
+        files.push_back(QString::fromUtf8((*iter).c_str()));
+
+    d_writeCorpusCancelled = false;
+    d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
+
+    QFuture<bool> corpusWriterFuture =
+        QtConcurrent::run(this, &MainWindow::writeCorpus, newPath, corpusReader, files);
+    d_corpusWriteWatcher.setFuture(corpusWriterFuture);
+
+}
+
+void MainWindow::convertDirectoryCorpus()
+{
+    QString corpusPath = QFileDialog::getExistingDirectory(this,
+        "Open directory corpus");
+    if (corpusPath.isNull())
+        return;
+
+    convertCorpus(corpusPath);
+}
+
 QString MainWindow::corpusExtensions()
 {
     // XXX - Bye bye, cosy old world!
@@ -435,6 +494,10 @@ void MainWindow::createActions()
     connect(d_ui->webserviceAction, SIGNAL(triggered()),
         SLOT(showWebserviceWindow()));
     #endif // USE_WEBSERVICE
+    connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
+        SLOT(convertCompactCorpus()));
+    connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
+        SLOT(convertDirectoryCorpus()));
 
 
     new GlobalCopyCommand(d_ui->globalCopyAction);
@@ -814,12 +877,14 @@ void MainWindow::exportCorpus()
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
 
         QFuture<bool> corpusWriterFuture =
-            QtConcurrent::run(this, &MainWindow::writeCorpus, filename, files);
+            QtConcurrent::run(this, &MainWindow::writeCorpus, filename, d_corpusReader, files);
         d_corpusWriteWatcher.setFuture(corpusWriterFuture);
     }
 }
 
-bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &files)
+bool MainWindow::writeCorpus(QString const &filename,
+    QSharedPointer<ac::CorpusReader> corpusReader,
+    QList<QString> const &files)
 {
     try {
         QSharedPointer<ac::CorpusWriter> corpus(
@@ -835,7 +900,7 @@ bool MainWindow::writeCorpus(QString const &filename, QList<QString> const &file
              end(files.constEnd());
              !d_writeCorpusCancelled && itr != end; ++itr)
         {
-            corpus->write(itr->toUtf8().constData(), d_corpusReader->read(itr->toUtf8().constData()));
+            corpus->write(itr->toUtf8().constData(), corpusReader->read(itr->toUtf8().constData()));
             ++progress;
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);

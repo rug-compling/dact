@@ -146,10 +146,18 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <widget class="QMenu" name="menuConvert_corpus">
+     <property name="title">
+      <string>Convert corpus</string>
+     </property>
+     <addaction name="convertDirectoryCorpusAction"/>
+     <addaction name="convertCompactCorpusAction"/>
+    </widget>
     <addaction name="downloadAction"/>
     <addaction name="webserviceAction"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
+    <addaction name="menuConvert_corpus"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -540,6 +548,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionConvert_corpus">
+   <property name="text">
+    <string>Convert corpus…</string>
+   </property>
+  </action>
+  <action name="convertDirectoryCorpusAction">
+   <property name="text">
+    <string>Directory corpus…</string>
+   </property>
+  </action>
+  <action name="convertCompactCorpusAction">
+   <property name="text">
+    <string>Compact corpus…</string>
    </property>
   </action>
  </widget>
