@@ -17,6 +17,17 @@ BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
     int ruleHeight = m.lineSpacing();
     setFixedHeight(2 * ruleHeight + (2 * document()->documentMargin()));
     setReadOnly(true);
+
+    loadSettings();
+}
+
+void BracketedSentenceWidget::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("CompleteSentence");
+
+    d_highlightColor =
+        settings.value("background", QColor(Qt::green)).value<QColor>();
 }
 
 void BracketedSentenceWidget::setParse(QString const &parse)
@@ -35,19 +46,13 @@ void BracketedSentenceWidget::updateText()
 
         clear();
 
-        QSettings settings;
-        settings.beginGroup("CompleteSentence");
-
-        QColor highlightColor =
-            settings.value("background", QColor(Qt::green)).value<QColor>();
-
         foreach (Chunk const &chunk, *chunks)
         {
             if (chunk.depth() > 0) {
                 setTextColor(Qt::white);
-                highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
+                d_highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
                     static_cast<size_t>(255)));
-                setTextBackgroundColor(highlightColor);
+                setTextBackgroundColor(d_highlightColor);
             }
             else {
                 setTextColor(Qt::black);

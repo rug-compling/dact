@@ -1,6 +1,7 @@
 #ifndef BRACKETEDSENTENCEWIDGET_HH
 #define BRACKETEDSENTENCEWIDGET_HH
 
+#include <QColor>
 #include <QFile>
 #include <QList>
 #include <QTextEdit>
@@ -17,9 +18,11 @@ public:
     void setParse(QString const &parse);
 
 private:
+	void loadSettings();
     QString transformXML(QString const &xml) const;
     void updateText();
 
+    QColor d_highlightColor;
     QString d_parse;
     QFile d_stylesheet;
     XSLTransformer d_transformer;
