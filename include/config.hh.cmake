@@ -7,6 +7,7 @@
 
 #cmakedefine USE_REMOTE_CORPUS
 #cmakedefine USE_WEBSERVICE
+#cmakedefine USE_SANDBOXING
 
 QString const ARCHIVE_BASEURL_KEY("archiveBaseUrl");
 QString const DEFAULT_ARCHIVE_BASEURL("http://www.let.rug.nl/dekok/corpora");

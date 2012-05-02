@@ -146,7 +146,7 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <widget class="QMenu" name="menuConvert_corpus">
+    <widget class="QMenu" name="convertCorpusMenu">
      <property name="title">
       <string>Convert corpus</string>
      </property>
@@ -157,7 +157,7 @@
     <addaction name="webserviceAction"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
-    <addaction name="menuConvert_corpus"/>
+    <addaction name="convertCorpusMenu"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

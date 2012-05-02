@@ -99,6 +99,10 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui->menuTools->removeAction(d_ui->webserviceAction);
 #endif
 
+#ifdef USE_SANDBOXING
+    d_ui->menuTools->removeAction(d_ui->convertCorpusMenu->menuAction());
+#endif
+
 #ifndef USE_REMOTE_CORPUS
     d_ui->menuFile->removeAction(d_ui->remoteAction);
 #endif
@@ -494,10 +498,13 @@ void MainWindow::createActions()
     connect(d_ui->webserviceAction, SIGNAL(triggered()),
         SLOT(showWebserviceWindow()));
     #endif // USE_WEBSERVICE
+
+    #ifndef USE_SANDBOXING
     connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
         SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
         SLOT(convertDirectoryCorpus()));
+    #endif // USE_SANDBOXING
 
 
     new GlobalCopyCommand(d_ui->globalCopyAction);
