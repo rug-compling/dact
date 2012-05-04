@@ -29,6 +29,12 @@ public slots:
     virtual void returnPressed();
     virtual void setText(QString const &newText);
 
+private slots:
+    void comboBoxActivated(QString const &);
+    void listViewClicked(QModelIndex const &);
+
+private:
+    bool d_listViewWasClicked;
 };
 
 #endif // HISTORY_COMBO_BOX_HH
