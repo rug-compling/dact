@@ -213,7 +213,7 @@ void MainWindow::convertCompactCorpus()
 void MainWindow::convertCorpus(QString const &convertPath)
 {
     QString newPath(QFileDialog::getSaveFileName(this,
-        "New Dact corpus", QString(), "*.dact"));
+        "New Dact corpus", QString("untitled"), "*.dact"));
 
     if (newPath.isNull())
         return;
@@ -620,7 +620,11 @@ void MainWindow::readMacros(QStringList const &fileNames)
 
 void MainWindow::exportPDF()
 {
-    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
+    QItemSelectionModel *selectionModel = d_ui->dependencyTreeWidget->selectionModel();
+    QString entryName = selectionModel->currentIndex().data(Qt::UserRole).toString();
+
+    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF",
+        entryName, "*.pdf");
     if (pdfFilename.isNull())
         return;
 
@@ -854,7 +858,7 @@ void MainWindow::exportCorpus()
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
-        QString(), "*.dact"));
+        QString("untitled"), "*.dact"));
 
     if (!filename.isNull())
     {
