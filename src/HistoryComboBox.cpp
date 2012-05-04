@@ -10,21 +10,25 @@
 #include <HistoryComboBox.hh>
 
 HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
-  QComboBox(parent)
+  QComboBox(parent),
+  d_listViewWasClicked(false)
 {
   setEditable(true);
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
   //setMaxCount(64);
 
-
   connect(lineEdit(), SIGNAL(returnPressed()),
-      SLOT(returnPressed()));
+    SLOT(returnPressed()));
 
-  // Does not work, weirdly enough...
-  //connect(view(),
-  //    SIGNAL(activated(QModelIndex const &)),
-  //    SLOT(itemClicked()));
+  // Listen for activation. If an entry was selected from the list view,
+  // and then the activation event fired, it was probably caused by the click.
+  // Handle this case as if the user pressed the enter key.
+  connect(this, SIGNAL(activated(QString const &)),
+    SLOT(comboBoxActivated(QString const &)));
+
+  connect(view(), SIGNAL(pressed(QModelIndex const &)),
+    SLOT(listViewClicked(QModelIndex const &)));
 }
 
 HistoryComboBox::~HistoryComboBox()
@@ -95,4 +99,18 @@ void HistoryComboBox::writeHistory(QString const &settingsKey)
     QSettings settings;
     settings.setValue(settingsKey, history);
   }
+}
+
+void HistoryComboBox::comboBoxActivated(QString const &text)
+{
+  if (d_listViewWasClicked)
+  {
+    d_listViewWasClicked = false;
+    returnPressed();
+  }
+}
+
+void HistoryComboBox::listViewClicked(QModelIndex const &index)
+{
+  d_listViewWasClicked = true;
 }
