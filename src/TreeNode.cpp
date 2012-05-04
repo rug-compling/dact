@@ -10,6 +10,7 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
     QGraphicsItem(parent),
     d_active(false),
     d_attributes(),
+    d_parentNode(0),
     d_childNodes(),
     d_labels(),
     d_popupItem(0),
@@ -30,13 +31,24 @@ bool TreeNode::isLeaf() const
 
 void TreeNode::appendChild(TreeNode *child)
 {
-    child->setParentItem(this);
+    child->setParentNode(this);
     d_childNodes.append(child);
 }
 
 void TreeNode::appendLabel(QString const &label)
 {
     d_labels.append(label);
+}
+
+TreeNode *TreeNode::parentNode()
+{
+    return d_parentNode;
+}
+
+void TreeNode::setParentNode(TreeNode *parent)
+{
+    d_parentNode = parent;
+    setParentItem(parent);
 }
 
 QList<TreeNode*> TreeNode::children()

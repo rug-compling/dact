@@ -22,6 +22,7 @@ public:
     QRectF branchBoundingRect() const;
     QSizeF leafSize() const;
     QSizeF branchSize() const;
+    TreeNode *parentNode();
     QList<TreeNode*> children();
     bool isLeaf() const;
     bool isActive() const;
@@ -35,12 +36,14 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
     void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
+    void setParentNode(TreeNode *node);
 private:
     void paintLabels(QPainter *painter, QRectF const &leaf);
     void paintEdges(QPainter *painter, QRectF const &leaf);
     QFont font() const;
     bool d_active;
     QHash<QString,QString> d_attributes;
+    TreeNode *d_parentNode;
     QList<TreeNode*> d_childNodes;
     QList<QString> d_labels;
     QList<QString> d_popupLines;

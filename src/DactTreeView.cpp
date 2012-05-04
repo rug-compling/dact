@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QWheelEvent>
 
 #include "DactTreeView.hh"
@@ -72,22 +73,34 @@ void DactTreeView::focusTreeNode(int direction)
         
             if (node.isActive())
             {
-                node.setFocus();
-                
-                // cause a selectionChanged signal
-                node.setSelected(false);
-                node.setSelected(true);
-                
-                // reset the matrix to undo the scale operation done by fitTree.
-                // I don't like this yet, because it always resets the zoom.
-                //d_ui->treeGraphicsView->setMatrix(QMatrix());
-            
-                // move the focus to the center of the focussed leaf
-                centerOn(node.mapToScene(node.leafRect().center()));
+                clearSelection();
+                focusNode(node);
                 break;
             }
         }
     }
+}
+
+void DactTreeView::focusNode(TreeNode &node)
+{
+    // Move focus to new node
+    node.setFocus();
+                
+    // Cause a selectionChanged signal, used to update the inspector
+    node.setSelected(true);
+    
+    // reset the matrix to undo the scale operation done by fitTree.
+    // I don't like this yet, because it always resets the zoom.
+    //d_ui->treeGraphicsView->setMatrix(QMatrix());
+
+    // Move the focus to the center of the focussed leaf
+    centerOn(node.mapToScene(node.leafRect().center()));
+}
+
+void DactTreeView::clearSelection()
+{
+    foreach (TreeNode *node, scene()->nodes())
+        node->setSelected(false);
 }
 
 void DactTreeView::zoomIn()
@@ -127,6 +140,77 @@ void DactTreeView::fitInView(QRectF const &rect, Qt::AspectRatioMode aspectRatio
         resetZoom();
 }
 
+TreeNode *DactTreeView::focussedNode()
+{
+    QList<TreeNode*> nodes(scene()->nodes());
+
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        if (nodes[i]->hasFocus())
+            return nodes[i];
+    }
+
+    return 0;
+}
+
+void DactTreeView::keyPressEvent(QKeyEvent * event)
+{
+    // Don't do anything if there is no scene
+    if (!scene())
+        return;
+
+    // Append nodes to the selection when shift-key is down. Otherwise, move
+    // the selection with the focus.
+    bool shiftKeyPressed = (event->modifiers() & Qt::ShiftModifier) != 0;
+
+    switch (event->key())
+    {
+        case Qt::Key_Up:
+            // Only move up when there is a parent
+            if (focussedNode() && focussedNode()->parentNode() != 0)
+            {
+                if (!shiftKeyPressed)
+                    clearSelection();
+
+                focusNode(*focussedNode()->parentNode());
+            }
+            break;
+        
+        case Qt::Key_Down:
+            // Only move down to the first child if there are children
+            if (focussedNode() && !focussedNode()->isLeaf())
+            {
+                if (!shiftKeyPressed)
+                    clearSelection();
+
+                focusNode(*focussedNode()->children()[0]);
+            }
+            break;
+
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+            // The top node has left and right siblings
+            if (focussedNode() && focussedNode()->parentNode() != 0)
+            {
+                // Find currently focussed sibling, and move focus to sibling +1 or -1.
+                QList<TreeNode*> siblings(focussedNode()->parentNode()->children());
+                int currentIndex = siblings.indexOf(focussedNode());
+                int direction = event->key() == Qt::Key_Left ? -1 : 1;
+                int nextIndex = currentIndex + direction;
+                if (nextIndex >= 0 && nextIndex < siblings.size())
+                {
+                    if (!shiftKeyPressed)
+                        clearSelection();
+
+                    focusNode(*siblings[nextIndex]);
+                }
+            }
+            break;
+        default:
+            QGraphicsView::keyPressEvent(event);
+            break;
+    }
+}
 
 void DactTreeView::wheelEvent(QWheelEvent * event)
 {
