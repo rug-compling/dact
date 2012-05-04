@@ -146,18 +146,18 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <widget class="QMenu" name="menuConvert_corpus">
+    <widget class="QMenu" name="menuConvertCorpus">
      <property name="title">
       <string>Convert corpus</string>
      </property>
      <addaction name="convertDirectoryCorpusAction"/>
      <addaction name="convertCompactCorpusAction"/>
     </widget>
-    <addaction name="downloadAction"/>
     <addaction name="webserviceAction"/>
+    <addaction name="downloadAction"/>
+    <addaction name="menuConvertCorpus"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
-    <addaction name="menuConvert_corpus"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

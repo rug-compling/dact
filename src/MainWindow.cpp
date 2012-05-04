@@ -198,7 +198,7 @@ void MainWindow::close()
 void MainWindow::convertCompactCorpus()
 {
 
-    QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
+    QString corpusPath = QFileDialog::getOpenFileName(this, "Open compact corpus", QString(),
         QString("Compact corpora (*.data.dz)"));
     if (corpusPath.isNull())
         return;
