@@ -75,6 +75,9 @@ void DactTreeView::focusTreeNode(int direction)
             {
                 clearSelection();
                 focusNode(node);
+                
+                // Move the focus to the center of the focussed leaf
+                centerOn(node.mapToScene(node.leafRect().center()));
                 break;
             }
         }
@@ -93,8 +96,7 @@ void DactTreeView::focusNode(TreeNode &node)
     // I don't like this yet, because it always resets the zoom.
     //d_ui->treeGraphicsView->setMatrix(QMatrix());
 
-    // Move the focus to the center of the focussed leaf
-    centerOn(node.mapToScene(node.leafRect().center()));
+    ensureVisible(node.mapToScene(node.leafRect()).boundingRect());
 }
 
 void DactTreeView::clearSelection()
