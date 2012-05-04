@@ -324,6 +324,7 @@ if(APPLE)
 
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
     set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+    set(MACOSX_BUNDLE_BUNDLE_NAME ${PROGNAME} )
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
     set_target_properties(${PROGNAME}
