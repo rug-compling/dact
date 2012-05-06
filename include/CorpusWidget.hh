@@ -13,8 +13,12 @@ class CorpusWidget : public QWidget
 public:
     CorpusWidget(QWidget *parent = 0) : QWidget(parent) {}
     virtual ~CorpusWidget() {}
+    virtual bool saveEnabled() const = 0;
+    virtual void saveAs() = 0;
+signals:
+    void saveStateChanged();
 public slots:
-    virtual void setFilter(QString const &filter) = 0;
+    virtual void setFilter(QString const &filter, QString const &raw_filter) = 0;
     virtual void cancelQuery() = 0;
     virtual void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpus) = 0;
 };

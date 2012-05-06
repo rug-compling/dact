@@ -14,6 +14,10 @@ if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
   set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
+  set(ENABLE_CODESIGN OFF CACHE BOOL "Sign the application bundle")
+  if(ENABLE_CODESIGN)
+    set(CODESIGN_IDENTITY "John Doe" CACHE STRING "Code signing identity")
+  endif(ENABLE_CODESIGN)
 else(APPLE)
   set(PROGNAME alpino-dact)
   set(ENABLE_BUNDLE OFF)
@@ -73,8 +77,12 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
+find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
+
+option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
+
+option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
 SET(dact_SRCS
@@ -87,14 +95,16 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
+  src/Chunk.cpp
   src/DependencyTreeWidget.cpp
   src/DownloadWindow.cpp
   src/DactApplication.cpp
-  src/HistoryLineEdit.cpp
+  src/HistoryComboBox.cpp
   src/DactListView.cpp
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
+  src/DactTableView.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
@@ -141,6 +151,7 @@ SET(dact_HDRS
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactTableView.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -149,7 +160,7 @@ SET(dact_HDRS
   include/GlobalCutCommand.hh
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
-  include/HistoryLineEdit.hh
+  include/HistoryComboBox.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -184,10 +195,11 @@ SET(dact_MOC_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
+  include/DactTableView.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
-  include/HistoryLineEdit.hh
+  include/HistoryComboBox.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
   include/FilterModel.hh
@@ -218,6 +230,28 @@ SET(dact_UI
 SET(dact_RCS
   resources/dact.qrc
 )
+
+if(USE_REMOTE_CORPUS)
+  list(APPEND dact_HEADERS
+    include/RemoteWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/RemoteWindow.hh)
+  list(APPEND dact_SRCS
+    src/RemoteWindow.cpp)
+  list(APPEND dact_UI
+    ui/RemoteWindow.ui)
+endif()
+
+if(USE_WEBSERVICE)
+  list(APPEND dact_HEADERS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_SRCS
+    src/WebserviceWindow.cpp)
+  list(APPEND dact_UI
+    ui/WebserviceWindow.ui)
+endif()
 
 if(WIN32)
   set(dact_SRCS
@@ -292,6 +326,7 @@ if(APPLE)
 
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
     set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+    set(MACOSX_BUNDLE_BUNDLE_NAME ${PROGNAME} )
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
     set_target_properties(${PROGNAME}
@@ -307,6 +342,16 @@ if(APPLE)
       include(BundleUtilities)
       fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
+
+    # XXX - Automatically find frameworks?
+    if(ENABLE_CODESIGN)
+      INSTALL(CODE "
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtCore.framework/Versions/4/QtCore\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtGui.framework/Versions/4/QtGui\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtNetwork.framework/Versions/4/QtNetwork\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
+      " COMPONENT Runtime)
+    endif(ENABLE_CODESIGN)
 
     set(CPACK_BINARY_DRAGNDROP ON)
     include(CPack)

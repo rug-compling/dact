@@ -28,7 +28,17 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="HistoryLineEdit" name="filterLineEdit"/>
+       <widget class="HistoryComboBox" name="filterComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -90,7 +100,10 @@
      </property>
     </widget>
     <addaction name="openAction"/>
+    <addaction name="remoteAction"/>
     <addaction name="menuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="saveAsAction"/>
     <addaction name="separator"/>
     <addaction name="saveCorpus"/>
     <addaction name="xmlExportAction"/>
@@ -127,14 +140,24 @@
     <addaction name="nextTreeNodeAction"/>
     <addaction name="separator"/>
     <addaction name="inspectorAction"/>
+    <addaction name="toolbarAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
+    <widget class="QMenu" name="menuConvertCorpus">
+     <property name="title">
+      <string>Convert corpus</string>
+     </property>
+     <addaction name="convertDirectoryCorpusAction"/>
+     <addaction name="convertCompactCorpusAction"/>
+    </widget>
+    <addaction name="webserviceAction"/>
     <addaction name="downloadAction"/>
+    <addaction name="menuConvertCorpus"/>
+    <addaction name="separator"/>
+    <addaction name="clearHistoryAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -150,11 +173,18 @@
     <addaction name="separator"/>
     <addaction name="loadMacrosAction"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="minimizeAction"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuTools"/>
    <addaction name="menuMacros"/>
+   <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -392,12 +422,25 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="saveCorpus">
+  <action name="remoteAction">
    <property name="text">
-    <string>Export to corpus…</string>
+    <string>Open &amp;Remote…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="saveAsAction">
+   <property name="text">
+    <string>&amp;Save as…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="saveCorpus">
+   <property name="text">
+    <string>Export to corpus…</string>
    </property>
   </action>
   <action name="preferencesAction">
@@ -453,6 +496,11 @@
     <string>Ctrl+G</string>
    </property>
   </action>
+  <action name="webserviceAction">
+   <property name="text">
+    <string>Parse sentences...</string>
+   </property>
+  </action>
   <action name="filterOnAttributeAction">
    <property name="text">
     <string>Filter on attribute</string>
@@ -478,6 +526,45 @@
     <string>Paste</string>
    </property>
   </action>
+  <action name="clearHistoryAction">
+   <property name="text">
+    <string>Clear query history</string>
+   </property>
+  </action>
+  <action name="minimizeAction">
+   <property name="text">
+    <string>Minimize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="toolbarAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionConvert_corpus">
+   <property name="text">
+    <string>Convert corpus…</string>
+   </property>
+  </action>
+  <action name="convertDirectoryCorpusAction">
+   <property name="text">
+    <string>Directory corpus…</string>
+   </property>
+  </action>
+  <action name="convertCompactCorpusAction">
+   <property name="text">
+    <string>Compact corpus…</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -497,9 +584,9 @@
    <header>DependencyTreeWidget.hh</header>
   </customwidget>
   <customwidget>
-   <class>HistoryLineEdit</class>
-   <extends>QFrame</extends>
-   <header>HistoryLineEdit.hh</header>
+   <class>HistoryComboBox</class>
+   <extends>QComboBox</extends>
+   <header>HistoryComboBox.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -552,6 +639,38 @@
     <hint type="destinationlabel">
      <x>749</x>
      <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearHistoryAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clearQueryHistory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minimizeAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showMinimized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>329</y>
     </hint>
    </hints>
   </connection>

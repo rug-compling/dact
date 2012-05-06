@@ -12,10 +12,13 @@ extern "C" {
 class XSLTransformer
 {
 public:
+    typedef QHash<QString, QString> ParamHash;
+
     XSLTransformer(QFile &xslt);
     XSLTransformer(QString const &xslt);
     ~XSLTransformer();
-    QString transform(QString const &xml, QHash<QString, QString> const &params) const;
+    QString transform(QString const &xml,
+    	QHash<QString, QString> const &params = ParamHash()) const;
 private:
     XSLTransformer(XSLTransformer const &other);
     XSLTransformer &operator=(XSLTransformer const &other);

@@ -17,10 +17,17 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 
+signals:
+    void colorChanged(); // More fine-grained???
+
 private slots:
     void restoreDefaultColors();
     void restoreDefaultNetwork();
+    void restoreDefaultRemote();
+    void restoreDefaultWebservice();
     void saveArchiveBaseUrl();
+    void saveRemoteBaseUrl();
+    void saveWebserviceBaseUrl();
     void saveColorsTab();
     void selectAppFont();
     
@@ -28,6 +35,7 @@ private:
     void applyAppFont();
     void loadColorsTab();
     void loadNetworkTab();
+    void loadRemoteTab();
     QSharedPointer<Ui::PreferencesWindow> d_ui;
 };
 

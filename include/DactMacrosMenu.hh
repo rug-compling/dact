@@ -21,6 +21,7 @@ private slots:
 	void reload();
 	void macroActionTriggered();
 	void reloadActionTriggered();
+	void unloadActionTriggered();
 
 private:
 	QSharedPointer<DactMacrosModel> d_model;

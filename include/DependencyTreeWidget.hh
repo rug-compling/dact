@@ -9,6 +9,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "CorpusWidget.hh"
+#include "DactMacrosModel.hh"
 #include "FilterModel.hh"
 #include "XPathValidator.hh"
 #include "ui_DependencyTreeWidget.h"
@@ -24,12 +25,18 @@ class DependencyTreeWidget : public CorpusWidget
 public:
     DependencyTreeWidget(QWidget *parent);
     
+    // Provide access to the sentence widget.
+    BracketedSentenceWidget *sentenceWidget();
+
     // XXX - do we want this?
     QItemSelectionModel *selectionModel();
     
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
+    void setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel);
     void readSettings();
     void renderTree(QPainter *painter);
+
+    bool saveEnabled() const;
     
     // XXX - hack, kill asap
     DactTreeScene *scene();
@@ -41,6 +48,7 @@ signals:
     
 public slots:
     void cancelQuery();
+    void saveAs();
     
     /*!
      Focus the highlight query entry field
@@ -74,7 +82,7 @@ public slots:
      */
     void previousEntry(bool);
     
-    void setFilter(QString const &filter);
+    void setFilter(QString const &filter, QString const &raw_filter);
     
     void showFile(QString const &entry);
     

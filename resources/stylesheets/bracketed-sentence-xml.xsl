@@ -5,14 +5,9 @@
   xmlns:exsl="http://exslt.org/common"
   extension-element-prefixes="str exsl">
 
-  <!-- 
-       Print een sentence met de gematchte onderdelen tussen brackets.
-       Uitvoermodule voor xmlmatch. 
-  -->
+  <xsl:output method="xml" encoding="UTF-8"/>
 
-  <xsl:output method="text" encoding="UTF-8"/>
-
-  <xsl:variable name="selectedNodes" select="//node[@active='1']"/>
+  <xsl:variable name="selectedNodes" select="//node[@active='1' and (@cat or @root)]"/>
   <xsl:variable name="words" select="str:tokenize(/*/sentence)"/>
 
   <!-- Result Tree Fragment, geen node-set -->
@@ -27,20 +22,21 @@
   <xsl:variable name="bpositions" select="exsl:node-set($bpositions-rtf)"/>
 
   <xsl:template match="/">
-    <xsl:for-each select="$words">
-      <xsl:variable name="wordpos" select="position()"/>
-      <xsl:for-each select="$bpositions/begin[.=$wordpos]">
-        <xsl:text>[</xsl:text>
+    <sentence>
+      <xsl:for-each select="$words">
+        <xsl:variable name="wordpos" select="position()"/>
+        <xsl:for-each select="$bpositions/begin[.=$wordpos]">
+          <xsl:text disable-output-escaping="yes"><![CDATA[<bracket>]]></xsl:text>
+        </xsl:for-each>
+        <xsl:value-of select="."/>
+        <xsl:for-each select="$bpositions/end[.=$wordpos]">
+          <xsl:text disable-output-escaping="yes"><![CDATA[</bracket>]]></xsl:text>
+        </xsl:for-each>
+        <xsl:if test="position() != last()">
+          <xsl:text> </xsl:text>
+        </xsl:if>
       </xsl:for-each>
-      <xsl:value-of select="."/>
-      <xsl:for-each select="$bpositions/end[.=$wordpos]">
-        <xsl:text>]</xsl:text>
-      </xsl:for-each>
-      <xsl:if test="position() != last()">
-        <xsl:text> </xsl:text>
-      </xsl:if>
-    </xsl:for-each>
-    <xsl:text>&#xA;</xsl:text>
+    </sentence>
   </xsl:template>
 
 </xsl:stylesheet>
