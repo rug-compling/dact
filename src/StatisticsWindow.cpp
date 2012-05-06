@@ -25,8 +25,6 @@
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"
 
-QString const MISSING_ATTRIBUTE("[missing attribute]");
-
 StatisticsWindow::StatisticsWindow(QWidget *parent) :
     CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow))
@@ -321,24 +319,9 @@ void StatisticsWindow::startQuery()
 
     d_ui->totalHitsLabel->clear();
 
-<<<<<<< HEAD
-    QString attrWithMissing = QString("%1/(@%2/string(), '%3')[1]")
-        .arg(d_filter)
-        .arg(d_ui->attributeComboBox->currentText())
-        .arg(MISSING_ATTRIBUTE);
-    
-    if (d_model->validQuery(attrWithMissing))
-        d_model->runQuery(attrWithMissing);
-    else
-        d_model->runQuery(QString("%1/@%2")
-            .arg(d_filter)
-            .arg(d_ui->attributeComboBox->currentText()));
-
-=======
     d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText());
 
     emit saveStateChanged();
->>>>>>> origin/release-1.2
 }
 
 void StatisticsWindow::showPercentageChanged()
