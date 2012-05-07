@@ -136,7 +136,6 @@
        </layout>
       </item>
      </layout>
-     <zorder>formLayoutWidget</zorder>
      <zorder>label</zorder>
     </widget>
    </item>
