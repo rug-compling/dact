@@ -55,7 +55,7 @@ QString QueryModel::asXML() const
     outList.append("<statistics>");
     outList.append("<statisticsinfo>");
     outList.append(QString("<corpus>%1</corpus>")
-        .arg(d_corpus->name().c_str()));
+        .arg(QString::fromUtf8(d_corpus->name().c_str())));
     outList.append(QString("<filter>%1</filter>")
         .arg(d_query));
     outList.append(QString("<attribute>%1</attribute>")
