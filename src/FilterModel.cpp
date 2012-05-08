@@ -88,7 +88,7 @@ QString FilterModel::asXML() const
 
     docList.append("<entriesinfo>");
     docList.append(QString("<corpus>%1</corpus>")
-        .arg(d_corpus->name().c_str()));
+        .arg(QString::fromUtf8(d_corpus->name().c_str())));
     docList.append(QString("<filter>%1</filter>").arg(d_query));
     QString date(QDateTime::currentDateTime().toLocalTime().toString());
     docList.append(QString("<date>%1</date>").arg(date));
