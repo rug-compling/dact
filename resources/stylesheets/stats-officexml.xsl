@@ -11,7 +11,7 @@
     <xsl:output method="xml" encoding="UTF-8" />
 
     <xsl:template match="/">
-        <?mso-application progid="Excel.Sheet"?>
+        <xsl:processing-instruction name="mso-application">progid="Excel.Sheet"</xsl:processing-instruction>
         <Workbook
             xmlns="urn:schemas-microsoft-com:office:spreadsheet"
             xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
