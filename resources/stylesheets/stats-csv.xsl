@@ -22,7 +22,7 @@
         <xsl:variable name="value" select="./text()" />
         <xsl:choose>
             <xsl:when test="contains($value, '&quot;')">
-                <xsl:value-of select="concat('&quot;', replace($value, '&quot;', '&quot;&quot;'), '&quot;')"/>
+                <xsl:value-of select="concat('&quot;', str:replace($value, '&quot;', '&quot;&quot;'), '&quot;')"/>
             </xsl:when>
             <xsl:when test="contains($value, ',')">
                 <xsl:value-of select="concat('&quot;', $value, '&quot;')"/>
