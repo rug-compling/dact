@@ -31,8 +31,6 @@ protected:
     */
     std::list<Chunk> parseChunks(QModelIndex const &index) const;
 
-    QString sentence(QModelIndex const &index) const;
-
     QString bracketedSentence(QModelIndex const &index) const;
     
 
