@@ -21,7 +21,7 @@ protected:
 public:
     BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent = 0);
 
-    QString sentenceForClipboard(QModelIndex const &index) const;
+    virtual QString sentenceForClipboard(QModelIndex const &index) const;
 
 protected:    
     /*!
