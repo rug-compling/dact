@@ -29,7 +29,7 @@ else()
 endif()
 
 
-set(VERSION "0.0.1")
+set(VERSION "1.2.1")
 
 set(GIT_REVISION "unknown")
 exec_program(git
