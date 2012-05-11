@@ -74,3 +74,8 @@ void BracketedVisibilityDelegate::paint(QPainter *painter, QStyleOptionViewItem 
     
     painter->restore();
 }
+
+QString BracketedVisibilityDelegate::sentenceForClipboard(QModelIndex const &index) const
+{
+    return formatSentence(index).trimmed();
+}
