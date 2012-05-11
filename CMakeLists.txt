@@ -363,6 +363,7 @@ endif(APPLE)
 # Windows installer
 if(WIN32)
   set(CPACK_GENERATOR NSIS)
+  set(CPACK_MONOLITHIC_INSTALL TRUE)
   set(CPACK_PACKAGE_NAME "Dact")
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Decaffeinated Alpino Corpus Tool")
   set(CPACK_PACKAGE_VENDOR "Daniel de Kok")
