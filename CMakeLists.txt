@@ -404,5 +404,14 @@ if(WIN32)
     DESTINATION bin
   )
 
+  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    !include ${DACT_SOURCE_DIR}/resources/nsis\\\\FileAssociation.nsh
+    \\\${registerExtension} \\\"\\\$INSTDIR\\\\bin\\\\dact.exe\\\" \\\".dact\\\" \\\"Dact Corpus\\\"
+  ")
+
+  set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+    ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+    "\\\${unregisterExtension} \\\".dact\\\" \\\"Dact Corpus\\\"")
+
   include(CPack)
 endif(WIN32)
