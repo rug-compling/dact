@@ -52,8 +52,6 @@
             <xsl:value-of select="@cat"/>
           </xsl:otherwise>
         </xsl:choose>
-
-          
       </line>
       <line>
         <xsl:choose>
