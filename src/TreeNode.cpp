@@ -74,14 +74,35 @@ void TreeNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void TreeNode::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d_popupItem && d_popupItem->isVisible())
+    if (d_popupItem && d_popupItem->isVisible()) {
+#if defined(Q_WS_MAC)
+        // Work around a bug (#56) where Qt 4.8.x on Mac OS X does not invalidate
+        // the region of the popup when we hover as a result of mouse scrolling.
+        if (event->screenPos() == event->lastScreenPos())
+            d_popupItem->scene()->invalidate(d_popupItem->sceneBoundingRect());
+#endif
+
         d_popupItem->setVisible(false);
+        event->accept();
+    }
 }
 
 void TreeNode::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d_popupItem && d_popupItem->isVisible())
-        d_popupItem->setPos(event->scenePos());
+    if (d_popupItem && d_popupItem->isVisible()) {
+        if (event->screenPos() == event->lastScreenPos())
+        {
+#if defined(Q_WS_MAC)
+            // Work around a bug (#56) where Qt 4.8.x on Mac OS X does not invalidate
+            // the region of the popup when we hover as a result of mouse scrolling.
+            d_popupItem->scene()->invalidate(d_popupItem->sceneBoundingRect());
+#endif
+            d_popupItem->setPos(event->scenePos());
+        }
+        else
+            d_popupItem->setPos(event->scenePos());
+        event->accept();
+}
 }
 
 void TreeNode::setAttribute(QString const &name, QString const &value)

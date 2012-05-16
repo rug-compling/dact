@@ -24,7 +24,7 @@ QRectF PopupItem::boundingRect() const
 QRectF PopupItem::rect() const
 {
     QSizeF popup = size();
-    return QRectF(QPointF(-popup.width() / 2.0, -34.0), popup);
+    return QRectF(QPointF(-popup.width() / 2.0, -popup.height() / 2.0), popup);
 }
 
 QFont PopupItem::font() const
