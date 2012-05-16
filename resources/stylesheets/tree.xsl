@@ -41,7 +41,19 @@
         <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <xsl:value-of select="@cat|@pt|@pos"/>
+        <xsl:choose>
+          <xsl:when test="@pt">
+            <xsl:value-of select="@pt"/>
+          </xsl:when>
+          <xsl:when test="@pos">
+            <xsl:value-of select="@pos"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@cat"/>
+          </xsl:otherwise>
+        </xsl:choose>
+
+          
       </line>
       <line>
         <xsl:choose>
