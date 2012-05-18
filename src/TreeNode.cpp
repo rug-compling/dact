@@ -102,7 +102,7 @@ void TreeNode::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
         else
             d_popupItem->setPos(event->scenePos());
         event->accept();
-}
+    }
 }
 
 void TreeNode::setAttribute(QString const &name, QString const &value)
