@@ -1,6 +1,7 @@
 body {
-  width: 800px;
+  max-width: 800px;
   margin: 0px auto;
+  padding: 0 1em;
 
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 90%;
@@ -36,6 +37,10 @@ table td {
   font-style: italic;
 }
 
+pre {
+  overflow: auto;
+}
+
 pre.screen {
   border: 1px dashed #94da3a;
   background-color: #e7ffc7;
@@ -54,4 +59,8 @@ pre.programlisting {
 
 .type {
     font-family: monospace;
+}
+
+img {
+  max-width: 100%;
 }
