@@ -7,6 +7,10 @@ body {
   font-size: 90%;
 }
 
+img {
+  max-width: 100%;
+}
+
 h2 {
   color: #990000;
 }
@@ -61,6 +65,26 @@ pre.programlisting {
     font-family: monospace;
 }
 
-img {
-  max-width: 100%;
+.note, .tip {
+  margin: inherit !important;
+  padding: 0 .5em;
+}
+
+.note h3, .tip h3 {
+  float: left;
+  margin: 0;
+  font-size: 1em;
+}
+
+.note h3:after, .tip h3:after {
+  content: ':';
+  margin-right: 0.5em;
+}
+
+.note {
+  border-left: .5em solid #8cff80;
+}
+
+.tip {
+  border-left: .5em solid #97afff;
 }

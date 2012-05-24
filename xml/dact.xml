@@ -119,7 +119,9 @@
             <programlisting>//node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]</programlisting>
             <para>(This query was taken from the <link xlink:href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html">manual for Treebank Tools</link>, which contains some more interesting queries.)</para>
             
-            <para>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</para>
+            <note>
+                <para>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</para>
+            </note>
         </sect2>
         <sect2>
             <title>Exploring a corpus</title>
@@ -155,7 +157,9 @@
                 </mediaobject>
             </figure>
             <para>The Inspector will show you every attribute the focussed node has. You can right-click an attribute and use the context menu to directly add it to your search query.</para>
-            <para>The Inspector is detachable and can be torn of the Main window.</para>
+            <tip>
+                <para>The Inspector is detachable and can be torn of the Main window.</para>
+            </tip>
         </sect2>
         <sect2>
             <title>Gathering statistics</title>
@@ -179,7 +183,9 @@
         <sect2>
             <title>Exporting Statistics</title>
             <para>The results from the Statistics tab can be saved in various formats: plain text, HTML, Excel worksheet and CSV. Go to the <emphasis>File - Save as…</emphasis> menu and select the file type from the drop-down menu in the save dialog.</para>
-            <para>Note that this menu item also works for other the Sentences tab.</para>
+            <tip>
+                <para>Note that this menu item also works for other the Sentences tab.</para>
+            </tip>
         </sect2>
         <sect2>
             <title>Sentences</title>
@@ -209,7 +215,10 @@
     </sect1>
     <sect1>
         <title>Converting corpora</title>
-        <para>Dact can only work with Dact corpora, but it can create these from any Directory and Compact corpus. To convert a Directory or Compact corpus, go to the <emphasis>Tools - Convert corpus</emphasis> submenu, and choose your type. Dact will prompt you for the location of your corpus, and where to save the new Dact corpus. Afterwards you can open the newly generated Dact corpus using the <emphasis>File - Open…</emphasis> menu item. Note that <emphasis>your original corpus won't be affected</emphasis> in this process.</para>
+        <para>Dact can only work with Dact corpora, but it can create these from any Directory and Compact corpus. To convert a Directory or Compact corpus, go to the <emphasis>Tools - Convert corpus</emphasis> submenu, and choose your type. Dact will prompt you for the location of your corpus, and where to save the new Dact corpus. Afterwards you can open the newly generated Dact corpus using the <emphasis>File - Open…</emphasis> menu item. </para>
+        <note>
+            <para>Note that <emphasis>your original corpus won't be affected</emphasis> in this process.</para>
+        </note>
     </sect1>
     <sect1>
         <title>Configuring Dact</title>
@@ -231,7 +240,9 @@
         <sect2>
             <title>Network</title>
             <para>Dact's <emphasis>Download corpus</emphasis>, <emphasis>Open remote corpus</emphasis> and <emphasis>Parse sentences</emphasis> features use web services to function. The addresses of these web services can be changed.</para>
-            <para>Note that not all of these features may be enabled in your version of Dact as of the time of writing not all of the required web services are publicly available.</para>
+            <note>
+                <para>Note that not all of these features may be enabled in your version of Dact as of the time of writing not all of the required web services are publicly available.</para>
+            </note>
         </sect2>
     </sect1>
     <sect1>
