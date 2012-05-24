@@ -235,6 +235,53 @@
         </sect2>
     </sect1>
     <sect1>
+        <title>Marcos</title>
+        <para>Dact supports macros in its XPath queries. You can insert simple placeholders in your query which are expanded before a query is evaluated. A placeholder is the name of the macro surrounded by percentage signs (<literal>%</literal>).</para>
+        <sect2>
+            <title>Loading a file with Macros</title>
+            <para>You can load a file with macros with the <emphasis>Macros - Load file…</emphasis> menu item. When the file is successfully loaded, a submenu with the same name as the filename is visible in the <emphasis>Macros</emphasis> menu, containing all the macros in the file.</para>
+            <para>When you have focused one of the XPath query fields in Dact, you can select one of the macros from the <emphasis>Macros</emphasis> menu to insert it at the position of your text cursor.</para>
+        </sect2>
+        <sect2>
+            <title>Using a macro</title>
+            <para>Given you have loaded a file with the following macro:</para>
+            <programlisting>interesting = """ @rel="su" or @rel="vc" """</programlisting>
+            <para>When you enter the following query in to the filter query field:</para>
+            <programlisting>//node[%interesting%]</programlisting>
+            <para>Dact replace the placeholder, and execute the following query:</para>
+            <programlisting>//node[ @rel="su" or @rel="vc" ]</programlisting>
+            <para>Since Dact only does simple text replacement, you can also use invalid or partial XPath code as replacement. As long as the expanded query is valid, Dact will accept it.</para>
+        </sect2>
+        <sect2>
+            <title>Macros file syntax</title>
+            <para>Macro files are rather simple and can be created with any plain text editor. Macros have the following syntax:</para>
+            <programlisting>placeholder = """replacement"""</programlisting>
+            <para><literal>placeholder</literal> is the name of your macro, and <literal>replacement</literal> the XPath code it will be replaced with. The name and replacement are separated by a <literal>=</literal>, and the replacement has to be surrounded by three pairs of double quotes. <literal>replacement</literal> may span several lines.</para>
+            <para>Dact also expands macros while loading them. This way, you can use macros you defined earlier on in a file in your macros.</para>
+            <figure>
+                <title>Example of macros file</title>
+                <programlisting><![CDATA[
+b = """number(@begin)"""
+e = """number(@end)"""
+
+headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp") """
+
+precedes_head_of_smain = """
+(  ancestor::node[@cat="smain"]/
+             node[@rel="hd"]/%b% 
+           > node[%headrel%]/%b% 
+   or 
+   ancestor::node[@cat="smain"]/
+             node[@rel="hd"]/%b% 
+           > %b% and @pos
+)
+"""
+]]></programlisting>
+            <caption>Notice how <literal>precedes_head_of_smain</literal> makes use of the <literal>headrel</literal> macro.</caption>
+            </figure>
+        </sect2>
+    </sect1>
+    <sect1>
         <title>Common errors</title>
         <sect2>
             <title>The application failed to initialize properly (0xc0000022)</title>
