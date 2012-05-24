@@ -25,23 +25,31 @@
 
     <xsl:template match="statistics">
         <xsl:apply-templates select="statisticsinfo" />
-        <p />
-        <table border="1" cellspacing="0" cellpadding="4">
-            <xsl:apply-templates select="statistic" />
+        <table id="statistics" border="1" cellspacing="0" cellpadding="4">
+            <thead>
+                <tr>
+                    <th scope="col">Frequency</th>
+                    <th scope="col">Percentage</th>
+                    <th scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <xsl:apply-templates select="statistic" />
+            </tbody>
         </table>
     </xsl:template>
 
     <xsl:template match="statisticsinfo">
-        <table>
+        <table id="statisticsinfo">
             <xsl:apply-templates />
         </table>
     </xsl:template>
 
     <xsl:template match="corpus|filter|attribute|date|variants|hits">
         <tr>
-            <td>
+            <th scope="row">
                 <xsl:value-of select="concat(translate(substring(local-name(), 1, 1), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), substring(local-name(), 2))" />
-            </td>
+            </th>
             <td>
                 <xsl:apply-templates />
             </td>
@@ -50,9 +58,9 @@
 
     <xsl:template match="statistic">
         <tr>
-                <xsl:apply-templates select="frequency"/>
-                <xsl:apply-templates select="percentage"/>
-                <xsl:apply-templates select="value"/>
+            <xsl:apply-templates select="frequency"/>
+            <xsl:apply-templates select="percentage"/>
+            <xsl:apply-templates select="value"/>
         </tr>
     </xsl:template>
 
