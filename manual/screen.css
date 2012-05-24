@@ -1,9 +1,14 @@
 body {
-  width: 800px;
+  max-width: 800px;
   margin: 0px auto;
+  padding: 0 1em;
 
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 90%;
+}
+
+img {
+  max-width: 100%;
 }
 
 h2 {
@@ -36,6 +41,10 @@ table td {
   font-style: italic;
 }
 
+pre {
+  overflow: auto;
+}
+
 pre.screen {
   border: 1px dashed #94da3a;
   background-color: #e7ffc7;
@@ -54,4 +63,28 @@ pre.programlisting {
 
 .type {
     font-family: monospace;
+}
+
+.note, .tip {
+  margin: inherit !important;
+  padding: 0 .5em;
+}
+
+.note h3, .tip h3 {
+  float: left;
+  margin: 0;
+  font-size: 1em;
+}
+
+.note h3:after, .tip h3:after {
+  content: ':';
+  margin-right: 0.5em;
+}
+
+.note {
+  border-left: .5em solid #8cff80;
+}
+
+.tip {
+  border-left: .5em solid #97afff;
 }
