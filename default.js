@@ -48,6 +48,9 @@
 			e.preventDefault();
 		});
 	
+	// Don't recalculate the current tab while scrolling to prevent enormous lag.
+	var update_current_tab_timeout;
+
 	function update_current_tab()
 	{
 		$('article, header').each(function() {
@@ -60,16 +63,15 @@
 			$('a[href=#' + this.id + ']').toggleClass('current',
 				reader_pos > pos.top && reader_pos < pos.top + size);
 		});
-	}
 
-	// Don't recalculate the current tab while scrolling to prevent enormous lag.
-	var update_current_tab_timeout;
+		update_current_tab_timeout = null;
+	}
 
 	// Just wait till the scrolling is over
 	function taint_current_tab()
 	{
-		clearTimeout(update_current_tab_timeout);
-		update_current_tab_timeout = setTimeout(update_current_tab, 50);
+		if (!update_current_tab_timeout)
+			update_current_tab_timeout = setTimeout(update_current_tab, 50);
 	}
 
 	$(window).scroll(taint_current_tab);
