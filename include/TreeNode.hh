@@ -41,6 +41,7 @@ private:
     void paintLabels(QPainter *painter, QRectF const &leaf);
     void paintEdges(QPainter *painter, QRectF const &leaf);
     QFont font() const;
+    qreal viewScale() const;
     bool d_active;
     QHash<QString,QString> d_attributes;
     TreeNode *d_parentNode;

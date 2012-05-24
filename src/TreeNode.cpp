@@ -1,10 +1,13 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsView>
 #include <QPainter>
 #include <QSettings>
 
 #include "TreeNode.hh"
 #include "PopupItem.hh"
+
+static const QPointF popupCursorOffset(0, -16);
 
 TreeNode::TreeNode(QGraphicsItem *parent) :
     QGraphicsItem(parent),
@@ -97,10 +100,10 @@ void TreeNode::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
             // the region of the popup when we hover as a result of mouse scrolling.
             d_popupItem->scene()->invalidate(d_popupItem->sceneBoundingRect());
 #endif
-            d_popupItem->setPos(event->scenePos());
+            d_popupItem->setPos(event->scenePos() + popupCursorOffset / viewScale());
         }
         else
-            d_popupItem->setPos(event->scenePos());
+            d_popupItem->setPos(event->scenePos() + popupCursorOffset / viewScale());
         event->accept();
     }
 }
@@ -301,4 +304,12 @@ void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
         
         painter->drawLine(origin, target);
     }
+}
+
+qreal TreeNode::viewScale() const
+{
+    if (!scene() || scene()->views().isEmpty())
+        return 1.0;
+    
+    return scene()->views().first()->transform().m11();
 }
