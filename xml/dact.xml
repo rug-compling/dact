@@ -10,21 +10,18 @@
         <itemizedlist>
             <listitem>
                 <para>Compact corpora, consisting of a data and index file (recognizable by
-                        the <filename>.data.dz</filename> and <filename>.index</filename> extensions).</para>
+                        the <filename>.data.dz</filename> and <filename>.index</filename> extensions).</para>
             </listitem>
             <listitem>
                 <para>Directory corpora, which are directories that contain parses.</para>
             </listitem>
         </itemizedlist>
-        <para>Dact corpora can be opened using the <emphasis role="italic"
-                >Ctrl+o</emphasis> keyboard shortcut (on OS X, use Cmd instead of Ctrl). This
-            will show a dialog that allows you to open the corpus. If you prefer, you can use
-                the <emphasis role="italic">File - Open…</emphasis> menu item as well.</para>
+        <para>Dact corpora can be opened using the <emphasis role="italic">Ctrl+o</emphasis> keyboard shortcut (on OS X, use Cmd instead of Ctrl). This will show a dialog that allows you to open the corpus. If you prefer, you can use the <emphasis role="italic">File - Open…</emphasis> menu item as well.</para>
         <figure>
             <title>Dact main window</title>
             <mediaobject>
                 <imageobject>
-                    <imagedata fileref="../images/dact-osx-small.png"/>
+                    <imagedata fileref="../images/dact-osx.png"/>
                 </imageobject>
             </mediaobject>
         </figure>
@@ -41,16 +38,10 @@
                 <para>The Sentences tab shows the entries containing matching nodes as sentences, and highlights them.</para>
             </listitem>
         </itemizedlist>
-        <para>Although the corpus can be browsed entry by entry, most functionality of Dact is
-            query-driven. After a short introduction to the query language in the next section, you
-            will be prepared to use other functionality of Dact.</para>
+        <para>Although the corpus can be browsed entry by entry, most functionality of Dact is query-driven. After a short introduction to the query language in the next section, you will be prepared to use other functionality of Dact.</para>
         <sect2>
             <title>Getting a corpus</title>
-            <para>Dact comes with a download tool for corpora. Select <emphasis>Tools – Download
-                    corpus…</emphasis> and choose the corpus you want to download, and press
-                    <emphasis>Download</emphasis>. You will be asked where you want to store the
-                corpus. After downloading and unpacking the corpus you will have to open it manually
-                using <emphasis>File – Open…</emphasis>.</para>
+            <para>Dact comes with a download tool for corpora. Select <emphasis>Tools – Download corpus…</emphasis> and choose the corpus you want to download, and press <emphasis>Download</emphasis>. You will be asked where you want to store the corpus. After downloading and unpacking the corpus you will have to open it manually using <emphasis>File – Open…</emphasis>.</para>
             <figure>
                 <title>Download Corpora window</title>
                 <mediaobject>
@@ -63,19 +54,12 @@
     </sect1>
     <sect1>
         <title>Queries</title>
-        <para> Queries are written in the <link xlink:href="http://en.wikipedia.org/wiki/XPath"
-                >XPath</link> query language.</para>
+        <para> Queries are written in the <link xlink:href="http://en.wikipedia.org/wiki/XPath">XPath</link> query language.</para>
         <sect2>
             <title>Matching a node</title>
-            <para>Every node in the tree is represented as an <emphasis role="italic"
-                    >node</emphasis> element. You can match any node in the tree by using two
-                forward slashes:</para>
+            <para>Every node in the tree is represented as an <emphasis role="italic">node</emphasis> element. You can match any node in the tree by using two forward slashes:</para>
             <programlisting>//node</programlisting>
-            <para>Of course, normally, you would want to match nodes with certain restrictions based
-                on attributes of a node. Such restrictions can be entered between square brackets
-                    (<literal role="italic">[</literal> and <literal role="italic">]</literal>). And
-                attributes are prefixed by the ‘at’ sign (<literal role="italic">@</literal>).
-                Commonly-used attributes are:</para>
+            <para>Of course, normally, you would want to match nodes with certain restrictions based on attributes of a node. Such restrictions can be entered between square brackets (<literal role="italic">[</literal> and <literal role="italic">]</literal>). And attributes are prefixed by the ‘at’ sign (<literal role="italic">@</literal>). Commonly-used attributes are:</para>
             <variablelist>
                 <varlistentry>
                     <term>rel</term>
@@ -94,99 +78,52 @@
                     <listitem><para>the root/stem of a lexical node</para></listitem>
                 </varlistentry>
             </variablelist>
-            <para>For instance, the following query will match all nodes with the <emphasis
-                    role="italic">pos</emphasis> attribute, or in other words lexical nodes:</para>
+            <para>For instance, the following query will match all nodes with the <emphasis role="italic">pos</emphasis> attribute, or in other words lexical nodes:</para>
             <programlisting>//node[@pos]</programlisting>
-            <para>We can also restrict the selection by requiring that an attribute has a specific
-                value using the equals sign (<emphasis role="italic">=</emphasis>). For instance,
-                the following query will match all nodes, which have a <emphasis role="italic"
-                    >pos</emphasis> attribute with the value <emphasis role="italic"
-                >det</emphasis>:</para>
+            
+            <para>We can also restrict the selection by requiring that an attribute has a specific value using the equals sign (<emphasis role="italic">=</emphasis>). For instance, the following query will match all nodes, which have a <emphasis role="italic">pos</emphasis> attribute with the value <emphasis role="italic">det</emphasis>:</para>
             <programlisting>//node[@pos="det"]</programlisting>
-            <para>Such conditions can also be combined. Using the <emphasis role="italic"
-                    >and</emphasis> operator will require both conditions to be true, while
-                    the <emphasis role="italic">or</emphasis>operator requires one of the conditions
-                to be true. The following query will match all nodes with a <emphasis role="italic"
-                    >su</emphasis> dependency relation, that also have <emphasis role="italic"
-                    >det</emphasis> as their part of speech tag:</para>
+            
+            <para>Such conditions can also be combined. Using the <emphasis role="italic">and</emphasis> operator will require both conditions to be true, while the <emphasis role="italic">or</emphasis>operator requires one of the conditions to be true. The following query will match all nodes with a <emphasis role="italic">su</emphasis> dependency relation, that also have <emphasis role="italic">det</emphasis> as their part of speech tag:</para>
             <programlisting>//node[@rel="su" and @pos="det"]</programlisting>
-            <para>There are some functions available in XPath which may be useful. For example
-                    using <function>not</function> we could find any node that does not match a
-                certain condition. Say we want to match everything except nouns, we could
-                write:</para>
+            
+            <para>There are some functions available in XPath which may be useful. For example using <function>not</function> we could find any node that does not match a certain condition. Say we want to match everything except nouns, we could write:</para>
             <programlisting>//node[not(@pt="n")]</programlisting>
-            <para>Or say we wanted to match everything except nouns that are lexical nodes starting
-                with the letter <emphasis role="italic">v</emphasis>. We can use the <function>starts-with</function> function to require that the <emphasis
-                    role="italic">root</emphasis> attribute starts with the text <emphasis
-                    role="italic">v</emphasis>. The <emphasis role="italic">and</emphasis> operator
-                will tie them together.</para>
+            
+            <para>Or say we wanted to match everything except nouns that are lexical nodes starting with the letter <emphasis role="italic">v</emphasis>. We can use the <function>starts-with</function> function to require that the <emphasis role="italic">root</emphasis> attribute starts with the text <emphasis role="italic">v</emphasis>. The <emphasis role="italic">and</emphasis> operator will tie them together.</para>
             <programlisting>//node[not(@pt) and starts-with(@root, "v")]</programlisting>
-            <para><function>contains</function> is another function that works just
-                    like <function>start-with</function>, except it match if the text is found
-                anywhere in the attribute its value, not just at the beginning.</para>
-            <para>We can also make queries based on the structure of a tree. For example, the
-                following query will match any node with a <emphasis role="italic"
-                >su</emphasis> dependency relation that has a determiner: one of the children of the
-                matching node is a node which<emphasis role="italic">pos</emphasis> attribute has
-                the value <emphasis role="italic">det</emphasis>.</para>
+            
+            <para><function>contains</function> is another function that works just like <function>start-with</function>, except it match if the text is found anywhere in the attribute its value, not just at the beginning.</para>
+            <para>We can also make queries based on the structure of a tree. For example, the following query will match any node with a <emphasis role="italic">su</emphasis> dependency relation that has a determiner: one of the children of the matching node is a node which<emphasis role="italic">pos</emphasis> attribute has the value <emphasis role="italic">det</emphasis>.</para>
             <programlisting>//node[@rel="su" and node[@pos="det"]]</programlisting>
-            <para>Now that query matched the <emphasis role="italic">su</emphasis> node, but we can
-                also match the <emphasis role="italic">det</emphasis> node. This is useful in the
-                Statistics Window, where the matching nodes are read. This query will do just
-                that:</para>
+            
+            <para>Now that query matched the <emphasis role="italic">su</emphasis> node, but we can also match the <emphasis role="italic">det</emphasis> node. This is useful in the Statistics Window, where the matching nodes are read. This query will do just that:</para>
             <programlisting>//node[@rel="su"]/node[@pos="det"]</programlisting>
-            <para>It first finds the subject nodes, and then matches all the determiners found in
-                these nodes. We can continue this to for example find all the nouns in the noun
-                phrase in a preposition phrase. We first find the preposition phrase somewhere in
-                the tree (mind the double slash), then find the noun phrase among one of its
-                children (the single slash), and then find a noun among the noun phrase its
-                children.</para>
+            
+            <para>It first finds the subject nodes, and then matches all the determiners found in these nodes. We can continue this to for example find all the nouns in the noun phrase in a preposition phrase. We first find the preposition phrase somewhere in the tree (mind the double slash), then find the noun phrase among one of its children (the single slash), and then find a noun among the noun phrase its children.</para>
             <programlisting>//node[@cat="pp"]/node[@cat="np"]/node[@pt="n"]</programlisting>
-            <para>This goes down deeper into the tree, but we can also move back up in the tree
-                using double dots. Say we wanted to select all the siblings of a noun node, we can
-                use .. to move up to the parent of the noun node, and then select all the children
-                of this parent node:</para>
+            
+            <para>This goes down deeper into the tree, but we can also move back up in the tree using double dots. Say we wanted to select all the siblings of a noun node, we can use .. to move up to the parent of the noun node, and then select all the children of this parent node:</para>
             <programlisting>//node[@pt="n"]/../node</programlisting>
-            <para>Or we could select all nodes of which the parent node has a child node which is a
-                noun:</para>
+            
+            <para>Or we could select all nodes of which the parent node has a child node which is a noun:</para>
             <programlisting>//node[../node[@pt="n"]]</programlisting>
-            <para>Note that strings, i.e. the text between quotes and attributes can be used
-                interchangeably since an attribute has a string as a value. For example, say we
-                would want to do something silly and try to find all lexical nodes with an
-                    attribute <emphasis role="italic">pt</emphasis> that has the same value al the
-                word of the node, which would mostly be just the letter <emphasis role="italic"
-                    >n</emphasis>. The word is accessible through the <emphasis role="italic"
-                    >word</emphasis> attribute. So we end up comparing the <emphasis role="italic"
-                    >word</emphasis> attribute with the <emphasis role="italic"
-                >pt</emphasis> attribute:</para>
+            
+            <para>Note that strings, i.e. the text between quotes and attributes can be used interchangeably since an attribute has a string as a value. For example, say we would want to do something silly and try to find all lexical nodes with an attribute <emphasis role="italic">pt</emphasis> that has the same value al the word of the node, which would mostly be just the letter <emphasis role="italic">n</emphasis>. The word is accessible through the <emphasis role="italic">word</emphasis> attribute. So we end up comparing the <emphasis role="italic">word</emphasis> attribute with the <emphasis role="italic">pt</emphasis> attribute:</para>
             <programlisting>//node[@pt=@word]</programlisting>
-            <para>And we are not just bound to the attributes of the current node. Say we wanted to
-                find examples the dutch verb<emphasis role="italic">krijgen</emphasis> used in a
-                passive form. To do this, we have to look for sentences where the subject of the
-                sentence is also the object of the verb phrase. A translation takes place. In the
-                corpus this is indicated by an <emphasis role="italic">index</emphasis> attribute.
-                This attribute contains the same value on both nodes. I.e.. when we want to see
-                translation 1, this query will highlight both the nodes before and after the
-                translation:</para>
+            
+            <para>And we are not just bound to the attributes of the current node. Say we wanted to find examples the dutch verb<emphasis role="italic">krijgen</emphasis> used in a passive form. To do this, we have to look for sentences where the subject of the sentence is also the object of the verb phrase. A translation takes place. In the corpus this is indicated by an <emphasis role="italic">index</emphasis> attribute. This attribute contains the same value on both nodes. I.e.. when we want to see translation 1, this query will highlight both the nodes before and after the translation:</para>
             <programlisting>//node[@index=1]</programlisting>
-            <para>Now using that knowledge we can find the node which contains the verb <emphasis
-                    role="italic">krijgen</emphasis>, a subject, and a object in the verb complement
-                which both share the same value for <emphasis role="italic">index</emphasis>:</para>
+            
+            <para>Now using that knowledge we can find the node which contains the verb <emphasis role="italic">krijgen</emphasis>, a subject, and a object in the verb complement which both share the same value for <emphasis role="italic">index</emphasis>:</para>
             <programlisting>//node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]</programlisting>
-            <para>(This query was taken from the <link
-                    xlink:href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html"
-                    >manual for Treebank Tools</link>, which contains some more interesting
-                queries.)</para>
-            <para>Please do note that Dact expects queries that return nodes. A highlight query
-                returning the value of an attribute of a node wont highlight any nodes.</para>
+            <para>(This query was taken from the <link xlink:href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html">manual for Treebank Tools</link>, which contains some more interesting queries.)</para>
+            
+            <para>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</para>
         </sect2>
         <sect2>
             <title>Filtering a corpus</title>
-            <para>The left pane shows a list of corpus entries, where each entry represents a parsed
-                sentence. When viewing large corpora, it is often more interesting to look at
-                particular entries. You can filter a corpus using an XPath query, where only the
-                entries with nodes matching the query will be shown. A filter query can be typed in
-                the field above the list of corpus entries: </para>
+            <para>The left pane on the Tree tab shows a list of corpus entries, where each entry represents a parsed sentence. When viewing large corpora, it is often more interesting to look at particular entries. You can filter a corpus using an XPath query, where only the entries with nodes matching the query will be shown. A filter query can be typed in the field above the list of corpus entries: </para>
             <figure>
                 <title>Filtering entries</title>
                 <mediaobject>
@@ -195,26 +132,17 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>After typing the query, press the <emphasis role="italic">Enter</emphasis> key,
-                and Dact will start filtering the corpus. If you want to interrupt filtering, press
-                    the <emphasis role="italic">Esc</emphasis> key.</para>
-            <para>Using <emphasis role="italic">Next</emphasis> and <emphasis role="italic"
-                    >Previous</emphasis> arrows in the top left menu bar, you can walk through each
-                found entry. Or you can use the <emphasis role="italic"
-                    >Ctrl+Down</emphasis> and <emphasis role="italic"
-                >Ctrl+Up</emphasis> shortcuts.</para>
+            <para>After typing the query, press the <emphasis role="italic">Enter</emphasis> key, and Dact will start filtering the corpus. If you want to interrupt filtering, press the <emphasis role="italic">Esc</emphasis> key.</para>
+            <para>Using <emphasis role="italic">Next</emphasis> and <emphasis role="italic">Previous</emphasis> arrows in the top left menu bar, you can walk through each found entry. Or you can use the <emphasis role="italic">Ctrl+Down</emphasis> and <emphasis role="italic">Ctrl+Up</emphasis> shortcuts.</para>
         </sect2>
         <sect2>
             <title>Highlighting</title>
-            <para>After selecting an entry, its parse tree is shown in the right pane. All nodes
-                matching an XPath query can be highlighted, this makes it easier to spot interesting
-                phenomena. Entries can be highlighted by entering an XPath query:</para>
+            <para>After selecting an entry, its parse tree is shown in the right pane. All nodes matching an XPath query can be highlighted, this makes it easier to spot interesting phenomena. Entries can be highlighted by entering an XPath query:</para>
             <figure>
                 <title>Highlighting nodes</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata
-                            fileref="../images/highlight-entry.png"/>
+                        <imagedata fileref="../images/highlight-entry.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -223,34 +151,17 @@
                 <title>Highlighted nodes</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata
-                            fileref="../images/tree-highlighted.png"/>
+                        <imagedata fileref="../images/tree-highlighted.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>Matching nodes will be highlighted in the tree in green. The buttons <emphasis
-                    role="italic">Zoom In</emphasis> and <emphasis role="italic">Zoom
-                Out</emphasis> can be used to scale the tree. <emphasis role="italic">Previous
-                    Node</emphasis> and <emphasis role="italic">Next Node</emphasis> will walk you
-                through all the matching nodes. You can use <emphasis role="italic"
-                    >Ctrl+Left</emphasis> and<emphasis role="italic">Ctrl+Right</emphasis> as well.
-                This node will then be marked by a slightly thicker border. When zoomed in, it also
-                focusses on the node, making sure it is visible. Normally, the scroll wheel is used
-                for panning the tree. but when you press <emphasis role="italic">Ctrl</emphasis>,
-                scrolling will zoom the tree. <emphasis role="italic"
-                    >Ctrl+=</emphasis> and <emphasis role="italic">Ctrl+-</emphasis> can also be
-                used to zoom in and out, and <emphasis role="italic">Ctrl+0</emphasis> resets the
-                zoom level to show the whole tree.</para>
+            <para>Matching nodes will be highlighted in the tree in green. The buttons <emphasis role="italic">Zoom In</emphasis> and <emphasis role="italic">Zoom Out</emphasis> can be used to scale the tree. <emphasis role="italic">Previous Node</emphasis> and <emphasis role="italic">Next Node</emphasis> will walk you through all the matching nodes. You can use <emphasis role="italic">Ctrl+Left</emphasis> and<emphasis role="italic">Ctrl+Right</emphasis> as well. This node will then be marked by a slightly thicker border. When zoomed in, it also focusses on the node, making sure it is visible. Normally, the scroll wheel is used for panning the tree. but when you press <emphasis role="italic">Ctrl</emphasis>, scrolling will zoom the tree. <emphasis role="italic">Ctrl+=</emphasis> and <emphasis role="italic">Ctrl+-</emphasis> can also be used to zoom in and out, and <emphasis role="italic">Ctrl+0</emphasis> resets the zoom level to show the whole tree.</para>
             <para>The leaf nodes have tool tips showing more details about the node.</para>
-            <para>Below the tree the bracketed sentence is shown, and the parts in the sentence
-                represented by the matching nodes are surrounded by square brackets.</para>
+            <para>Below the tree the bracketed sentence is shown, and the parts in the sentence represented by the matching nodes are surrounded by square brackets.</para>
         </sect2>
         <sect2>
             <title>Inspecting nodes</title>
-            <para>If you want to know more about a node, you can select it and open the Inspector by
-                clicking its button on the right hand side of the toolbar, pressing <emphasis
-                    role="italic">Ctrl+i</emphasis> or by enabling it in the <emphasis role="italic"
-                    >View</emphasis> menu. This is very useful for writing queries.</para>
+            <para>If you want to know more about a node, you can select it and open the Inspector by clicking its button on the right hand side of the toolbar, pressing <emphasis role="italic">Ctrl+i</emphasis> or by enabling it in the <emphasis role="italic">View</emphasis> menu. This is very useful for writing queries.</para>
             <figure>
                 <title>Main window with inspector attached</title>
                 <mediaobject>
@@ -259,107 +170,62 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>The Inspector will show you
-                <?oxy_comment_start author="jelmer" timestamp="20110609T133213+0200" comment="except the attribute that is internally used to mark a node for highlighting"?>every
-                attribute<?oxy_comment_end?> the node has. You can right-click an attribute and use
-                the context menu to directly add it to your search query.</para>
-            <para>The Inspector is detachable and be torn of the Main window.</para>
+            <para>The Inspector will show you every attribute<?oxy_comment_end?> the node has. You can right-click an attribute and use the context menu to directly add it to your search query.</para>
+            <para>The Inspector is detachable and can be torn of the Main window.</para>
         </sect2>
         <sect2>
             <title>Gathering statistics</title>
-            <para>The Statistics window can be found in the <emphasis role="italic"
-                >Tools</emphasis> menu, or using <emphasis role="italic">Ctrl+t</emphasis>.</para>
-            <para>The Statistics window shows which values can be found for a certain attribute of
-                the matching nodes throughout the corpus. These nodes can be filtered using the same
-                XPath queries. If a node does match the filter, but does not have the attribute, it
-                won’t be counted.</para>
+            <para>The Statistics window can be found in the <emphasis role="italic">Tools</emphasis> menu, or using <emphasis role="italic">Ctrl+t</emphasis>.</para>
+            <para>The Statistics window shows which values can be found for a certain attribute of the matching nodes throughout the corpus. These nodes can be filtered using the same XPath queries. If a node does match the filter, but does not have the attribute, it won’t be counted.</para>
             <figure>
                 <title>Statistics window</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata
-                            fileref="../images/statistics-window.png"/>
+                        <imagedata fileref="../images/statistics-window.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>Make sure to use a filter which matches the nodes you want to know the values of.
-                For example, say we wanted to know how often every preposition occurs in a
-                preposition phrase. We need to filter for the preposition nodes that are children of
-                a preposition phrase node:</para>
+            <para>Make sure to use a filter which matches the nodes you want to know the values of. For example, say we wanted to know how often every preposition occurs in a preposition phrase. We need to filter for the preposition nodes that are children of a preposition phrase node:</para>
             <programlisting>//node[@cat="pp"]/node[@pt="vz"]</programlisting>
-            <para>If you are unsure whether your filter will match too much or too little, try to
-                test it visually in the tree by using it as the highlight query.</para>
-            <para>Because we want to know how often the word occurs, we select <literal
-                    role="italic">word</literal> or <literal role="italic">lemma</literal>.</para>
-            <para>The <emphasis role="italic">result</emphasis> column shows all the distinct values
-                found, and the <emphasis role="italic">count</emphasis> column shows how often these
-                values where encountered. The <emphasis role="italic">percentage</emphasis> column
-                puts this number into perspective by showing how much this is as a percentage of the
-                total count of found values. This total is shown in the bottom right of the
-                window.</para>
-            <para>You can double-click one of the rows to search for all nodes that together are
-                summed up in that row in the Main Window.</para>
-            <para>When copying rows to the clipboards, they will be pasted as a tab-separated
-                plain-text table. Excel and many other programs are able to import this format when
-                pasting it into a document.</para>
+            
+            <para>If you are unsure whether your filter will match too much or too little, try to test it visually in the tree by using it as the highlight query.</para>
+            <para>Because we want to know how often the word occurs, we select <literal role="italic">word</literal> or <literal role="italic">lemma</literal>.</para>
+            <para>The <emphasis role="italic">result</emphasis> column shows all the distinct values found, and the <emphasis role="italic">count</emphasis> column shows how often these values where encountered. The <emphasis role="italic">percentage</emphasis> column puts this number into perspective by showing how much this is as a percentage of the total count of found values. This total is shown in the bottom right of the window.</para>
+            <para>You can double-click one of the rows to search for all nodes that together are summed up in that row in the Main Window.</para>
+            <para>When copying rows to the clipboards, they will be pasted as a tab-separated plain-text table. Excel and many other programs are able to import this format when pasting it into a document.</para>
         </sect2>
         <sect2>
             <title>Bracketed sentences</title>
-            <para>To quickly get an impression which part of a sentence matches a query, you can use
-                    the <emphasis role="italic">Bracketed sentences</emphasis> window in
-                    the <emphasis role="italic">Tools</emphasis> menu. Or by using <emphasis
-                    role="italic">Ctrl+b</emphasis>.</para>
+            <para>To quickly get an impression which part of a sentence matches a query, you can use the <emphasis role="italic">Bracketed sentences</emphasis> window in the <emphasis role="italic">Tools</emphasis> menu. Or by using <emphasis role="italic">Ctrl+b</emphasis>.</para>
             <figure>
                 <title>Bracketed sentences window</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata
-                            fileref="../images/bracketed-sentences-window.png"
-                        />
+                        <imagedata fileref="../images/bracketed-sentences-window.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>The window shows the part of a sentence which matches the query between brackets
-                for all the sentences in the corpus where at least one matching node is found.
-                Double clicking on one of these sentences will open it in the Main Window. </para>
-            <para>You can select alternative display modes using the drop-down menu. Currently three
-                methods are implemented:</para>
+            <para>The window shows the part of a sentence which matches the query between brackets for all the sentences in the corpus where at least one matching node is found. Double clicking on one of these sentences will open it in the Main Window. </para>
+            <para>You can select alternative display modes using the drop-down menu. Currently three methods are implemented:</para>
             <itemizedlist>
                 <listitem>
-                    <para><emphasis role="italic">Complete Sentence</emphasis> shows the matching
-                        nodes in the sentence on a different background. Nested matches have a more
-                        opaque background. The color can be changed in Dact's Preference
-                        Window.</para>
+                    <para><emphasis role="italic">Complete Sentence</emphasis> shows the matching nodes in the sentence on a different background. Nested matches have a more opaque background. The color can be changed in Dact's Preference Window.</para>
                 </listitem>
                 <listitem>
-                    <para><emphasis role="italic">Only Matches</emphasis> shows only partial
-                        sentences of the nodes that matched. One match or nested match per line.
-                        Currently because of the way this view is implemented the matches cannot be
-                        sorted.</para>
+                    <para><emphasis role="italic">Only Matches</emphasis> shows only partial sentences of the nodes that matched. One match or nested match per line. Currently because of the way this view is implemented the matches cannot be sorted.</para>
                 </listitem>
                 <listitem>
-                    <para><emphasis role="italic">Keywords in Context</emphasis> shows all the
-                        matches directly underneath each other and prints the rest of the sentence
-                        left and right of the match. The colors can be configured in Dact’s
-                        Preference Window.</para>
+                    <para><emphasis role="italic">Keywords in Context</emphasis> shows all the matches directly underneath each other and prints the rest of the sentence left and right of the match. The colors can be configured in Dact’s Preference Window.</para>
                 </listitem>
             </itemizedlist>
         </sect2>
     </sect1>
     <sect1>
         <title>Converting and exporting corpora</title>
-        <para>Dact can also be used to create Dact corpora from any corpus that can be read with
-            Dact. Dact corpora are larger than Compact corpora but can be queried very quickly.
-            Currently you cannot add new sentences to an existing corpus using Dact.</para>
+        <para>Dact can also be used to create Dact corpora from any corpus that can be read with Dact. Dact corpora are larger than Compact corpora but can be queried very quickly. Currently you cannot add new sentences to an existing corpus using Dact.</para>
         <sect2>
             <title>Exporting a whole corpus</title>
-            <para>Any corpus that can be loaded can be saved as a Dact corpus. Open the corpus, and
-                make sure you do not have any files selected in the file list on the left. Dact will
-                try to export your selection, and only if you have nothing selected it will export
-                the complete corpus. Select <emphasis>File - Export to corpus…</emphasis> to select
-                where you want to store your new corpus. If you are unsure whether Dact tries to
-                export the complete corpus or only a selection, check the title of the Save file
-                dialog. </para>
+            <para>Any corpus that can be loaded can be saved as a Dact corpus. Open the corpus, and make sure you do not have any files selected in the file list on the left. Dact will try to export your selection, and only if you have nothing selected it will export the complete corpus. Select <emphasis>File - Export to corpus…</emphasis> to select where you want to store your new corpus. If you are unsure whether Dact tries to export the complete corpus or only a selection, check the title of the Save file dialog. </para>
             <figure>
                 <title>Export corpus dialog</title>
                 <mediaobject>
@@ -368,47 +234,25 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>Depending on the size of the corpus you have loaded, exporting can take a while. A
-                progress dialog will tell you how many of the sentences have been exported. When you
-                cancel the export action, the corpus you where exporting will be saved but the
-                sentences that where not yet added will be missing from it.</para>
+            <para>Depending on the size of the corpus you have loaded, exporting can take a while. A progress dialog will tell you how many of the sentences have been exported. When you cancel the export action, the corpus you where exporting will be saved but the sentences that where not yet added will be missing from it.</para>
         </sect2>
         <sect2>
             <title>Exporting a selection</title>
-            <para>If you want to create a new corpus from a subset of the sentences in the corpus
-                you have loaded, select all the files you want in it and select <emphasis>File -
-                    Export to corpus…</emphasis>. You can use the Filter query to filter the file
-                list, and press <emphasis>Ctrl+a</emphasis> to select every sentence that matched.
-                Since only the selected sentences will be added to the corpus, only the sentences
-                that matched your query will be added.</para>
+            <para>If you want to create a new corpus from a subset of the sentences in the corpus you have loaded, select all the files you want in it and select <emphasis>File - Export to corpus…</emphasis>. You can use the Filter query to filter the file list, and press <emphasis>Ctrl+a</emphasis> to select every sentence that matched. Since only the selected sentences will be added to the corpus, only the sentences that matched your query will be added.</para>
         </sect2>
         <sect2>
             <title>Exporting a single sentence as XML</title>
-            <para>You can export the XML of a single sentence if you want to inspect it or play with
-                it with another tool. Select the sentence you want to export in the file list and
-                select <emphasis>File - Export to XML…</emphasis>. Currently you cannot export
-                multiple sentences as XML at once.</para>
+            <para>You can export the XML of a single sentence if you want to inspect it or play with it with another tool. Select the sentence you want to export in the file list and select <emphasis>File - Export to XML…</emphasis>. Currently you cannot export multiple sentences as XML at once.</para>
         </sect2>
     </sect1>
     <sect1>
         <title>Configuring Dact</title>
-        <para>Dact has some preferences to change it to your needs. You can configure the font and
-            colors of the interface and specify macros for common query conditions.</para>
+        <para>Dact has some preferences to change it to your needs. You can configure the font and colors of the interface and specify macros for common query conditions.</para>
         <sect2>
             <title>Macros</title>
-            <para>Macros in Dact are nothing more than simple substitutions, and using them is
-                really simple. To use a macro simply use its pattern surrounded by percentage signs
-                in a query. E.g. if you have a macro that replaces <literal>su</literal> with
-                    <literal>@rel="su"</literal>, the following query will be internally translated
-                like this:<programlisting>//node[%su%] -> //node[@rel="su"]</programlisting></para>
-            <para>You can use macros in every query in Dact. Macro patterns are replaced before a
-                query is validated or executed. If a pattern in the query is not in your list of
-                macros it won't be replaced and will be present in the final query.</para>
-            <para>You can add macros in the Macros window, which you can find in <emphasis>Tools -
-                    Macros…</emphasis> menu. Simply press the <emphasis>Add</emphasis> button to add
-                a new macro, and double click the fields to edit them. Macros are stored along with
-                Dact's other preferences, and currently there is no easy way to import and export
-                them.</para>
+            <para>Macros in Dact are nothing more than simple substitutions, and using them is really simple. To use a macro simply use its pattern surrounded by percentage signs in a query. E.g. if you have a macro that replaces <literal>su</literal> with <literal>@rel="su"</literal>, the following query will be internally translated like this:<programlisting>//node[%su%] -> //node[@rel="su"]</programlisting></para>
+            <para>You can use macros in every query in Dact. Macro patterns are replaced before a query is validated or executed. If a pattern in the query is not in your list of macros it won't be replaced and will be present in the final query.</para>
+            <para>You can add macros in the Macros window, which you can find in <emphasis>Tools - Macros…</emphasis> menu. Simply press the <emphasis>Add</emphasis> button to add a new macro, and double click the fields to edit them. Macros are stored along with Dact's other preferences, and currently there is no easy way to import and export them.</para>
             <figure>
                 <title>Macros window</title>
                 <mediaobject>
@@ -420,10 +264,7 @@
         </sect2>
         <sect2>
             <title>Font and colors</title>
-            <para>Dact allows you to choose your own colors and font used in the interface to some
-                extend. You can find these in the Preference window, which you can find in
-                    <emphasis>Edit</emphasis> menu. (On OS X, you will find it in the application
-                menu like in any other OS X application.) Changes are automatically saved.</para>
+            <para>Dact allows you to choose your own colors and font used in the interface to some extend. You can find these in the Preference window, which you can find in <emphasis>Edit</emphasis> menu. (On OS X, you will find it in the application menu like in any other OS X application.) Changes are automatically saved.</para>
             <figure>
                 <title>Preferences window</title>
                 <mediaobject>
@@ -432,24 +273,16 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>Note that the OS X version of Dact does not have a <emphasis>Font</emphasis> tab.
-                In the other versions of Dact you can change the font that is used for the buttons
-                and lists throughout Dact.</para>
-            <para>If you mess up, you can always return to the default preferences Dact ships with
-                by clicking the <emphasis>Return to Default</emphasis> button in a tab. Any
-                preference on that tab will be reset.</para>
+            <para>Note that the OS X version of Dact does not have a <emphasis>Font</emphasis> tab. In the other versions of Dact you can change the font that is used for the buttons and lists throughout Dact.</para>
+            <para>If you accidentally mess up, you can always return to the default preferences Dact ships with by clicking the <emphasis>Return to Default</emphasis> button in a tab. Any preference on that tab will be reset.</para>
         </sect2>
     </sect1>
     <sect1>
         <title>Common errors</title>
         <sect2>
-            <title>The application failed to initialize properly
-                (0xc0000022)</title>
-            <para>If you get the error <literal>The application failed to initialize properly
-                (0xc0000022)</literal> it means that something is wrong with the DLL permissions.
-                Presumably with the .dll files in the Dact distribution.</para>
-            <para>You can fix this problem by opening a command prompt, and cd to the directory in
-                which the Dact files reside. Then type:</para>
+            <title>The application failed to initialize properly (0xc0000022)</title>
+            <para>If you get the error <literal>The application failed to initialize properly (0xc0000022)</literal> it means that something is wrong with the DLL permissions. Presumably with the .dll files in the Dact distribution.</para>
+            <para>You can fix this problem by opening a command prompt, and cd to the directory in which the Dact files reside. Then type:</para>
             <programlisting>cacls *.dll /E /G BUILTIN\Users:R</programlisting>
         </sect2>
     </sect1>
