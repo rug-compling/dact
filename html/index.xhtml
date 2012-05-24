@@ -8,7 +8,7 @@
     <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
   </head>
   <body>
-    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="idp15168"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#idp21776">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#idp32480">2. Queries</a></span></dt><dt><span class="sect1"><a href="#idp115920">3. Converting corpora</a></span></dt><dt><span class="sect1"><a href="#idp118576">4. Configuring Dact</a></span></dt><dt><span class="sect1"><a href="#idp129392">5. Common errors</a></span></dt></dl></div>
+    <div class="article"><div class="titlepage"><div><div><h2 class="title"><a id="idp15168"></a>Decaffeinated Alpino Corpus Tool</h2></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl><dt><span class="sect1"><a href="#idp21776">1. Introduction</a></span></dt><dt><span class="sect1"><a href="#idp32480">2. Queries</a></span></dt><dt><span class="sect1"><a href="#idp117088">3. Converting corpora</a></span></dt><dt><span class="sect1"><a href="#idp120704">4. Configuring Dact</a></span></dt><dt><span class="sect1"><a href="#idp131984">5. Marcos</a></span></dt><dt><span class="sect1"><a href="#idp148688">6. Common errors</a></span></dt></dl></div>
     
     <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp21776"></a>1. Introduction</h2></div></div></div>
         
@@ -93,18 +93,20 @@
             <pre class="programlisting">//node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]</pre>
             <p>(This query was taken from the <a class="ulink" href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html" target="_top">manual for Treebank Tools</a>, which contains some more interesting queries.)</p>
             
-            <p>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</p>
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>
+                <p>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</p>
+            </div>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp71904"></a>2.2. Exploring a corpus</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp73168"></a>2.2. Exploring a corpus</h3></div></div></div>
             
             <p>The left pane on the Tree tab shows a list of corpus entries, where each entry represents a parsed sentence containing at least one node that matched your filter query.</p>
             <p>After typing the query, press the <span class="emphasis"><em>Enter</em></span> key, and Dact will start filtering the corpus. If you want to interrupt filtering, press the <span class="emphasis"><em>Esc</em></span> key. You can also pick one of your previous queries form the history using the arrow on the right of the filter field.</p>
             <p>Using the <span class="emphasis"><em>Next</em></span> and <span class="emphasis"><em>Previous</em></span> arrows in the top left menu bar, you can walk through each found entry. Or you can use the <span class="emphasis"><em>Ctrl+Down</em></span> and <span class="emphasis"><em>Ctrl+Up</em></span> shortcuts.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp34832"></a>2.3. Highlighting nodes</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp72272"></a>2.3. Highlighting nodes</h3></div></div></div>
             
             <p>After selecting an entry, its parse tree is shown in the right pane. To easier to spot interesting phenomena, or test a query, you can enter a separate query in the highlight field. Each node matching the highlight query will be coloured:</p>
-            <div class="figure"><a id="idp78496"></a><p class="title"><strong>Figure 3. Highlighted nodes</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp78928"></a><p class="title"><strong>Figure 3. Highlighted nodes</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/highlighted-nodes.png" alt="Highlighted nodes" /></div>
             </div></div><br class="figure-break" />
@@ -113,20 +115,22 @@
             <p>The leaf nodes have tool tips showing more details about the node.</p>
             <p>Below the tree the sentence is shown, and the parts in the sentence represented by the matching nodes are highlighted.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp87744"></a>2.4. Inspecting nodes</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp88192"></a>2.4. Inspecting nodes</h3></div></div></div>
             
             <p>If you want to know more about a node, you can select it and open the Inspector by clicking its button on the right hand side of the toolbar, pressing <span class="emphasis"><em>Ctrl+i</em></span> or by enabling it in the <span class="emphasis"><em>View</em></span> menu. This is very useful for writing queries.</p>
-            <div class="figure"><a id="idp90096"></a><p class="title"><strong>Figure 4. Main window with inspector attached</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp90464"></a><p class="title"><strong>Figure 4. Main window with inspector attached</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/inspector.png" alt="Main window with inspector attached" /></div>
             </div></div><br class="figure-break" />
             <p>The Inspector will show you every attribute the focussed node has. You can right-click an attribute and use the context menu to directly add it to your search query.</p>
-            <p>The Inspector is detachable and can be torn of the Main window.</p>
+            <div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3>
+                <p>The Inspector is detachable and can be torn of the Main window.</p>
+            </div>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp93584"></a>2.5. Gathering statistics</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp94256"></a>2.5. Gathering statistics</h3></div></div></div>
             
             <p>The Statistics tab shows which values can be found for a certain attribute of the matching nodes throughout the corpus. These nodes can be filtered using the same XPath queries. If a node does match the filter, but does not have the attribute, it will be counted as <span class="emphasis"><em>[missing attribute]</em></span>.</p>
-            <div class="figure"><a id="idp95584"></a><p class="title"><strong>Figure 5. Statistics tab</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp96416"></a><p class="title"><strong>Figure 5. Statistics tab</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/statistics-tab.png" alt="Statistics tab" /></div>
             </div></div><br class="figure-break" />
@@ -138,15 +142,17 @@
             <p>You can double-click one of the rows to search for all nodes that together are summed up in that row. Dact will automatically generate a new filter query for you.</p>
             <p>When copying rows to the clipboards, they will be pasted as a tab-separated plain-text table. Excel and many other programs are able to import this format when pasting it into a document.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp93840"></a>2.6. Exporting Statistics</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp94512"></a>2.6. Exporting Statistics</h3></div></div></div>
             
             <p>The results from the Statistics tab can be saved in various formats: plain text, HTML, Excel worksheet and CSV. Go to the <span class="emphasis"><em>File - Save as…</em></span> menu and select the file type from the drop-down menu in the save dialog.</p>
-            <p>Note that this menu item also works for other the Sentences tab.</p>
+            <div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3>
+                <p>Note that this menu item also works for other the Sentences tab.</p>
+            </div>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp106208"></a>2.7. Sentences</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp107520"></a>2.7. Sentences</h3></div></div></div>
             
             <p>To quickly get an impression which part of a sentence matches a query, you can use the <span class="emphasis"><em>Sentences</em></span> tab.</p>
-            <div class="figure"><a id="idp108032"></a><p class="title"><strong>Figure 6. Sentences tab</strong></p><div class="figure-contents">
+            <div class="figure"><a id="idp109280"></a><p class="title"><strong>Figure 6. Sentences tab</strong></p><div class="figure-contents">
                 
                 <div class="mediaobject"><img src="../images/sentences-tab.png" alt="Sentences tab" /></div>
             </div></div><br class="figure-break" />
@@ -161,32 +167,84 @@
                 </li></ul></div>
         </div>
     </div>
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp115920"></a>3. Converting corpora</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp117088"></a>3. Converting corpora</h2></div></div></div>
         
-        <p>Dact can only work with Dact corpora, but it can create these from any Directory and Compact corpus. To convert a Directory or Compact corpus, go to the <span class="emphasis"><em>Tools - Convert corpus</em></span> submenu, and choose your type. Dact will prompt you for the location of your corpus, and where to save the new Dact corpus. Afterwards you can open the newly generated Dact corpus using the <span class="emphasis"><em>File - Open…</em></span> menu item. Note that <span class="emphasis"><em>your original corpus won't be affected</em></span> in this process.</p>
+        <p>Dact can only work with Dact corpora, but it can create these from any Directory and Compact corpus. To convert a Directory or Compact corpus, go to the <span class="emphasis"><em>Tools - Convert corpus</em></span> submenu, and choose your type. Dact will prompt you for the location of your corpus, and where to save the new Dact corpus. Afterwards you can open the newly generated Dact corpus using the <span class="emphasis"><em>File - Open…</em></span> menu item. </p>
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>
+            <p>Note that <span class="emphasis"><em>your original corpus won't be affected</em></span> in this process.</p>
+        </div>
     </div>
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp118576"></a>4. Configuring Dact</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp120704"></a>4. Configuring Dact</h2></div></div></div>
         
         <p>Dact has some preferences you can change it to suit more to your needs. You can configure the font and colours of the interface. You can find these in the Preference window, which you can find in <span class="emphasis"><em>Edit</em></span> menu. (On OS X, you will find it in the application menu like any other OS X application.) Changes are automatically applied and saved.</p>
         <p>If you accidentally mess up, you can always return to the default preferences Dact ships with by clicking the <span class="emphasis"><em>Return to Default</em></span> button in a tab. The preferences will be restored to their default values.</p>
-        <div class="figure"><a id="idp121456"></a><p class="title"><strong>Figure 7. Preferences window</strong></p><div class="figure-contents">
+        <div class="figure"><a id="idp123584"></a><p class="title"><strong>Figure 7. Preferences window</strong></p><div class="figure-contents">
             
             <div class="mediaobject"><img src="../images/preferences-window.png" alt="Preferences window" /></div>
         </div></div><br class="figure-break" />
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp123296"></a>4.1. Font and colours</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp125392"></a>4.1. Font and colours</h3></div></div></div>
             
             <p>Dact allows you to choose your own colours and font used in the interface to some extend.</p>
             <p>Note that the OS X version of Dact does not have a <span class="emphasis"><em>Font</em></span> tab. In the other versions of Dact you can change the font that is used for the buttons and lists throughout Dact.</p>
         </div>
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp126272"></a>4.2. Network</h3></div></div></div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp128400"></a>4.2. Network</h3></div></div></div>
             
             <p>Dact's <span class="emphasis"><em>Download corpus</em></span>, <span class="emphasis"><em>Open remote corpus</em></span> and <span class="emphasis"><em>Parse sentences</em></span> features use web services to function. The addresses of these web services can be changed.</p>
-            <p>Note that not all of these features may be enabled in your version of Dact as of the time of writing not all of the required web services are publicly available.</p>
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>
+                <p>Note that not all of these features may be enabled in your version of Dact as of the time of writing not all of the required web services are publicly available.</p>
+            </div>
         </div>
     </div>
-    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp129392"></a>5. Common errors</h2></div></div></div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp131984"></a>5. Marcos</h2></div></div></div>
         
-        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp130032"></a>5.1. The application failed to initialize properly (0xc0000022)</h3></div></div></div>
+        <p>Dact supports macros in its XPath queries. You can insert simple placeholders in your query which are expanded before a query is evaluated. A placeholder is the name of the macro surrounded by percentage signs (<code class="literal">%</code>).</p>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp133776"></a>5.1. Loading a file with Macros</h3></div></div></div>
+            
+            <p>You can load a file with macros with the <span class="emphasis"><em>Macros - Load file…</em></span> menu item. When the file is successfully loaded, a submenu with the same name as the filename is visible in the <span class="emphasis"><em>Macros</em></span> menu, containing all the macros in the file.</p>
+            <p>When you have focused one of the XPath query fields in Dact, you can select one of the macros from the <span class="emphasis"><em>Macros</em></span> menu to insert it at the position of your text cursor.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp137056"></a>5.2. Using a macro</h3></div></div></div>
+            
+            <p>Given you have loaded a file with the following macro:</p>
+            <pre class="programlisting">interesting = """ @rel="su" or @rel="vc" """</pre>
+            <p>When you enter the following query in to the filter query field:</p>
+            <pre class="programlisting">//node[%interesting%]</pre>
+            <p>Dact replace the placeholder, and execute the following query:</p>
+            <pre class="programlisting">//node[ @rel="su" or @rel="vc" ]</pre>
+            <p>Since Dact only does simple text replacement, you can also use invalid or partial XPath code as replacement. As long as the expanded query is valid, Dact will accept it.</p>
+        </div>
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp141136"></a>5.3. Macros file syntax</h3></div></div></div>
+            
+            <p>Macro files are rather simple and can be created with any plain text editor. Macros have the following syntax:</p>
+            <pre class="programlisting">placeholder = """replacement"""</pre>
+            <p><code class="literal">placeholder</code> is the name of your macro, and <code class="literal">replacement</code> the XPath code it will be replaced with. The name and replacement are separated by a <code class="literal">=</code>, and the replacement has to be surrounded by three pairs of double quotes. <code class="literal">replacement</code> may span several lines.</p>
+            <p>Dact also expands macros while loading them. This way, you can use macros you defined earlier on in a file in your macros.</p>
+            <div class="figure"><a id="idp145568"></a><p class="title"><strong>Figure 8. Example of macros file</strong></p><div class="figure-contents">
+                
+                <pre class="programlisting">
+b = """number(@begin)"""
+e = """number(@end)"""
+
+headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp") """
+
+precedes_head_of_smain = """
+(  ancestor::node[@cat="smain"]/
+             node[@rel="hd"]/%b% 
+           &gt; node[%headrel%]/%b% 
+   or 
+   ancestor::node[@cat="smain"]/
+             node[@rel="hd"]/%b% 
+           &gt; %b% and @pos
+)
+"""
+</pre>
+            <div class="caption">Notice how <code class="literal">precedes_head_of_smain</code> makes use of the <code class="literal">headrel</code> macro.</div>
+            </div></div><br class="figure-break" />
+        </div>
+    </div>
+    <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idp148688"></a>6. Common errors</h2></div></div></div>
+        
+        <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="idp149328"></a>6.1. The application failed to initialize properly (0xc0000022)</h3></div></div></div>
             
             <p>If you get the error <code class="literal">The application failed to initialize properly (0xc0000022)</code> it means that something is wrong with the DLL permissions. Presumably with the .dll files in the Dact distribution.</p>
             <p>You can fix this problem by opening a command prompt, and cd to the directory in which the Dact files reside. Then type:</p>
