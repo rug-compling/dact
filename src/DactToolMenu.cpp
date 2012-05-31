@@ -30,12 +30,16 @@ void DactToolMenu::exec(QSharedPointer<DactToolModel> model, QString const &argu
 	QModelIndex commandIndex = model->index(action->data().toInt(), DactToolModel::COLUMN_COMMAND);
 	QString commandTemplate = commandIndex.data(Qt::DisplayRole).toString();
 
+	// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice
+	// to stdout, and it would be weird to have a command without the file as an argument.
+	// TODO: Escape spaces etc. argument
 	QString command = commandTemplate.arg(argument);
 
 	qDebug() << "Calling" << command;
 
 	QProcess *process = new QProcess();
 	process->start(command);
+	process->closeWriteChannel();
 
 	// TODO: should we clean up process in some way?
 }

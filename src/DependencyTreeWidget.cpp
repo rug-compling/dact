@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QSharedPointer>
 #include <QWidget>
+#include <QFile>
 
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
@@ -433,8 +434,10 @@ void DependencyTreeWidget::showToolMenu(QPoint const &position)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
 
+    QFile toolFile("tools.txt");
+
     DactToolMenu::exec(
-        QSharedPointer<DactToolModel>(new DactToolModel()),
+        QSharedPointer<DactToolModel>(DactToolModel::loadFromFile(toolFile)),
         current.data(Qt::DisplayRole).toString(),
         mapToGlobal(position));
 }

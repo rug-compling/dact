@@ -1,16 +1,19 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QStringList>
-#include <QTimer>
 
 #include "DactToolModel.hh"
 
-DactToolModel::DactToolModel(QObject *parent)
+const QString DactToolModel::s_assignment_symbol("=");
+const QString DactToolModel::s_start_replacement_symbol("\"\"\"");
+const QString DactToolModel::s_end_replacement_symbol("\"\"\"");
+
+DactToolModel::DactToolModel(QList<DactTool*> tools, QObject *parent)
 :
-    QAbstractItemModel(parent)
+    QAbstractItemModel(parent),
+    d_tools(tools)
 {
-    d_tools.append(new DactTool("edit", "subl %1"));
-    d_tools.append(new DactTool("diff", "opendiff %1"));
+    //
 }
 
 DactToolModel::~DactToolModel()
@@ -94,4 +97,54 @@ QModelIndex DactToolModel::index(int row, int column, QModelIndex const &parent)
 QModelIndex DactToolModel::parent(QModelIndex const &index) const
 {
     return QModelIndex();
+}
+
+QSharedPointer<DactToolModel> DactToolModel::loadFromFile(QFile &file)
+{
+    QList<DactTool*> tools;
+    QString data;
+    
+    // XXX - a nice parser would parse directly from the QTextStream
+    {
+        file.open(QIODevice::ReadOnly);
+        QTextStream macro_data(&file);
+        data = macro_data.readAll();
+        file.close();
+    }
+
+    int cursor = 0;
+
+    while (cursor < data.size())
+    {
+        // find '=' symbol, which indicates the end of the name of the macro
+        int assignment_symbol_pos = data.indexOf(s_assignment_symbol, cursor);
+
+        if (assignment_symbol_pos == -1)
+            break;
+
+        // find the '"""' symbol which indicates the start of the replacement
+        int opening_quotes_pos = data.indexOf(s_start_replacement_symbol,
+            assignment_symbol_pos + s_assignment_symbol.size());
+
+        if (opening_quotes_pos == -1)
+            break;
+
+        // find the second '"""' symbol which marks the end of the replacement
+        int closing_quotes_pos = data.indexOf(s_end_replacement_symbol,
+            opening_quotes_pos + s_start_replacement_symbol.size());
+
+        if (closing_quotes_pos == -1)
+            break;
+
+        // and go get it!
+        QString name = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
+        QString command = data.mid(opening_quotes_pos + s_start_replacement_symbol.size(),
+          closing_quotes_pos - (opening_quotes_pos + s_start_replacement_symbol.size())).trimmed();
+
+        tools.append(new DactTool(name, command));
+
+        cursor = closing_quotes_pos + s_end_replacement_symbol.size();
+    }
+
+    return QSharedPointer<DactToolModel>(new DactToolModel(tools));
 }
