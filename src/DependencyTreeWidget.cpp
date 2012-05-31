@@ -10,6 +10,8 @@
 
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
+#include <DactToolMenu.hh>
+#include <DactToolModel.hh>
 #include <DactTreeScene.hh>
 #include <DactTreeView.hh>
 #include <DependencyTreeWidget.hh>
@@ -31,6 +33,12 @@ DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);
+}
+
+DependencyTreeWidget::~DependencyTreeWidget()
+{
+    // Define a destructor here to make sure the qsharedpointers are implemented where all
+    // the proper header files are available (not just forward declarations)
 }
 
 void DependencyTreeWidget::addConnections()
@@ -420,3 +428,14 @@ void DependencyTreeWidget::zoomOut()
 {
     d_ui->treeGraphicsView->zoomOut();
 }
+
+void DependencyTreeWidget::showToolMenu(QPoint const &position)
+{
+    QModelIndex current(d_ui->fileListWidget->currentIndex());
+
+    DactToolMenu::exec(
+        QSharedPointer<DactToolModel>(new DactToolModel()),
+        current.data(Qt::DisplayRole).toString(),
+        mapToGlobal(position));
+}
+

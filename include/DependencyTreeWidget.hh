@@ -15,6 +15,7 @@
 #include "ui_DependencyTreeWidget.h"
 
 class DactMacrosModel;
+class DactToolModel;
 class DactTreeScene;
 class QPainter;
 class QItemSelectionModel;
@@ -24,6 +25,7 @@ class DependencyTreeWidget : public CorpusWidget
     Q_OBJECT
 public:
     DependencyTreeWidget(QWidget *parent);
+    ~DependencyTreeWidget();
     
     // Provide access to the sentence widget.
     BracketedSentenceWidget *sentenceWidget();
@@ -91,6 +93,8 @@ public slots:
     void zoomOut();
 
     void copy();
+
+    void showToolMenu(QPoint const &position);
 
 private slots:
     /*!
@@ -219,6 +223,8 @@ private:
      The macros model. Used to store and apply macros to XPath queries.
      */
     QSharedPointer<DactMacrosModel> d_macrosModel;
+
+    QSharedPointer<DactToolModel> d_toolModel;
     
     QSharedPointer<XPathValidator> d_xpathValidator;
     
