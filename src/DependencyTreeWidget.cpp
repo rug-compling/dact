@@ -432,8 +432,14 @@ void DependencyTreeWidget::zoomOut()
 
 void DependencyTreeWidget::showToolMenu(QPoint const &position)
 {
+    if (!d_ui->fileListWidget->model())
+        return;
+
     QModelIndexList rows = d_ui->fileListWidget->selectionModel()->selectedRows();
     QList<QString> selectedFiles;
+
+    if (rows.isEmpty())
+        return;
 
     foreach (QModelIndex const &row, rows)
         selectedFiles << row.data().toString();
