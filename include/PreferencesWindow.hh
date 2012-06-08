@@ -32,6 +32,7 @@ private slots:
     void saveColorsTab();
     void saveToolsTab();
     void selectAppFont();
+    void selectToolsFilePath();
     
 private:
     void applyAppFont();

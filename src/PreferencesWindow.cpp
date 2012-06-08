@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QFont>
 #include <QFontDialog>
 #include <QKeyEvent>
@@ -80,6 +81,9 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
     connect(d_ui->restoreDefaultWebserviceButton, SIGNAL(clicked()),
         SLOT(restoreDefaultWebservice()));
+
+    connect(d_ui->selectToolsFilePath, SIGNAL(clicked()),
+        SLOT(selectToolsFilePath()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -101,6 +105,17 @@ void PreferencesWindow::selectAppFont()
     QSettings().setValue("appFont", newFont.toString());
 
     applyAppFont();
+}
+
+void PreferencesWindow::selectToolsFilePath()
+{
+    QString path(QFileDialog::getOpenFileName(this, "Select Tools configuration file"));
+
+    if (path.isNull())
+        return;
+
+    d_ui->toolsFilePath->setText(path);
+    saveToolsTab();
 }
 
 void PreferencesWindow::loadColorsTab()

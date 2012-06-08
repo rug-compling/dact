@@ -46,7 +46,7 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> co
 	{
 		// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice
 		// to stdout, and it would be weird to have a command without the file as an argument.
-		// TODO: Escape spaces etc. argument
+		// TODO: Escape spaces etc. argument? Workaround: use quotes in your template.
 		QString command = commandTemplate.arg(selectedFile);
 
 		qDebug() << "Calling" << command;
