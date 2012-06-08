@@ -209,13 +209,26 @@ void DactToolsModel::readFromFile(QFile &file)
 
         cursor = closing_quotes_pos + s_end_replacement_symbol.size();
     }
-
-    foreach (DactTool const *tool, d_tools)
-        qDebug() << tool->name() << tool->command() << tool->corpus();
 }
 
 void DactToolsModel::clear()
 {
     d_tools.clear();
+}
+
+QList<DactTool const *> DactToolsModel::tools(QString const &corpus) const
+{
+    QFileInfo fileInfo(corpus);
+    QString corpusName(fileInfo.baseName());
+
+    QList<DactTool const *> tools;
+
+    // Select only the tools that have no corpus specified, or a corpus 
+    // with the same name as the basename of the supplied corpus name.
+    foreach (DactTool const *tool, d_tools)
+        if (tool->corpus().isEmpty() || tool->corpus() == corpusName)
+            tools << tool;
+
+    return tools;
 }
 

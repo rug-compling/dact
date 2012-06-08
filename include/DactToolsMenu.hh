@@ -3,12 +3,13 @@
 
 #include <QSharedPointer>
 
-class DactToolsModel;
+class DactTool;
 
 class DactToolsMenu
 {
 public:
-	static void exec(QSharedPointer<DactToolsModel> model,
+	static void exec(
+		QList<DactTool const *> const &tools,
 		QList<QString> const &selectedFiles,
 		QPoint const &position,
 		QList<QAction *> const &actions = QList<QAction*>());

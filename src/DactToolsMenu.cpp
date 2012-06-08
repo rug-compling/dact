@@ -6,7 +6,7 @@
 #include "DactToolsMenu.hh"
 #include "DactToolsModel.hh"
 
-void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> const &selectedFiles, QPoint const &position, QList<QAction*> const &widgetActions)
+void DactToolsMenu::exec(QList<DactTool const *> const &tools, QList<QString> const &selectedFiles, QPoint const &position, QList<QAction*> const &widgetActions)
 {
 	QMenu menu;
 
@@ -17,27 +17,26 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> co
 	// and separate the actions from the tools with a separator.
 	menu.addSeparator();
 
-	QMap<QAction*,QModelIndex> actionMap;
+	QMap<QAction*,DactTool const *> actionMap;
 	
 	// Fetch all the tools from the model and add actions to the menu for them.
-	for (int row = 0, end = model->rowCount(QModelIndex()); row < end; ++row)
+	foreach (DactTool const *tool, tools)
 	{
-		QModelIndex nameIndex(model->index(row, 0));
-		
 		// Create and label the menu item
-		QAction *action = menu.addAction(nameIndex.data(Qt::DisplayRole).toString());
+		QAction *action = menu.addAction(tool->name());
 	
 		// And remember the pattern in the data section, for easy use later on.
-		actionMap[action] = model->index(row, DactToolsModel::COLUMN_COMMAND);
+		actionMap[action] = tool;
 	}
 
 	QAction *action = menu.exec(position);
 	// Who has ownership over the QAction*'s in menu? Should we delete them?
 
+	// If no action was selected, or an action that is not a tool, we are done.
 	if (action == 0 || !actionMap.contains(action))
 		return;
 
-	QString commandTemplate = actionMap[action].data(Qt::DisplayRole).toString();
+	QString commandTemplate = actionMap[action]->command();
 
 	foreach (QString const &selectedFile, selectedFiles)
 	{

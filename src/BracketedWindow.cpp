@@ -511,7 +511,7 @@ void BracketedWindow::showToolsMenu(QPoint const &position)
         selectedFiles << row.data().toString();
 
     DactToolsMenu::exec(
-        DactToolsModel::sharedInstance(),
+        DactToolsModel::sharedInstance()->tools(QString::fromStdString(d_corpusReader->name())),
         selectedFiles,
         mapToGlobal(position),
         d_ui->resultsTable->actions());

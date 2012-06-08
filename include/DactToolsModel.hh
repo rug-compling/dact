@@ -47,6 +47,8 @@ public:
     void readFromFile(QFile &file);
     void clear();
 
+    QList<DactTool const *> tools(QString const &corpus = QString()) const;
+
 private slots:
     void preferenceChanged(QString const &key, QVariant const &value);
 
