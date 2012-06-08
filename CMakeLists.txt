@@ -112,6 +112,7 @@ SET(dact_SRCS
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
+  src/DactSettings.cpp
   src/DactTableView.cpp
   src/DactTool.cpp
   src/DactToolMenu.cpp
@@ -162,6 +163,7 @@ SET(dact_HDRS
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh
   include/DactToolMenu.hh
@@ -209,6 +211,7 @@ SET(dact_MOC_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
+  include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh
   include/DactToolMenu.hh

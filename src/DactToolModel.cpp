@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QStringList>
 
+#include "DactSettings.hh"
 #include "DactToolModel.hh"
 
 const QString DactToolModel::s_assignment_symbol("=");
@@ -32,10 +33,14 @@ QSharedPointer<DactToolModel> DactToolModel::sharedInstance()
         QSettings settings;
         QFile file(settings.value("toolsFilePath").toString());
 
+        s_sharedInstance = QSharedPointer<DactToolModel>(new DactToolModel());
+
         if (file.exists())
-            s_sharedInstance = DactToolModel::loadFromFile(file);
-        else
-            s_sharedInstance = QSharedPointer<DactToolModel>(new DactToolModel());
+            s_sharedInstance->readFromFile(file);
+        
+        connect(DactSettings::sharedInstance().data(),
+            SIGNAL(valueChanged(QString const &, QVariant const &)),
+            s_sharedInstance.data(), SLOT(preferenceChanged(QString const &, QVariant const &)));
     }
 
     return s_sharedInstance;
@@ -118,9 +123,21 @@ QModelIndex DactToolModel::parent(QModelIndex const &index) const
     return QModelIndex();
 }
 
-QSharedPointer<DactToolModel> DactToolModel::loadFromFile(QFile &file)
+void DactToolModel::preferenceChanged(QString const &key, QVariant const &value)
 {
-    QList<DactTool*> tools;
+    if (key == "toolsFilePath")
+    {
+        clear();
+        
+        QFile file(value.toString());
+        
+        if (file.exists())
+            readFromFile(file);
+    }
+}
+
+void DactToolModel::readFromFile(QFile &file)
+{
     QString data;
     
     // XXX - a nice parser would parse directly from the QTextStream
@@ -160,10 +177,14 @@ QSharedPointer<DactToolModel> DactToolModel::loadFromFile(QFile &file)
         QString command = data.mid(opening_quotes_pos + s_start_replacement_symbol.size(),
           closing_quotes_pos - (opening_quotes_pos + s_start_replacement_symbol.size())).trimmed();
 
-        tools.append(new DactTool(name, command));
+        d_tools.append(new DactTool(name, command));
 
         cursor = closing_quotes_pos + s_end_replacement_symbol.size();
     }
-
-    return QSharedPointer<DactToolModel>(new DactToolModel(tools));
 }
+
+void DactToolModel::clear()
+{
+    d_tools.clear();
+}
+

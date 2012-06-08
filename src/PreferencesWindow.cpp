@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 
+#include <DactSettings.hh>
 #include <PreferencesWindow.hh>
 #include <config.hh>
 
@@ -161,9 +162,8 @@ void PreferencesWindow::loadRemoteTab()
 
 void PreferencesWindow::loadToolsTab()
 {
-    QSettings settings;
     d_ui->toolsFilePath->setText(
-        settings.value("toolsFilePath", "").toString());
+        DactSettings::sharedInstance()->value("toolsFilePath", "").toString());
 }
 
 void PreferencesWindow::saveArchiveBaseUrl()
@@ -209,8 +209,7 @@ void PreferencesWindow::saveColorsTab()
 
 void PreferencesWindow::saveToolsTab()
 {
-    QSettings settings;
-    settings.setValue("toolsFilePath", d_ui->toolsFilePath->text());
+    DactSettings::sharedInstance()->setValue("toolsFilePath", d_ui->toolsFilePath->text());
 }
 
 void PreferencesWindow::restoreDefaultColors()

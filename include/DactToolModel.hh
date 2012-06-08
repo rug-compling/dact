@@ -41,7 +41,11 @@ public:
     QModelIndex index(int row, int column, QModelIndex const &parent = QModelIndex()) const;
     QModelIndex parent(QModelIndex const &parent) const;
 
-    static QSharedPointer<DactToolModel> loadFromFile(QFile &file);
+    void readFromFile(QFile &file);
+    void clear();
+
+private slots:
+    void preferenceChanged(QString const &key, QVariant const &value);
 
 private:
     QList<DactTool *> d_tools;

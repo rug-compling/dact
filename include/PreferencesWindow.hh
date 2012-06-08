@@ -19,6 +19,7 @@ protected:
 
 signals:
     void colorChanged(); // More fine-grained???
+    void toolsChanged();
 
 private slots:
     void restoreDefaultColors();
