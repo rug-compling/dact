@@ -437,6 +437,6 @@ void DependencyTreeWidget::showToolMenu(QPoint const &position)
     DactToolsMenu::exec(
         DactToolsModel::sharedInstance(),
         current.data(Qt::DisplayRole).toString(),
-        mapToGlobal(position));
+        mapToGlobal(position),
+        d_ui->fileListWidget->actions());
 }
-

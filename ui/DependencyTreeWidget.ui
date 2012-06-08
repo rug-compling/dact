@@ -44,6 +44,7 @@
             <property name="contextMenuPolicy">
               <enum>Qt::CustomContextMenu</enum>
             </property>
+            <addaction name="copyFileNamesAction" />
            </widget>
           </item>
           <item>

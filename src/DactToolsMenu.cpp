@@ -6,10 +6,23 @@
 #include "DactToolsMenu.hh"
 #include "DactToolsModel.hh"
 
-void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &argument, QPoint const &position)
+void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &argument, QPoint const &position, QList<QAction*> const &widgetActions)
 {
 	QMenu menu;
+
+	// If the widget already has some actions, show them first
+	if (widgetActions.size())
+	{
+		foreach (QAction *action, widgetActions)
+			menu.addAction(action);
+
+		// and separate the actions from the tools with a separator.
+		menu.addSeparator();
+	}
+
+	QMap<QAction*,QModelIndex> actionMap;
 	
+	// Fetch all the tools from the model and add actions to the menu for them.
 	for (int row = 0, end = model->rowCount(QModelIndex()); row < end; ++row)
 	{
 		QModelIndex nameIndex(model->index(row, 0));
@@ -18,17 +31,16 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &ar
 		QAction *action = menu.addAction(nameIndex.data(Qt::DisplayRole).toString());
 	
 		// And remember the pattern in the data section, for easy use later on.
-		action->setData(row);
+		actionMap[action] = model->index(row, DactToolsModel::COLUMN_COMMAND);
 	}
 
 	QAction *action = menu.exec(position);
 	// Who has ownership over the QAction*'s in menu? Should we delete them?
 
-	if (action == 0)
+	if (action == 0 || !actionMap.contains(action))
 		return;
 
-	QModelIndex commandIndex = model->index(action->data().toInt(), DactToolsModel::COLUMN_COMMAND);
-	QString commandTemplate = commandIndex.data(Qt::DisplayRole).toString();
+	QString commandTemplate = actionMap[action].data(Qt::DisplayRole).toString();
 
 	// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice
 	// to stdout, and it would be weird to have a command without the file as an argument.
