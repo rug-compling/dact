@@ -496,8 +496,16 @@ bool BracketedWindow::saveEnabled() const
 
 void BracketedWindow::showToolsMenu(QPoint const &position)
 {
+    // Don't even try to access the current selection if there is no data.
+    if (!d_ui->resultsTable->model())
+        return;
+
     QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
     QList<QString> selectedFiles;
+
+    // Don't show a menu with actions if there are no files selected
+    if (rows.isEmpty())
+        return;
 
     foreach (QModelIndex const &row, rows)
         selectedFiles << row.data().toString();
