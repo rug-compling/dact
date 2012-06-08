@@ -51,9 +51,7 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> co
 
 		qDebug() << "Calling" << command;
 
-		QProcess *process = new QProcess();
-		process->start(command);
-		process->closeWriteChannel();
+		QProcess::startDetached(command);
 	}
 
 	// TODO: should we clean up process in some way?
