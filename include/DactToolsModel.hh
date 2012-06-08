@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QSharedPointer>
 #include <QFile>
+#include <QFileSystemWatcher>
 #include <QList>
 
 #include "DactTool.hh"
@@ -44,16 +45,19 @@ public:
     QModelIndex index(int row, int column, QModelIndex const &parent = QModelIndex()) const;
     QModelIndex parent(QModelIndex const &parent) const;
 
-    void readFromFile(QFile &file);
-    void clear();
-
     QList<DactTool const *> tools(QString const &corpus = QString()) const;
 
 private slots:
     void preferenceChanged(QString const &key, QVariant const &value);
+    void reloadFromFile(QString const &filename);
 
 private:
     QList<DactTool *> d_tools;
+    QFileSystemWatcher d_watcher;
+
+    void watchFile(QFile &file);
+    void readFromFile(QFile &file);
+    void clear();
 };
 
 #endif

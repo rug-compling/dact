@@ -17,13 +17,13 @@ DactToolsModel::DactToolsModel(QList<DactTool*> tools, QObject *parent)
     QAbstractItemModel(parent),
     d_tools(tools)
 {
-    //
+    connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
+        SLOT(reloadFromFile(QString const &)));
 }
 
 DactToolsModel::~DactToolsModel()
 {
-    foreach (DactTool *tool, d_tools)
-        delete tool;
+    clear();
 }
 
 QSharedPointer<DactToolsModel> DactToolsModel::s_sharedInstance;
@@ -38,8 +38,8 @@ QSharedPointer<DactToolsModel> DactToolsModel::sharedInstance()
         s_sharedInstance = QSharedPointer<DactToolsModel>(new DactToolsModel());
 
         if (file.exists())
-            s_sharedInstance->readFromFile(file);
-        
+            s_sharedInstance->watchFile(file);
+
         connect(DactSettings::sharedInstance().data(),
             SIGNAL(valueChanged(QString const &, QVariant const &)),
             s_sharedInstance.data(), SLOT(preferenceChanged(QString const &, QVariant const &)));
@@ -140,7 +140,7 @@ void DactToolsModel::preferenceChanged(QString const &key, QVariant const &value
         QFile file(value.toString());
         
         if (file.exists())
-            readFromFile(file);
+            watchFile(file);
     }
 }
 
@@ -148,7 +148,7 @@ void DactToolsModel::readFromFile(QFile &file)
 {
     QString data;
     QString section;
-    
+
     // XXX - a nice parser would parse directly from the QTextStream
     {
         file.open(QIODevice::ReadOnly);
@@ -211,8 +211,35 @@ void DactToolsModel::readFromFile(QFile &file)
     }
 }
 
+void DactToolsModel::watchFile(QFile &file)
+{
+    // Clear current queries (they get in the way if you want to watch a file)
+    // and clear out when reloading
+    clear();
+
+    // read the file initially
+    readFromFile(file);
+
+    // and watch only this file.
+    foreach (QString const &watchedFile, d_watcher.files())
+        d_watcher.removePath(watchedFile);
+
+    d_watcher.addPath(file.fileName());
+}
+
+void DactToolsModel::reloadFromFile(QString const &path)
+{
+    clear();
+
+    QFile file(path);
+    readFromFile(file);
+}
+
 void DactToolsModel::clear()
 {
+    foreach (DactTool const *tool, d_tools)
+        delete tool;
+
     d_tools.clear();
 }
 
