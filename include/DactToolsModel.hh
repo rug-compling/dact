@@ -17,11 +17,14 @@ class DactToolsModel : public QAbstractItemModel
 public:
     static const int COLUMN_NAME = 0;
     static const int COLUMN_COMMAND = 1;
+    static const int COLUMN_CORPUS = 2;
 
 private:
     static const QString s_assignment_symbol;
     static const QString s_start_replacement_symbol;
     static const QString s_end_replacement_symbol;
+    static const QString s_start_section_symbol;
+    static const QString s_end_section_symbol;
 
     static QSharedPointer<DactToolsModel> s_sharedInstance;
 

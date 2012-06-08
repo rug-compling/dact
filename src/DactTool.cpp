@@ -7,10 +7,11 @@ DactTool::DactTool()
 	//
 }
 
-DactTool::DactTool(QString const &name, QString const &command)
+DactTool::DactTool(QString const &name, QString const &command, QString const &corpus)
 :
 	d_name(name),
-	d_command(command)
+	d_command(command),
+	d_corpus(corpus)
 {
 	//
 }
@@ -25,12 +26,7 @@ QString const &DactTool::command() const
 	return d_command;
 }
 
-void DactTool::run(QString const &identifier) const
+QString const &DactTool::corpus() const
 {
-	QString command = d_command.arg(identifier);
-
-	qDebug() << "Calling" << command;
-
-	QProcess process;
-	process.start(command);
+	return d_corpus;
 }

@@ -9,6 +9,8 @@
 const QString DactToolsModel::s_assignment_symbol("=");
 const QString DactToolsModel::s_start_replacement_symbol("\"\"\"");
 const QString DactToolsModel::s_end_replacement_symbol("\"\"\"");
+const QString DactToolsModel::s_start_section_symbol("[");
+const QString DactToolsModel::s_end_section_symbol("]");
 
 DactToolsModel::DactToolsModel(QList<DactTool*> tools, QObject *parent)
 :
@@ -48,7 +50,7 @@ QSharedPointer<DactToolsModel> DactToolsModel::sharedInstance()
     
 int DactToolsModel::columnCount(const QModelIndex &parent) const
 {
-    return 2; // name and command
+    return 3; // name, command and corpus
 }
 
 int DactToolsModel::rowCount(const QModelIndex &parent) const
@@ -71,12 +73,15 @@ QVariant DactToolsModel::headerData(int column, Qt::Orientation orientation, int
     
     switch (column)
     {
-        case 0:
+        case COLUMN_NAME:
             return tr("Name");
     
-        case 1:
+        case COLUMN_COMMAND:
             return tr("Command");
     
+        case COLUMN_CORPUS:
+            return tr("Corpus");
+
         default:
             return QVariant();   
     }
@@ -101,6 +106,9 @@ QVariant DactToolsModel::data(const QModelIndex &index, int role) const
             case COLUMN_COMMAND:
                 return tool->command();
             
+            case COLUMN_CORPUS:
+                return tool->corpus();
+
             default:
                 return QVariant();
         }
@@ -112,7 +120,7 @@ QVariant DactToolsModel::data(const QModelIndex &index, int role) const
 QModelIndex DactToolsModel::index(int row, int column, QModelIndex const &parent) const
 {
     // Invalid parent -> coordinates point to a file
-    if (!parent.isValid() && row < d_tools.size() && (column == 0 || column == 1))
+    if (!parent.isValid() && row < d_tools.size() && (column >= 0 && column <= 2))
         return createIndex(row, column);
     
     return QModelIndex();
@@ -139,6 +147,7 @@ void DactToolsModel::preferenceChanged(QString const &key, QVariant const &value
 void DactToolsModel::readFromFile(QFile &file)
 {
     QString data;
+    QString section;
     
     // XXX - a nice parser would parse directly from the QTextStream
     {
@@ -154,6 +163,25 @@ void DactToolsModel::readFromFile(QFile &file)
     {
         // find '=' symbol, which indicates the end of the name of the macro
         int assignment_symbol_pos = data.indexOf(s_assignment_symbol, cursor);
+
+        // Or find a '[' symbol, indicating a section name.
+        int section_start_symbol_pos = data.indexOf(s_start_section_symbol, cursor);
+
+        // Jeej, first we will parse the section header
+        if (section_start_symbol_pos > -1 && section_start_symbol_pos < assignment_symbol_pos)
+        {
+            int section_end_symbol_pos = data.indexOf(s_end_section_symbol, section_start_symbol_pos);
+
+            // There is no section end? Bail out!
+            if (section_end_symbol_pos == -1)
+                break;
+
+            section = data.mid(section_start_symbol_pos + 1, section_end_symbol_pos - section_start_symbol_pos - 1);
+            cursor = section_end_symbol_pos + 1;
+
+            // Jump back to beginning of the parser
+            continue;
+        }
 
         if (assignment_symbol_pos == -1)
             break;
@@ -177,10 +205,13 @@ void DactToolsModel::readFromFile(QFile &file)
         QString command = data.mid(opening_quotes_pos + s_start_replacement_symbol.size(),
           closing_quotes_pos - (opening_quotes_pos + s_start_replacement_symbol.size())).trimmed();
 
-        d_tools.append(new DactTool(name, command));
+        d_tools.append(new DactTool(name, command, section));
 
         cursor = closing_quotes_pos + s_end_replacement_symbol.size();
     }
+
+    foreach (DactTool const *tool, d_tools)
+        qDebug() << tool->name() << tool->command() << tool->corpus();
 }
 
 void DactToolsModel::clear()

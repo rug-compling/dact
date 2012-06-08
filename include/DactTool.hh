@@ -14,14 +14,15 @@ class DactTool : public QObject
 
 public:
 	DactTool();
-	DactTool(QString const &name, QString const &command);
+	DactTool(QString const &name, QString const &command, QString const &corpus = QString());
 	QString const &name() const;
 	QString const &command() const;
-	void run(QString const &identifier) const;
+	QString const &corpus() const;
 
 private:
     QString d_name;
     QString d_command;
+    QString d_corpus;
 };
 
 #endif
