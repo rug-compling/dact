@@ -23,10 +23,14 @@ private:
     static const QString s_start_replacement_symbol;
     static const QString s_end_replacement_symbol;
 
+    static QSharedPointer<DactToolModel> s_sharedInstance;
+
 public:
     DactToolModel(QList<DactTool*> tools = QList<DactTool*>(), QObject *parent = 0);
     ~DactToolModel();
     
+    static QSharedPointer<DactToolModel> sharedInstance();
+
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
 

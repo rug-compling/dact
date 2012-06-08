@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QFileInfo>
+#include <QSettings>
 #include <QStringList>
 
 #include "DactToolModel.hh"
@@ -20,6 +21,24 @@ DactToolModel::~DactToolModel()
 {
     foreach (DactTool *tool, d_tools)
         delete tool;
+}
+
+QSharedPointer<DactToolModel> DactToolModel::s_sharedInstance;
+
+QSharedPointer<DactToolModel> DactToolModel::sharedInstance()
+{
+    if (s_sharedInstance.isNull())
+    {
+        QSettings settings;
+        QFile file(settings.value("ToolFile").toString());
+
+        if (file.exists())
+            s_sharedInstance = DactToolModel::loadFromFile(file);
+        else
+            s_sharedInstance = QSharedPointer<DactToolModel>(new DactToolModel());
+    }
+
+    return s_sharedInstance;
 }
     
 int DactToolModel::columnCount(const QModelIndex &parent) const

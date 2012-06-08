@@ -434,10 +434,8 @@ void DependencyTreeWidget::showToolMenu(QPoint const &position)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
 
-    QFile toolFile("tools.txt");
-
     DactToolMenu::exec(
-        QSharedPointer<DactToolModel>(DactToolModel::loadFromFile(toolFile)),
+        DactToolModel::sharedInstance(),
         current.data(Qt::DisplayRole).toString(),
         mapToGlobal(position));
 }
