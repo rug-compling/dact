@@ -11,14 +11,11 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> co
 	QMenu menu;
 
 	// If the widget already has some actions, show them first
-	if (widgetActions.size())
-	{
-		foreach (QAction *action, widgetActions)
-			menu.addAction(action);
-
-		// and separate the actions from the tools with a separator.
-		menu.addSeparator();
-	}
+	foreach (QAction *action, widgetActions)
+		menu.addAction(action);
+		
+	// and separate the actions from the tools with a separator.
+	menu.addSeparator();
 
 	QMap<QAction*,QModelIndex> actionMap;
 	
