@@ -30,7 +30,7 @@ QSharedPointer<DactToolModel> DactToolModel::sharedInstance()
     if (s_sharedInstance.isNull())
     {
         QSettings settings;
-        QFile file(settings.value("ToolFile").toString());
+        QFile file(settings.value("toolsFilePath").toString());
 
         if (file.exists())
             s_sharedInstance = DactToolModel::loadFromFile(file);

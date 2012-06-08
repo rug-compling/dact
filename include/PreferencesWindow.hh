@@ -29,6 +29,7 @@ private slots:
     void saveRemoteBaseUrl();
     void saveWebserviceBaseUrl();
     void saveColorsTab();
+    void saveToolsTab();
     void selectAppFont();
     
 private:
@@ -36,6 +37,7 @@ private:
     void loadColorsTab();
     void loadNetworkTab();
     void loadRemoteTab();
+    void loadToolsTab();
     QSharedPointer<Ui::PreferencesWindow> d_ui;
 };
 

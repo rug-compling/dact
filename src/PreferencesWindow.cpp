@@ -37,6 +37,7 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     loadColorsTab();
     loadNetworkTab();
     loadRemoteTab();
+    loadToolsTab();
 
     connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
@@ -63,7 +64,10 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
     connect(d_ui->webserviceBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveWebserviceBaseUrl()));
-
+    
+    connect(d_ui->toolsFilePath, SIGNAL(editingFinished()),
+        SLOT(saveToolsTab()));
+    
     connect(d_ui->restoreDefaultColorsButton, SIGNAL(clicked()),
         SLOT(restoreDefaultColors()));
 
@@ -155,6 +159,13 @@ void PreferencesWindow::loadRemoteTab()
         settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString());
 }
 
+void PreferencesWindow::loadToolsTab()
+{
+    QSettings settings;
+    d_ui->toolsFilePath->setText(
+        settings.value("toolsFilePath", "").toString());
+}
+
 void PreferencesWindow::saveArchiveBaseUrl()
 {
     QSettings settings;
@@ -194,6 +205,12 @@ void PreferencesWindow::saveColorsTab()
     settings.endGroup();
 
     emit colorChanged();
+}
+
+void PreferencesWindow::saveToolsTab()
+{
+    QSettings settings;
+    settings.setValue("toolsFilePath", d_ui->toolsFilePath->text());
 }
 
 void PreferencesWindow::restoreDefaultColors()
