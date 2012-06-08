@@ -1,5 +1,5 @@
-#ifndef DACTTOOLMODEL_H
-#define DACTTOOLMODEL_H
+#ifndef DACTTOOLSMODEL_H
+#define DACTTOOLSMODEL_H
 
 #include <QAbstractItemModel>
 #include <QSharedPointer>
@@ -8,7 +8,7 @@
 
 #include "DactTool.hh"
 
-class DactToolModel : public QAbstractItemModel
+class DactToolsModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -23,13 +23,13 @@ private:
     static const QString s_start_replacement_symbol;
     static const QString s_end_replacement_symbol;
 
-    static QSharedPointer<DactToolModel> s_sharedInstance;
+    static QSharedPointer<DactToolsModel> s_sharedInstance;
 
 public:
-    DactToolModel(QList<DactTool*> tools = QList<DactTool*>(), QObject *parent = 0);
-    ~DactToolModel();
+    DactToolsModel(QList<DactTool*> tools = QList<DactTool*>(), QObject *parent = 0);
+    ~DactToolsModel();
     
-    static QSharedPointer<DactToolModel> sharedInstance();
+    static QSharedPointer<DactToolsModel> sharedInstance();
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;

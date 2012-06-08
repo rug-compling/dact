@@ -4,13 +4,13 @@
 #include <QStringList>
 
 #include "DactSettings.hh"
-#include "DactToolModel.hh"
+#include "DactToolsModel.hh"
 
-const QString DactToolModel::s_assignment_symbol("=");
-const QString DactToolModel::s_start_replacement_symbol("\"\"\"");
-const QString DactToolModel::s_end_replacement_symbol("\"\"\"");
+const QString DactToolsModel::s_assignment_symbol("=");
+const QString DactToolsModel::s_start_replacement_symbol("\"\"\"");
+const QString DactToolsModel::s_end_replacement_symbol("\"\"\"");
 
-DactToolModel::DactToolModel(QList<DactTool*> tools, QObject *parent)
+DactToolsModel::DactToolsModel(QList<DactTool*> tools, QObject *parent)
 :
     QAbstractItemModel(parent),
     d_tools(tools)
@@ -18,22 +18,22 @@ DactToolModel::DactToolModel(QList<DactTool*> tools, QObject *parent)
     //
 }
 
-DactToolModel::~DactToolModel()
+DactToolsModel::~DactToolsModel()
 {
     foreach (DactTool *tool, d_tools)
         delete tool;
 }
 
-QSharedPointer<DactToolModel> DactToolModel::s_sharedInstance;
+QSharedPointer<DactToolsModel> DactToolsModel::s_sharedInstance;
 
-QSharedPointer<DactToolModel> DactToolModel::sharedInstance()
+QSharedPointer<DactToolsModel> DactToolsModel::sharedInstance()
 {
     if (s_sharedInstance.isNull())
     {
         QSettings settings;
         QFile file(settings.value("toolsFilePath").toString());
 
-        s_sharedInstance = QSharedPointer<DactToolModel>(new DactToolModel());
+        s_sharedInstance = QSharedPointer<DactToolsModel>(new DactToolsModel());
 
         if (file.exists())
             s_sharedInstance->readFromFile(file);
@@ -46,12 +46,12 @@ QSharedPointer<DactToolModel> DactToolModel::sharedInstance()
     return s_sharedInstance;
 }
     
-int DactToolModel::columnCount(const QModelIndex &parent) const
+int DactToolsModel::columnCount(const QModelIndex &parent) const
 {
     return 2; // name and command
 }
 
-int DactToolModel::rowCount(const QModelIndex &parent) const
+int DactToolsModel::rowCount(const QModelIndex &parent) const
 {
     // No index? You must be new here. A row for each file
     if (!parent.isValid())
@@ -61,7 +61,7 @@ int DactToolModel::rowCount(const QModelIndex &parent) const
     return 0;
 }
 
-QVariant DactToolModel::headerData(int column, Qt::Orientation orientation, int role) const
+QVariant DactToolsModel::headerData(int column, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole) 
         return QVariant();
@@ -82,7 +82,7 @@ QVariant DactToolModel::headerData(int column, Qt::Orientation orientation, int 
     }
 }
 
-QVariant DactToolModel::data(const QModelIndex &index, int role) const
+QVariant DactToolsModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -109,7 +109,7 @@ QVariant DactToolModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-QModelIndex DactToolModel::index(int row, int column, QModelIndex const &parent) const
+QModelIndex DactToolsModel::index(int row, int column, QModelIndex const &parent) const
 {
     // Invalid parent -> coordinates point to a file
     if (!parent.isValid() && row < d_tools.size() && (column == 0 || column == 1))
@@ -118,12 +118,12 @@ QModelIndex DactToolModel::index(int row, int column, QModelIndex const &parent)
     return QModelIndex();
 }
 
-QModelIndex DactToolModel::parent(QModelIndex const &index) const
+QModelIndex DactToolsModel::parent(QModelIndex const &index) const
 {
     return QModelIndex();
 }
 
-void DactToolModel::preferenceChanged(QString const &key, QVariant const &value)
+void DactToolsModel::preferenceChanged(QString const &key, QVariant const &value)
 {
     if (key == "toolsFilePath")
     {
@@ -136,7 +136,7 @@ void DactToolModel::preferenceChanged(QString const &key, QVariant const &value)
     }
 }
 
-void DactToolModel::readFromFile(QFile &file)
+void DactToolsModel::readFromFile(QFile &file)
 {
     QString data;
     
@@ -183,7 +183,7 @@ void DactToolModel::readFromFile(QFile &file)
     }
 }
 
-void DactToolModel::clear()
+void DactToolsModel::clear()
 {
     d_tools.clear();
 }

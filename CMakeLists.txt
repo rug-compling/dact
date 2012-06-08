@@ -115,8 +115,8 @@ SET(dact_SRCS
   src/DactSettings.cpp
   src/DactTableView.cpp
   src/DactTool.cpp
-  src/DactToolMenu.cpp
-  src/DactToolModel.cpp
+  src/DactToolsMenu.cpp
+  src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
@@ -166,8 +166,8 @@ SET(dact_HDRS
   include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh
-  include/DactToolMenu.hh
-  include/DactToolModel.hh
+  include/DactToolsMenu.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -214,8 +214,8 @@ SET(dact_MOC_HDRS
   include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh
-  include/DactToolMenu.hh
-  include/DactToolModel.hh
+  include/DactToolsMenu.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh

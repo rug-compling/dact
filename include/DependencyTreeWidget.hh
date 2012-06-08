@@ -15,7 +15,7 @@
 #include "ui_DependencyTreeWidget.h"
 
 class DactMacrosModel;
-class DactToolModel;
+class DactToolsModel;
 class DactTreeScene;
 class QPainter;
 class QItemSelectionModel;
@@ -224,7 +224,7 @@ private:
      */
     QSharedPointer<DactMacrosModel> d_macrosModel;
 
-    QSharedPointer<DactToolModel> d_toolModel;
+    QSharedPointer<DactToolsModel> d_toolModel;
     
     QSharedPointer<XPathValidator> d_xpathValidator;
     

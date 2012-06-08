@@ -3,10 +3,10 @@
 #include <QMenu>
 #include <QProcess>
 
-#include "DactToolMenu.hh"
-#include "DactToolModel.hh"
+#include "DactToolsMenu.hh"
+#include "DactToolsModel.hh"
 
-void DactToolMenu::exec(QSharedPointer<DactToolModel> model, QString const &argument, QPoint const &position)
+void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &argument, QPoint const &position)
 {
 	QMenu menu;
 	
@@ -27,7 +27,7 @@ void DactToolMenu::exec(QSharedPointer<DactToolModel> model, QString const &argu
 	if (action == 0)
 		return;
 
-	QModelIndex commandIndex = model->index(action->data().toInt(), DactToolModel::COLUMN_COMMAND);
+	QModelIndex commandIndex = model->index(action->data().toInt(), DactToolsModel::COLUMN_COMMAND);
 	QString commandTemplate = commandIndex.data(Qt::DisplayRole).toString();
 
 	// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice

@@ -11,8 +11,8 @@
 
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
-#include <DactToolMenu.hh>
-#include <DactToolModel.hh>
+#include <DactToolsMenu.hh>
+#include <DactToolsModel.hh>
 #include <DactTreeScene.hh>
 #include <DactTreeView.hh>
 #include <DependencyTreeWidget.hh>
@@ -434,8 +434,8 @@ void DependencyTreeWidget::showToolMenu(QPoint const &position)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
 
-    DactToolMenu::exec(
-        DactToolModel::sharedInstance(),
+    DactToolsMenu::exec(
+        DactToolsModel::sharedInstance(),
         current.data(Qt::DisplayRole).toString(),
         mapToGlobal(position));
 }
