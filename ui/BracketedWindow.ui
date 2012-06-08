@@ -37,7 +37,7 @@
       <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
      <property name="contextMenuPolicy">
-      <enum>Qt::ActionsContextMenu</enum>
+      <enum>Qt::CustomContextMenu</enum>
      </property>
      <property name="showGrid">
       <bool>false</bool>
@@ -123,6 +123,12 @@
    <extends>QTableView</extends>
    <header>DactTableView.hh</header>
   </customwidget>
+  <customwidget>
+   <class>DactToolsMenu</class>
+   <extends>QMenu</extends>
+   <header>DactToolsMenu.hh</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -147,6 +153,12 @@
    <signal>triggered()</signal>
    <receiver>BracketedWindow</receiver>
    <slot>exportSelection()</slot>
+  </connection>
+  <connection>
+   <sender>resultsTable</sender>
+   <signal>customContextMenuRequested(const QPoint &amp;)</signal>
+   <receiver>BracketedWindow</receiver>
+   <slot>showToolsMenu(QPoint const &amp;)</slot>
   </connection>
  </connections>
 </ui>

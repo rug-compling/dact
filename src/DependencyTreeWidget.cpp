@@ -432,11 +432,15 @@ void DependencyTreeWidget::zoomOut()
 
 void DependencyTreeWidget::showToolMenu(QPoint const &position)
 {
-    QModelIndex current(d_ui->fileListWidget->currentIndex());
+    QModelIndexList rows = d_ui->fileListWidget->selectionModel()->selectedRows();
+    QList<QString> selectedFiles;
+
+    foreach (QModelIndex const &row, rows)
+        selectedFiles << row.data().toString();
 
     DactToolsMenu::exec(
         DactToolsModel::sharedInstance(),
-        current.data(Qt::DisplayRole).toString(),
+        selectedFiles,
         mapToGlobal(position),
         d_ui->fileListWidget->actions());
 }

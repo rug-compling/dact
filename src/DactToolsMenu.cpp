@@ -6,7 +6,7 @@
 #include "DactToolsMenu.hh"
 #include "DactToolsModel.hh"
 
-void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &argument, QPoint const &position, QList<QAction*> const &widgetActions)
+void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QList<QString> const &selectedFiles, QPoint const &position, QList<QAction*> const &widgetActions)
 {
 	QMenu menu;
 
@@ -42,16 +42,19 @@ void DactToolsMenu::exec(QSharedPointer<DactToolsModel> model, QString const &ar
 
 	QString commandTemplate = actionMap[action].data(Qt::DisplayRole).toString();
 
-	// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice
-	// to stdout, and it would be weird to have a command without the file as an argument.
-	// TODO: Escape spaces etc. argument
-	QString command = commandTemplate.arg(argument);
+	foreach (QString const &selectedFile, selectedFiles)
+	{
+		// TODO: Should we test if there is a placeholder in the template? If not, Qt will throw a notice
+		// to stdout, and it would be weird to have a command without the file as an argument.
+		// TODO: Escape spaces etc. argument
+		QString command = commandTemplate.arg(selectedFile);
 
-	qDebug() << "Calling" << command;
+		qDebug() << "Calling" << command;
 
-	QProcess *process = new QProcess();
-	process->start(command);
-	process->closeWriteChannel();
+		QProcess *process = new QProcess();
+		process->start(command);
+		process->closeWriteChannel();
+	}
 
 	// TODO: should we clean up process in some way?
 }

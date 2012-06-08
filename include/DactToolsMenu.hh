@@ -9,7 +9,7 @@ class DactToolsMenu
 {
 public:
 	static void exec(QSharedPointer<DactToolsModel> model,
-		QString const &argument,
+		QList<QString> const &selectedFiles,
 		QPoint const &position,
 		QList<QAction *> const &actions = QList<QAction*>());
 };
