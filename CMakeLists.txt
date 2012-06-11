@@ -214,7 +214,6 @@ SET(dact_MOC_HDRS
   include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh
-  include/DactToolsMenu.hh
   include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
