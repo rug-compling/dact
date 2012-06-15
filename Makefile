@@ -6,5 +6,5 @@ html/index.xhtml: xml/dact.xml
 clean:
 	rm -f html/index.xhtml
 
-open:
+open: html/index.xhtml
 	open html/index.xhtml
