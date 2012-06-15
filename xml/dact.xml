@@ -118,6 +118,11 @@
             <para>Now using that knowledge we can find the node which contains the verb <emphasis>krijgen</emphasis>, a subject, and a object in the verb complement which both share the same value for <emphasis>index</emphasis>:</para>
             <programlisting>//node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]</programlisting>
             <para>(This query was taken from the <link xlink:href="http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html">manual for Treebank Tools</link>, which contains some more interesting queries.)</para>
+
+            <note>
+                <para>When using the position attributes, <literal>@begin</literal> and <literal>@end</literal>, note that XPath sees them as strings. If you want to compare them, you may want to convert them to numbers first using <literal>number()</literal>. For example:</para>
+                <programlisting>//node[@cat="pp" and node[@rel="hd"]/number(@begin) &gt; node[@rel="obj1"]/number(@begin)]</programlisting>
+            </note>
             
             <note>
                 <para>Please do note that Dact expects queries that return nodes. A highlight query returning the value of an attribute wont highlight any nodes.</para>
