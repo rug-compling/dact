@@ -50,7 +50,7 @@ QSharedPointer<DactToolsModel> DactToolsModel::sharedInstance()
     
 int DactToolsModel::columnCount(const QModelIndex &parent) const
 {
-    return 3; // name, command and corpus
+    return 2; // name, command (and corpus)
 }
 
 int DactToolsModel::rowCount(const QModelIndex &parent) const
@@ -79,8 +79,8 @@ QVariant DactToolsModel::headerData(int column, Qt::Orientation orientation, int
         case COLUMN_COMMAND:
             return tr("Command");
     
-        case COLUMN_CORPUS:
-            return tr("Corpus");
+        // case COLUMN_CORPUS:
+        //     return tr("Corpus");
 
         default:
             return QVariant();   
@@ -106,8 +106,8 @@ QVariant DactToolsModel::data(const QModelIndex &index, int role) const
             case COLUMN_COMMAND:
                 return tool->command();
             
-            case COLUMN_CORPUS:
-                return tool->corpus();
+            // case COLUMN_CORPUS:
+            //     return tool->corpus();
 
             default:
                 return QVariant();
@@ -253,7 +253,7 @@ QList<DactTool const *> DactToolsModel::tools(QString const &corpus) const
     // Select only the tools that have no corpus specified, or a corpus 
     // with the same name as the basename of the supplied corpus name.
     foreach (DactTool const *tool, d_tools)
-        if (tool->corpus().isEmpty() || tool->corpus() == corpusName)
+        if (tool->availableForCorpus(corpus))
             tools << tool;
 
     return tools;

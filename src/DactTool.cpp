@@ -11,7 +11,7 @@ DactTool::DactTool(QString const &name, QString const &command, QString const &c
 :
 	d_name(name),
 	d_command(command),
-	d_corpus(corpus)
+	d_corpusNamePattern(corpus, Qt::CaseInsensitive, QRegExp::Wildcard)
 {
 	//
 }
@@ -26,7 +26,7 @@ QString const &DactTool::command() const
 	return d_command;
 }
 
-QString const &DactTool::corpus() const
+bool DactTool::availableForCorpus(QString const &corpus) const
 {
-	return d_corpus;
+	return d_corpusNamePattern.isEmpty() || d_corpusNamePattern.exactMatch(corpus);
 }

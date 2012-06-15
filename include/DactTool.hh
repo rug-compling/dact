@@ -3,6 +3,7 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QRegExp>
 
 // Currently macros are just structs. This might become something decent once
 // the macro-related code is abstracted out of DactMacrosModel.h which contains
@@ -19,10 +20,12 @@ public:
 	QString const &command() const;
 	QString const &corpus() const;
 
+	bool availableForCorpus(QString const &corpus) const;
+
 private:
     QString d_name;
     QString d_command;
-    QString d_corpus;
+    QRegExp d_corpusNamePattern;
 };
 
 #endif
