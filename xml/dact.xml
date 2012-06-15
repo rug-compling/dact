@@ -249,11 +249,6 @@
         <title>Marcos</title>
         <para>Dact supports macros in its XPath queries. You can insert simple placeholders in your query which are expanded before a query is evaluated. A placeholder is the name of the macro surrounded by percentage signs (<literal>%</literal>).</para>
         <sect2>
-            <title>Loading a file with Macros</title>
-            <para>You can load a file with macros with the <emphasis>Macros - Load file…</emphasis> menu item. When the file is successfully loaded, a submenu with the same name as the filename is visible in the <emphasis>Macros</emphasis> menu, containing all the macros in the file.</para>
-            <para>When you have focused one of the XPath query fields in Dact, you can select one of the macros from the <emphasis>Macros</emphasis> menu to insert it at the position of your text cursor.</para>
-        </sect2>
-        <sect2>
             <title>Using a macro</title>
             <para>Given you have loaded a file with the following macro:</para>
             <programlisting>interesting = """ @rel="su" or @rel="vc" """</programlisting>
@@ -262,6 +257,11 @@
             <para>Dact replace the placeholder, and execute the following query:</para>
             <programlisting>//node[ @rel="su" or @rel="vc" ]</programlisting>
             <para>Since Dact only does simple text replacement, you can also use invalid or partial XPath code as replacement. As long as the expanded query is valid, Dact will accept it.</para>
+        </sect2>
+        <sect2>
+            <title>Loading a file with Macros</title>
+            <para>You can load a file with macros with the <emphasis>Macros - Load file…</emphasis> menu item. When the file is successfully loaded, a submenu with the same name as the filename is visible in the <emphasis>Macros</emphasis> menu, containing all the macros in the file.</para>
+            <para>When you have focused one of the XPath query fields in Dact, you can select one of the macros from the <emphasis>Macros</emphasis> menu to insert it at the position of your text cursor.</para>
         </sect2>
         <sect2>
             <title>Macros file syntax</title>
@@ -289,6 +289,45 @@ precedes_head_of_smain = """
 """
 ]]></programlisting>
             <caption>Notice how <literal>precedes_head_of_smain</literal> makes use of the <literal>headrel</literal> macro.</caption>
+            </figure>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Tools</title>
+        <sect2>
+            <title>Using tools</title>
+            <para>In both the Tree and Sentences tab the individual files matching your filter query are shown. You can add additional entries to the context menu for these files by configuring tools. For example, you could configure a text editor to show the raw XML data of the selected sentence.</para>
+            <para>If you have selected multiple files, Dact will start the selected tool once for each file.</para>
+        </sect2>
+        <sect2>
+            <title>Configuring tools</title>
+            <para>The path to a tools configuration file can be set in the Preferences of Dact. Once the path is set, the file is loaded when you open the tools context menu. If you update the file after that, Dact will reload it automatically.</para>
+        </sect2>
+        <sect2>
+            <title>Tools configuration file syntax</title>
+            <para>The syntax of the tools configuration file looks a lot like the one used by the macros. In addition to this, you can use <literal>%1</literal> as placeholder for the filename of the selected file as shown by Dact in the Tree tab. For example, to define an "Edit Text" menu entry: <programlisting>Edit Text = """gedit "~/treebanks/cdb/%1""""</programlisting></para>
+            <tip>
+                <para>In this example the complete path is surrounded by quotes, as the filename may contain spaces.</para>
+            </tip>
+            <para>Unfortunately, the XML files Dact uses are not accessible outside of the Dact database files. But if you have the raw XML files installed somewhere (e.g. in <literal>~/treebanks/cdb</literal>), you can refer to those.</para>
+        </sect2>
+        <sect2>
+            <title>Tools for a specific treebank</title>
+            <para>Because you cannot let the tools interact with the treebank, you might need to configure your tools differently for each treebank you use. E.g. your <literal>cdb.dact</literal> might need to use the files in <literal>~/treebanks/cdb</literal> while you have all your XML files for <literal>wikipedia.dact</literal> in <literal>/net/shared/treebanks/wikipedia</literal>.</para>
+            <para>To allow you to specify a tool for just a few specific treebanks, you can add subsections to your tools configuration file with the path of the treebank files as name. Fortunately, you can use wildcards in these filenames. Only when the path of the currently loaded treebank matches this pattern, all tools in this subsection will be shown in the tools context menu.</para>
+            <figure>
+                <title>Example of macros file</title>
+                <programlisting><![CDATA[
+mark = """bash -c "echo \"%1\" >> ~/marked_entries.txt" """
+
+[*/cdb.dact]
+show xml = """gedit "~/treebanks/cdb/%1""""
+email name = """bash -c "echo \"%1\" | sendmail -v someone@domain" """
+
+[*/wikipedia*.dact]
+show xml = """gedit "/net/shared/treebanks/wikipedia/%1""""
+]]></programlisting>
+                <caption>The <literal>show xml</literal> tool is specific for the treebank you currently use. The <literal>mark</literal> tool is not inside a section and will be shown for every treebank. The <literal>email name</literal> tool will only show up if your current treebank is named <literal>cdb.dact</literal>.</caption>
             </figure>
         </sect2>
     </sect1>
