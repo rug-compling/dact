@@ -17,6 +17,10 @@
       <xsl:copy-of select="@*"/>
       <line>
         <xsl:value-of select="@rel"/>
+        <!-- SoNaR annotation for semantic roles -->
+        <xsl:if test="@pb">
+          <xsl:text>/</xsl:text><xsl:value-of select="@pb" />
+        </xsl:if>
       </line>
       <line>
         <xsl:value-of select="@index"/>
@@ -35,6 +39,11 @@
       <xsl:copy-of select="@*"/>
       <line>
         <xsl:value-of select="@rel"/>
+        <!-- SoNaR annotation for semantic roles -->
+        <xsl:if test="@pb">
+          <xsl:text>/</xsl:text>
+          <xsl:value-of select="@pb" />
+        </xsl:if>
       </line>
       <line>
         <xsl:value-of select="@index"/>
