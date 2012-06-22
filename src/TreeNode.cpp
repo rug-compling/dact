@@ -240,18 +240,9 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 void TreeNode::paintLabel(QPainter *painter, QRectF const &leaf)
 {
-    /*
-    // You can't be serious... Yes you can.
-    double appDpi = qt_defaultDpi();
-    double ratio = appDpi / painter->device()->logicalDpiY();
-    QFont scaledFont(font());
-    scaledFont.setPointSizeF(scaledFont.pointSize() * ratio);
-
-    QTextDocument richLabels;
-    richLabels.setDefaultFont(scaledFont);
-    richLabels.setHtml(labels);
-    richLabels.setDocumentMargin(d_leafPadding);
-    */
+    // Necessary for centred text.
+    d_label.setTextWidth(leaf.width());
+    
     painter->save();
     painter->translate(leaf.topLeft());
     d_label.drawContents(painter, QRectF(QPointF(0,0), leaf.size()));
