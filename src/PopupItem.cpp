@@ -6,12 +6,16 @@
 #include "PopupItem.hh"
 #include "TreeNode.hh"
 
-PopupItem::PopupItem(QGraphicsItem *parent, QList<QString> lines)
+PopupItem::PopupItem(QGraphicsItem *parent, QString const &html)
 :
     QGraphicsItem(parent),
-    d_lines(lines),
+    d_content(),
     d_padding(5.0)
-{}
+{
+    d_content.setDocumentMargin(d_padding);
+    d_content.setDefaultFont(font());
+    d_content.setHtml(html);
+}
 
 QRectF PopupItem::boundingRect() const
 {
@@ -37,19 +41,19 @@ void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
     QWidget *widget)
 {
     QString lines;
-    foreach (QString const &line, d_lines)
-        lines += QString("%1\n").arg(line);
-
+    
+    /*
     // Get the font size.
     double appDpi = qt_defaultDpi();
     double ratio = appDpi / painter->device()->logicalDpiY();
     QFont painterFont(font());
     painterFont.setPointSizeF(painterFont.pointSize() * ratio);
-
+    
     QRectF bRect(rect());
     QRectF textRect(bRect.x() + d_padding, bRect.y() + d_padding,
         bRect.width() - 2.0 * d_padding, bRect.height() - 2.0 * d_padding);
-
+    */
+    
     painter->save();
     
     qreal scale = 1 / viewScale();
@@ -66,32 +70,16 @@ void PopupItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option,
     painter->setOpacity(1.0);
     painter->setBrush(QBrush());
     painter->setPen(QPen());
-    painter->setFont(painterFont);
-    painter->drawText(textRect, Qt::AlignCenter, lines);
+
+    painter->translate(rect().topLeft());
+    d_content.drawContents(painter, QRectF(QPointF(0,0), size()));
     
     painter->restore();
 }
 
 QSizeF PopupItem::size() const
 {
-    QFontMetricsF metrics(font());
-    QSizeF popupSize(10, 10);
-    
-    foreach (QString const &label, d_lines)
-    {
-        qreal labelWidth = metrics.width(label);
-        if (labelWidth > popupSize.width())
-            popupSize.setWidth(labelWidth);
-    }
-    
-    qreal labelsHeight = d_lines.size() * metrics.lineSpacing();
-    if (labelsHeight > popupSize.height())
-        popupSize.setHeight(labelsHeight);
-
-    popupSize.setWidth(popupSize.width() + 2.0 * d_padding);
-    popupSize.setHeight(popupSize.height() + 2.0 * d_padding);
-    
-    return popupSize;
+    return d_content.size();
 }
 
 qreal PopupItem::viewScale() const

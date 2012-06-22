@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" 
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
@@ -16,6 +17,7 @@
     <node>
       <xsl:copy-of select="@*"/>
       <label>
+        <![CDATA[<p align="center">]]>
         <xsl:value-of select="@rel"/>
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
@@ -27,6 +29,7 @@
           <xsl:text>:</xsl:text>
         </xsl:if>
         <xsl:value-of select="@cat|@pt"/>
+        <![CDATA[</p>]]>
       </label>
       <xsl:apply-templates select="node"/>
     </node>
@@ -63,7 +66,7 @@
           </xsl:choose>
         <![CDATA[</i>]]>
         <![CDATA[<br>]]>
-        <![CDATA[<b>]]>
+        <![CDATA[<font color="green">]]>
           <xsl:choose>
             <xsl:when test="@lemma">
               <xsl:value-of select="@lemma"/>
@@ -72,10 +75,11 @@
               <xsl:value-of select="@root"/>
             </xsl:otherwise>
           </xsl:choose>
-        <![CDATA[</b>]]>
+        <![CDATA[</font>]]>
         <![CDATA[</p>]]>
       </label>
-      <hoverLine>
+      <tooltip>
+        <![CDATA[<i>]]>
         <xsl:choose>
           <xsl:when test="@postag">
             <xsl:value-of select="@postag"/>
@@ -84,7 +88,8 @@
             <xsl:value-of select="@pos"/>
           </xsl:otherwise>
         </xsl:choose>
-      </hoverLine>
+        <![CDATA[</i>]]>
+      </tooltip>
     </node>
   </xsl:template>
 </xsl:stylesheet>

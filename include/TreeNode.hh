@@ -15,7 +15,8 @@ public:
     void setAttribute(QString const &name, QString const &value);
     void appendChild(TreeNode *node);
     void setLabel(QString const &label);
-    void appendPopupLine(QString const &line);
+    void setTooltip(QString const &tooltip);
+    QString const &tooltip() const;
     QString asString(QString const &indent = "") const; // debugging purpuse
     QRectF boundingRect() const;
     QRectF leafBoundingRect() const;
@@ -48,7 +49,7 @@ private:
     TreeNode *d_parentNode;
     QList<TreeNode*> d_childNodes;
     QTextDocument d_label;
-    QList<QString> d_popupLines;
+    QString d_tooltip;
     PopupItem *d_popupItem;
     qreal d_spaceBetweenLayers;
     qreal d_spaceBetweenNodes;
@@ -62,19 +63,14 @@ inline QHash<QString, QString> const &TreeNode::attributes() const
     return d_attributes;
 }
 
-inline QList<QString> const &TreeNode::popupLines() const
+inline void TreeNode::setTooltip(QString const &tooltip)
 {
-    return d_popupLines;
+    d_tooltip = tooltip;
 }
 
-inline void TreeNode::appendPopupLine(QString const &line)
+inline QString const &TreeNode::tooltip() const
 {
-    d_popupLines.append(line);
-}
-
-inline void TreeNode::setPopupItem(PopupItem *item)
-{
-    d_popupItem = item;
+    return d_tooltip;
 }
 
 inline void TreeNode::setActive(bool active)
@@ -87,6 +83,10 @@ inline bool TreeNode::isActive() const
     return d_active;
 }
 
+inline void TreeNode::setPopupItem(PopupItem *popupItem)
+{
+    d_popupItem = popupItem;
+}
 
 #endif
 

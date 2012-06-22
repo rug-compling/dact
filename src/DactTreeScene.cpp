@@ -140,12 +140,12 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &l
                     processXMLAttribute(reader, node);
                 }
             }
-            else if (name == "label" || name == "hoverLine")
+            else if (name == "label" || name == "tooltip")
             {
                 if (stack.isEmpty())
                 {
                     qWarning() << "Tree XML Read error: encountered line element while the stack is empty."
-                                  "Is this <line> element outside a <node> element? Skipping";
+                                  "Is this <label> or <toolt element outside a <node> element? Skipping";
                     break;
                 }
                 
@@ -173,9 +173,10 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &l
                 if (name == "label")
                     stack.top()->setLabel(label);
                 else
-                    stack.top()->appendPopupLine(label);
-                }
-                break;
+                    stack.top()->setTooltip(label);
+            }
+            break;
+
         case XML_READER_TYPE_END_ELEMENT:
             if (name == "node")
             {
@@ -187,8 +188,8 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &l
                 }
                 
                 TreeNode *node = stack.pop();
-                if (node->popupLines().size() > 0) {
-                    PopupItem *popupItem = new PopupItem(0, node->popupLines());
+                if (!node->tooltip().isEmpty()) {
+                    PopupItem *popupItem = new PopupItem(0, node->tooltip());
                     popupItem->setVisible(false);
                     popupItem->setZValue(1.0);
                     node->setPopupItem(popupItem);
