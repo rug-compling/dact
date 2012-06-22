@@ -15,20 +15,19 @@
   <xsl:template match="node[node]">
     <node>
       <xsl:copy-of select="@*"/>
-      <line>
+      <label>
         <xsl:value-of select="@rel"/>
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
           <xsl:text>/</xsl:text><xsl:value-of select="@pb" />
         </xsl:if>
-      </line>
-      <line>
+        <![CDATA[<br>]]>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt)">
           <xsl:text>:</xsl:text>
         </xsl:if>
         <xsl:value-of select="@cat|@pt"/>
-      </line>
+      </label>
       <xsl:apply-templates select="node"/>
     </node>
   </xsl:template>
@@ -37,41 +36,45 @@
   <xsl:template match="node">
     <node>
       <xsl:copy-of select="@*"/>
-      <line>
+      <label>
+        <![CDATA[<p align="center">]]>
         <xsl:value-of select="@rel"/>
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
           <xsl:text>/</xsl:text>
           <xsl:value-of select="@pb" />
         </xsl:if>
-      </line>
-      <line>
+        <![CDATA[<br>]]>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <xsl:choose>
-          <xsl:when test="@pt">
-            <xsl:value-of select="@pt"/>
-          </xsl:when>
-          <xsl:when test="@pos">
-            <xsl:value-of select="@pos"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@cat"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </line>
-      <line>
-        <xsl:choose>
-          <xsl:when test="@lemma">
-            <xsl:value-of select="@lemma"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@root"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </line>
+        <![CDATA[<i>]]>
+          <xsl:choose>
+            <xsl:when test="@pt">
+              <xsl:value-of select="@pt"/>
+            </xsl:when>
+            <xsl:when test="@pos">
+              <xsl:value-of select="@pos"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@cat"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        <![CDATA[</i>]]>
+        <![CDATA[<br>]]>
+        <![CDATA[<b>]]>
+          <xsl:choose>
+            <xsl:when test="@lemma">
+              <xsl:value-of select="@lemma"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@root"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        <![CDATA[</b>]]>
+        <![CDATA[</p>]]>
+      </label>
       <hoverLine>
         <xsl:choose>
           <xsl:when test="@postag">

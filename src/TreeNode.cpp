@@ -1,8 +1,10 @@
+#include <QDebug>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
 #include <QPainter>
 #include <QSettings>
+#include <QTextDocument>
 
 #include "TreeNode.hh"
 #include "PopupItem.hh"
@@ -15,7 +17,6 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
     d_attributes(),
     d_parentNode(0),
     d_childNodes(),
-    d_labels(),
     d_popupItem(0),
     d_spaceBetweenLayers(40),
     d_spaceBetweenNodes(10),
@@ -25,6 +26,8 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
 {
     setFlags(ItemIsSelectable | ItemIsFocusable);
     setAcceptHoverEvents(true);
+    d_label.setDefaultFont(font());
+    d_label.setDocumentMargin(d_leafPadding);
 }
 
 bool TreeNode::isLeaf() const
@@ -38,9 +41,9 @@ void TreeNode::appendChild(TreeNode *child)
     d_childNodes.append(child);
 }
 
-void TreeNode::appendLabel(QString const &label)
+void TreeNode::setLabel(QString const &label)
 {
-    d_labels.append(label);
+    d_label.setHtml(label);
 }
 
 TreeNode *TreeNode::parentNode()
@@ -104,12 +107,7 @@ void TreeNode::setAttribute(QString const &name, QString const &value)
 
 QString TreeNode::asString(QString const &indent) const
 {
-    QString dump = indent + "[node labels:";
-    
-    foreach (QString const &line, d_labels)
-    {
-        dump += " \"" + line + "\"";
-    }
+    QString dump = indent + "[node label: \"" + d_label.toHtml() + "\"";
     
     dump += "\n" + indent + QString("      attributes: (%1)").arg(d_attributes.size());
     
@@ -173,21 +171,7 @@ QRectF TreeNode::leafRect() const
 
 QSizeF TreeNode::leafSize() const
 {
-    QFontMetricsF metrics(font());
-    QSizeF leaf(d_leafMinimumWidth, d_leafMinimumHeight);
-    
-    foreach (QString const &label, d_labels)
-    {
-        qreal labelWidth = metrics.width(label) + 2 * d_leafPadding;
-        if (labelWidth > leaf.width())
-            leaf.setWidth(labelWidth);
-    }
-    
-    qreal labelsHeight = d_labels.size() * metrics.lineSpacing() + 2 * d_leafPadding;
-    if (labelsHeight > leaf.height())
-        leaf.setHeight(labelsHeight);
-    
-    return leaf;
+    return d_label.size();
 }
 
 QSizeF TreeNode::branchSize() const
@@ -251,32 +235,27 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setPen(borderPen);
     painter->drawRect(leaf);
     
-    painter->setPen(isActive() ? activeNodeForeground : QColor(Qt::black));
-    paintLabels(painter, leaf);
+    paintLabel(painter, leaf);
 }
 
-void TreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
+void TreeNode::paintLabel(QPainter *painter, QRectF const &leaf)
 {
-    // @TODO currently I draw all the labels by just concatenating them together
-    // but if I could implement drawing each line separately, it would be easy as pie
-    // to implement colors, weights etc for each line separately.
-    QString labels;
-    foreach (QString const &label, d_labels)
-        labels += QString("%1\n").arg(label);
-    
-    QRectF textBox(leaf);
-    
-    textBox.setWidth(leaf.width() - 2*d_leafPadding);
-    textBox.setHeight(leaf.height() - 2*d_leafPadding);
-    textBox.translate(d_leafPadding, d_leafPadding);
-
+    /*
     // You can't be serious... Yes you can.
     double appDpi = qt_defaultDpi();
     double ratio = appDpi / painter->device()->logicalDpiY();
-    QFont painterFont(font());
-    painterFont.setPointSizeF(painterFont.pointSize() * ratio);
-    painter->setFont(painterFont);
-    painter->drawText(textBox, Qt::AlignCenter, labels);
+    QFont scaledFont(font());
+    scaledFont.setPointSizeF(scaledFont.pointSize() * ratio);
+
+    QTextDocument richLabels;
+    richLabels.setDefaultFont(scaledFont);
+    richLabels.setHtml(labels);
+    richLabels.setDocumentMargin(d_leafPadding);
+    */
+    painter->save();
+    painter->translate(leaf.topLeft());
+    d_label.drawContents(painter, QRectF(QPointF(0,0), leaf.size()));
+    painter->restore();
 }
 
 void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)

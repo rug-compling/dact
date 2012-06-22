@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QList>
+#include <QTextDocument>
 
 class PopupItem;
 
@@ -13,7 +14,7 @@ public:
     QHash<QString, QString> const &attributes() const;
     void setAttribute(QString const &name, QString const &value);
     void appendChild(TreeNode *node);
-    void appendLabel(QString const &label);
+    void setLabel(QString const &label);
     void appendPopupLine(QString const &line);
     QString asString(QString const &indent = "") const; // debugging purpuse
     QRectF boundingRect() const;
@@ -38,7 +39,7 @@ protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent * event);
     void setParentNode(TreeNode *node);
 private:
-    void paintLabels(QPainter *painter, QRectF const &leaf);
+    void paintLabel(QPainter *painter, QRectF const &leaf);
     void paintEdges(QPainter *painter, QRectF const &leaf);
     QFont font() const;
     qreal viewScale() const;
@@ -46,7 +47,7 @@ private:
     QHash<QString,QString> d_attributes;
     TreeNode *d_parentNode;
     QList<TreeNode*> d_childNodes;
-    QList<QString> d_labels;
+    QTextDocument d_label;
     QList<QString> d_popupLines;
     PopupItem *d_popupItem;
     qreal d_spaceBetweenLayers;

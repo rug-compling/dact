@@ -140,7 +140,7 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &l
                     processXMLAttribute(reader, node);
                 }
             }
-            else if (name == "line" || name == "hoverLine")
+            else if (name == "label" || name == "hoverLine")
             {
                 if (stack.isEmpty())
                 {
@@ -170,8 +170,8 @@ void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &l
                     }
                 }
             
-                if (name == "line")
-                    stack.top()->appendLabel(label);
+                if (name == "label")
+                    stack.top()->setLabel(label);
                 else
                     stack.top()->appendPopupLine(label);
                 }
