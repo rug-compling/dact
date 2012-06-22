@@ -63,16 +63,6 @@ inline QHash<QString, QString> const &TreeNode::attributes() const
     return d_attributes;
 }
 
-inline void TreeNode::setTooltip(QString const &tooltip)
-{
-    d_tooltip = tooltip;
-}
-
-inline QString const &TreeNode::tooltip() const
-{
-    return d_tooltip;
-}
-
 inline void TreeNode::setActive(bool active)
 {
     d_active = active;

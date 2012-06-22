@@ -16,6 +16,9 @@ public:
     void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
     QSizeF size() const;
     QRectF rect() const;
+
+    QString content() const;
+    void setContent(QString const &content);
 private:
     qreal viewScale() const;
     QTextDocument d_content;

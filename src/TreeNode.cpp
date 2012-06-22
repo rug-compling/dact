@@ -46,6 +46,19 @@ void TreeNode::setLabel(QString const &label)
     d_label.setHtml(label);
 }
 
+void TreeNode::setTooltip(QString const &tooltip)
+{
+    d_tooltip = tooltip;
+
+    if (d_popupItem)
+        d_popupItem->setContent(tooltip);
+}
+
+QString const &TreeNode::tooltip() const
+{
+    return d_tooltip;
+}
+
 TreeNode *TreeNode::parentNode()
 {
     return d_parentNode;

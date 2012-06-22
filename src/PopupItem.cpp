@@ -14,7 +14,8 @@ PopupItem::PopupItem(QGraphicsItem *parent, QString const &html)
 {
     d_content.setDocumentMargin(d_padding);
     d_content.setDefaultFont(font());
-    d_content.setHtml(html);
+    
+    setContent(html);
 }
 
 QRectF PopupItem::boundingRect() const
@@ -88,4 +89,14 @@ qreal PopupItem::viewScale() const
         return 1.0;
     
     return scene()->views().first()->transform().m11();
+}
+
+QString PopupItem::content() const
+{
+    return d_content.toHtml();
+}
+
+void PopupItem::setContent(QString const &html)
+{
+    d_content.setHtml(html);
 }
