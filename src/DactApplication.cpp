@@ -1,5 +1,4 @@
 #include "DactApplication.hh"
-#include <QDesktopServices>
 #include <QFileOpenEvent>
 
 
@@ -13,8 +12,6 @@ d_mainWindow(0)
 
 void DactApplication::init()
 {
-    QDesktopServices::setUrlHandler("dact", this, "openUrl");
-
     d_mainWindow.reset(new MainWindow());
     d_mainWindow->show();
 }
