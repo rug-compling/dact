@@ -63,6 +63,22 @@ void DactApplication::openUrl(QUrl const &url)
     if (url.scheme() != "dact")
         return;
 
-    if (!url.allQueryItemValues("corpus").isEmpty())
-        d_mainWindow->readCorpora(url.allQueryItemValues("corpus"));
+    if (url.hasQueryItem("filter"))
+    {
+        QByteArray encodedFilter(url.queryItemValue("filter").toUtf8());
+        d_mainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+    }
+
+    if (url.hasQueryItem("corpus"))
+    {
+        QStringList fileNames;
+
+        foreach (QString fileName, url.allQueryItemValues("corpus"))
+        {
+            QByteArray encodedFileName(fileName.toUtf8());
+            fileNames << QUrl::fromPercentEncoding(encodedFileName);
+        }
+
+        d_mainWindow->readCorpora(fileNames);
+    }
 }
