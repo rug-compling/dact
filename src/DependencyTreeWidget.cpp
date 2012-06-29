@@ -279,8 +279,9 @@ void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_f
     }
 
     setHighlight(raw_filter);
-    
-    d_model->runQuery(d_filter);
+
+    if (d_model)
+        d_model->runQuery(d_filter);
 }
 
 void DependencyTreeWidget::setModel(FilterModel *model)
