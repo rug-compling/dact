@@ -69,6 +69,10 @@ void DactApplication::openUrl(QUrl const &url)
         d_mainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
     }
 
+    // Disabled because I don't trust this functionality. I think it can
+    // be easily abused to let Dact open arbritray files. We then have to
+    // trust dbxml for doing nothing stupid.
+    #if 0
     if (url.hasQueryItem("corpus"))
     {
         QStringList fileNames;
@@ -81,4 +85,5 @@ void DactApplication::openUrl(QUrl const &url)
 
         d_mainWindow->readCorpora(fileNames);
     }
+    #endif
 }
