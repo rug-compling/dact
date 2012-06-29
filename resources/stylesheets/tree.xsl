@@ -17,19 +17,22 @@
     <node>
       <xsl:copy-of select="@*"/>
       <label>
-        <![CDATA[<p align="center">]]>
+        <xhtml:p align="center">
         <xsl:value-of select="@rel"/>
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
-          <xsl:text>/</xsl:text><xsl:value-of select="@pb" />
+          <xsl:text>/</xsl:text>
+          <xhtml:font color="red">
+            <xsl:value-of select="@pb" />
+          </xhtml:font>
         </xsl:if>
-        <![CDATA[<br>]]>
+        <xhtml:br/>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt)">
           <xsl:text>:</xsl:text>
         </xsl:if>
         <xsl:value-of select="@cat|@pt"/>
-        <![CDATA[</p>]]>
+        </xhtml:p>
       </label>
       <xsl:apply-templates select="node"/>
     </node>
@@ -40,19 +43,19 @@
     <node>
       <xsl:copy-of select="@*"/>
       <label>
-        <![CDATA[<p align="center">]]>
+        <xhtml:p align="center">
         <xsl:value-of select="@rel"/>
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
           <xsl:text>/</xsl:text>
           <xsl:value-of select="@pb" />
         </xsl:if>
-        <![CDATA[<br>]]>
+        <xhtml:br/>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <![CDATA[<i>]]>
+        <xhtml:i>
           <xsl:choose>
             <xsl:when test="@pt">
               <xsl:value-of select="@pt"/>
@@ -64,9 +67,9 @@
               <xsl:value-of select="@cat"/>
             </xsl:otherwise>
           </xsl:choose>
-        <![CDATA[</i>]]>
-        <![CDATA[<br>]]>
-        <![CDATA[<font color="green">]]>
+        </xhtml:i>
+        <xhtml:br/>
+        <xhtml:font color="green">
           <xsl:choose>
             <xsl:when test="@lemma">
               <xsl:value-of select="@lemma"/>
@@ -75,11 +78,11 @@
               <xsl:value-of select="@root"/>
             </xsl:otherwise>
           </xsl:choose>
-        <![CDATA[</font>]]>
-        <![CDATA[</p>]]>
+        </xhtml:font>
+        </xhtml:p>
       </label>
       <tooltip>
-        <![CDATA[<i>]]>
+        <xhtml:i>
         <xsl:choose>
           <xsl:when test="@postag">
             <xsl:value-of select="@postag"/>
@@ -88,7 +91,7 @@
             <xsl:value-of select="@pos"/>
           </xsl:otherwise>
         </xsl:choose>
-        <![CDATA[</i>]]>
+        </xhtml:i>
       </tooltip>
     </node>
   </xsl:template>

@@ -10,7 +10,7 @@
 
 extern "C" {
     #include <libxml/parser.h>
-    #include <libxml/xmlreader.h>
+    #include <libxml/tree.h>
 };
 
 extern int qt_defaultDpi();
@@ -36,12 +36,12 @@ private slots:
     void emitSelectionChange();
 
 private:
+    bool nodeNameIs(xmlNodePtr xmlNode, char const *name);
     void freeNodes();
     void layout(QPointF pos, TreeNode* node);
     void parseXML(QString const &xml);
-    void processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &list, QStack<TreeNode*> &stack);
-    void processXMLAttribute(xmlTextReaderPtr &reader, TreeNode* node);
-    QString processXMLString(xmlChar* xmlValue) const;
+    TreeNode *processNode(xmlNodePtr node);
+    void scrubNamespace(xmlNodePtr xmlNode);
     QList<TreeNode*> d_nodes;
 };
 

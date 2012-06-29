@@ -6,6 +6,11 @@
 #include <QPainter>
 #include <QSettings>
 
+extern "C" {
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+}
+
 #include "DactTreeScene.hh"
 #include "TreeNode.hh"
 #include "PopupItem.hh"
@@ -56,23 +61,97 @@ void DactTreeScene::parseTree(QString const &xml)
 void DactTreeScene::parseXML(QString const &xml)
 {
     QByteArray xmlData(xml.toUtf8());
-    xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.constData(),
-        xmlData.size(), NULL, NULL, XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA);
-    
-    // Process every node 
-    QStack<TreeNode*> stack;
-    while (true)
-    {
-        if (!xmlTextReaderRead(reader))
-            break;
-        
-        processXMLNode(reader, d_nodes, stack);
+
+    xmlDocPtr doc;
+    doc = xmlReadMemory(xmlData.constData(), xmlData.size(), NULL, NULL, 0);
+    if (doc == NULL) {
+      qWarning() << "Could not parse tree!";
+      return;
     }
-    
-    xmlFreeTextReader(reader);
-    
-    if (stack.size() > 1)
-        qWarning() << "Tree XML Read error: Stack not empty at the end";
+
+    xmlNode *treeRoot = xmlDocGetRootElement(doc);
+    if (treeRoot == NULL) {
+      qWarning() << "Tree does not have a root?";
+      return;
+    }
+
+    TreeNode *root = processNode(treeRoot);
+}
+
+TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
+{
+    TreeNode *node = new TreeNode;
+    d_nodes.append(node);
+
+    for (xmlNodePtr child = xmlNode->children; child; child = child->next)
+    {
+      if (child->type == XML_ELEMENT_NODE && nodeNameIs(child, "node"))
+      {
+        TreeNode *childNode = processNode(child);
+        node->appendChild(childNode);
+      }
+      if (child->type == XML_ELEMENT_NODE &&
+          (nodeNameIs(child, "label") || nodeNameIs(child, "tooltip")))
+      {
+        xmlBufferPtr buf = xmlBufferCreate();
+
+        for (xmlNodePtr contentNode = child->children; contentNode;
+                contentNode = contentNode->next) {
+            scrubNamespace(contentNode);
+            xmlNodeDump(buf, 0, contentNode, 0, 0);
+        }
+
+        xmlChar const *value = xmlBufferContent(buf);
+
+        if (nodeNameIs(child, "label"))
+            node->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(value)));
+        else
+        {
+            node->setTooltip(QString::fromUtf8(reinterpret_cast<char const *>(value)));
+
+            PopupItem *popupItem = new PopupItem(0, node->tooltip());
+            popupItem->setVisible(false);
+            popupItem->setZValue(1.0);
+            node->setPopupItem(popupItem);
+            addItem(popupItem);
+        }
+
+        xmlBufferFree(buf);
+      }
+    }
+
+    for (xmlAttrPtr attr = xmlNode->properties; attr; attr = attr->next)
+    {
+      xmlChar *value = xmlNodeGetContent(attr->children);
+      if (value == 0)
+        continue;
+
+      // Do we have an active node marker?
+      if (xmlStrEqual(attr->name, reinterpret_cast<xmlChar const *>("active")) &&
+          xmlStrEqual(value, reinterpret_cast<xmlChar const *>("1")))
+        node->setActive(true);
+      else
+        node->setAttribute(
+            QString::fromUtf8(reinterpret_cast<char const *>(attr->name)),
+            QString::fromUtf8(reinterpret_cast<char const *>(value)));
+
+      xmlFree(value);
+    }
+
+    return node;
+}
+
+bool DactTreeScene::nodeNameIs(xmlNodePtr xmlNode, char const *name)
+{
+    return xmlStrEqual(xmlNode->name, reinterpret_cast<xmlChar const *>(name));
+}
+
+void DactTreeScene::scrubNamespace(xmlNodePtr xmlNode)
+{
+    xmlSetNs(xmlNode, 0);
+
+    for (xmlNodePtr child = xmlNode->children; child; child = child->next)
+        scrubNamespace(child);
 }
 
 void DactTreeScene::freeNodes()
@@ -109,124 +188,3 @@ TreeNode* DactTreeScene::rootNode()
         return 0;
 }
 
-void DactTreeScene::processXMLNode(xmlTextReaderPtr &reader, QList<TreeNode*> &list, QStack<TreeNode*> &stack)
-{
-    QString name = processXMLString(xmlTextReaderName(reader));
-    QString value = processXMLString(xmlTextReaderValue(reader));
-    
-    int type = xmlTextReaderNodeType(reader);
-    
-    switch (type)
-    {
-        case XML_READER_TYPE_ELEMENT:
-            if (name == "node")
-            {
-                TreeNode* node = new TreeNode();
-                d_nodes.append(node);
-
-                // When this isn't the root-node, append it to it's parent.
-                if (!stack.isEmpty())
-                    stack.top()->appendChild(node);
-                
-                if (!xmlTextReaderIsEmptyElement(reader))
-                    stack.push(node);
-                else
-                    qWarning() << "Tree XML Read error: encountered an empty <node> element. Most of the time they "
-                                  "contain child <node> elements or <line> elements if they are leaf nodes. Interesting.";
-                
-                for (int attrIdx = 0, attrCount = xmlTextReaderAttributeCount(reader); attrIdx < attrCount; ++attrIdx)
-                {
-                    xmlTextReaderMoveToAttributeNo(reader, attrIdx);
-                    processXMLAttribute(reader, node);
-                }
-            }
-            else if (name == "label" || name == "tooltip")
-            {
-                if (stack.isEmpty())
-                {
-                    qWarning() << "Tree XML Read error: encountered line element while the stack is empty."
-                                  "Is this <label> or <toolt element outside a <node> element? Skipping";
-                    break;
-                }
-                
-                if (xmlTextReaderIsEmptyElement(reader))
-                {
-                    // Skip empty elements, no need for them.
-                    break;
-                }
-                
-                QString label;
-                while (xmlTextReaderRead(reader))
-                {
-                    type = xmlTextReaderNodeType(reader);
-                    
-                    if (type == XML_READER_TYPE_END_ELEMENT)
-                        break;
-                    
-                    if (type == XML_READER_TYPE_TEXT)
-                    {
-                        value = processXMLString(xmlTextReaderValue(reader));
-                        label += value;
-                    }
-                }
-            
-                if (name == "label")
-                    stack.top()->setLabel(label);
-                else
-                    stack.top()->setTooltip(label);
-            }
-            break;
-
-        case XML_READER_TYPE_END_ELEMENT:
-            if (name == "node")
-            {
-                if (stack.isEmpty())
-                {
-                    qWarning() << "Tree XML Read error: Trying to pop the stack while it is empty."
-                                  "Did I close a <node> element to many? This looks like a bug in the parser.";
-                    break;
-                }
-                
-                TreeNode *node = stack.pop();
-                if (!node->tooltip().isEmpty()) {
-                    PopupItem *popupItem = new PopupItem(0, node->tooltip());
-                    popupItem->setVisible(false);
-                    popupItem->setZValue(1.0);
-                    node->setPopupItem(popupItem);
-                    addItem(popupItem);
-                }
-            }
-            break;
-    }
-}
-
-void DactTreeScene::processXMLAttribute(xmlTextReaderPtr &reader, TreeNode* node)
-{
-    int type = xmlTextReaderNodeType(reader);
-    
-    if (type != XML_READER_TYPE_ATTRIBUTE)
-        return;
-    
-    QString name = processXMLString(xmlTextReaderName(reader));
-    QString value = processXMLString(xmlTextReaderValue(reader));
-    
-    // active is a special attribute, as it describes which node matched the
-    // query. It is not an attribute of the original node in the parse tree and
-    // therefore we do not treat it as an 'attribute'. We don't want this to
-    // show up in the inspector now do we? Some poor soul might try to use it in
-    // a query... >:)
-    if (name == "active")
-        node->setActive(!value.isEmpty());
-    else
-        node->setAttribute(name, value);
-}
-
-QString DactTreeScene::processXMLString(xmlChar* xmlValue) const
-{
-    if (xmlValue == NULL)
-        return QString();
-
-    QString value(QString::fromUtf8(reinterpret_cast<char const *>(xmlValue)));
-    xmlFree(xmlValue);
-    return value;
-}
