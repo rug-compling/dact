@@ -219,9 +219,7 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     QSettings settings;
     settings.beginGroup("Tree");
 
-    QColor activeNodeForeground(settings.value("activeNodeForeground",
-        QColor(Qt::white)).value<QColor>());
-    QColor activeNodeBackground(settings.value("activeNodeBackground",
+    QColor activeNodeBorder(settings.value("activeNodeBorder",
         QColor(Qt::darkGreen)).value<QColor>());
     
     QRectF branch(branchBoundingRect());
@@ -242,7 +240,7 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if (isSelected())
         background = background.darker(125);
     
-    QPen borderPen(isActive() ? activeNodeBackground : QColor(Qt::black), isActive() ? 3 : 1);
+    QPen borderPen(isActive() ? activeNodeBorder : QColor(Qt::black), isActive() ? 3 : 1);
 
     if (!isSelected() && !isActive())
         borderPen.setStyle(Qt::DashLine);
