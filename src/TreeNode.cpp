@@ -237,14 +237,17 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     
     painter->setRenderHint(QPainter::Antialiasing, true);
     
-    QColor background = isActive() ? activeNodeBackground : QColor(Qt::white);
-    
+    QColor background(Qt::white);
+
     if (isSelected())
         background = background.darker(125);
     
-    painter->fillRect(leaf, background);
+    QPen borderPen(isActive() ? activeNodeBackground : QColor(Qt::black), isActive() ? 3 : 1);
+
+    if (!isSelected() && !isActive())
+        borderPen.setStyle(Qt::DashLine);
     
-    QPen borderPen(Qt::black, hasFocus() ? 3 : 1);
+    painter->fillRect(leaf, background);
     painter->setPen(borderPen);
     painter->drawRect(leaf);
     
