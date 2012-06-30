@@ -123,7 +123,7 @@ void PreferencesWindow::loadColorsTab()
     settings.beginGroup("Tree");
 
     d_ui->treeActiveNodeBorderColor->setColor(
-        settings.value("activeNodeBorder", QColor(Qt::darkGreen)).value<QColor>());
+        settings.value("activeNodeBorder", QColor(Qt::black)).value<QColor>());
 
     settings.endGroup();
 

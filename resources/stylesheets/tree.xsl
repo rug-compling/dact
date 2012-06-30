@@ -22,7 +22,7 @@
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
           <xsl:text>/</xsl:text>
-          <xhtml:font color="red">
+          <xhtml:font color="purple">
             <xsl:value-of select="@pb" />
           </xhtml:font>
         </xsl:if>
@@ -48,14 +48,15 @@
         <!-- SoNaR annotation for semantic roles -->
         <xsl:if test="@pb">
           <xsl:text>/</xsl:text>
-          <xsl:value-of select="@pb" />
+          <xhtml:font color="purple">
+            <xsl:value-of select="@pb" />
+          </xhtml:font>
         </xsl:if>
         <xhtml:br/>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <xhtml:i>
           <xsl:choose>
             <xsl:when test="@pt">
               <xsl:value-of select="@pt"/>
@@ -67,9 +68,8 @@
               <xsl:value-of select="@cat"/>
             </xsl:otherwise>
           </xsl:choose>
-        </xhtml:i>
         <xhtml:br/>
-        <xhtml:font color="green">
+        <xhtml:i>
           <xsl:choose>
             <xsl:when test="@lemma">
               <xsl:value-of select="@lemma"/>
@@ -78,7 +78,7 @@
               <xsl:value-of select="@root"/>
             </xsl:otherwise>
           </xsl:choose>
-        </xhtml:font>
+        </xhtml:i>
         </xhtml:p>
       </label>
       <tooltip>
