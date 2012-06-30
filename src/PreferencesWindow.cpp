@@ -41,11 +41,9 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     loadRemoteTab();
     loadToolsTab();
 
-    connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
+    connect(d_ui->treeActiveNodeBorderColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
-    connect(d_ui->treeActiveNodeBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-
+    
     connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
     connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
@@ -124,11 +122,8 @@ void PreferencesWindow::loadColorsTab()
 
     settings.beginGroup("Tree");
 
-    d_ui->treeActiveNodeForegroundColor->setColor(
-        settings.value("activeNodeForeground", QColor(Qt::white)).value<QColor>());
-
-    d_ui->treeActiveNodeBackgroundColor->setColor(
-        settings.value("activeNodeBackground", QColor(Qt::darkGreen)).value<QColor>());
+    d_ui->treeActiveNodeBorderColor->setColor(
+        settings.value("activeNodeBorder", QColor(Qt::black)).value<QColor>());
 
     settings.endGroup();
 
@@ -204,8 +199,7 @@ void PreferencesWindow::saveColorsTab()
     QSettings settings;
 
     settings.beginGroup("Tree");
-    settings.setValue("activeNodeForeground", d_ui->treeActiveNodeForegroundColor->color());
-    settings.setValue("activeNodeBackground", d_ui->treeActiveNodeBackgroundColor->color());
+    settings.setValue("activeNodeBorder", d_ui->treeActiveNodeBorderColor->color());
     settings.endGroup();
 
     settings.beginGroup("KeywordsInContext");
