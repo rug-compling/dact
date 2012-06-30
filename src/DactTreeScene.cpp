@@ -104,7 +104,7 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
         xmlChar const *value = xmlBufferContent(buf);
 
         if (nodeNameIs(child, "label"))
-            node->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(value)));
+            node->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(value)).trimmed());
         else
         {
             node->setTooltip(QString::fromUtf8(reinterpret_cast<char const *>(value)));
