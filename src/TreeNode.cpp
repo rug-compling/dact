@@ -237,10 +237,12 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     
     QColor background(Qt::white);
 
-    if (isSelected())
-        background = background.darker(125);
-    
-    QPen borderPen(isActive() ? activeNodeBorder : QColor(Qt::black), isActive() ? 3 : 1);
+    if (isActive())
+        background = background.darker(120);
+   
+    QPen borderPen(isSelected() ?
+        activeNodeBorder : QColor(Qt::black),
+        isSelected() ? 3 : 1);
 
     //if (isActive())
     //  borderPen.setStyle(Qt::DotLine);
