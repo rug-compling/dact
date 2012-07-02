@@ -226,15 +226,17 @@ void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
 void DependencyTreeWidget::nextEntry(bool)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
-    d_ui->fileListWidget->setCurrentIndex(
-                                          current.sibling(current.row() + 1, current.column()));
+    QModelIndex next = current.sibling(current.row() + 1, current.column());
+    if (next.isValid())
+        d_ui->fileListWidget->setCurrentIndex(next);
 }
 
 void DependencyTreeWidget::previousEntry(bool)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
-    d_ui->fileListWidget->setCurrentIndex(
-                                          current.sibling(current.row() - 1, current.column()));
+    QModelIndex previous = current.sibling(current.row() - 1, current.column());
+    if (previous.isValid())
+        d_ui->fileListWidget->setCurrentIndex(previous);
 }
 
 void DependencyTreeWidget::readSettings()
