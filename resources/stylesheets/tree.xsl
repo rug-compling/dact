@@ -68,17 +68,19 @@
               <xsl:value-of select="@cat"/>
             </xsl:otherwise>
           </xsl:choose>
-        <xhtml:br/>
-        <xhtml:i>
-          <xsl:choose>
-            <xsl:when test="@lemma">
-              <xsl:value-of select="@lemma"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="@root"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xhtml:i>
+        <xsl:if test="@lemma or @root">
+          <xhtml:br/>
+          <xhtml:i>
+            <xsl:choose>
+              <xsl:when test="@lemma">
+                <xsl:value-of select="@lemma"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="@root"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xhtml:i>
+        </xsl:if>
         </xhtml:p>
       </label>
       <tooltip>
