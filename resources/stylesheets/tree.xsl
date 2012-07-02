@@ -83,18 +83,20 @@
         </xsl:if>
         </xhtml:p>
       </label>
-      <tooltip>
-        <xhtml:i>
-        <xsl:choose>
-          <xsl:when test="@postag">
-            <xsl:value-of select="@postag"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@pos"/>
-          </xsl:otherwise>
-        </xsl:choose>
-        </xhtml:i>
-      </tooltip>
+      <xsl:if test="@postag or pos">
+        <tooltip>
+          <xhtml:i>
+          <xsl:choose>
+            <xsl:when test="@postag">
+              <xsl:value-of select="@postag"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@pos"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          </xhtml:i>
+        </tooltip>
+      </xsl:if>
     </node>
   </xsl:template>
 </xsl:stylesheet>
