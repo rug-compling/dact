@@ -121,13 +121,16 @@ void WebserviceWindow::readResponse()
     // Did peeking succeed? If not, don't continue.
     if (bytesPeeked == -1)
     {
+        delete[] buffer;
         qDebug() << "Peeking response stream failed";
         return;
     }
 
     // Meh, nothing to read.
-    if (bytesPeeked == 0)
+    if (bytesPeeked == 0) {
+        delete[] buffer;
         return;
+    }
 
     // Convert the peeked buffer to a string for easy access
     QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
