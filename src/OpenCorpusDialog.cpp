@@ -47,11 +47,9 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui->setupUi(this);
 
     d_ui->corpusListView->setModel(d_archiveModel.data());
-    // d_ui->corpusListView->hideColumn(2);
     
     // We only enable the download button when a corpus is selected.
     d_ui->openButton->setEnabled(false);
-    // d_ui->informationGroupBox->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
@@ -77,12 +75,12 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
             SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
+    
     connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
         SLOT(downloadCanceled()));
     connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
             SLOT(cancelInflate()));
-    // connect(d_ui->refreshPushButton, SIGNAL(clicked()),
-    //     SLOT(refreshCorpusList()));
+    
     connect(this, SIGNAL(inflateProgressed(int)),
         d_inflateProgressDialog.data(), SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
@@ -352,36 +350,15 @@ void OpenCorpusDialog::refreshCorpusList()
 void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
     Q_UNUSED(previous);
-    
-    if (current.isValid()) {
-        d_ui->openButton->setEnabled(true);
-        // d_ui->informationGroupBox->setEnabled(true);
-        
-        // Retrieve the active entry.
-        int row = current.row();
-        ArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
-        
-        // Show detailed information.
-        // if (entry.sentences == 0)
-        //     d_ui->sentenceCountLabel->setText("unknown");
-        // else
-        //     d_ui->sentenceCountLabel->setText(QString("%L1").arg(entry.sentences));
-        // d_ui->descriptionTextBrowser->setText(entry.longDescription);
-    }
-    else {
-        d_ui->openButton->setEnabled(false);
-        // d_ui->informationGroupBox->setEnabled(false);
-        
-        // d_ui->sentenceCountLabel->clear();
-        // d_ui->descriptionTextBrowser->clear();
-    }
+    d_ui->openButton->setEnabled(current.isValid());
 }
 
 QString OpenCorpusDialog::networkErrorToString(QNetworkReply::NetworkError error)
 {
     QString errorValue;
     QMetaObject meta = QNetworkReply::staticMetaObject;
-    for (int i = 0; i < meta.enumeratorCount(); ++i) {
+    for (int i = 0; i < meta.enumeratorCount(); ++i)
+    {
         QMetaEnum m = meta.enumerator(i);
         if (m.name() == QLatin1String("NetworkError"))
         {
