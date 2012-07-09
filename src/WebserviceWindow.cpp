@@ -175,6 +175,12 @@ void WebserviceWindow::readResponse()
         // Read the sentence from the real stream, incrementing its internal pointer.
         // Again, the length is in characters, but we read bytes from d_reply. Converting again.
         int byteLength = bufferString.midRef(bufferCharOffset, sentencePattern.matchedLength()).toUtf8().size();
+
+        // Apparently, it's possible that we can peek a buffer, while
+        // we cannot retrieve it...
+        if (d_reply->bytesAvailable() == 0)
+          return;
+
         QString sentence(QString::fromUtf8(d_reply->read(byteLength)));
         bufferCharOffset += sentencePattern.matchedLength();
 
