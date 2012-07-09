@@ -16,14 +16,11 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QListView" name="corpusListView">
-     <action name="deleteLocalFilesAction">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Delete local files</string>
-      </property>
-     </action>
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <addaction name="deleteLocalFilesAction"/>
+     <addaction name="reloadAction"/>
     </widget>
    </item>
    <item>
@@ -53,31 +50,80 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
-       <property name="default">
-        <bool>true</bool>
-       </property>
        <property name="text">
         <string>Open</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
+  <action name="deleteLocalFilesAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete local files</string>
+   </property>
+  </action>
+  <action name="reloadAction">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-    <sender>openLocalFileButton</sender>
-    <signal>clicked()</signal>
-    <receiver>OpenCorpusDialog</receiver>
-    <slot>openLocalFile()</slot>
+   <sender>openLocalFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>openLocalFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>openButton</sender>
    <signal>clicked()</signal>
    <receiver>OpenCorpusDialog</receiver>
    <slot>openSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reloadAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>refreshCorpusList()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
