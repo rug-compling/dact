@@ -101,9 +101,6 @@ void WebserviceWindow::parseSentences()
     connect(d_reply, SIGNAL(readyRead()),
         SLOT(readResponse()));
 
-    connect(d_reply, SIGNAL(finished()),
-        SLOT(finishResponse()));
-
     connect(d_reply, SIGNAL(error(QNetworkReply::NetworkError)),
         SLOT(errorResponse(QNetworkReply::NetworkError)));
 }
@@ -188,6 +185,11 @@ void WebserviceWindow::readResponse()
         receiveSentence(sentence);
     }
 
+    // Are we done?
+    QRegExp endPattern("</treebank>", Qt::CaseInsensitive);
+    if (endPattern.indexIn(bufferString, bufferCharOffset) != -1)
+      finishResponse();
+
     delete[] buffer;
 }
 
@@ -231,7 +233,7 @@ void WebserviceWindow::finishResponse()
 {
     // Reset the reply pointer, since the request is no longer active.
     d_reply->disconnect();
-    d_reply = 0;
+    //d_reply = 0;
 
     // Also close the corpus writer
     d_corpus.clear();
