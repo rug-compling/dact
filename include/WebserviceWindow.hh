@@ -65,6 +65,7 @@ private:
     QProgressDialog *d_progressDialog;
 
     QNetworkReply *d_reply;
+    QByteArray d_buffer;
 
     int d_numberOfSentences;
     int d_numberOfSentencesReceived;
