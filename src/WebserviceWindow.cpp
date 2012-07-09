@@ -29,6 +29,9 @@ WebserviceWindow::WebserviceWindow(QWidget *parent, Qt::WindowFlags f) :
 
     connect(d_progressDialog,
         SIGNAL(canceled()), SLOT(cancelResponse()));
+
+    connect(this, SIGNAL(progress()), SLOT(updateProgressDialog()),
+        Qt::QueuedConnection);
 }
 
 WebserviceWindow::~WebserviceWindow()
@@ -185,19 +188,15 @@ void WebserviceWindow::receiveSentence(QString const &sentence)
 
     QString name(idPattern.capturedTexts().at(1));
 
-    qDebug() << "Adding: " << name;
-
     try {
       d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
     } catch (std::runtime_error &e) {
       qDebug() << e.what();
-      //qDebug() << "Document contents:";
-      //qDebug() << sentence;
     }
 
     d_numberOfSentencesReceived++;
 
-    updateProgressDialog();
+    emit progress();
 }
 
 void WebserviceWindow::updateProgressDialog()
