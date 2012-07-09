@@ -120,6 +120,8 @@ public slots:
 
     void statusMessage(QString message);
 
+    void openCookbook();
+
 private slots:
     /*!
      Raise the about window
