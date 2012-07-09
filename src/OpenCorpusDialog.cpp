@@ -37,10 +37,10 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
 :
     QDialog(parent),
     d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
-    d_archiveModel(new ArchiveModel),
-    d_corpusAccessManager(new QNetworkAccessManager),
-    d_downloadProgressDialog(new QProgressDialog()),
-    d_inflateProgressDialog(new QProgressDialog()),
+    d_archiveModel(new ArchiveModel(this)),
+    d_corpusAccessManager(new QNetworkAccessManager(this)),
+    d_downloadProgressDialog(new QProgressDialog(this)),
+    d_inflateProgressDialog(new QProgressDialog(this)),
     d_reply(0),
     d_cancelInflate(false)
 {
@@ -68,6 +68,11 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
     connect(d_ui->corpusListView->selectionModel(),
         SIGNAL(currentRowChanged(QModelIndex const &, QModelIndex const &)),
         SLOT(rowChanged(QModelIndex const &, QModelIndex const &)));
+
+    connect(d_ui->corpusListView,
+        SIGNAL(activated(QModelIndex const &)),
+        SLOT(openSelectedCorpus(QModelIndex const &)));
+
     connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
             SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
@@ -315,12 +320,13 @@ void OpenCorpusDialog::openSelectedCorpus()
     QItemSelectionModel *selectionModel =
       d_ui->corpusListView->selectionModel();
 
-    if (selectionModel->selectedIndexes().size() == 0)
-      return;
+    if (selectionModel->selectedIndexes().size() > 0)
+      openSelectedCorpus(selectionModel->selectedIndexes().at(0));
+}
 
-    int row = selectionModel->selectedIndexes().at(0).row();
-
-    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
+void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
+{
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
     
     QFile localCorpus(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + entry.name + ".dact");
 

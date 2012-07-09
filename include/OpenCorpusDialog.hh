@@ -58,6 +58,7 @@ private slots:
 
     void openLocalFile();
     void openSelectedCorpus();
+    void openSelectedCorpus(QModelIndex const &);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
