@@ -50,6 +50,7 @@
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
+#include <OpenCorpusDialog.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -591,12 +592,17 @@ void MainWindow::initSentenceTransformer()
 
 void MainWindow::openCorpus()
 {
+    /*
     QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
         QString("Dact corpora (%1)").arg(corpusExtensions()));
+    
     if (corpusPath.isNull())
         return;
 
     readCorpus(corpusPath);
+    */
+    OpenCorpusDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::openMacrosFile()

@@ -128,6 +128,7 @@ SET(dact_SRCS
   src/GlobalEditCommand.cpp
   src/GlobalPasteCommand.cpp
   src/MainWindow.cpp
+  src/OpenCorpusDialog.cpp
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
@@ -177,6 +178,7 @@ SET(dact_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/HistoryComboBox.hh
+  include/OpenCorpusDialog.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -227,6 +229,7 @@ SET(dact_MOC_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/MainWindow.hh
+  include/OpenCorpusDialog.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/RecentFilesMenu.hh
@@ -241,6 +244,7 @@ SET(dact_UI
   ui/DependencyTreeWidget.ui
   ui/DownloadWindow.ui
   ui/MainWindow.ui
+  ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
