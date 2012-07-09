@@ -18,6 +18,8 @@ struct ArchiveEntry {
     QString description;
     QString longDescription;
     QString checksum;
+
+    QString filePath() const;
 };
 
 class ArchiveModel : public QAbstractTableModel

@@ -1,7 +1,6 @@
 #include <QChar>
 #include <QByteArray>
 #include <QCryptographicHash>
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QList>
@@ -165,7 +164,7 @@ void OpenCorpusDialog::download(ArchiveEntry const &entry)
     QString hash = entry.checksum;
     
     QString corpusName = name + DOWNLOAD_EXTENSION;
-    QString filename = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
+    QString filename = entry.filePath();
     
     d_filename = filename;
     d_hash = hash;
@@ -326,11 +325,9 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
 {
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
     
-    QFile localCorpus(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + entry.name + ".dact");
-
-    if (localCorpus.exists())
+    if (QFile(entry.filePath()).exists())
     {
-        d_filename = localCorpus.fileName();
+        d_filename = entry.filePath();
         accept();
     }
     else
