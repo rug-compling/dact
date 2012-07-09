@@ -84,6 +84,8 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
         d_inflateProgressDialog.data(), SLOT(accept()));
+    connect(this, SIGNAL(inflateFinished()),
+        SLOT(accept()));
     
     // connect(d_archiveModel.data(), SIGNAL(retrieving()),
     //     d_ui->activityIndicator, SLOT(show()));
