@@ -160,10 +160,11 @@ void WebserviceWindow::readResponse()
         if (charPos != 0)
         {
             // charPos is in utf8 characters, but we are reading bytes. Therefore, let's convert them.
-            int bytePos = bufferString.midRef(bufferCharOffset, charPos).toUtf8().size();
-            d_reply->read(bytePos);
+            int prefixLen = bufferString.midRef(bufferCharOffset, charPos - bufferCharOffset).toUtf8().size();
+            d_reply->read(prefixLen);
 
-            bufferCharOffset += charPos;
+            // New offset in the buffer is the start of the matched string.
+            bufferCharOffset = charPos;
         }
 
         // Read the sentence from the real stream, incrementing its internal pointer.
