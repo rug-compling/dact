@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -194,7 +196,13 @@ void WebserviceWindow::receiveSentence(QString const &sentence)
 
     QString name(idPattern.capturedTexts().at(1));
 
-    d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
+    try {
+      d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
+    } catch (std::runtime_error &e) {
+      qDebug() << e.what();
+      qDebug() << "Document contents:";
+      qDebug() << sentence;
+    }
 
     d_numberOfSentencesReceived++;
 
