@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QSharedPointer>
 
+#include <AlpinoCorpus/CorpusReader.hh>
+
 namespace Ui {
     class OpenCorpusDialog;
 }
@@ -15,6 +17,9 @@ public:
     OpenCorpusDialog(QWidget *parent = 0);
     ~OpenCorpusDialog();
 
+    static QString getCorpusFileName(QWidget *parent);
+    static QSharedPointer<alpinocorpus::CorpusReader> getCorpusReader(QWidget *parent);
+
 signals:
     void openError(QString const &error);
 
@@ -24,6 +29,7 @@ private slots:
 
 private:
     QSharedPointer<Ui::OpenCorpusDialog> d_ui;
+    QString d_selectedFileName;
 };
 
 #endif // OPENCORPUSDIALOG_H

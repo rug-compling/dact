@@ -255,23 +255,6 @@ void MainWindow::convertDirectoryCorpus()
     convertCorpus(corpusPath);
 }
 
-QString MainWindow::corpusExtensions()
-{
-    // XXX - Bye bye, cosy old world!
-    // QStringList extensions;
-    //
-    // ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
-    // for (ReaderList::const_iterator iter = readers.begin();
-    //         iter != readers.end(); ++iter)
-    //     for (ExtList::const_iterator extIter = iter->extensions.begin();
-    //             extIter != iter->extensions.end(); ++extIter)
-    //         extensions.push_back(QString("*.%1").arg(extIter->c_str()));
-    //
-    // return extensions.join(" ");
-
-    return "*.dact";
-}
-
 void MainWindow::showDownloadWindow()
 {
     if (d_downloadWindow == 0)
@@ -592,17 +575,12 @@ void MainWindow::initSentenceTransformer()
 
 void MainWindow::openCorpus()
 {
-    /*
-    QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        QString("Dact corpora (%1)").arg(corpusExtensions()));
+    QString corpusPath = OpenCorpusDialog::getCorpusFileName(this);
     
     if (corpusPath.isNull())
         return;
 
     readCorpus(corpusPath);
-    */
-    OpenCorpusDialog dialog(this);
-    dialog.exec();
 }
 
 void MainWindow::openMacrosFile()
