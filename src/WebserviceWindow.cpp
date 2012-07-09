@@ -114,13 +114,14 @@ int WebserviceWindow::countSentences(QString const &sentences)
 
 void WebserviceWindow::readResponse()
 {
-    // Add data to our internal buffer.
-    d_buffer.append(d_reply->read(d_reply->bytesAvailable()));
+    QByteArray newData = d_reply->readAll();
 
     // Meh, nothing to read.
-    if (d_buffer.size() == 0)
+    if (newData.size() == 0)
         return;
 
+    // Add data to our internal buffer.
+    d_buffer.append(newData);
 
     // Detect treebank wrapper.
     {
@@ -151,16 +152,12 @@ void WebserviceWindow::readResponse()
         }
     }
 
-    // Search for a complete sentences in the peeked buffer
-    QRegExp sentencePattern("<alpino_ds([^>]*)>(.+)</alpino_ds>", Qt::CaseInsensitive);
-    sentencePattern.setMinimal(true); // Make quantifiers non-greedy; match one sentence at a time.
-
-    int dsIdx = 0;
-    while ((dsIdx = d_buffer.indexOf("<alpino_ds", dsIdx)) != -1)
+    int dsIdx;
+    while ((dsIdx = d_buffer.indexOf("<alpino_ds")) != -1)
     {
-      int endDsIdx = d_buffer.indexOf("</alpino_ds>");
+      int endDsIdx = d_buffer.indexOf("</alpino_ds>", dsIdx);
       if (endDsIdx == -1) // Not enough data for this ds.
-        return;
+        return; // Definitely not the end of the corpus...
       
       // Decode as a UTF-8 string, and handle it.
       int dsLen = endDsIdx - dsIdx + QString("</alpino_ds>").size();
@@ -188,12 +185,14 @@ void WebserviceWindow::receiveSentence(QString const &sentence)
 
     QString name(idPattern.capturedTexts().at(1));
 
+    qDebug() << "Adding: " << name;
+
     try {
       d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
     } catch (std::runtime_error &e) {
       qDebug() << e.what();
-      qDebug() << "Document contents:";
-      qDebug() << sentence;
+      //qDebug() << "Document contents:";
+      //qDebug() << sentence;
     }
 
     d_numberOfSentencesReceived++;
