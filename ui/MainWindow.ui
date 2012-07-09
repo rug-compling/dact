@@ -154,7 +154,6 @@
      <addaction name="convertCompactCorpusAction"/>
     </widget>
     <addaction name="webserviceAction"/>
-    <addaction name="downloadAction"/>
     <addaction name="menuConvertCorpus"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
@@ -487,14 +486,6 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="downloadAction">
-   <property name="text">
-    <string>Download corpus...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="webserviceAction">

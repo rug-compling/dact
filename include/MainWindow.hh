@@ -22,7 +22,6 @@ namespace Ui {
 }
 
 class AboutWindow;
-class DownloadWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -94,11 +93,6 @@ public slots:
      Toggle toolbar visibility.
     */
     void setToolbarVisible(bool visible);
-
-    /*!
-     Instantiate (if not already instantiated) and raise the download window.
-     */
-    void showDownloadWindow();
 
 #ifdef USE_WEBSERVICE
     /*!
@@ -371,7 +365,6 @@ private:
 
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
-    DownloadWindow *d_downloadWindow;
 #ifdef USE_WEBSERVICE
     WebserviceWindow *d_webserviceWindow;
 #endif // USE_WEBSERVICE

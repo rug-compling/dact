@@ -43,7 +43,6 @@
 #include <config.hh>
 
 #include <AboutWindow.hh>
-#include <DownloadWindow.hh>
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
@@ -83,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
-    d_downloadWindow(0),
 #ifdef USE_WEBSERVICE
     d_webserviceWindow(0),
 #endif // USE_WEBSERVICE
@@ -136,7 +134,6 @@ MainWindow::~MainWindow()
     d_ui->filterComboBox->writeHistory("filterHistory");
 
     delete d_aboutWindow;
-    delete d_downloadWindow;
 #ifdef USE_WEBSERVICE
     delete d_webserviceWindow;
 #endif // USE_WEBSERVICE
@@ -253,15 +250,6 @@ void MainWindow::convertDirectoryCorpus()
         return;
 
     convertCorpus(corpusPath);
-}
-
-void MainWindow::showDownloadWindow()
-{
-    if (d_downloadWindow == 0)
-        d_downloadWindow = new DownloadWindow(this, Qt::Window);
-
-    d_downloadWindow->show();
-    d_downloadWindow->raise();
 }
 
 #ifdef USE_WEBSERVICE
@@ -421,8 +409,6 @@ void MainWindow::createActions()
     // Actions
     connect(d_ui->aboutAction, SIGNAL(triggered(bool)),
         SLOT(aboutDialog()));
-    connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
-        SLOT(showDownloadWindow()));
 #ifdef USE_REMOTE_CORPUS
     connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
         SLOT(showRemoteWindow()));

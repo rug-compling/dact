@@ -105,7 +105,6 @@ SET(dact_SRCS
   src/BracketedWindow.cpp
   src/Chunk.cpp
   src/DependencyTreeWidget.cpp
-  src/DownloadWindow.cpp
   src/DactApplication.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
@@ -154,7 +153,6 @@ SET(dact_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/config.hh
   include/DactApplication.hh
   include/DactColorWell.hh
@@ -208,7 +206,6 @@ SET(dact_MOC_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/DactListView.hh
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
@@ -242,7 +239,6 @@ SET(dact_UI
   ui/AboutWindow.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
-  ui/DownloadWindow.ui
   ui/MainWindow.ui
   ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui
