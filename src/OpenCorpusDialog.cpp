@@ -87,12 +87,12 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
     connect(this, SIGNAL(inflateFinished()),
         SLOT(accept()));
     
-    // connect(d_archiveModel.data(), SIGNAL(retrieving()),
-    //     d_ui->activityIndicator, SLOT(show()));
-    // connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
-    //     d_ui->activityIndicator, SLOT(hide()));
-    // connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
-    //     d_ui->activityIndicator, SLOT(hide()));
+    connect(d_archiveModel.data(), SIGNAL(retrieving()),
+        d_ui->activityIndicator, SLOT(show()));
+    connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
+        d_ui->activityIndicator, SLOT(hide()));
+    connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
+        d_ui->activityIndicator, SLOT(hide()));
     
     refreshCorpusList();
 }

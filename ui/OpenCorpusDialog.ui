@@ -46,6 +46,16 @@
       </spacer>
      </item>
      <item>
+      <widget class="QProgressBar" name="activityIndicator">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="openButton">
        <property name="enabled">
         <bool>false</bool>
