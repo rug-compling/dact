@@ -19,6 +19,7 @@ namespace Ui {
 }
 
 class ArchiveModel;
+class ArchiveEntry;
 class QIODevice;
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -50,7 +51,7 @@ private slots:
     void downloadCanceled();
     void inflate(QIODevice *dev);
     void inflateHandleError(QString error);
-    void download();
+    void download(ArchiveEntry const &entry);
     void downloadProgress(qint64 progress, qint64 maximum);
     void refreshCorpusList();
     void rowChanged(QModelIndex const &current, QModelIndex const &previous);

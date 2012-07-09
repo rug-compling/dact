@@ -1,6 +1,7 @@
 #include <QChar>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QList>
@@ -49,7 +50,7 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
     // d_ui->corpusListView->hideColumn(2);
     
     // We only enable the download button when a corpus is selected.
-    // d_ui->downloadPushButton->setEnabled(false);
+    d_ui->openButton->setEnabled(false);
     // d_ui->informationGroupBox->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
@@ -77,8 +78,6 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
             SLOT(cancelInflate()));
     // connect(d_ui->refreshPushButton, SIGNAL(clicked()),
     //     SLOT(refreshCorpusList()));
-    // connect(d_ui->downloadPushButton, SIGNAL(clicked()),
-    //     SLOT(download()));
     connect(this, SIGNAL(inflateProgressed(int)),
         d_inflateProgressDialog.data(), SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
@@ -155,42 +154,26 @@ void OpenCorpusDialog::corpusReplyFinished(QNetworkReply *reply)
     QtConcurrent::run(this, &OpenCorpusDialog::inflate, reply);
 }
 
-void OpenCorpusDialog::download()
+void OpenCorpusDialog::download(ArchiveEntry const &entry)
 {
-    QItemSelectionModel *selectionModel =
-      d_ui->corpusListView->selectionModel();
-
-    if (selectionModel->selectedRows().size() == 0)
-      return;
-
-    int row = selectionModel->selectedRows().at(0).row();
-
-    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
-    
     QString name = entry.name;
     QString hash = entry.checksum;
     
     QString corpusName = name + DOWNLOAD_EXTENSION;
-    QString finalCorpusName = name + ".dact";
+    QString filename = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
     
-    QString filename(QFileDialog::getSaveFileName(this,
-        "Download corpus", finalCorpusName, "*.dact"));
-    
-    if (filename.isNull())
-        return;
-    else {
-        d_filename = filename;
-        d_hash = hash;
-    }
-    
+    d_filename = filename;
+    d_hash = hash;
+
     d_downloadProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
     d_downloadProgressDialog->reset();
     d_downloadProgressDialog->open();
     
     QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
-    QNetworkRequest request(corpusUrl);    
+    
+    QNetworkRequest request(corpusUrl);
     d_reply = d_corpusAccessManager->get(request);
-        
+    
     connect(d_reply, SIGNAL(downloadProgress(qint64, qint64)),
         SLOT(downloadProgress(qint64, qint64)));
 }
@@ -241,6 +224,14 @@ void OpenCorpusDialog::inflate(QIODevice *dev)
         return;
     }
     
+    // Make sure the directory exists in which we want to store the result
+    if (!QDir::current().mkpath(QFileInfo(d_filename).path()))
+    {
+        dev->deleteLater();
+        emit inflateError("could not create output directory");
+        return;
+    }
+
     QFile out(d_filename);
     if (!out.open(QIODevice::WriteOnly))
     {
@@ -277,7 +268,6 @@ void OpenCorpusDialog::inflate(QIODevice *dev)
     }
     
     emit inflateFinished();
-    
 }
 
 void OpenCorpusDialog::cancelInflate()
@@ -320,7 +310,27 @@ void OpenCorpusDialog::openLocalFile()
 
 void OpenCorpusDialog::openSelectedCorpus()
 {
-    qDebug() << "To implement: openSelectedCorpus";
+    QItemSelectionModel *selectionModel =
+      d_ui->corpusListView->selectionModel();
+
+    if (selectionModel->selectedIndexes().size() == 0)
+      return;
+
+    int row = selectionModel->selectedIndexes().at(0).row();
+
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
+    
+    QFile localCorpus(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + entry.name + ".dact");
+
+    if (localCorpus.exists())
+    {
+        d_filename = localCorpus.fileName();
+        accept();
+    }
+    else
+    {
+        download(entry);
+    }
 }
 
 void OpenCorpusDialog::refreshCorpusList()
@@ -336,7 +346,7 @@ void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const 
     Q_UNUSED(previous);
     
     if (current.isValid()) {
-        // d_ui->downloadPushButton->setEnabled(true);
+        d_ui->openButton->setEnabled(true);
         // d_ui->informationGroupBox->setEnabled(true);
         
         // Retrieve the active entry.
@@ -351,7 +361,7 @@ void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const 
         // d_ui->descriptionTextBrowser->setText(entry.longDescription);
     }
     else {
-        // d_ui->downloadPushButton->setEnabled(false);
+        d_ui->openButton->setEnabled(false);
         // d_ui->informationGroupBox->setEnabled(false);
         
         // d_ui->sentenceCountLabel->clear();
