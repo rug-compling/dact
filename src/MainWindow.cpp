@@ -498,8 +498,7 @@ void MainWindow::createActions()
         SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
         SLOT(convertDirectoryCorpus()));
-
-
+    
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
     new GlobalPasteCommand(d_ui->globalPasteAction);
@@ -531,6 +530,12 @@ void MainWindow::help()
 {
     static QUrl const usage("http://rug-compling.github.com/dact/manual/");
     QDesktopServices::openUrl(usage);
+}
+
+void MainWindow::openCookbook()
+{
+    static QUrl const cookbook("http://rug-compling.github.com/dact/manual/cookbook.xhtml");
+    QDesktopServices::openUrl(cookbook);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
