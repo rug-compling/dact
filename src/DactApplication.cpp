@@ -1,7 +1,6 @@
 #include "DactApplication.hh"
 #include <QFileOpenEvent>
 
-
 DactApplication::DactApplication(int &argc, char** argv)
 :
 QApplication(argc, argv),
@@ -18,7 +17,6 @@ void DactApplication::init()
 
 bool DactApplication::event(QEvent *event)
 {
-    qDebug() << "event" << event->type();
     switch (event->type())
     {
         case QEvent::FileOpen:
