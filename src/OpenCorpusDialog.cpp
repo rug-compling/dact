@@ -33,9 +33,9 @@ namespace ac = alpinocorpus;
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
-OpenCorpusDialog::OpenCorpusDialog(QWidget *parent)
+OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 :
-    QDialog(parent),
+    QDialog(parent, f),
     d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
     d_archiveModel(new ArchiveModel(this)),
     d_corpusAccessManager(new QNetworkAccessManager(this)),

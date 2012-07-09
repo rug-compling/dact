@@ -30,7 +30,7 @@ class QTreeWidgetItem;
 class OpenCorpusDialog : public QDialog {
     Q_OBJECT
 public:
-    OpenCorpusDialog(QWidget *parent = 0);
+    OpenCorpusDialog(QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~OpenCorpusDialog();
 
     static QString getCorpusFileName(QWidget *parent);
