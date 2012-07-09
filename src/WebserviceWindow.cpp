@@ -216,7 +216,7 @@ void WebserviceWindow::updateProgressDialog()
 void WebserviceWindow::finishResponse()
 {
     // Reset the reply pointer, since the request is no longer active.
-    d_reply->deleteLater();
+    d_reply->disconnect();
     d_reply = 0;
 
     // Also close the corpus writer
