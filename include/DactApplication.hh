@@ -15,6 +15,7 @@ public:
     void openCorpora(QStringList const &fileNames);
     void openMacros(QStringList const &fileNames);
     void openUrl(QUrl const &url);
+    void showOpenCorpus();
 protected:
     bool event(QEvent *event);
 

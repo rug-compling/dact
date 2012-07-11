@@ -65,6 +65,12 @@ public slots:
     void close();
 
     /*!
+     Calls the open file dialog and filters on the .data.dz extension
+     \sa readCorpus
+     */
+    void openCorpus();
+
+    /*!
      Start loading a corpus
      \param corpusPath path to a .dz or directory with the XML files
     */
@@ -213,12 +219,6 @@ private slots:
      Opens the wiki in the default webbrowser.
      */
     void help();
-
-    /*!
-     Calls the open file dialog and filters on the .data.dz extension
-     \sa readCorpus
-     */
-    void openCorpus();
 
     void openMacrosFile();
 
