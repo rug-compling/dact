@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>626</width>
+    <width>550</width>
     <height>435</height>
    </rect>
   </property>
@@ -20,6 +20,9 @@
       <enum>Qt::ActionsContextMenu</enum>
      </property>
      <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="uniformItemSizes">
       <bool>true</bool>
      </property>
      <property name="verticalScrollMode">
