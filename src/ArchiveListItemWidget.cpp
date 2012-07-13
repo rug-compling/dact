@@ -25,6 +25,7 @@ void ArchiveListItemWidget::setArchiveEntry(ArchiveEntry const &entry)
     d_ui->descriptionLabel->setText(entry.description);
 
     d_ui->sizeLabel->setText(humanReadableSize(entry.size));
-
+    d_ui->sizeLabel->setVisible(!entry.existsLocally());
+    
     d_ui->downloadedLabel->setVisible(entry.existsLocally());
 }
