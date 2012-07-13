@@ -25,7 +25,9 @@
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
+     <addaction name="revealLocalFilesAction"/>
      <addaction name="deleteLocalFilesAction"/>
+     <addaction name="separatorAction"/>
      <addaction name="reloadAction"/>
     </widget>
    </item>
@@ -84,10 +86,12 @@
     </layout>
    </item>
   </layout>
-  <action name="deleteLocalFilesAction">
-   <property name="enabled">
-    <bool>false</bool>
+  <action name="revealLocalFilesAction">
+   <property name="text">
+    <string>Reveal local files</string>
    </property>
+  </action>
+  <action name="deleteLocalFilesAction">
    <property name="text">
     <string>Delete local files</string>
    </property>
@@ -95,6 +99,11 @@
   <action name="reloadAction">
    <property name="text">
     <string>Reload</string>
+   </property>
+  </action>
+  <action name="separatorAction">
+   <property name="separator">
+    <bool>true</bool>
    </property>
   </action>
  </widget>
@@ -153,6 +162,22 @@
    <signal>triggered()</signal>
    <receiver>OpenCorpusDialog</receiver>
    <slot>deleteSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>revealLocalFilesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>revealSelectedCorpus()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
