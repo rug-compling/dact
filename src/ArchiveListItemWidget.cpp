@@ -26,5 +26,5 @@ void ArchiveListItemWidget::setArchiveEntry(ArchiveEntry const &entry)
 
     d_ui->sizeLabel->setText(humanReadableSize(entry.size));
 
-    d_ui->downloadedLabel->setVisible(QFile(entry.filePath()).exists());
+    d_ui->downloadedLabel->setVisible(entry.existsLocally());
 }

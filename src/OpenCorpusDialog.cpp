@@ -328,7 +328,7 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
 {
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
     
-    if (QFile(entry.filePath()).exists())
+    if (entry.existsLocally())
     {
         d_filename = entry.filePath();
         accept();
@@ -337,6 +337,19 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
     {
         download(entry);
     }
+}
+
+void OpenCorpusDialog::deleteSelectedCorpus()
+{
+    QItemSelectionModel *selectionModel = d_ui->corpusListView->selectionModel();
+
+    if (selectionModel->selectedIndexes().size() == 0)
+        return;
+      
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(selectionModel->selectedIndexes().at(0).row());
+
+    if (entry.existsLocally())
+        QFile(entry.filePath()).remove();
 }
 
 void OpenCorpusDialog::refreshCorpusList()
@@ -350,7 +363,14 @@ void OpenCorpusDialog::refreshCorpusList()
 void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
     Q_UNUSED(previous);
+
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(current.row());
+
+    // Disable/enable Open button
     d_ui->openButton->setEnabled(current.isValid());
+
+    // Disable/enable Remove local files context menu item
+    d_ui->deleteLocalFilesAction->setEnabled(entry.existsLocally());
 }
 
 QString OpenCorpusDialog::networkErrorToString(QNetworkReply::NetworkError error)

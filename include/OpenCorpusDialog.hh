@@ -60,6 +60,8 @@ private slots:
     void openSelectedCorpus();
     void openSelectedCorpus(QModelIndex const &);
 
+    void deleteSelectedCorpus();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
         

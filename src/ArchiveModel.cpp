@@ -1,5 +1,6 @@
 #include <QByteArray>
 #include <QDesktopServices>
+#include <QFile>
 #include <QIODevice>
 #include <QMetaEnum>
 #include <QMetaObject>
@@ -26,6 +27,11 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 QString ArchiveEntry::filePath() const
 {
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
+}
+
+bool ArchiveEntry::existsLocally() const
+{
+    return QFile(filePath()).exists();
 }
 
 ArchiveModel::ArchiveModel(QObject *parent) :

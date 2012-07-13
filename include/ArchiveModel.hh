@@ -20,6 +20,7 @@ struct ArchiveEntry {
     QString checksum;
 
     QString filePath() const;
+    bool existsLocally() const;
 };
 
 class ArchiveModel : public QAbstractTableModel
