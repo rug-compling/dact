@@ -30,7 +30,7 @@ public:
     ArchiveModel(QUrl const &archiveUrl, QObject *parent = 0);
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     int columnCount(QModelIndex const &parent = QModelIndex()) const;
-    ArchiveEntry const &entryAtRow(int row);
+    ArchiveEntry const &entryAtRow(int row) const;
     QVariant headerData(int column, Qt::Orientation orientation,
         int role) const;
     void refresh();
@@ -54,10 +54,9 @@ private:
 
 };
 
-inline ArchiveEntry const &ArchiveModel::entryAtRow(int row)
+inline ArchiveEntry const &ArchiveModel::entryAtRow(int row) const
 {
     return d_corpora.at(row);
 }
-
 
 #endif // DOWNLOADWINDOW_H

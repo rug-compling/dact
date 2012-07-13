@@ -96,6 +96,8 @@ option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
 SET(dact_SRCS
   src/AboutWindow.cpp
   src/ArchiveModel.cpp
+  src/ArchiveListItemDelegate.cpp
+  src/ArchiveListItemWidget.cpp
   src/DactColorWell.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -145,6 +147,8 @@ SET(dact_SRCS
 SET(dact_HDRS
   include/AboutWindow.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -196,6 +200,8 @@ SET(dact_HDRS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
   include/DactApplication.hh
   include/DactColorWell.hh
   include/BracketedDelegate.hh
@@ -237,6 +243,7 @@ SET(dact_MOC_HDRS
 
 SET(dact_UI
   ui/AboutWindow.ui
+  ui/ArchiveListItemWidget.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
   ui/MainWindow.ui

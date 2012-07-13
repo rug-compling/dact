@@ -16,8 +16,14 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QListView" name="corpusListView">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
      <property name="contextMenuPolicy">
       <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
      <addaction name="deleteLocalFilesAction"/>
      <addaction name="reloadAction"/>

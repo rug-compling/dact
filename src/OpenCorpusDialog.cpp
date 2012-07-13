@@ -19,6 +19,7 @@
 #include <QtIOCompressor.hh>
 
 #include "OpenCorpusDialog.hh"
+#include "ArchiveListItemDelegate.hh"
 #include "ArchiveModel.hh"
 
 #include <config.hh>
@@ -46,6 +47,8 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui->setupUi(this);
 
     d_ui->corpusListView->setModel(d_archiveModel.data());
+
+    d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
     
     // We only enable the download button when a corpus is selected.
     d_ui->openButton->setEnabled(false);
