@@ -5,22 +5,22 @@
 #include <QWidget>
 
 namespace Ui {
-	class ArchiveListItemWidget;
+    class ArchiveListItemWidget;
 }
 
 class ArchiveEntry;
 
 class ArchiveListItemWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	ArchiveListItemWidget(QWidget *parent = 0);
-	~ArchiveListItemWidget();
+    ArchiveListItemWidget(QWidget *parent = 0);
+    ~ArchiveListItemWidget();
 
-	void setArchiveEntry(ArchiveEntry const &entry);
+    void setArchiveEntry(ArchiveEntry const &entry);
 
 private:
-	QSharedPointer<Ui::ArchiveListItemWidget> d_ui;
+    QSharedPointer<Ui::ArchiveListItemWidget> d_ui;
 };
 
 #endif // ARCHIVELISTITEMWIDGET_H
