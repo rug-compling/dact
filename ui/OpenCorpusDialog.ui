@@ -16,11 +16,11 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QListView" name="corpusListView">
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
      <property name="contextMenuPolicy">
       <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
      </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -58,6 +58,13 @@
        </property>
        <property name="maximum">
         <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>Cancel</string>
        </property>
       </widget>
      </item>
@@ -138,6 +145,22 @@
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>495</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>217</y>
     </hint>
    </hints>
   </connection>
