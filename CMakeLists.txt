@@ -128,6 +128,7 @@ SET(dact_SRCS
   src/GlobalCutCommand.cpp
   src/GlobalEditCommand.cpp
   src/GlobalPasteCommand.cpp
+  src/HumanReadableSize.cpp
   src/MainWindow.cpp
   src/OpenCorpusDialog.cpp
   src/PercentageCellDelegate.cpp
@@ -180,6 +181,7 @@ SET(dact_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/HistoryComboBox.hh
+  include/HumanReadableSize.hh
   include/OpenCorpusDialog.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh

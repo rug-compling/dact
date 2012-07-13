@@ -19,6 +19,7 @@
 #include <QtDebug>
 
 #include <ArchiveModel.hh>
+#include <HumanReadableSize.hh>
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
@@ -66,7 +67,7 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             case 0:
                 return corpus.name;
             case 1:
-                return QString("%1 MB").arg(corpus.size);
+                return humanReadableSize(corpus.size);
             case 2:
                 return QString("%L1").arg(corpus.sentences);
             case 3:
@@ -210,12 +211,10 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         if (!ok)
             continue;
         
-        double fileSizeMB = fileSize / (1024 * 1024);
-        
         ArchiveEntry corpus;
         corpus.name = name;
         corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
-        corpus.size = fileSizeMB;
+        corpus.size = fileSize;
         corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
         corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
         corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));

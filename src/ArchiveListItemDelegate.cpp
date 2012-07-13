@@ -25,7 +25,7 @@ void ArchiveListItemDelegate::setEntry(QModelIndex const &index) const
 QSize ArchiveListItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	setEntry(index);
-	// d_view->adjustSize();
+	d_view->adjustSize();
 
 	// return QSize(d_view->size().width(), 75);
 	return d_view->sizeHint();
