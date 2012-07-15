@@ -1,6 +1,7 @@
 #include <QChar>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QList>
@@ -9,6 +10,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QProcess>
 #include <QProgressDialog>
 #include <QRegExp>
 #include <QString>
@@ -19,6 +21,7 @@
 #include <QtIOCompressor.hh>
 
 #include "OpenCorpusDialog.hh"
+#include "ArchiveListItemDelegate.hh"
 #include "ArchiveModel.hh"
 
 #include <config.hh>
@@ -46,6 +49,8 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui->setupUi(this);
 
     d_ui->corpusListView->setModel(d_archiveModel.data());
+
+    d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
     
     // We only enable the download button when a corpus is selected.
     d_ui->openButton->setEnabled(false);
@@ -325,7 +330,7 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
 {
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
     
-    if (QFile(entry.filePath()).exists())
+    if (entry.existsLocally())
     {
         d_filename = entry.filePath();
         accept();
@@ -334,6 +339,52 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
     {
         download(entry);
     }
+}
+
+ArchiveEntry const &OpenCorpusDialog::selectedCorpus() const
+{
+    QItemSelectionModel *selectionModel = d_ui->corpusListView->selectionModel();
+
+    Q_ASSERT(selectionModel->selectedIndexes().size() > 0);
+      
+    return d_archiveModel->entryAtRow(selectionModel->selectedIndexes().at(0).row());
+
+}
+
+void OpenCorpusDialog::deleteSelectedCorpus()
+{
+    ArchiveEntry const &entry(selectedCorpus());
+
+    if (entry.existsLocally())
+        QFile(entry.filePath()).remove();
+}
+
+void OpenCorpusDialog::revealSelectedCorpus()
+{
+    ArchiveEntry const &entry(selectedCorpus());
+    // source: http://lynxline.com/show-in-finder-show-in-explorer/
+
+    #ifdef Q_WS_MAC
+        QStringList args;
+        args << "-e";
+        args << "tell application \"Finder\"";
+        args << "-e";
+        args << "activate";
+        args << "-e";
+        args << "select POSIX file \""+entry.filePath()+"\"";
+        args << "-e";
+        args << "end tell";
+        QProcess::startDetached("osascript", args);
+
+    #elif Q_WS_WIN
+        QStringList args;
+        args << "/select," << QDir::toNativeSeparators(entry.filePath());
+        QProcess::startDetached("explorer", args);
+
+    #else
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(entry.filePath()).path()));
+
+    #endif
 }
 
 void OpenCorpusDialog::refreshCorpusList()
@@ -347,7 +398,16 @@ void OpenCorpusDialog::refreshCorpusList()
 void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
     Q_UNUSED(previous);
+
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(current.row());
+
+    // Disable/enable Open button
     d_ui->openButton->setEnabled(current.isValid());
+
+    // Disable/enable Reveal & Remove local files context menu items
+    bool corpusExistsLocally(entry.existsLocally());
+    d_ui->deleteLocalFilesAction->setEnabled(corpusExistsLocally);
+    d_ui->revealLocalFilesAction->setEnabled(corpusExistsLocally);
 }
 
 QString OpenCorpusDialog::networkErrorToString(QNetworkReply::NetworkError error)

@@ -1,5 +1,7 @@
 #include <QByteArray>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFile>
 #include <QIODevice>
 #include <QMetaEnum>
 #include <QMetaObject>
@@ -19,6 +21,7 @@
 #include <QtDebug>
 
 #include <ArchiveModel.hh>
+#include <HumanReadableSize.hh>
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
@@ -27,10 +30,17 @@ QString ArchiveEntry::filePath() const
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
 }
 
+bool ArchiveEntry::existsLocally() const
+{
+    return QFile(filePath()).exists();
+}
+
 ArchiveModel::ArchiveModel(QObject *parent) :
     QAbstractTableModel(parent),
     d_accessManager(new QNetworkAccessManager)
 {
+    scanLocalFiles();
+
     connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(replyFinished(QNetworkReply*)));
 }
@@ -66,7 +76,7 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             case 0:
                 return corpus.name;
             case 1:
-                return QString("%1 MB").arg(corpus.size);
+                return humanReadableSize(corpus.size);
             case 2:
                 return QString("%L1").arg(corpus.sentences);
             case 3:
@@ -210,12 +220,10 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         if (!ok)
             continue;
         
-        double fileSizeMB = fileSize / (1024 * 1024);
-        
         ArchiveEntry corpus;
         corpus.name = name;
         corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
-        corpus.size = fileSizeMB;
+        corpus.size = fileSize;
         corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
         corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
         corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
@@ -236,6 +244,24 @@ int ArchiveModel::rowCount(QModelIndex const &parent) const
         return 0;
     
     return d_corpora.size();
+}
+
+void ArchiveModel::scanLocalFiles()
+{
+    QDir localFiles(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+
+    QStringList extensions;
+    extensions << "*.dact";
+
+    foreach (QFileInfo const &entry, localFiles.entryInfoList(extensions))
+    {
+        ArchiveEntry corpus;
+        corpus.name = entry.baseName();
+
+        d_corpora.push_back(corpus);
+    }
+
+    emit layoutChanged();
 }
 
 void ArchiveModel::setUrl(QUrl const &archiveUrl)

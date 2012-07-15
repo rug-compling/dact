@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>626</width>
+    <width>550</width>
     <height>435</height>
    </rect>
   </property>
@@ -19,7 +19,18 @@
      <property name="contextMenuPolicy">
       <enum>Qt::ActionsContextMenu</enum>
      </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="uniformItemSizes">
+      <bool>true</bool>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+     <addaction name="revealLocalFilesAction"/>
      <addaction name="deleteLocalFilesAction"/>
+     <addaction name="separatorAction"/>
      <addaction name="reloadAction"/>
     </widget>
    </item>
@@ -56,6 +67,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="openButton">
        <property name="enabled">
         <bool>false</bool>
@@ -71,10 +89,12 @@
     </layout>
    </item>
   </layout>
-  <action name="deleteLocalFilesAction">
-   <property name="enabled">
-    <bool>false</bool>
+  <action name="revealLocalFilesAction">
+   <property name="text">
+    <string>Reveal local files</string>
    </property>
+  </action>
+  <action name="deleteLocalFilesAction">
    <property name="text">
     <string>Delete local files</string>
    </property>
@@ -82,6 +102,11 @@
   <action name="reloadAction">
    <property name="text">
     <string>Reload</string>
+   </property>
+  </action>
+  <action name="separatorAction">
+   <property name="separator">
+    <bool>true</bool>
    </property>
   </action>
  </widget>
@@ -132,6 +157,54 @@
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteLocalFilesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>deleteSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>revealLocalFilesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>revealSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>495</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>217</y>
     </hint>
    </hints>
   </connection>

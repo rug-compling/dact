@@ -60,11 +60,15 @@ private slots:
     void openSelectedCorpus();
     void openSelectedCorpus(QModelIndex const &);
 
+    void deleteSelectedCorpus();
+    void revealSelectedCorpus();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
         
 private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
+    ArchiveEntry const &selectedCorpus() const;
     
     QSharedPointer<Ui::OpenCorpusDialog> d_ui;
     QSharedPointer<ArchiveModel> d_archiveModel;
