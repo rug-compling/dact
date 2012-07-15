@@ -36,10 +36,10 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 :
     QDialog(parent, f),
     d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
-    d_archiveModel(new ArchiveModel(this)),
-    d_corpusAccessManager(new QNetworkAccessManager(this)),
-    d_downloadProgressDialog(new QProgressDialog(this)),
-    d_inflateProgressDialog(new QProgressDialog(this)),
+    d_archiveModel(new ArchiveModel()),
+    d_corpusAccessManager(new QNetworkAccessManager()),
+    d_downloadProgressDialog(new QProgressDialog()),
+    d_inflateProgressDialog(new QProgressDialog()),
     d_reply(0),
     d_cancelInflate(false)
 {
