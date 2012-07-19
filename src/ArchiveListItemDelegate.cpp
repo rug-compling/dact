@@ -44,5 +44,8 @@ void ArchiveListItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     setEntry(index);
 
     d_view->resize(option.rect.size());
-    d_view->render(painter, option.rect.topLeft(), QRegion(), QWidget::DrawChildren);
+    painter->save();
+    painter->translate(option.rect.topLeft());
+    d_view->render(painter, QPoint(), QRegion(), QWidget::DrawChildren);
+    painter->restore();
 }
