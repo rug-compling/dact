@@ -73,8 +73,8 @@ private:
     QSharedPointer<Ui::OpenCorpusDialog> d_ui;
     QSharedPointer<ArchiveModel> d_archiveModel;
     QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;
-    QSharedPointer<QProgressDialog> d_downloadProgressDialog;
-    QSharedPointer<QProgressDialog> d_inflateProgressDialog;
+    QProgressDialog *d_downloadProgressDialog;
+    QProgressDialog *d_inflateProgressDialog;
     QString d_baseUrl;
     QString d_filename;
     QString d_hash;

@@ -41,8 +41,8 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
     d_archiveModel(new ArchiveModel()),
     d_corpusAccessManager(new QNetworkAccessManager()),
-    d_downloadProgressDialog(new QProgressDialog()),
-    d_inflateProgressDialog(new QProgressDialog()),
+    d_downloadProgressDialog(new QProgressDialog(this)),
+    d_inflateProgressDialog(new QProgressDialog(this)),
     d_reply(0),
     d_cancelInflate(false)
 {
@@ -80,17 +80,17 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
     
-    connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
+    connect(d_downloadProgressDialog, SIGNAL(canceled()),
         SLOT(downloadCanceled()));
-    connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
+    connect(d_inflateProgressDialog, SIGNAL(canceled()),
             SLOT(cancelInflate()));
     
     connect(this, SIGNAL(inflateProgressed(int)),
-        d_inflateProgressDialog.data(), SLOT(setValue(int)));
+        d_inflateProgressDialog, SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
-        d_inflateProgressDialog.data(), SLOT(accept()));
+        d_inflateProgressDialog, SLOT(accept()));
     connect(this, SIGNAL(inflateFinished()),
         SLOT(accept()));
     
