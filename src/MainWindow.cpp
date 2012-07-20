@@ -757,7 +757,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
     d_ui->statisticsWindow->switchCorpus(d_corpusReader);
     d_ui->sentencesWidget->switchCorpus(d_corpusReader);
 
-    //taintAllWidgets();
+    taintAllWidgets();
     tabChanged(d_ui->mainTabWidget->currentIndex());
 }
 
