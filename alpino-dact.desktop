@@ -2,9 +2,9 @@
 Name=Dact
 GenericName=Alpino treebank viewer
 Comment=View and query treebanks
-Exec=alpino-dact
+Exec=alpino-dact %U
 Icon=dact-espresso
 Terminal=false
 Type=Application
 Categories=Education;Science;
-MimeType=application/dact
+MimeType=application/dact;x-scheme-handler/dact

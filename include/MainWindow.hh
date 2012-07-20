@@ -220,12 +220,6 @@ private slots:
      */
     void help();
 
-    /*!
-     Calls the open file dialog and filters on the .data.dz extension
-     \sa readCorpus
-     */
-    void openCorpus();
-
     void openMacrosFile();
 
     /*!
