@@ -22,7 +22,6 @@ namespace Ui {
 }
 
 class AboutWindow;
-class DownloadWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -66,6 +65,12 @@ public slots:
     void close();
 
     /*!
+     Calls the open file dialog and filters on the .data.dz extension
+     \sa readCorpus
+     */
+    void openCorpus();
+
+    /*!
      Start loading a corpus
      \param corpusPath path to a .dz or directory with the XML files
     */
@@ -94,11 +99,6 @@ public slots:
      Toggle toolbar visibility.
     */
     void setToolbarVisible(bool visible);
-
-    /*!
-     Instantiate (if not already instantiated) and raise the download window.
-     */
-    void showDownloadWindow();
 
 #ifdef USE_WEBSERVICE
     /*!
@@ -225,6 +225,7 @@ private slots:
      \sa readCorpus
      */
     void openCorpus();
+
     void openMacrosFile();
 
     /*!
@@ -294,11 +295,6 @@ private:
      Attaches all the signals from the ui and mapper to the various functions.
      */
     void createActions();
-
-    /*!
-     Retrieve a list of corpus extensions from the alpinocorpus library.
-    */
-    QString corpusExtensions();
 
     /*!
      Focus on the next or previous tree node in the current tree scene. It finds the
@@ -375,7 +371,6 @@ private:
 
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
-    DownloadWindow *d_downloadWindow;
 #ifdef USE_WEBSERVICE
     WebserviceWindow *d_webserviceWindow;
 #endif // USE_WEBSERVICE

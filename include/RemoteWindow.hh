@@ -15,7 +15,7 @@ namespace Ui {
     class RemoteWindow;
 }
 
-class ArchiveModel;
+class RemoteArchiveModel;
 class QIODevice;
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -47,7 +47,7 @@ private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
 
     QSharedPointer<Ui::RemoteWindow> d_ui;
-    QSharedPointer<ArchiveModel> d_archiveModel;
+    QSharedPointer<RemoteArchiveModel> d_archiveModel;
     QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;
     QString d_baseUrl;
     QString d_url;

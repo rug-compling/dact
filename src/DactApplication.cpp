@@ -3,16 +3,20 @@
 
 DactApplication::DactApplication(int &argc, char** argv)
 :
-QApplication(argc, argv),
-d_mainWindow(0)
+    QApplication(argc, argv),
+    d_mainWindow(0)
 {
-    //d_mainWindow = new DactMainWindow();
+    d_showOpenCorpusTimer.setSingleShot(true);
+
+    connect(&d_showOpenCorpusTimer, SIGNAL(timeout()), SLOT(showOpenCorpus()));
 }
 
 void DactApplication::init()
 {
     d_mainWindow.reset(new MainWindow());
     d_mainWindow->show();
+
+    d_showOpenCorpusTimer.start(50);
 }
 
 bool DactApplication::event(QEvent *event)
@@ -45,6 +49,7 @@ bool DactApplication::event(QEvent *event)
 
 void DactApplication::openCorpora(QStringList const &fileNames)
 {
+    d_showOpenCorpusTimer.stop();
     d_mainWindow->readCorpora(fileNames);
 }
 
@@ -81,4 +86,9 @@ void DactApplication::openUrl(QUrl const &url)
         d_mainWindow->readCorpora(fileNames);
     }
     #endif
+}
+
+void DactApplication::showOpenCorpus()
+{
+  d_mainWindow->openCorpus();
 }

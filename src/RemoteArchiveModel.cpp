@@ -1,7 +1,4 @@
 #include <QByteArray>
-#include <QDesktopServices>
-#include <QDir>
-#include <QFile>
 #include <QIODevice>
 #include <QMetaEnum>
 #include <QMetaObject>
@@ -20,51 +17,27 @@
 
 #include <QtDebug>
 
-#include <ArchiveModel.hh>
-#include <HumanReadableSize.hh>
+#include <RemoteArchiveModel.hh>
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
-QString ArchiveEntry::filePath() const
-{
-    return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
-}
-
-bool ArchiveEntry::existsLocally() const
-{
-    return QFile(filePath()).exists();
-}
-
-ArchiveModel::ArchiveModel(QObject *parent) :
+RemoteArchiveModel::RemoteArchiveModel(QObject *parent) :
     QAbstractTableModel(parent),
     d_accessManager(new QNetworkAccessManager)
-{
-    init();
-}
-
-ArchiveModel::ArchiveModel(QString const &archiveUrl, QObject *parent) :
-    QAbstractTableModel(parent),
-    d_archiveUrl(archiveUrl),
-    d_accessManager(new QNetworkAccessManager)
-{
-    init();
-}
-
-void ArchiveModel::init()
 {
     connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(replyFinished(QNetworkReply*)));
-
-    // First of all, add the local files to the list
-    addLocalFiles();
-
-    // Then, if there is a local copy of the archive index, read it
-    QByteArray localArchiveIndex(readLocalArchiveIndex());
-    if (localArchiveIndex.size() > 0)
-        parseArchiveIndex(localArchiveIndex, true);
 }
 
-int ArchiveModel::columnCount(QModelIndex const &parent) const
+RemoteArchiveModel::RemoteArchiveModel(QUrl const &archiveUrl, QObject *parent) :
+    QAbstractTableModel(parent),
+    d_accessManager(new QNetworkAccessManager)
+{
+    connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
+        SLOT(replyFinished(QNetworkReply*)));
+}
+
+int RemoteArchiveModel::columnCount(QModelIndex const &parent) const
 {
     if (parent != QModelIndex())
         return 0;
@@ -72,14 +45,14 @@ int ArchiveModel::columnCount(QModelIndex const &parent) const
     return 4;
 }
 
-QVariant ArchiveModel::data(QModelIndex const &index, int role) const
+QVariant RemoteArchiveModel::data(QModelIndex const &index, int role) const
 {
     if (!index.isValid() ||
         index.row() >= d_corpora.size() ||
         index.row() < 0)
       return QVariant();
 
-    ArchiveEntry const &corpus = d_corpora.at(index.row());
+    RemoteArchiveEntry const &corpus = d_corpora.at(index.row());
    
     if (role == Qt::DisplayRole)
         switch (index.column())
@@ -87,7 +60,7 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
             case 0:
                 return corpus.name;
             case 1:
-                return humanReadableSize(corpus.size);
+                return QString("%1 MB").arg(corpus.size);
             case 2:
                 return QString("%L1").arg(corpus.sentences);
             case 3:
@@ -115,7 +88,7 @@ QVariant ArchiveModel::data(QModelIndex const &index, int role) const
     return QVariant();
 }
 
-QVariant ArchiveModel::headerData(int column, Qt::Orientation orientation,
+QVariant RemoteArchiveModel::headerData(int column, Qt::Orientation orientation,
   int role) const
 {
   if (orientation != Qt::Horizontal ||
@@ -137,7 +110,7 @@ QVariant ArchiveModel::headerData(int column, Qt::Orientation orientation,
   }
 }
 
-QString ArchiveModel::networkErrorToString(QNetworkReply::NetworkError error)
+QString RemoteArchiveModel::networkErrorToString(QNetworkReply::NetworkError error)
 {
     QString errorValue;
     QMetaObject meta = QNetworkReply::staticMetaObject;
@@ -173,8 +146,11 @@ QString childValue(xmlDocPtr doc, xmlNodePtr children, xmlChar const *name) {
 }
 
 
-void ArchiveModel::replyFinished(QNetworkReply *reply)
+void RemoteArchiveModel::replyFinished(QNetworkReply *reply)
 {
+    d_corpora.clear();
+    emit layoutChanged();
+    
     QNetworkReply::NetworkError error = reply->error();
     if (error != QNetworkReply::NoError)
     {
@@ -188,26 +164,10 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
     }
     
     QByteArray xmlData(reply->readAll());
-    
-    // Save a local copy of XML Data, for when the application is offline
-    if (parseArchiveIndex(xmlData))
-        writeLocalArchiveIndex(xmlData);
-
-    emit retrievalFinished();
-
-    reply->deleteLater();
-}
-
-bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFilesOnly)
-{
-    // Clear the list, but add the local files again.
-    d_corpora.clear();
-    addLocalFiles();
-    
     xmlDocPtr xmlDoc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
     if (xmlDoc == 0) {
         emit processingError("could not parse the corpus archive index.");
-        return false;
+        return;
     }
     
     xmlNodePtr root = xmlDocGetRootElement(xmlDoc);
@@ -215,7 +175,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
         QString("corpusarchive")) {
         xmlFreeDoc(xmlDoc);
         emit processingError("the corpus archive index has an incorrect root node.");
-        return false;
+        return;
     }
     
     for (xmlNodePtr child = root->children; child != 0; child = child->next)
@@ -244,44 +204,27 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
         if (!ok)
             continue;
         
-        ArchiveEntry *corpus(0);
-
-        // Try to find if the file is already in the index (e.g. a local file)
-        for (QVector<ArchiveEntry>::iterator it = d_corpora.begin(); it != d_corpora.end(); it++)
-        {
-            if (it->name == name)
-            {
-                corpus = it;
-                break;
-            }
-        }
-
-        // If there is no such corpus on the list already, add a new one.
-        if (corpus == 0)
-        {
-            // .. unless we only want to list local corpora. If so, skip it.
-            if (listLocalFilesOnly)
-                continue;
-
-            d_corpora.push_back(ArchiveEntry());
-            corpus = &d_corpora.last();
-        }
-
-        corpus->name = name;
-        corpus->url = QString("%1/%2").arg(d_archiveUrl).arg(name + DOWNLOAD_EXTENSION);
-        corpus->sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
-        corpus->size = fileSize;
-        corpus->description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
-        corpus->longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
-        corpus->checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
+        double fileSizeMB = fileSize / (1024 * 1024);
+        
+        RemoteArchiveEntry corpus;
+        corpus.name = name;
+        corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
+        corpus.size = fileSizeMB;
+        corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
+        corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
+        corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
+        
+        d_corpora.push_back(corpus);        
     }
 
     emit layoutChanged();
+    
+    emit retrievalFinished();
 
-    return true;
+    reply->deleteLater();
 }
 
-int ArchiveModel::rowCount(QModelIndex const &parent) const
+int RemoteArchiveModel::rowCount(QModelIndex const &parent) const
 {
     if (parent != QModelIndex())
         return 0;
@@ -289,71 +232,17 @@ int ArchiveModel::rowCount(QModelIndex const &parent) const
     return d_corpora.size();
 }
 
-void ArchiveModel::addLocalFiles()
-{
-    QDir localFiles(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-
-    QStringList extensions;
-    extensions << "*.dact";
-
-    foreach (QFileInfo const &entry, localFiles.entryInfoList(extensions))
-    {
-        ArchiveEntry corpus;
-        corpus.name = entry.baseName();
-
-        d_corpora.push_back(corpus);
-    }
-
-    emit layoutChanged();
-}
-
-void ArchiveModel::setUrl(QString const &archiveUrl)
+void RemoteArchiveModel::setUrl(QUrl const &archiveUrl)
 {
     d_archiveUrl = archiveUrl;
     refresh();
 }
 
-void ArchiveModel::refresh()
+void RemoteArchiveModel::refresh()
 {
     emit retrieving();
     
-    QNetworkRequest request(d_archiveUrl + "/index.xml");
+    QNetworkRequest request(d_archiveUrl);
     d_accessManager->get(request);
 }
 
-void ArchiveModel::writeLocalArchiveIndex(QByteArray const &data)
-{
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
-
-    if (!file.open(QIODevice::WriteOnly))
-        return;
-
-    file.write(data);
-}
-
-QByteArray ArchiveModel::readLocalArchiveIndex() const
-{
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
-
-    if (!file.exists() || !file.open(QIODevice::ReadOnly))
-        return QByteArray();
-
-    return file.readAll();
-}
-
-void ArchiveModel::deleteLocalFiles(QModelIndex const &index)
-{
-    ArchiveEntry const &entry(entryAtRow(index.row()));
-
-    // If it indeed exists as a local file, delete it.
-    if (entry.existsLocally())
-    {
-        QFile(entry.filePath()).remove();
-
-        // If it only exists as a local file (i.e. not in the corpus index) also delete it from the index.
-        if (entry.url.isEmpty())
-            d_corpora.remove(index.row());
-
-        emit layoutChanged();
-    }
-}

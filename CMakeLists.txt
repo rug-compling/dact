@@ -92,6 +92,8 @@ option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 SET(dact_SRCS
   src/AboutWindow.cpp
   src/ArchiveModel.cpp
+  src/ArchiveListItemDelegate.cpp
+  src/ArchiveListItemWidget.cpp
   src/DactColorWell.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -101,7 +103,6 @@ SET(dact_SRCS
   src/BracketedWindow.cpp
   src/Chunk.cpp
   src/DependencyTreeWidget.cpp
-  src/DownloadWindow.cpp
   src/DactApplication.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
@@ -123,7 +124,9 @@ SET(dact_SRCS
   src/GlobalCutCommand.cpp
   src/GlobalEditCommand.cpp
   src/GlobalPasteCommand.cpp
+  src/HumanReadableSize.cpp
   src/MainWindow.cpp
+  src/OpenCorpusDialog.cpp
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
@@ -141,6 +144,8 @@ SET(dact_SRCS
 SET(dact_HDRS
   include/AboutWindow.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -149,7 +154,6 @@ SET(dact_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/config.hh
   include/DactApplication.hh
   include/DactColorWell.hh
@@ -173,6 +177,8 @@ SET(dact_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/HistoryComboBox.hh
+  include/HumanReadableSize.hh
+  include/OpenCorpusDialog.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -192,6 +198,8 @@ SET(dact_HDRS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
   include/DactApplication.hh
   include/DactColorWell.hh
   include/BracketedDelegate.hh
@@ -202,7 +210,6 @@ SET(dact_MOC_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/DactListView.hh
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
@@ -223,6 +230,7 @@ SET(dact_MOC_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/MainWindow.hh
+  include/OpenCorpusDialog.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/RecentFilesMenu.hh
@@ -233,10 +241,11 @@ SET(dact_MOC_HDRS
 
 SET(dact_UI
   ui/AboutWindow.ui
+  ui/ArchiveListItemWidget.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
-  ui/DownloadWindow.ui
   ui/MainWindow.ui
+  ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
@@ -248,11 +257,14 @@ SET(dact_RCS
 
 if(USE_REMOTE_CORPUS)
   list(APPEND dact_HEADERS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_MOC_HDRS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_SRCS
-    src/RemoteWindow.cpp)
+    src/RemoteWindow.cpp
+    src/RemoteArchiveModel.cpp)
   list(APPEND dact_UI
     ui/RemoteWindow.ui)
 endif()

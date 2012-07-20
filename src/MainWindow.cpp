@@ -43,13 +43,13 @@
 #include <config.hh>
 
 #include <AboutWindow.hh>
-#include <DownloadWindow.hh>
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
+#include <OpenCorpusDialog.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -82,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
     d_aboutWindow(new AboutWindow(this, Qt::Window)),
-    d_downloadWindow(0),
 #ifdef USE_WEBSERVICE
     d_webserviceWindow(0),
 #endif // USE_WEBSERVICE
@@ -135,7 +134,6 @@ MainWindow::~MainWindow()
     d_ui->filterComboBox->writeHistory("filterHistory");
 
     delete d_aboutWindow;
-    delete d_downloadWindow;
 #ifdef USE_WEBSERVICE
     delete d_webserviceWindow;
 #endif // USE_WEBSERVICE
@@ -252,32 +250,6 @@ void MainWindow::convertDirectoryCorpus()
         return;
 
     convertCorpus(corpusPath);
-}
-
-QString MainWindow::corpusExtensions()
-{
-    // XXX - Bye bye, cosy old world!
-    // QStringList extensions;
-    //
-    // ReaderList readers = ac::CorpusReaderFactory::readersAvailable();
-    // for (ReaderList::const_iterator iter = readers.begin();
-    //         iter != readers.end(); ++iter)
-    //     for (ExtList::const_iterator extIter = iter->extensions.begin();
-    //             extIter != iter->extensions.end(); ++extIter)
-    //         extensions.push_back(QString("*.%1").arg(extIter->c_str()));
-    //
-    // return extensions.join(" ");
-
-    return "*.dact";
-}
-
-void MainWindow::showDownloadWindow()
-{
-    if (d_downloadWindow == 0)
-        d_downloadWindow = new DownloadWindow(this, Qt::Window);
-
-    d_downloadWindow->show();
-    d_downloadWindow->raise();
 }
 
 #ifdef USE_WEBSERVICE
@@ -437,8 +409,6 @@ void MainWindow::createActions()
     // Actions
     connect(d_ui->aboutAction, SIGNAL(triggered(bool)),
         SLOT(aboutDialog()));
-    connect(d_ui->downloadAction, SIGNAL(triggered(bool)),
-        SLOT(showDownloadWindow()));
 #ifdef USE_REMOTE_CORPUS
     connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
         SLOT(showRemoteWindow()));
@@ -591,8 +561,8 @@ void MainWindow::initSentenceTransformer()
 
 void MainWindow::openCorpus()
 {
-    QString corpusPath = QFileDialog::getOpenFileName(this, "Open corpus", QString(),
-        QString("Dact corpora (%1)").arg(corpusExtensions()));
+    QString corpusPath = OpenCorpusDialog::getCorpusFileName(this);
+    
     if (corpusPath.isNull())
         return;
 

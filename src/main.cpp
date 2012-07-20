@@ -74,13 +74,16 @@ int main(int argc, char *argv[])
                 
                 macroPaths.append(args[++i]);
             }
+            if (args[i].startsWith("dact:"))
+                a->openUrl(QUrl::fromUserInput(args[i]));
             else
                 corpusPaths.append(args[i]);
         }
 
+        a->openMacros(macroPaths);
+
         if (corpusPaths.size() != 0)
           a->openCorpora(corpusPaths);
-        a->openMacros(macroPaths);
         
         r = a->exec();
     } catch (std::logic_error const &e) {
