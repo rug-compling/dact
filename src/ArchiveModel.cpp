@@ -61,7 +61,7 @@ void ArchiveModel::init()
     // Then, if there is a local copy of the archive index, read it
     QByteArray localArchiveIndex(readLocalArchiveIndex());
     if (localArchiveIndex.size() > 0)
-        parseArchiveIndex(localArchiveIndex);
+        parseArchiveIndex(localArchiveIndex, true);
 }
 
 int ArchiveModel::columnCount(QModelIndex const &parent) const
@@ -198,7 +198,7 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData)
+bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFilesOnly)
 {
     // Clear the list, but add the local files again.
     d_corpora.clear();
@@ -259,6 +259,10 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData)
         // If there is no such corpus on the list already, add a new one.
         if (corpus == 0)
         {
+            // .. unless we only want to list local corpora. If so, skip it.
+            if (listLocalFilesOnly)
+                continue;
+
             d_corpora.push_back(ArchiveEntry());
             corpus = &d_corpora.last();
         }

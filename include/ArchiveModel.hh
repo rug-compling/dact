@@ -59,7 +59,7 @@ private:
     void writeLocalArchiveIndex(QByteArray const &data);
     QByteArray readLocalArchiveIndex() const;
 
-    bool parseArchiveIndex(QByteArray const &xmlData);
+    bool parseArchiveIndex(QByteArray const &xmlData, bool listLocalFilesOnly = false);
 
     QString d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
