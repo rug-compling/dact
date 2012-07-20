@@ -39,18 +39,29 @@ ArchiveModel::ArchiveModel(QObject *parent) :
     QAbstractTableModel(parent),
     d_accessManager(new QNetworkAccessManager)
 {
-    addLocalFiles();
-
-    connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
-        SLOT(replyFinished(QNetworkReply*)));
+    init();
 }
 
 ArchiveModel::ArchiveModel(QUrl const &archiveUrl, QObject *parent) :
     QAbstractTableModel(parent),
+    d_archiveUrl(archiveUrl),
     d_accessManager(new QNetworkAccessManager)
+{
+    init();
+}
+
+void ArchiveModel::init()
 {
     connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(replyFinished(QNetworkReply*)));
+
+    // First of all, add the local files to the list
+    addLocalFiles();
+
+    // Then, if there is a local copy of the archive index, read it
+    QByteArray localArchiveIndex(readLocalArchiveIndex());
+    if (localArchiveIndex.size() > 0)
+        parseArchiveIndex(localArchiveIndex);
 }
 
 int ArchiveModel::columnCount(QModelIndex const &parent) const
@@ -164,11 +175,6 @@ QString childValue(xmlDocPtr doc, xmlNodePtr children, xmlChar const *name) {
 
 void ArchiveModel::replyFinished(QNetworkReply *reply)
 {
-    d_corpora.clear();
-    emit layoutChanged();
-
-    addLocalFiles();
-    
     QNetworkReply::NetworkError error = reply->error();
     if (error != QNetworkReply::NoError)
     {
@@ -182,10 +188,26 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
     }
     
     QByteArray xmlData(reply->readAll());
+    
+    // Save a local copy of XML Data, for when the application is offline
+    if (parseArchiveIndex(xmlData))
+        writeLocalArchiveIndex(xmlData);
+
+    emit retrievalFinished();
+
+    reply->deleteLater();
+}
+
+bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData)
+{
+    // Clear the list, but add the local files again.
+    d_corpora.clear();
+    addLocalFiles();
+    
     xmlDocPtr xmlDoc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
     if (xmlDoc == 0) {
         emit processingError("could not parse the corpus archive index.");
-        return;
+        return false;
     }
     
     xmlNodePtr root = xmlDocGetRootElement(xmlDoc);
@@ -193,7 +215,7 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         QString("corpusarchive")) {
         xmlFreeDoc(xmlDoc);
         emit processingError("the corpus archive index has an incorrect root node.");
-        return;
+        return false;
     }
     
     for (xmlNodePtr child = root->children; child != 0; child = child->next)
@@ -250,10 +272,8 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
     }
 
     emit layoutChanged();
-    
-    emit retrievalFinished();
 
-    reply->deleteLater();
+    return true;
 }
 
 int ArchiveModel::rowCount(QModelIndex const &parent) const
@@ -296,3 +316,22 @@ void ArchiveModel::refresh()
     d_accessManager->get(request);
 }
 
+void ArchiveModel::writeLocalArchiveIndex(QByteArray const &data)
+{
+    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
+
+    if (!file.open(QIODevice::WriteOnly))
+        return;
+
+    file.write(data);
+}
+
+QByteArray ArchiveModel::readLocalArchiveIndex() const
+{
+    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
+
+    if (!file.exists() || !file.open(QIODevice::ReadOnly))
+        return QByteArray();
+
+    return file.readAll();
+}

@@ -46,9 +46,16 @@ signals:
     void retrieving();
     void retrievalFinished();
     
-private:    
+private:
+    void init();
+    
     QString networkErrorToString(QNetworkReply::NetworkError error);
     void addLocalFiles();
+
+    void writeLocalArchiveIndex(QByteArray const &data);
+    QByteArray readLocalArchiveIndex() const;
+
+    bool parseArchiveIndex(QByteArray const &xmlData);
 
     QUrl d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
