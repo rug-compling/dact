@@ -38,7 +38,10 @@ public:
     void refresh();
     int rowCount(QModelIndex const &parent = QModelIndex()) const;
     void setUrl(QString const &archiveUrl);
-    private slots:
+
+    void deleteLocalFiles(QModelIndex const &index);
+
+private slots:
     void replyFinished(QNetworkReply *reply);
 
 signals:
@@ -66,6 +69,8 @@ private:
 
 inline ArchiveEntry const &ArchiveModel::entryAtRow(int row) const
 {
+    Q_ASSERT(row >= 0 && row < d_corpora.size());
+    
     return d_corpora.at(row);
 }
 

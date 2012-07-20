@@ -341,22 +341,23 @@ void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
     }
 }
 
-ArchiveEntry const &OpenCorpusDialog::selectedCorpus() const
+QModelIndex OpenCorpusDialog::selectedCorpusIndex() const
 {
     QItemSelectionModel *selectionModel = d_ui->corpusListView->selectionModel();
 
     Q_ASSERT(selectionModel->selectedIndexes().size() > 0);
-      
-    return d_archiveModel->entryAtRow(selectionModel->selectedIndexes().at(0).row());
+    
+    return selectionModel->selectedIndexes().at(0);
+}
 
+ArchiveEntry const &OpenCorpusDialog::selectedCorpus() const
+{
+    return d_archiveModel->entryAtRow(selectedCorpusIndex().row());
 }
 
 void OpenCorpusDialog::deleteSelectedCorpus()
 {
-    ArchiveEntry const &entry(selectedCorpus());
-
-    if (entry.existsLocally())
-        QFile(entry.filePath()).remove();
+    d_archiveModel->deleteLocalFiles(selectedCorpusIndex());
 }
 
 void OpenCorpusDialog::revealSelectedCorpus()

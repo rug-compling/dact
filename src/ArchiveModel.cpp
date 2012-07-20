@@ -336,3 +336,20 @@ QByteArray ArchiveModel::readLocalArchiveIndex() const
 
     return file.readAll();
 }
+
+void ArchiveModel::deleteLocalFiles(QModelIndex const &index)
+{
+    ArchiveEntry const &entry(entryAtRow(index.row()));
+
+    // If it indeed exists as a local file, delete it.
+    if (entry.existsLocally())
+    {
+        QFile(entry.filePath()).remove();
+
+        // If it only exists as a local file (i.e. not in the corpus index) also delete it from the index.
+        if (entry.url.isEmpty())
+            d_corpora.remove(index.row());
+
+        emit layoutChanged();
+    }
+}

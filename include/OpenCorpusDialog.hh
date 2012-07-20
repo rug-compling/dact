@@ -68,6 +68,7 @@ protected:
         
 private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
+    QModelIndex selectedCorpusIndex() const;
     ArchiveEntry const &selectedCorpus() const;
     
     QSharedPointer<Ui::OpenCorpusDialog> d_ui;
