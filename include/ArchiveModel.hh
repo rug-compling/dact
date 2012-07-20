@@ -13,6 +13,7 @@
 
 struct ArchiveEntry {
     QString name;
+    QString url;
     size_t sentences;
     double size;
     QString description;
@@ -28,7 +29,7 @@ class ArchiveModel : public QAbstractTableModel
     Q_OBJECT
 public:
     ArchiveModel(QObject *parent = 0);
-    ArchiveModel(QUrl const &archiveUrl, QObject *parent = 0);
+    ArchiveModel(QString const &archiveUrl, QObject *parent = 0);
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     int columnCount(QModelIndex const &parent = QModelIndex()) const;
     ArchiveEntry const &entryAtRow(int row) const;
@@ -36,7 +37,7 @@ public:
         int role) const;
     void refresh();
     int rowCount(QModelIndex const &parent = QModelIndex()) const;
-    void setUrl(QUrl const &archiveUrl);
+    void setUrl(QString const &archiveUrl);
     private slots:
     void replyFinished(QNetworkReply *reply);
 
@@ -48,7 +49,7 @@ signals:
     
 private:
     void init();
-    
+
     QString networkErrorToString(QNetworkReply::NetworkError error);
     void addLocalFiles();
 
@@ -57,7 +58,7 @@ private:
 
     bool parseArchiveIndex(QByteArray const &xmlData);
 
-    QUrl d_archiveUrl;
+    QString d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     QVector<ArchiveEntry> d_corpora;
 

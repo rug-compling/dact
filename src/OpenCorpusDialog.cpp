@@ -178,7 +178,7 @@ void OpenCorpusDialog::download(ArchiveEntry const &entry)
     d_downloadProgressDialog->reset();
     d_downloadProgressDialog->open();
     
-    QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
+    QString corpusUrl = entry.url;
     
     QNetworkRequest request(corpusUrl);
     d_reply = d_corpusAccessManager->get(request);
@@ -392,7 +392,7 @@ void OpenCorpusDialog::refreshCorpusList()
     QSettings settings;
     d_baseUrl = settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString();
     
-    d_archiveModel->setUrl(QUrl(QString("%1/index.xml").arg(d_baseUrl)));
+    d_archiveModel->setUrl(d_baseUrl);
 }
 
 void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const &previous)

@@ -42,7 +42,7 @@ ArchiveModel::ArchiveModel(QObject *parent) :
     init();
 }
 
-ArchiveModel::ArchiveModel(QUrl const &archiveUrl, QObject *parent) :
+ArchiveModel::ArchiveModel(QString const &archiveUrl, QObject *parent) :
     QAbstractTableModel(parent),
     d_archiveUrl(archiveUrl),
     d_accessManager(new QNetworkAccessManager)
@@ -264,6 +264,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData)
         }
 
         corpus->name = name;
+        corpus->url = QString("%1/%2").arg(d_archiveUrl).arg(name + DOWNLOAD_EXTENSION);
         corpus->sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
         corpus->size = fileSize;
         corpus->description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
@@ -302,7 +303,7 @@ void ArchiveModel::addLocalFiles()
     emit layoutChanged();
 }
 
-void ArchiveModel::setUrl(QUrl const &archiveUrl)
+void ArchiveModel::setUrl(QString const &archiveUrl)
 {
     d_archiveUrl = archiveUrl;
     refresh();
@@ -312,7 +313,7 @@ void ArchiveModel::refresh()
 {
     emit retrieving();
     
-    QNetworkRequest request(d_archiveUrl);
+    QNetworkRequest request(d_archiveUrl + "/index.xml");
     d_accessManager->get(request);
 }
 
