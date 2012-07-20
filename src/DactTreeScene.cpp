@@ -25,6 +25,8 @@ DactTreeScene::DactTreeScene(QObject *parent) :
 
 DactTreeScene::~DactTreeScene()
 {
+    disconnect(this, SIGNAL(selectionChanged()));
+    
     if (rootNode())
         freeNodes();
 }
