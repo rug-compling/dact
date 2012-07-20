@@ -78,9 +78,12 @@ int main(int argc, char *argv[])
                 corpusPaths.append(args[i]);
         }
 
+        a->openMacros(macroPaths);
+
         if (corpusPaths.size() != 0)
           a->openCorpora(corpusPaths);
-        a->openMacros(macroPaths);
+        else
+          a->showOpenCorpus();
         
         r = a->exec();
     } catch (std::logic_error const &e) {

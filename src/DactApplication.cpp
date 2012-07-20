@@ -82,3 +82,8 @@ void DactApplication::openUrl(QUrl const &url)
     }
     #endif
 }
+
+void DactApplication::showOpenCorpus()
+{
+  d_mainWindow->openCorpus();
+}

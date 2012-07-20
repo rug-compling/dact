@@ -1,5 +1,5 @@
-#ifndef ARCHIVEMODEL_H
-#define ARCHIVEMODEL_H
+#ifndef REMOTEARCHIVEMODEL_H
+#define REMOTEARCHIVEMODEL_H
 
 #include <QAbstractTableModel>
 #include <QModelIndex>
@@ -11,37 +11,30 @@
 #include <QVariant>
 #include <QVector>
 
-struct ArchiveEntry {
+struct RemoteArchiveEntry {
     QString name;
-    QString url;
     size_t sentences;
     double size;
     QString description;
     QString longDescription;
     QString checksum;
-
-    QString filePath() const;
-    bool existsLocally() const;
 };
 
-class ArchiveModel : public QAbstractTableModel
+class RemoteArchiveModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    ArchiveModel(QObject *parent = 0);
-    ArchiveModel(QString const &archiveUrl, QObject *parent = 0);
+    RemoteArchiveModel(QObject *parent = 0);
+    RemoteArchiveModel(QUrl const &archiveUrl, QObject *parent = 0);
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     int columnCount(QModelIndex const &parent = QModelIndex()) const;
-    ArchiveEntry const &entryAtRow(int row) const;
+    RemoteArchiveEntry const &entryAtRow(int row);
     QVariant headerData(int column, Qt::Orientation orientation,
         int role) const;
     void refresh();
     int rowCount(QModelIndex const &parent = QModelIndex()) const;
-    void setUrl(QString const &archiveUrl);
-
-    void deleteLocalFiles(QModelIndex const &index);
-
-private slots:
+    void setUrl(QUrl const &archiveUrl);
+    private slots:
     void replyFinished(QNetworkReply *reply);
 
 signals:
@@ -50,28 +43,19 @@ signals:
     void retrieving();
     void retrievalFinished();
     
-private:
-    void init();
-
+private:    
     QString networkErrorToString(QNetworkReply::NetworkError error);
-    void addLocalFiles();
-
-    void writeLocalArchiveIndex(QByteArray const &data);
-    QByteArray readLocalArchiveIndex() const;
-
-    bool parseArchiveIndex(QByteArray const &xmlData, bool listLocalFilesOnly = false);
-
-    QString d_archiveUrl;
+    
+    QUrl d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
-    QVector<ArchiveEntry> d_corpora;
+    QVector<RemoteArchiveEntry> d_corpora;
 
 };
 
-inline ArchiveEntry const &ArchiveModel::entryAtRow(int row) const
+inline RemoteArchiveEntry const &RemoteArchiveModel::entryAtRow(int row)
 {
-    Q_ASSERT(row >= 0 && row < d_corpora.size());
-    
     return d_corpora.at(row);
 }
 
-#endif // DOWNLOADWINDOW_H
+
+#endif // REMOTEARCHIVEMODEL_H
