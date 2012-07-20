@@ -82,8 +82,8 @@ int main(int argc, char *argv[])
 
         if (corpusPaths.size() != 0)
           a->openCorpora(corpusPaths);
-        else
-          a->showOpenCorpus();
+        // else
+          // a->showOpenCorpus();
         
         r = a->exec();
     } catch (std::logic_error const &e) {
