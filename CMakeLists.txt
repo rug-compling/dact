@@ -9,6 +9,10 @@ IF("${isSystemDir}" STREQUAL "-1")
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
+if(WIN32)
+  # Let CPack include the required libraries.
+  include (InstallRequiredSystemLibraries)
+endif()
 
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -104,7 +108,11 @@ SET(dact_SRCS
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
+  src/DactSettings.cpp
   src/DactTableView.cpp
+  src/DactTool.cpp
+  src/DactToolsMenu.cpp
+  src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
@@ -151,7 +159,11 @@ SET(dact_HDRS
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactSettings.hh
   include/DactTableView.hh
+  include/DactTool.hh
+  include/DactToolsMenu.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -195,7 +207,10 @@ SET(dact_MOC_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
+  include/DactSettings.hh
   include/DactTableView.hh
+  include/DactTool.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -357,3 +372,60 @@ if(APPLE)
     include(CPack)
   endif(ENABLE_BUNDLE)
 endif(APPLE)
+
+# Windows installer
+if(WIN32)
+  set(CPACK_GENERATOR NSIS)
+  set(CPACK_MONOLITHIC_INSTALL TRUE)
+  set(CPACK_PACKAGE_NAME "Dact")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Decaffeinated Alpino Corpus Tool")
+  set(CPACK_PACKAGE_VENDOR "Daniel de Kok")
+  set(CPACK_NSIS_PACKAGE_NAME "Dact")
+  set(CPACK_NSIS_DISPLAY_NAME "Dact")
+  set(CPACK_PACKAGE_VERSION ${VERSION})
+  set(CPACK_NSIS_CONTACT "me@danieldk.eu")
+  set(CPACK_PACKAGE_EXECUTABLES ${PROGNAME} ${PROGNAME})
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Dact-${VERSION}")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+  set(CPACK_PACKAGE_ICON "${DACT_SOURCE_DIR}/resources\\\\dact-espresso.bmp")
+  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Decaffeinated Alpino Corpus Tool")
+
+  install(FILES
+      "${QT_BINARY_DIR}/QtCore${QT_VERSION_MAJOR}.dll"
+      "${QT_BINARY_DIR}/QtGui${QT_VERSION_MAJOR}.dll"
+      "${QT_BINARY_DIR}/QtNetwork${QT_VERSION_MAJOR}.dll"
+    DESTINATION bin
+  )
+
+  # Ok, now things are getting really annoying. We could apply
+  # all kinds of fun path manipulations to get the DLLs. But
+  # we'll just assume the you've put them in the runtime directory
+  # of the source directory.
+  #
+  # Yes, this makes you long for Linux' package management.
+  set(DACT_DEPENDENCY_DIR "${DACT_SOURCE_DIR}/runtime")
+  install(FILES
+      "${DACT_DEPENDENCY_DIR}/alpino_corpus.dll"
+      "${DACT_DEPENDENCY_DIR}/iconv.dll"
+      "${DACT_DEPENDENCY_DIR}/libdb48.dll"
+      "${DACT_DEPENDENCY_DIR}/libdbxml25.dll"
+      "${DACT_DEPENDENCY_DIR}/libexslt.dll"
+      "${DACT_DEPENDENCY_DIR}/libxml2.dll"
+      "${DACT_DEPENDENCY_DIR}/libxslt.dll"
+      "${DACT_DEPENDENCY_DIR}/xerces-c_3_0.dll"
+      "${DACT_DEPENDENCY_DIR}/xqilla22.dll"
+      "${DACT_DEPENDENCY_DIR}/zlib1.dll"
+    DESTINATION bin
+  )
+
+  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    !include ${DACT_SOURCE_DIR}/resources/nsis\\\\FileAssociation.nsh
+    \\\${registerExtension} \\\"\\\$INSTDIR\\\\bin\\\\dact.exe\\\" \\\".dact\\\" \\\"Dact Corpus\\\"
+  ")
+
+  set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+    ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+    "\\\${unregisterExtension} \\\".dact\\\" \\\"Dact Corpus\\\"")
+
+  include(CPack)
+endif(WIN32)

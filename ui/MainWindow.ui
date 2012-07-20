@@ -164,6 +164,7 @@
      <string>Help</string>
     </property>
     <addaction name="helpAction"/>
+    <addaction name="cookbookAction"/>
     <addaction name="aboutAction"/>
    </widget>
    <widget class="DactMacrosMenu" name="menuMacros">
@@ -565,6 +566,11 @@
     <string>Compact corpus…</string>
    </property>
   </action>
+  <action name="cookbookAction">
+   <property name="text">
+    <string>Cookbook</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -673,6 +679,12 @@
      <y>329</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>cookbookAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openCookbook()</slot>
   </connection>
  </connections>
 </ui>

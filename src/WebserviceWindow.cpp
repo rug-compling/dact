@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -27,6 +29,9 @@ WebserviceWindow::WebserviceWindow(QWidget *parent, Qt::WindowFlags f) :
 
     connect(d_progressDialog,
         SIGNAL(canceled()), SLOT(cancelResponse()));
+
+    connect(this, SIGNAL(progress()), SLOT(updateProgressDialog()),
+        Qt::QueuedConnection);
 }
 
 WebserviceWindow::~WebserviceWindow()
@@ -88,6 +93,8 @@ void WebserviceWindow::parseSentences()
     d_progressDialog->setLabelText("Sending sentences to webservice");
     d_progressDialog->open();
 
+    d_buffer = QByteArray();
+
     // Send the request
     QSettings settings;
     QNetworkRequest request(settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
@@ -98,9 +105,6 @@ void WebserviceWindow::parseSentences()
     // Connect all the event handlers to the response
     connect(d_reply, SIGNAL(readyRead()),
         SLOT(readResponse()));
-
-    connect(d_reply, SIGNAL(finished()),
-        SLOT(finishResponse()));
 
     connect(d_reply, SIGNAL(error(QNetworkReply::NetworkError)),
         SLOT(errorResponse(QNetworkReply::NetworkError)));
@@ -113,70 +117,64 @@ int WebserviceWindow::countSentences(QString const &sentences)
 
 void WebserviceWindow::readResponse()
 {
-    // Peek to see if there is a complete sentence to be read
-    size_t bufferSize = d_reply->bytesAvailable();
-    char *buffer = new char[bufferSize];
-    int bytesPeeked = d_reply->peek(buffer, bufferSize);
-
-    // Did peeking succeed? If not, don't continue.
-    if (bytesPeeked == -1)
-    {
-        qDebug() << "Peeking response stream failed";
-        return;
-    }
+    QByteArray newData = d_reply->readAll();
 
     // Meh, nothing to read.
-    if (bytesPeeked == 0)
+    if (newData.size() == 0)
         return;
 
-    // Convert the peeked buffer to a string for easy access
-    QString bufferString(QString::fromUtf8(buffer, bytesPeeked));
-    int bufferCharOffset = 0;
+    // Add data to our internal buffer.
+    d_buffer.append(newData);
 
+    // Detect treebank wrapper.
     {
-        QRegExp treebankPattern("<treebank[^>]+sentences=\"([0-9]+)\"[^>]*>");
-        treebankPattern.setMinimal(true);
-        if (treebankPattern.indexIn(bufferString, 0) != -1)
+        int treebankIdx = d_buffer.indexOf("<treebank");
+        if (treebankIdx != -1)
         {
-            bool ok;
-            int nSents = treebankPattern.cap(1).toInt(&ok);
+            // Find the end of the tag.
+            int end = d_buffer.indexOf(">", treebankIdx);
 
-            if (ok)
+            // Convert to a string, so that we can easily pry out the number
+            // of sentences.
+            QString treebankStr = QString::fromUtf8(
+                d_buffer.data() + treebankIdx, end - treebankIdx + 1);
+            
+            QRegExp treebankPattern("<treebank[^>]+sentences=\"([0-9]+)\"[^>]*>");
+            treebankPattern.setMinimal(true);
+            if (treebankPattern.indexIn(treebankStr) != -1)
             {
-                d_numberOfSentences = nSents;
-                d_progressDialog->setRange(0, d_numberOfSentences);
+                bool ok;
+                int nSents = treebankPattern.cap(1).toInt(&ok);
+
+                if (ok)
+                {
+                    d_numberOfSentences = nSents;
+                    d_progressDialog->setRange(0, d_numberOfSentences);
+                }
             }
         }
     }
 
-    // Search for a complete sentences in the peeked buffer
-    QRegExp sentencePattern("<alpino_ds([^>]*)>(.+)</alpino_ds>", Qt::CaseInsensitive);
-    sentencePattern.setMinimal(true); // Make quantifiers non-greedy; match one sentence at a time.
-
-    int charPos;
-    while ((charPos = sentencePattern.indexIn(bufferString, bufferCharOffset)) != -1)
+    int dsIdx;
+    while ((dsIdx = d_buffer.indexOf("<alpino_ds")) != -1)
     {
-        // If the match is not in front, read (skip) the data in front of it till it is.
-        if (charPos != 0)
-        {
-            // charPos is in utf8 characters, but we are reading bytes. Therefore, let's convert them.
-            int bytePos = bufferString.midRef(bufferCharOffset, charPos).toUtf8().size();
-            d_reply->read(bytePos);
+      int endDsIdx = d_buffer.indexOf("</alpino_ds>", dsIdx);
+      if (endDsIdx == -1) // Not enough data for this ds.
+        return; // Definitely not the end of the corpus...
+      
+      // Decode as a UTF-8 string, and handle it.
+      int dsLen = endDsIdx - dsIdx + QString("</alpino_ds>").size();
+      QString ds = QString::fromUtf8(d_buffer.data() + dsIdx, dsLen);
+      receiveSentence(ds);
 
-            bufferCharOffset += charPos;
-        }
-
-        // Read the sentence from the real stream, incrementing its internal pointer.
-        // Again, the length is in characters, but we read bytes from d_reply. Converting again.
-        int byteLength = bufferString.midRef(bufferCharOffset, sentencePattern.matchedLength()).toUtf8().size();
-        QString sentence(QString::fromUtf8(d_reply->read(byteLength)));
-        bufferCharOffset += sentencePattern.matchedLength();
-
-        // Deal with the sentence itself.
-        receiveSentence(sentence);
+      // Purge data from the buffer. This may not be very efficient, but
+      // we are not in a tight loop. So, we KISS.
+      d_buffer.remove(0, dsIdx + dsLen);
     }
 
-    delete[] buffer;
+    // Are we done?
+    if (d_buffer.indexOf("</treebank>") != -1)
+      finishResponse();
 }
 
 void WebserviceWindow::receiveSentence(QString const &sentence)
@@ -190,11 +188,15 @@ void WebserviceWindow::receiveSentence(QString const &sentence)
 
     QString name(idPattern.capturedTexts().at(1));
 
-    d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
+    try {
+      d_corpus->write(name.toUtf8().constData(), sentence.toUtf8().constData());
+    } catch (std::runtime_error &e) {
+      qDebug() << e.what();
+    }
 
     d_numberOfSentencesReceived++;
 
-    updateProgressDialog();
+    emit progress();
 }
 
 void WebserviceWindow::updateProgressDialog()
@@ -212,8 +214,8 @@ void WebserviceWindow::updateProgressDialog()
 void WebserviceWindow::finishResponse()
 {
     // Reset the reply pointer, since the request is no longer active.
-    d_reply->deleteLater();
-    d_reply = 0;
+    d_reply->disconnect();
+    //d_reply = 0;
 
     // Also close the corpus writer
     d_corpus.clear();

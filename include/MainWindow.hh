@@ -81,6 +81,16 @@ public slots:
     void saveStateChanged();
 
     /*!
+     Changes the filter query field used to filter the file list and calls
+     filterChanged. Used to set the filter from one of the child windows.
+     Currently the statistics window uses it to display all the entries
+     that make up one of it's results rows.
+     \param filter the XPath query.
+     \sa filterChanged
+     */
+    void setFilter(QString const &filter);
+
+    /*!
      Toggle toolbar visibility.
     */
     void setToolbarVisible(bool visible);
@@ -109,6 +119,8 @@ public slots:
     void saveAs();
 
     void statusMessage(QString message);
+
+    void openCookbook();
 
 private slots:
     /*!
@@ -226,17 +238,6 @@ private slots:
     void print();
 
     void setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path);
-
-    /*!
-     Changes the filter query field used to filter the file list and calls
-     filterChanged. Used to set the filter from one of the child windows.
-     Currently the statistics window uses it to display all the entries
-     that make up one of it's results rows.
-     \param filter the XPath query.
-     \sa setHighlight
-     \sa filterChanged
-     */
-    void setFilter(QString const &filter);
 
     /*!
      Displays a critical error dialog with the suplied error message.

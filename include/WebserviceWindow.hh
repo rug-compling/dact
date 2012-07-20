@@ -26,6 +26,12 @@ public:
 signals:
     void parseSentencesFinished(QString corpus);
 
+    /*!
+     * This signal is emitted when there is progress (one or more sentences
+     * were parse.
+     */
+    void progress();
+
 private slots:
     /*!
      * Ask the user which plain text file(s) to load into the sentences text field.
@@ -58,6 +64,11 @@ private slots:
      */
     void cancelResponse();
 
+    /*!
+     * Called when there is progress to report.
+     */
+    void updateProgressDialog();
+
 
 private:
     QSharedPointer<Ui::WebserviceWindow> d_ui;
@@ -65,6 +76,7 @@ private:
     QProgressDialog *d_progressDialog;
 
     QNetworkReply *d_reply;
+    QByteArray d_buffer;
 
     int d_numberOfSentences;
     int d_numberOfSentencesReceived;
@@ -77,7 +89,6 @@ private:
 
     int countSentences(QString const &);
     void receiveSentence(QString const &);
-    void updateProgressDialog();
 };
 
 #endif

@@ -41,7 +41,10 @@
             <property name="uniformItemSizes">
              <bool>true</bool>
             </property>
-            <addaction name="copyFileNamesAction"/>
+            <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+            </property>
+            <addaction name="copyFileNamesAction" />
            </widget>
           </item>
           <item>
@@ -206,6 +209,12 @@
    <signal>triggered()</signal>
    <receiver>DependencyTreeWidget</receiver>
    <slot>copy()</slot>
+  </connection>
+  <connection>
+   <sender>fileListWidget</sender>
+   <signal>customContextMenuRequested(const QPoint &amp;)</signal>
+   <receiver>DependencyTreeWidget</receiver>
+   <slot>showToolMenu(const QPoint &amp;)</slot>
   </connection>
  </connections>
 </ui>

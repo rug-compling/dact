@@ -76,7 +76,7 @@
         </style>
         <xsl:text disable-output-escaping="yes">
           <![CDATA[
-          <!--[if !IE]> -->
+          <!--[if !IE]>
           ]]>
         </xsl:text>
         <style type="text/css">
@@ -93,7 +93,11 @@
             ]]>
           </xsl:text>
         </style>
-        <!-- <![endif]-->
+        <xsl:text disable-output-escaping="yes">
+          <![CDATA[
+          <![endif]-->
+          ]]>
+        </xsl:text>
         <script language="JavaScript" type="text/javascript">
           <xsl:text disable-output-escaping="yes">
             <![CDATA[

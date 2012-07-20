@@ -21,7 +21,7 @@ protected:
 public:
     BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent = 0);
 
-    QString sentenceForClipboard(QModelIndex const &index) const;
+    virtual QString sentenceForClipboard(QModelIndex const &index) const;
 
 protected:    
     /*!
@@ -30,8 +30,6 @@ protected:
     \param sentence the brackets containing sentence to be parsed
     */
     std::list<Chunk> parseChunks(QModelIndex const &index) const;
-
-    QString sentence(QModelIndex const &index) const;
 
     QString bracketedSentence(QModelIndex const &index) const;
     

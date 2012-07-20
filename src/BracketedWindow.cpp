@@ -24,6 +24,8 @@
 #include "BracketedWindow.hh"
 #include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
+#include "DactToolsMenu.hh"
+#include "DactToolsModel.hh"
 #include "FilterModel.hh"
 #include "Query.hh"
 #include "ValidityColor.hh"
@@ -117,7 +119,6 @@ void BracketedWindow::setModel(FilterModel *model)
 
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
             SLOT(progressFinished(int, int, bool)));
-
 }
 
 void BracketedWindow::startQuery()
@@ -491,4 +492,27 @@ bool BracketedWindow::saveEnabled() const
         return false;
 
     return true;
+}
+
+void BracketedWindow::showToolsMenu(QPoint const &position)
+{
+    // Don't even try to access the current selection if there is no data.
+    if (!d_ui->resultsTable->model())
+        return;
+
+    QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
+    QList<QString> selectedFiles;
+
+    // Don't show a menu with actions if there are no files selected
+    if (rows.isEmpty())
+        return;
+
+    foreach (QModelIndex const &row, rows)
+        selectedFiles << row.data().toString();
+
+    DactToolsMenu::exec(
+        DactToolsModel::sharedInstance()->tools(QString::fromStdString(d_corpusReader->name())),
+        selectedFiles,
+        mapToGlobal(position),
+        d_ui->resultsTable->actions());
 }

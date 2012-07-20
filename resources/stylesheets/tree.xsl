@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" 
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
@@ -15,16 +16,24 @@
   <xsl:template match="node[node]">
     <node>
       <xsl:copy-of select="@*"/>
-      <line>
+      <label>
+        <xhtml:p align="center">
         <xsl:value-of select="@rel"/>
-      </line>
-      <line>
+        <!-- SoNaR annotation for semantic roles -->
+        <xsl:if test="@pb">
+          <xsl:text>/</xsl:text>
+          <xhtml:font color="purple">
+            <xsl:value-of select="@pb" />
+          </xhtml:font>
+        </xsl:if>
+        <xhtml:br/>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt)">
           <xsl:text>:</xsl:text>
         </xsl:if>
         <xsl:value-of select="@cat|@pt"/>
-      </line>
+        </xhtml:p>
+      </label>
       <xsl:apply-templates select="node"/>
     </node>
   </xsl:template>
@@ -33,36 +42,61 @@
   <xsl:template match="node">
     <node>
       <xsl:copy-of select="@*"/>
-      <line>
+      <label>
+        <xhtml:p align="center">
         <xsl:value-of select="@rel"/>
-      </line>
-      <line>
+        <!-- SoNaR annotation for semantic roles -->
+        <xsl:if test="@pb">
+          <xsl:text>/</xsl:text>
+          <xhtml:font color="purple">
+            <xsl:value-of select="@pb" />
+          </xhtml:font>
+        </xsl:if>
+        <xhtml:br/>
         <xsl:value-of select="@index"/>
         <xsl:if test = "@index and (@cat|@pt|@pos)">
           <xsl:text>:</xsl:text>
         </xsl:if>
-        <xsl:value-of select="@cat|@pt|@pos"/>
-      </line>
-      <line>
-        <xsl:choose>
-          <xsl:when test="@lemma">
-            <xsl:value-of select="@lemma"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@root"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </line>
-      <hoverLine>
-        <xsl:choose>
-          <xsl:when test="@postag">
-            <xsl:value-of select="@postag"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@pos"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </hoverLine>
+          <xsl:choose>
+            <xsl:when test="@pt">
+              <xsl:value-of select="@pt"/>
+            </xsl:when>
+            <xsl:when test="@pos">
+              <xsl:value-of select="@pos"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@cat"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        <xsl:if test="@lemma or @root">
+          <xhtml:br/>
+          <xhtml:i>
+            <xsl:choose>
+              <xsl:when test="@lemma">
+                <xsl:value-of select="@lemma"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="@root"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xhtml:i>
+        </xsl:if>
+        </xhtml:p>
+      </label>
+      <xsl:if test="@postag or pos">
+        <tooltip>
+          <xhtml:i>
+          <xsl:choose>
+            <xsl:when test="@postag">
+              <xsl:value-of select="@postag"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@pos"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          </xhtml:i>
+        </tooltip>
+      </xsl:if>
     </node>
   </xsl:template>
 </xsl:stylesheet>

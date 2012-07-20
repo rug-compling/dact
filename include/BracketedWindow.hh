@@ -131,6 +131,8 @@ private slots:
 
     void showFilenamesChanged();
 
+    void showToolsMenu(QPoint const &position);
+
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 

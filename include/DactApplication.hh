@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QScopedPointer>
+#include <QUrl>
 #include "MainWindow.hh"
 
 class DactApplication: public QApplication
@@ -13,6 +14,7 @@ public:
     void init();
     void openCorpora(QStringList const &fileNames);
     void openMacros(QStringList const &fileNames);
+    void openUrl(QUrl const &url);
 protected:
     bool event(QEvent *event);
 

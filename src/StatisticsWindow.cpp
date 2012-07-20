@@ -92,6 +92,9 @@ void StatisticsWindow::setModel(QueryModel *model)
     d_model = QSharedPointer<QueryModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
 
+    d_ui->distinctValuesLabel->setText(QString(""));
+    d_ui->totalHitsLabel->setText(QString(""));
+
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
 
@@ -111,6 +114,7 @@ void StatisticsWindow::setModel(QueryModel *model)
 void StatisticsWindow::updateResultsTotalCount()
 {
     d_ui->totalHitsLabel->setText(QString("%L1").arg(d_model->totalHits()));
+    d_ui->distinctValuesLabel->setText(QString("%L1").arg(d_model->rowCount(QModelIndex())));
 }
 
 void StatisticsWindow::applyValidityColor(QString const &)
