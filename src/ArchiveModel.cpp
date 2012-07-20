@@ -39,7 +39,7 @@ ArchiveModel::ArchiveModel(QObject *parent) :
     QAbstractTableModel(parent),
     d_accessManager(new QNetworkAccessManager)
 {
-    scanLocalFiles();
+    addLocalFiles();
 
     connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(replyFinished(QNetworkReply*)));
@@ -166,6 +166,8 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
 {
     d_corpora.clear();
     emit layoutChanged();
+
+    addLocalFiles();
     
     QNetworkReply::NetworkError error = reply->error();
     if (error != QNetworkReply::NoError)
@@ -220,15 +222,31 @@ void ArchiveModel::replyFinished(QNetworkReply *reply)
         if (!ok)
             continue;
         
-        ArchiveEntry corpus;
-        corpus.name = name;
-        corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
-        corpus.size = fileSize;
-        corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
-        corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
-        corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
-        
-        d_corpora.push_back(corpus);        
+        ArchiveEntry *corpus(0);
+
+        // Try to find if the file is already in the index (e.g. a local file)
+        for (QVector<ArchiveEntry>::iterator it = d_corpora.begin(); it != d_corpora.end(); it++)
+        {
+            if (it->name == name)
+            {
+                corpus = it;
+                break;
+            }
+        }
+
+        // If there is no such corpus on the list already, add a new one.
+        if (corpus == 0)
+        {
+            d_corpora.push_back(ArchiveEntry());
+            corpus = &d_corpora.last();
+        }
+
+        corpus->name = name;
+        corpus->sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
+        corpus->size = fileSize;
+        corpus->description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
+        corpus->longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
+        corpus->checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
     }
 
     emit layoutChanged();
@@ -246,7 +264,7 @@ int ArchiveModel::rowCount(QModelIndex const &parent) const
     return d_corpora.size();
 }
 
-void ArchiveModel::scanLocalFiles()
+void ArchiveModel::addLocalFiles()
 {
     QDir localFiles(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
 

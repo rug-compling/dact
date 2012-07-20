@@ -48,7 +48,7 @@ signals:
     
 private:    
     QString networkErrorToString(QNetworkReply::NetworkError error);
-    void scanLocalFiles();
+    void addLocalFiles();
 
     QUrl d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
