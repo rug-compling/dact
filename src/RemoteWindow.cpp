@@ -14,7 +14,7 @@
 
 #include <QtDebug>
 
-#include <ArchiveModel.hh>
+#include <RemoteArchiveModel.hh>
 #include <RemoteWindow.hh>
 #include <config.hh>
 
@@ -25,7 +25,7 @@ QString const REMOTE_EXTENSION(".dact.gz");
 RemoteWindow::RemoteWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::RemoteWindow>(new Ui::RemoteWindow)),
-    d_archiveModel(new ArchiveModel()),
+    d_archiveModel(new RemoteArchiveModel()),
     d_corpusAccessManager(new QNetworkAccessManager),
     d_reply(0)
 {
@@ -102,7 +102,7 @@ void RemoteWindow::remote()
 
     int row = selectionModel->selectedRows().at(0).row();
 
-    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
+    RemoteArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
 
     QSettings settings;
     d_url = settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString() + "/" + entry.name;
@@ -149,7 +149,7 @@ void RemoteWindow::rowChanged(QModelIndex const &current, QModelIndex const &pre
 
         // Retrieve the active entry.
         int row = current.row();
-        ArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
+        RemoteArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
 
         d_ui->descriptionTextBrowser->setText(entry.longDescription);
     }

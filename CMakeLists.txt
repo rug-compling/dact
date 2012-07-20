@@ -261,11 +261,14 @@ SET(dact_RCS
 
 if(USE_REMOTE_CORPUS)
   list(APPEND dact_HEADERS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_MOC_HDRS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_SRCS
-    src/RemoteWindow.cpp)
+    src/RemoteWindow.cpp
+    src/RemoteArchiveModel.cpp)
   list(APPEND dact_UI
     ui/RemoteWindow.ui)
 endif()
