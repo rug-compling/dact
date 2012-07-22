@@ -27,15 +27,20 @@ else(APPLE)
   set(ENABLE_BUNDLE OFF)
 endif(APPLE)
 
-set(VERSION "1.2.1")
-
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)
 else()
   set(PROGNAME alpino-dact)
 endif()
 
+
+set(VERSION "1.4.0")
+
 set(GIT_REVISION ${VERSION})
+#exec_program(git
+#  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
+#  OUTPUT_VARIABLE GIT_REVISION 
+#)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
@@ -84,9 +89,9 @@ endif()
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
-option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
+option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
 
-option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
+option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
 
 # Dact sources
 SET(dact_SRCS

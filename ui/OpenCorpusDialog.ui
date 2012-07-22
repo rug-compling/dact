@@ -22,11 +22,11 @@
      <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
-     <property name="uniformItemSizes">
-      <bool>true</bool>
-     </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+     <property name="uniformItemSizes">
+      <bool>true</bool>
      </property>
      <addaction name="revealLocalFilesAction"/>
      <addaction name="deleteLocalFilesAction"/>
@@ -39,7 +39,10 @@
      <item>
       <widget class="QPushButton" name="openLocalFileButton">
        <property name="text">
-        <string>Open local file…</string>
+        <string>Open &amp;local file…</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+L</string>
        </property>
       </widget>
      </item>
@@ -105,7 +108,7 @@
    </property>
   </action>
   <action name="separatorAction">
-   <property name="separator">
+   <property name="separator" stdset="0">
     <bool>true</bool>
    </property>
   </action>
