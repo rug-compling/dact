@@ -33,13 +33,13 @@ else()
 endif()
 
 
-set(VERSION "0.0.1")
+set(VERSION "1.4.0")
 
-set(GIT_REVISION "unknown")
-exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
-  OUTPUT_VARIABLE GIT_REVISION 
-)
+set(GIT_REVISION ${VERSION})
+#exec_program(git
+#  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
+#  OUTPUT_VARIABLE GIT_REVISION 
+#)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
