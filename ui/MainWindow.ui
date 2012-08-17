@@ -159,6 +159,8 @@
     <addaction name="menuConvertCorpus"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
+    <addaction name="separator"/>
+    <addaction name="checkForUpdatesAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -572,6 +574,11 @@
     <string>Meta+Ctrl+F</string>
    </property>
   </action>
+  <action name="checkForUpdatesAction">
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -712,6 +719,12 @@
      <y>20</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>checkForUpdatesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>checkForUpdates()</slot>
   </connection>
  </connections>
 </ui>

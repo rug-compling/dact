@@ -70,6 +70,8 @@
 #include <GlobalCutCommand.hh>
 #include <GlobalPasteCommand.hh>
 
+#include <SparkleAutoUpdater.hh>
+
 #ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
 #endif
@@ -128,6 +130,10 @@ MainWindow::MainWindow(QWidget *parent) :
     createActions();
 
     d_ui->saveAsAction->setEnabled(false);
+
+    #ifdef Q_WS_MAC
+    d_autoUpdater = QSharedPointer<SparkleAutoUpdater>(new SparkleAutoUpdater("http://localhost/appcast.xml"));
+    #endif
 }
 
 MainWindow::~MainWindow()
@@ -181,6 +187,12 @@ void MainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void MainWindow::checkForUpdates()
+{
+    if (d_autoUpdater)
+        d_autoUpdater->checkForUpdates();
 }
 
 void MainWindow::clearQueryHistory()

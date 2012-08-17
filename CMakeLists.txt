@@ -151,6 +151,7 @@ SET(dact_HDRS
   include/ArchiveModel.hh
   include/ArchiveListItemDelegate.hh
   include/ArchiveListItemWidget.hh
+  include/AutoUpdater.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -299,7 +300,19 @@ if(APPLE)
   set_source_files_properties(
     src/AppleUtils.mm
     PROPERTIES COMPILE_FLAGS "-x objective-c++")
-  set(CMAKE_EXE_LINKER_FLAGS "-framework Foundation -w")
+  set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit")
+endif(APPLE)
+
+# Sparkle Auto updater
+if(APPLE)
+  list(APPEND dact_HEADERS
+    include/SparkleAutoUpdater.hh)
+  list(APPEND dact_SRCS
+    src/SparkleAutoUpdater.mm)
+  set_source_files_properties(
+    src/SparkleAutoUpdater.mm
+    PROPERTIES COMPILE_FLAGS "-x objective-c++")
+  set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
 endif(APPLE)
 
 set(dact_MACOSX_RESOURCE_FILES

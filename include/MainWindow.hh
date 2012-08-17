@@ -12,6 +12,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "AutoUpdater.hh"
 #include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -121,6 +122,8 @@ public slots:
     void statusMessage(QString message);
 
     void openCookbook();
+
+    void checkForUpdates();
 
 private slots:
     /*!
@@ -467,6 +470,8 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
+
+    QSharedPointer<AutoUpdater> d_autoUpdater;
 };
 
 #endif // MAINWINDOW_H
