@@ -147,6 +147,7 @@ SET(dact_SRCS
 
 SET(dact_HDRS
   include/AboutWindow.hh
+  include/AppleUtils.hh
   include/ArchiveModel.hh
   include/ArchiveListItemDelegate.hh
   include/ArchiveListItemWidget.hh
@@ -290,6 +291,16 @@ if(WIN32)
     resources/dact.rc
   )
 endif(WIN32)
+
+# OS X Full Screen support
+if(APPLE)
+  list(APPEND dact_SRCS
+    src/AppleUtils.mm)
+  set_source_files_properties(
+    src/AppleUtils.mm
+    PROPERTIES COMPILE_FLAGS "-x objective-c++")
+  set(CMAKE_EXE_LINKER_FLAGS "-framework Foundation -w")
+endif(APPLE)
 
 set(dact_MACOSX_RESOURCE_FILES
   ${DACT_SOURCE_DIR}/resources/dact-espresso.icns

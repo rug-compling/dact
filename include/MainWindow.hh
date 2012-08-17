@@ -275,6 +275,8 @@ private slots:
 
     void setInspectorVisible(bool);
 
+    void toggleFullScreen();
+
 protected:
     void changeEvent(QEvent *e);
     /*!
@@ -362,6 +364,8 @@ private:
      * correctly. If this could be done in the ui file itself...
      */
     void setupUi();
+
+    void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;

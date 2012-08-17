@@ -43,6 +43,7 @@
 #include <config.hh>
 
 #include <AboutWindow.hh>
+#include <AppleUtils.hh>
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
@@ -339,6 +340,9 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
 void MainWindow::setupUi()
 {
     d_ui->setupUi(this);
+
+    // Enables the full screen button on the right window corner on OS X >= 10.7.
+    enableFullScreen();
 
     // Move a spacer between the buttons and the inspector action button
     // This will align the inspection action button to the right
@@ -1021,4 +1025,23 @@ void MainWindow::updateTreeNodeButtons()
 void MainWindow::statusMessage(QString message)
 {
     statusBar()->showMessage(message, 4000);
+}
+
+void MainWindow::enableFullScreen()
+{
+    #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+        enableFullScreenOnMac(this);
+    #endif
+}
+
+void MainWindow::toggleFullScreen()
+{
+    #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+        toggleFullScreenOnMac(this);
+    #else
+        if (isFullScreen())
+            showNormal();
+        else
+            showFullScreen();
+    #endif
 }
