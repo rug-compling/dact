@@ -2,7 +2,7 @@
 #define APPLE_UTILS_HH
 #include <QMainWindow>
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 
 void enableFullScreenOnMac(QMainWindow const *);
 

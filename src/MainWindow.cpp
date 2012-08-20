@@ -1041,19 +1041,19 @@ void MainWindow::statusMessage(QString message)
 
 void MainWindow::enableFullScreen()
 {
-    #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-        enableFullScreenOnMac(this);
-    #endif
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+    enableFullScreenOnMac(this);
+#endif
 }
 
 void MainWindow::toggleFullScreen()
 {
-    #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-        toggleFullScreenOnMac(this);
-    #else
-        if (isFullScreen())
-            showNormal();
-        else
-            showFullScreen();
-    #endif
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+    toggleFullScreenOnMac(this);
+#else
+    if (isFullScreen())
+        showNormal();
+    else
+        showFullScreen();
+#endif
 }
