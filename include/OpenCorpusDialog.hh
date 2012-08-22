@@ -57,6 +57,7 @@ private slots:
     void rowChanged(QModelIndex const &current, QModelIndex const &previous);
 
     void openLocalFile();
+    void openLocalDirectory();
     void openSelectedCorpus();
     void openSelectedCorpus(QModelIndex const &);
 

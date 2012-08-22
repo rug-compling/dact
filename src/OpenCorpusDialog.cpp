@@ -317,6 +317,15 @@ void OpenCorpusDialog::openLocalFile()
         accept();
 }
 
+void OpenCorpusDialog::openLocalDirectory()
+{
+    d_filename = QFileDialog::getExistingDirectory(this,
+        "Open directory", QString());
+
+    if (!d_filename.isNull())
+        accept();
+}
+
 void OpenCorpusDialog::openSelectedCorpus()
 {
     QItemSelectionModel *selectionModel =

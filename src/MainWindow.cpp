@@ -583,7 +583,12 @@ void MainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
-    readCorpus(corpusPath);
+    QFileInfo fi(corpusPath);
+
+    if (fi.isDir())
+        readCorpus(corpusPath, true);
+    else
+        readCorpus(corpusPath);
 }
 
 void MainWindow::openMacrosFile()

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
+    <width>601</width>
     <height>435</height>
    </rect>
   </property>
@@ -43,6 +43,13 @@
        </property>
        <property name="shortcut">
         <string>Ctrl+L</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="openLocalDirectoryPushButton">
+       <property name="text">
+        <string>Open directory…</string>
        </property>
       </widget>
      </item>
@@ -207,6 +214,22 @@
     </hint>
     <hint type="destinationlabel">
      <x>312</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openLocalDirectoryPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>openLocalDirectory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>300</x>
      <y>217</y>
     </hint>
    </hints>
