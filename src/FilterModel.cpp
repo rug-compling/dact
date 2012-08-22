@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 #include "FilterModel.hh"
 
@@ -49,10 +50,12 @@ int FilterModel::rowCount(QModelIndex const &index) const
 QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
     if (role == Qt::TextAlignmentRole)
+    {
         if (index.column() == 1)
             return (Qt::AlignTop + Qt::AlignHCenter);
         else
             return Qt::AlignTop;
+    }
 
 
     size_t nResults;
@@ -226,11 +229,11 @@ void FilterModel::runQuery(QString const &query, QString const &stylesheet)
     else {
         if (stylesheet.isNull())
             d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->begin(), d_corpus->end(), false);
+                d_corpus->entries(), false);
         else
             d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->beginWithStylesheet(stylesheet.toUtf8().constData()),
-                d_corpus->end(), true);
+                d_corpus->entriesWithStylesheet(stylesheet.toUtf8().constData()),
+                true);
 
     }
 }
@@ -271,7 +274,6 @@ void FilterModel::getEntriesWithQuery(QString const &query,
             FilterModel::getEntries(
                 d_corpus->query(alpinocorpus::CorpusReader::XPATH,
                     cQuery),
-                d_corpus->end(),
                 false);
         else
             FilterModel::getEntries(
@@ -279,7 +281,6 @@ void FilterModel::getEntriesWithQuery(QString const &query,
                     query.toUtf8().constData(), stylesheet.toUtf8().constData(),
                     std::list<ac::CorpusReader::MarkerQuery>(
                         1, ac::CorpusReader::MarkerQuery(cQuery, "active", "1"))),
-                d_corpus->end(),
                 true);
 
     } catch (alpinocorpus::Error const &e) {
@@ -292,22 +293,22 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 }
 
 // run async
-void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end,
-    bool withStylesheet)
+void FilterModel::getEntries(EntryIterator const &i, bool withStylesheet)
 {
     try {
         emit queryStarted(0); // we don't know how many entries will be found
 
         d_cancelled = false;
         d_hits = 0;
-        d_entryIterator = begin;
+        d_entryIterator = i;
 
-        for (; !d_cancelled && d_entryIterator != end;
-          ++d_entryIterator)
+        while (!d_cancelled && d_entryIterator.hasNext())
         {
             ++d_hits;
 
-            QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
+            alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
+
+            QString name(QString::fromUtf8(e.name.c_str()));
 
             /*
              * WARNING: This assumes all the hits per result only occur right after
@@ -315,7 +316,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
              * or QMap for fast lookup.
              */
             int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].name == entry) {
+            if (row >= 0 && d_results[row].name == name) {
                 QMutexLocker locker(&d_resultsMutex);
                 ++d_results[row].hits;
             }
@@ -325,12 +326,12 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
                 ++row;
                 if (withStylesheet) {
                     QString contents =
-                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str());
-                    d_results.append(Entry(entry, 1, contents));
+                        QString::fromUtf8((e.contents.c_str()));
+                    d_results.append(Entry(name, 1, contents));
                 }
                 else {
                     QMutexLocker locker(&d_resultsMutex);
-                    d_results.append(Entry(entry, 1, QString::null));
+                    d_results.append(Entry(name, 1, QString::null));
                 }
             }
         }

@@ -51,8 +51,7 @@ signals:
     void nEntriesFound(int entries, int hits);
     
 private:
-    void getEntries(EntryIterator const &begin, EntryIterator const &end,
-        bool withStylesheet);
+    void getEntries(EntryIterator const &i, bool withStylesheet);
     void getEntriesWithQuery(QString const &query, QString const &stylesheet);
     
 private slots:

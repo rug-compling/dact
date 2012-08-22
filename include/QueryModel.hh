@@ -52,7 +52,7 @@ signals:
     void queryEntryFound(QString entry);
     
 private:
-    void getEntries(EntryIterator const &begin, EntryIterator const &end);
+    void getEntries(EntryIterator const &i);
     void getEntriesWithQuery(QString const &query);
     
 private slots:

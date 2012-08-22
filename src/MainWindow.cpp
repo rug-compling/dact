@@ -38,6 +38,7 @@
 #include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
+#include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 
 #include <config.hh>
@@ -242,9 +243,9 @@ void MainWindow::convertCorpus(QString const &convertPath)
     d_exportProgressDialog->open();
 
     QList<QString> files;
-    for (ac::CorpusReader::EntryIterator iter = corpusReader->begin();
-            iter != corpusReader->end(); ++iter)
-        files.push_back(QString::fromUtf8((*iter).c_str()));
+    ac::CorpusReader::EntryIterator iter = corpusReader->entries();
+    while (iter.hasNext())
+        files.push_back(QString::fromUtf8(iter.next(*corpusReader).name.c_str()));
 
     d_writeCorpusCancelled = false;
     d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
@@ -860,9 +861,12 @@ void MainWindow::exportCorpus()
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
-            for (ac::CorpusReader::EntryIterator iter = d_corpusReader->begin();
-                    iter != d_corpusReader->end(); ++iter)
-                files.push_back(QString::fromUtf8((*iter).c_str()));
+        {
+            ac::CorpusReader::EntryIterator iter = d_corpusReader->entries();
+            while (iter.hasNext())
+                files.push_back(QString::fromUtf8(iter.next(*d_corpusReader).name.c_str()));
+            
+        }
 
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));

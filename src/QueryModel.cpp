@@ -243,8 +243,7 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
             expandQuery(query, attribute));
     else
         d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntries,
-            d_corpus->begin(),
-            d_corpus->end());
+            d_corpus->entries());
 }
 
 bool QueryModel::validQuery(QString const &query) const
@@ -295,8 +294,7 @@ void QueryModel::getEntriesWithQuery(QString const &query)
         }
 
         QueryModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            d_corpus->end());
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()));
     } catch (std::exception const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -304,16 +302,19 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 }
 
 // run async
-void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
+void QueryModel::getEntries(EntryIterator const &i)
 {
     try {
         queryStarted(0);
         
         d_cancelled = false;
-        d_entryIterator = begin;
-        
-        for (; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
-            emit queryEntryFound(QString::fromUtf8(d_entryIterator.contents(*d_corpus).c_str()));
+        d_entryIterator = i;
+       
+        while (!d_cancelled && d_entryIterator.hasNext())
+        {
+            alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
+            emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
+        }
             
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
