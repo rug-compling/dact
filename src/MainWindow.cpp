@@ -724,12 +724,9 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
-        QPair< ac::CorpusReader*, QString> result = createCorpusReader(path, recursive);
-        if (result.first != 0) {
-            readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
-            nLoadedCorpora++;
-            emit corpusReaderCreated();
-        }
+        readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
+        nLoadedCorpora++;
+        emit corpusReaderCreated();
     }
 
     return QPair< ac::CorpusReader*, QString>(readers,
