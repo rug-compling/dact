@@ -703,8 +703,13 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
     ac::CorpusReader* reader = 0;
 
     try {
-        if (recursive)
-            reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
+        if (recursive) {
+            if (QFileInfo(path).isDir())
+              reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
+            else
+              // Do not attempt to open as a recursive corpus.
+              reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
+        }
         else
             reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
