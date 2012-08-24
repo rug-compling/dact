@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title>Dact for OS X</title>
+		<link>http://rug-compling.github.com/dact/</link>
+		<description>Most recent changes of Dact with links to updates.</description>
+		<language>en</language>
+		<item>
+			<title>Version 1.4</title>
+			<sparkle:releaseNotesLink>http://rug-compling.github.com/dact/release-notes.html</sparkle:releaseNotesLink>
+			<pubDate>Fri, 27 Jul 2012 23:56:15 -0700</pubDate>
+			<enclosure url="https://github.com/downloads/rug-compling/dact/Dact-1.4.0.dmg" sparkle:version="1.4" length="13707156" type="application/octet-stream"/>
+		</item>
+	</channel>
+</rss>

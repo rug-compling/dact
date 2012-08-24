@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title>Dact for Windows</title>
+		<link>http://rug-compling.github.com/dact/</link>
+		<description>Most recent changes of Dact with links to updates.</description>
+		<language>en</language>
+		<item>
+			<title>Version 1.2.1</title>
+			<sparkle:releaseNotesLink>http://rug-compling.github.com/dact/release-notes.html</sparkle:releaseNotesLink>
+			<pubDate>Fri, 11 May 2012 07:19:21 -0700</pubDate>
+			<enclosure url="https://github.com/downloads/rug-compling/dact/Dact-1.2.1-win32.exe" sparkle:version="1.2.1" length="7817230" type="application/octet-stream"/>
+		</item>
+	</channel>
+</rss>
