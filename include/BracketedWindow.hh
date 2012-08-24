@@ -97,11 +97,10 @@ private slots:
     void progressStarted(int totalEntries);
 
     /*!
-     Called when the search mapper is done or cancelled. Hides the progress bar.
-     \param processedEntries number of entries it has processed.
-     \param totalEntries number of entries it could have processed.
+     Called when the query progress has changed.
+     \param percentage The percentage of corpora that were processed.
      */
-    void progressChanged(int processedEntries, int totalEntries);
+    void progressChanged(int percentage);
 
     /*!
      Called when the search mapper was finished. Cancels the progress bar.

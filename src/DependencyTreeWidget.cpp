@@ -239,6 +239,11 @@ void DependencyTreeWidget::previousEntry(bool)
         d_ui->fileListWidget->setCurrentIndex(previous);
 }
 
+void DependencyTreeWidget::progressChanged(int progress)
+{
+    d_ui->filterProgressBar->setValue(progress);
+}
+
 void DependencyTreeWidget::readSettings()
 {
     QSettings settings;
@@ -301,6 +306,8 @@ void DependencyTreeWidget::setModel(FilterModel *model)
             SLOT(mapperFinished(int, int, bool)));
     connect(model, SIGNAL(nEntriesFound(int, int)),
             SLOT(nEntriesFound(int, int)));
+    connect(model, SIGNAL(progressChanged(int)),
+            SLOT(progressChanged(int)));
     
     connect(d_ui->fileListWidget->selectionModel(),
             SIGNAL(currentChanged(QModelIndex,QModelIndex)),

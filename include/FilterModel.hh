@@ -49,6 +49,7 @@ signals:
     void queryFinished(int n, int totalEntries, bool cached);
     void queryStopped(int n, int totalEntries);
     void nEntriesFound(int entries, int hits);
+    void progressChanged(int percentage);
     
 private:
     void getEntries(EntryIterator const &i, bool withStylesheet);

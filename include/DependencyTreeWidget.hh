@@ -177,6 +177,11 @@ private slots:
      \sa mapperProgressed
      */
     void mapperStopped(int processedEntries, int totalEntries);
+
+    /*!
+     * The progress in the processing of the query changed.
+     */
+    void progressChanged(int percentage);
     
 private:
     void addConnections();

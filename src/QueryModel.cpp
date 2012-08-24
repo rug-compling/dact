@@ -304,9 +304,12 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 // run async
 void QueryModel::getEntries(EntryIterator const &i)
 {
-    try {
-        queryStarted(0);
+        if (i.hasProgress())
+          queryStarted(100);
+        else
+          queryStarted(0);
         
+    try {
         d_cancelled = false;
         d_entryIterator = i;
        
@@ -314,6 +317,7 @@ void QueryModel::getEntries(EntryIterator const &i)
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
             emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
+            emit progressChanged(d_entryIterator.progress());
         }
             
         if (d_cancelled)

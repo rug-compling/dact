@@ -177,6 +177,9 @@ void FilterModel::fireDataChanged()
     emit nEntriesFound(rows, d_hits);
     emit layoutChanged();
 
+    if (d_entryIterator.hasProgress())
+      emit progressChanged(static_cast<int>(d_entryIterator.progress()));
+
     d_lastRow = rows - 1;
 }
 
@@ -295,9 +298,13 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 // run async
 void FilterModel::getEntries(EntryIterator const &i, bool withStylesheet)
 {
-    try {
+    if (i.hasProgress())
+        emit queryStarted(100);
+    else
         emit queryStarted(0); // we don't know how many entries will be found
 
+
+    try {
         d_cancelled = false;
         d_hits = 0;
         d_entryIterator = i;

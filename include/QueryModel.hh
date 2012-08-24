@@ -50,6 +50,7 @@ signals:
     void queryStopped(int n, int totalEntries);
     void queryFinished(int n, int totalEntries, bool cached);
     void queryEntryFound(QString entry);
+    void progressChanged(int progress);
     
 private:
     void getEntries(EntryIterator const &i);
