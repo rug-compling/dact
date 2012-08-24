@@ -50,7 +50,7 @@ bool DactApplication::event(QEvent *event)
 void DactApplication::openCorpora(QStringList const &fileNames)
 {
     d_showOpenCorpusTimer.stop();
-    d_mainWindow->readCorpora(fileNames);
+    d_mainWindow->readCorpora(fileNames, true);
 }
 
 void DactApplication::openMacros(QStringList const &fileNames)
