@@ -241,9 +241,7 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
     if (!query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
             expandQuery(query, attribute));
-    else
-        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntries,
-            d_corpus->entries());
+    // If the query is empty, QueryModel is not supposed to do anything.
 }
 
 bool QueryModel::validQuery(QString const &query) const
