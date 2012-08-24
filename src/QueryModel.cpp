@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QtConcurrentRun>
+#include <QTimer>
 
 #include <algorithm>
 
@@ -32,12 +33,23 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 :
     QAbstractTableModel(parent),
     d_corpus(corpus),
-    d_entryCache(new EntryCache())
+    d_entryCache(new EntryCache()),
+    d_timer(new QTimer)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
         SLOT(mapperEntryFound(QString)));
     connect(this, SIGNAL(queryFinished(int, int, bool)),
         SLOT(finalizeQuery(int, int, bool)));
+
+    // Timer for progress updates.
+    connect(d_timer.data(), SIGNAL(timeout()),
+        SLOT(updateProgress()));
+    connect(this, SIGNAL(queryStopped(int, int)),
+        SLOT(stopProgress()));
+    connect(this, SIGNAL(queryFinished(int, int, bool)),
+        SLOT(stopProgress()));
+    connect(this, SIGNAL(queryFailed(QString)),
+        SLOT(stopProgress()));
 }
 
 QueryModel::~QueryModel()
@@ -135,6 +147,11 @@ QString QueryModel::expandQuery(QString const &query,
             .arg(attribute);
 
     return expandedQuery;
+}
+
+void QueryModel::updateProgress()
+{
+    emit progressChanged(d_entryIterator.progress());
 }
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
@@ -237,10 +254,16 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
     // Do nothing if we where given a null-pointer
     if (!d_corpus)
         return;
-    
+
     if (!query.isEmpty())
+    {
+        d_timer->setInterval(100);
+        d_timer->setSingleShot(false);
+        d_timer->start();
+
         d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
             expandQuery(query, attribute));
+    }
     // If the query is empty, QueryModel is not supposed to do anything.
 }
 
@@ -255,6 +278,7 @@ void QueryModel::cancelQuery()
     d_cancelled = true;
     d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
+    d_timer->stop();
 }
 
 void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
@@ -303,9 +327,9 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 void QueryModel::getEntries(EntryIterator const &i)
 {
         if (i.hasProgress())
-          queryStarted(100);
+          emit queryStarted(100);
         else
-          queryStarted(0);
+          emit queryStarted(0);
         
     try {
         d_cancelled = false;
@@ -315,7 +339,6 @@ void QueryModel::getEntries(EntryIterator const &i)
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
             emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
-            emit progressChanged(d_entryIterator.progress());
         }
             
         if (d_cancelled)
@@ -332,3 +355,9 @@ void QueryModel::getEntries(EntryIterator const &i)
         emit queryFailed(e.what());
     }
 }
+
+void QueryModel::stopProgress()
+{
+    d_timer->stop();
+}
+
