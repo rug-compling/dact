@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
         QCoreApplication::setOrganizationName("RUG");
         QCoreApplication::setOrganizationDomain("rug.nl");
         QCoreApplication::setApplicationName("Dact");
+        QCoreApplication::setApplicationVersion(DACT_VERSION);
 
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
     
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
         appFont.fromString(fontValue.toString());
         a->setFont(appFont);
 #endif
-
+        a->setWindowIcon(QIcon(":/dact-espresso.png"));
         a->init();
     
         QStringList corpusPaths, macroPaths;

@@ -303,6 +303,8 @@ private:
      */
     void focusTreeNode(int direction);
 
+    void initAutoUpdater();
+
     /*!
      Initialize and load stylesheet for the the sentence xsl transformer
      \sa sentenceForFile

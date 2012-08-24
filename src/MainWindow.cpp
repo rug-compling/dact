@@ -43,6 +43,10 @@
 
 #include <config.hh>
 
+#ifdef USE_AUTO_UPDATER
+#include <qtsparkle/Updater>
+#endif
+
 #include <AboutWindow.hh>
 #include <AppleUtils.hh>
 #ifdef USE_WEBSERVICE
@@ -107,6 +111,8 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui->filterComboBox->readHistory("filterHistory");
 
     initTaintedWidgets();
+
+    initAutoUpdater();
 
     // Ensure that we have a status bar.
     statusBar();
@@ -499,6 +505,17 @@ void MainWindow::initTaintedWidgets()
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, false));
+}
+
+void MainWindow::initAutoUpdater()
+{
+#ifdef USE_AUTO_UPDATER
+    qtsparkle::Updater* updater(new qtsparkle::Updater(
+        QUrl(AUTO_UPDATER_FEED_URL), this));
+
+    // connect(d_ui->checkForUpdatesAction, SIGNAL(clicked()),
+    //     updater, SLOT(CheckNow());
+#endif
 }
 
 void MainWindow::help()

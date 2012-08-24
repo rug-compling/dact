@@ -32,8 +32,12 @@ else()
   set(PROGNAME dact)
 endif()
 
+if(ENABLE_BUNDLE)
+  set(USE_AUTO_UPDATER ON CACHE BOOL "Compile qtsparkle auto updater")
+endif()
 
-set(VERSION "0.0.1")
+
+set(VERSION "1.4")
 
 set(GIT_REVISION "unknown")
 exec_program(git
@@ -83,6 +87,13 @@ endif()
 find_package(LibExslt REQUIRED)
 if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
+endif()
+
+if(USE_AUTO_UPDATER)
+  find_package(QtSparkle REQUIRED)
+  if(QTSPARKLE_FOUND)
+    include_directories(${QTSPARKLE_INCLUDE_DIR})
+  endif()
 endif()
 
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
@@ -343,6 +354,9 @@ target_link_libraries(${PROGNAME} ${LIBXML2_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXSLT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})
 
+if(USE_AUTO_UPDATER)
+  target_link_libraries(${PROGNAME} ${QTSPARKLE_LIBRARIES})
+endif()
 
 install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime
@@ -356,9 +370,13 @@ if(APPLE)
     get_filename_component(ALPINOCORPUS_LIBRARY_DIR
       ${ALPINOCORPUS_LIBRARIES} PATH)
 
+    get_filename_component(QTSPARKLE_LIBRARY_DIR
+      ${QTSPARKLE_LIBRARIES} PATH)
+
     set(DIRS
       ${QT_LIBRARY_DIR}
-      ${ALPINOCORPUS_LIBRARY_DIR})
+      ${ALPINOCORPUS_LIBRARY_DIR}
+      ${QTSPARKLE_LIBRARY_DIR})
 
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
     set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
