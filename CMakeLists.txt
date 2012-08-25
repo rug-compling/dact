@@ -305,14 +305,18 @@ endif(APPLE)
 
 # Sparkle Auto updater
 if(APPLE)
-  list(APPEND dact_HEADERS
-    include/SparkleAutoUpdater.hh)
-  list(APPEND dact_SRCS
-    src/SparkleAutoUpdater.mm)
-  set_source_files_properties(
-    src/SparkleAutoUpdater.mm
-    PROPERTIES COMPILE_FLAGS "-x objective-c++")
-  set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
+  option(USE_SPARKLE "Enable Sparkle updates" OFF)
+
+  if(USE_SPARKLE)
+    list(APPEND dact_HEADERS
+      include/SparkleAutoUpdater.hh)
+    list(APPEND dact_SRCS
+      src/SparkleAutoUpdater.mm)
+    set_source_files_properties(
+      src/SparkleAutoUpdater.mm
+      PROPERTIES COMPILE_FLAGS "-x objective-c++")
+    set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
+  endif(USE_SPARKLE)
 endif(APPLE)
 
 set(dact_MACOSX_RESOURCE_FILES
