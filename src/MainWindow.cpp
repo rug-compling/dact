@@ -731,7 +731,10 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
-        readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
+        if (QFileInfo(path).isDir())
+          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
+        else
+          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), false);
         nLoadedCorpora++;
         emit corpusReaderCreated();
     }
