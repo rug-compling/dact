@@ -68,21 +68,10 @@
               <xsl:value-of select="@cat"/>
             </xsl:otherwise>
           </xsl:choose>
-        <xsl:if test="@lemma or @root">
+        <xsl:if test="@word">
           <xhtml:br/>
           <xhtml:i>
-            <xsl:choose>
-              <xsl:when test="@lemma and not(@lemma='_')">
-                <xsl:value-of select="@lemma"/>
-              </xsl:when>
-              <!-- In Lassy @lemma='_' indicates that @lemma equals @word. -->
-              <xsl:when test="@lemma and @lemma='_'">
-                <xsl:value-of select="@word"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="@root"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:value-of select="@word"/>
           </xhtml:i>
         </xsl:if>
         </xhtml:p>
