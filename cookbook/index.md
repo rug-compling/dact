@@ -84,29 +84,27 @@ main clause.
 
 The following set of macros establish this:
 
-   headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
-                or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
+  headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
+               or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
 
-   begin_of_head = """ node[%headrel%]/%b% """
-   end_of_head   = """ node[%headrel%]/%e% """
+  begin_of_head = """ node[%headrel%]/%b% """
+  end_of_head   = """ node[%headrel%]/%e% """
 
-   begin_of_hd   = """ node[@rel="hd"]/%b% """
-   end_of_hd     = """ node[@rel="hd"]/%e% """
+  begin_of_hd   = """ node[@rel="hd"]/%b% """
+  end_of_hd     = """ node[@rel="hd"]/%e% """
 
-   precedes_head_of_smain = """
-   (  ancestor::node[@cat="smain"]/
-                node[@rel="hd"]/%b% 
-              > %begin_of_head% 
-      or 
-      ancestor::node[@cat="smain"]/
-                node[@rel="hd"]/%b% 
-              > %b% and @pos
-   )
-   """
+  precedes_head_of_smain = """
+  (  ancestor::node[@cat="smain"]/
+               node[@rel="hd"]/%b% 
+             > %begin_of_head% 
+     or 
+     ancestor::node[@cat="smain"]/
+               node[@rel="hd"]/%b% 
+             > %b% and @pos
+  ) """
 
-   vorfeld = """
-   %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) 
-   """
+  vorfeld = """
+  %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) """
 
 
 
