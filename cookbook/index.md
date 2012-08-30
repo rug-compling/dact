@@ -68,7 +68,7 @@ may be proposed. In this query, we want to find elements of a main clause which 
 position as the main clause as a whole:
 
 ```
-//node[../@cat="smain" and @number(begin) = ../number(@begin) ]
+//node[../@cat="smain" and %b% = ../%b% ]
 ```
 
 The query will find genuine examples of topicalized constituents, but it will not find *all*
