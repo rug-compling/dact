@@ -62,27 +62,10 @@ b = """number(@begin)"""
 e = """number(@end)"""
 ```
 
-In order to find constituents which are "topicalized" in root sentences (in other words, 
-constituents which occupy the "vorfeld" position in a main clause), the following query
-may be proposed. In this query, we want to find elements of a main clause which start at the same 
-position as the main clause as a whole:
-
-```
-//node[../@cat="smain" and %b% = ../%b% ]
-```
-
-The query will find genuine examples of topicalized constituents, but it will not find *all*
-relevant cases. This is so, because a topicalized constituent is not always an element of a
-main clause. It can be embedded somewhere deeper in the sentence, as in:
-
->   Wat denk je dat hij zei <a href="5.svg">(SVG)</a>
-
-In order to catch such cases as well, the query will be formulated in a more complicated
-manner as follows. We will define vorfeld as a constituent which precedes *a* head of a
-main clause, for which it holds that there is no dominating constituent which precedes a head of 
-main clause. 
-
-The following set of macros establish this:
+It is also very common to refer to the begin and end positions of the head of a phrase. We define
+two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
+then we use "begin_of_hd" and "end_of_hd". If we also want to capture complementizers, coordinators etc,
+we use "begin_of_head" and "end_of_head".
 
 ```
   headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
@@ -93,6 +76,31 @@ The following set of macros establish this:
 
   begin_of_hd   = """ node[@rel="hd"]/%b% """
   end_of_hd     = """ node[@rel="hd"]/%e% """
+```
+
+In order to find constituents which are "topicalized" in root sentences (in other words, 
+constituents which occupy the "vorfeld" position in a main clause), the following query
+may be proposed. In this query, we want to find elements of a main clause which start at the same 
+position as the main clause as a whole:
+
+```
+//node[../@cat="smain" and %b% = ../%b% ]
+```
+
+The query will find many genuine examples of topicalized constituents, but it will not find *all*
+relevant cases. This is so, because a topicalized constituent is not always an element of a
+main clause. It can be embedded somewhere deeper in the sentence, as in:
+
+>   Wat denk je dat hij zei <a href="5.svg">(SVG)</a>
+
+In order to catch such cases as well, the query will be formulated in a more complicated
+manner as follows. We will define vorfeld as a constituent which precedes the head of a
+main clause, a long as there is no dominating constituent which precedes a head of 
+main clause. 
+
+The following set of macros establish this:
+
+```
 
   precedes_head_of_smain = """
   (  ancestor::node[@cat="smain"]/
