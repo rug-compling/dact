@@ -3,6 +3,12 @@ layout: manual
 title: Cookbook - Decaffeinated Alpino Corpus Tool
 ---
 
+## Search a particular word
+
+```
+//node[@word='loopt']
+```
+
 ## Proper name subjects
 
 ```
