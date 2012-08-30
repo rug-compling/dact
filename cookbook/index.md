@@ -19,19 +19,19 @@ title: Cookbook - Decaffeinated Alpino Corpus Tool
 
 Note that this query will only return single-word subjects, as in:
 
-   Ajax speelde een verloren wedstrijd
+>   Ajax speelde een verloren wedstrijd
 
 We will not get examples such as
 
-   Het Feyenood van van Hanegem boezemde elke tegenstander angst in
+>   Het Feyenoord van van Hanegem boezemde elke tegenstander angst in
 
 or
 
-   FC Utrecht speelt zijn thuiswedstrijden in de Galgenwaard
+>   FC Utrecht speelt zijn thuiswedstrijden in de Galgenwaard
    
 or the combination, as in 
 
-   Het FC Utrecht van Jan Wouters verloor drie wedstrijden op rij
+>   Het FC Utrecht van Jan Wouters verloor drie wedstrijden op rij
       
 If you also want to find these cases, then the query becomes a bit more complicated. At this point,
 you may want to consider using macros.
