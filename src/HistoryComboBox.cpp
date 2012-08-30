@@ -46,7 +46,6 @@ void HistoryComboBox::itemClicked()
   emit returnOrClick();
 }
 
-void HistoryComboBox::readHistory(QString const &settingsKey)
 void HistoryComboBox::readHistory(Workspace *workspace)
 {
   clear();
