@@ -1,5 +1,5 @@
-#ifndef DACTFILTERWINDOW_H
-#define DACTFILTERWINDOW_H
+#ifndef DACTBRACKETEDWINDOW_H
+#define DACTBRACKETEDWINDOW_H
 
 #include <QCloseEvent>
 #include <QHash>
@@ -31,32 +31,37 @@ class QTextStream;
  */
 class BracketedWindow : public CorpusWidget {
     Q_OBJECT
-    
+
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
     typedef QStyledItemDelegate*(*DelegateFactory)(CorpusReaderPtr);
-    
-public:    
+
+public:
     BracketedWindow(QWidget *parent = 0);
-    
+    ~BracketedWindow();
+
     /*!
      When a new treebank is loaded into the main window, the corpus is switched and the
      results will be updated.
      \param corpusReader the new corpus reader
      */
     void switchCorpus(CorpusReaderPtr corpusReader);
-    
+
+    bool saveEnabled() const;
+
     /*!
      Set the query filter. Used by the main window to copy the current filter query
      into this window when opened for the first time.
      \param text XPath query
      */
     void setFilter(QString const &text, QString const &raw_filter);
-    
+
     /*!
      Return the current active filter. Used by the main window to highlight the nodes
      when one of BracketedWindow's results is activated.::progress
      */
     inline QString const &filter() const { return d_filter; };
+
+    void showFilenames(bool show);
 
 signals:
     /*!
@@ -64,12 +69,15 @@ signals:
      Used by DactMainWindow to raise its window and show the tree
      */
     void entryActivated(QString file);
-    
+
+    void statusMessage(QString);
+
 public slots:
     void cancelQuery();
-
+    void colorChanged();
     void copy();
     void exportSelection();
+    void saveAs();
 
 
 private slots:
@@ -81,19 +89,18 @@ private slots:
      * Called when an item in the results list is activated
      */
     void entryActivated(QModelIndex const &index);
-    
+
     /*!
      Called when the search mapper started. Shows progress bar.
      \param totalEntries number of entries to search thru.
      */
     void progressStarted(int totalEntries);
-    
+
     /*!
-     Called when the search mapper is done or cancelled. Hides the progress bar.
-     \param processedEntries number of entries it has processed.
-     \param totalEntries number of entries it could have processed.
+     Called when the query progress has changed.
+     \param percentage The percentage of corpora that were processed.
      */
-    void progressChanged(int processedEntries, int totalEntries);
+    void progressChanged(int percentage);
 
     /*!
      Called when the search mapper was finished. Cancels the progress bar.
@@ -101,14 +108,14 @@ private slots:
      \param totalEntries number of entries to search thru.
      */
     void progressFinished(int processedEntries, int totalEntries, bool cached);
-    
+
     /*!
      Called when the search mapper was canceled. Cancels the progress bar.
      \param processedEntries number of entries searched so far.
      \param totalEntries number of entries to search thru.
      */
     void progressStopped(int processedEntries, int totalEntries);
-    
+
     /*!
      Called when another delegate is selected in the dropdown menu
      \sa d_listDelegateFactories
@@ -118,14 +125,21 @@ private slots:
 
     /*! Called when the execution of a query failed. */
     void queryFailed(QString error);
-    
+
     void startQuery();
-    
+
+    void showFilenamesChanged();
+
+    void showToolsMenu(QPoint const &position);
+
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
-    void addListDelegate(QString const &name, DelegateFactory);
+    enum OutputFormat {FormatText, FormatHTML};
+
+    void addOutputType(QString const &outputType, QString const &description,
+        DelegateFactory factory);
     void updateResults();
     void createActions();
     void initListDelegates();
@@ -134,17 +148,19 @@ private:
     void readSettings();
     void writeSettings();
     void selectionAsCSV(QTextStream &output);
-    
+
     static QStyledItemDelegate* colorDelegateFactory(CorpusReaderPtr);
     static QStyledItemDelegate* visibilityDelegateFactory(CorpusReaderPtr);
     static QStyledItemDelegate* keywordInContextDelegateFactory(CorpusReaderPtr);
 
     QString d_filter;
-    QList<DelegateFactory>d_listDelegateFactories;
+    QList<DelegateFactory> d_listDelegateFactories;
+    QList<QString> d_outputTypes;
     QSharedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<FilterModel> d_model;
+    QString d_lastfilterchoice;
 };
 
-#endif // DACTFILTERWINDOW_H
+#endif // DACTBRACKETEDWINDOW_H

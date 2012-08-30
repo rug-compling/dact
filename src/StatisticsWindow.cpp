@@ -1,4 +1,5 @@
 #include <QClipboard>
+#include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -24,8 +25,6 @@
 #include "XSLTransformer.hh"
 #include "ui_StatisticsWindow.h"
 
-QString const MISSING_ATTRIBUTE("[missing attribute]");
-
 StatisticsWindow::StatisticsWindow(QWidget *parent) :
     CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow))
@@ -35,7 +34,7 @@ StatisticsWindow::StatisticsWindow(QWidget *parent) :
     createActions();
     readNodeAttributes();
     readSettings();
-    
+
     // Pick a sane default attribute.
     int idx = d_ui->attributeComboBox->findText("word");
     if (idx != -1)
@@ -49,15 +48,15 @@ StatisticsWindow::~StatisticsWindow()
 
 void StatisticsWindow::attributeChanged(int index)
 {
-  Q_UNUSED(index);
-  if (!d_model.isNull())
-    startQuery();
+    Q_UNUSED(index);
+    if (!d_model.isNull())
+        startQuery();
 }
 
 void StatisticsWindow::queryFailed(QString error)
 {
     progressStopped(0, 0);
-    
+
     QMessageBox::critical(this, tr("Error processing query"),
         tr("Could not process query: ") + error,
         QMessageBox::Ok);
@@ -66,9 +65,10 @@ void StatisticsWindow::queryFailed(QString error)
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
-    
+    emit saveStateChanged();
+
     //d_xpathValidator->setCorpusReader(d_corpusReader);
-    
+
     setModel(new QueryModel(corpusReader));
 }
 
@@ -78,6 +78,7 @@ void StatisticsWindow::setFilter(QString const &filter, QString const &raw_filte
 
     d_filter = filter;
     startQuery();
+
 }
 
 void StatisticsWindow::setAggregateAttribute(QString const &detail)
@@ -91,25 +92,32 @@ void StatisticsWindow::setModel(QueryModel *model)
     d_model = QSharedPointer<QueryModel>(model);
     d_ui->resultsTable->setModel(d_model.data());
 
+    d_ui->distinctValuesLabel->setText(QString(""));
+    d_ui->totalHitsLabel->setText(QString(""));
+
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
-    
+
     connect(d_model.data(), SIGNAL(queryEntryFound(QString)),
         SLOT(updateResultsTotalCount()));
-    
+
     connect(d_model.data(), SIGNAL(queryStarted(int)),
         SLOT(progressStarted(int)));
-    
+
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
-    
+
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
         SLOT(progressStopped(int, int)));
+
+    connect(d_model.data(), SIGNAL(progressChanged(int)),
+        SLOT(progressChanged(int)));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
 {
     d_ui->totalHitsLabel->setText(QString("%L1").arg(d_model->totalHits()));
+    d_ui->distinctValuesLabel->setText(QString("%L1").arg(d_model->rowCount(QModelIndex())));
 }
 
 void StatisticsWindow::applyValidityColor(QString const &)
@@ -122,6 +130,73 @@ void StatisticsWindow::cancelQuery()
     if (d_model)
         d_model->cancelQuery();
 }
+
+
+void StatisticsWindow::saveAs()
+{
+    if (d_model.isNull())
+        return;
+
+    int nlines = d_model->rowCount(QModelIndex());
+
+    if (nlines == 0)
+        return;
+
+    QString filename;
+    QStringList filenames;
+
+    QFileDialog fd(this, tr("Save"), QString(), tr("Microsoft Excel 2003 XML (*.xls);;Text (*.txt);;HTML (*.html *.htm);;CSV (*.csv)"));
+    fd.setAcceptMode(QFileDialog::AcceptSave);
+    fd.setConfirmOverwrite(true);
+    fd.setLabelText(QFileDialog::Accept, tr("Save"));
+    if (d_lastFilterChoice.size())
+        fd.selectNameFilter(d_lastFilterChoice);
+    if (fd.exec())
+        filenames = fd.selectedFiles();
+    else
+        return;
+    if (filenames.size() < 1)
+        return;
+    filename = filenames[0];
+    if (! filename.length())
+        return;
+
+    QSharedPointer<QFile> stylesheet;
+
+    d_lastFilterChoice = fd.selectedNameFilter();
+    if (d_lastFilterChoice.contains("*.txt"))
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-text.xsl"));
+    else if (d_lastFilterChoice.contains("*.html"))
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-html.xsl"));
+    else if (d_lastFilterChoice.contains("*.xls"))
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-officexml.xsl"));
+    else
+        stylesheet = QSharedPointer<QFile>(new QFile(":/stylesheets/stats-csv.xsl"));
+
+    QFile data(filename);
+    if (!data.open(QFile::WriteOnly | QFile::Truncate)) {
+        QMessageBox::critical(this,
+                              tr("Save file error"),
+                              tr("Cannot save file %1 (error code %2)").arg(filename).arg(data.error()),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    QTextStream out(&data);
+
+    out.setCodec("UTF-8");
+
+    QString xmlStats = d_model->asXML();
+
+    XSLTransformer trans(*stylesheet);
+    out << trans.transform(xmlStats);
+
+    out.flush();
+    data.close();
+
+    emit statusMessage(tr("File saved as %1").arg(filename));
+}
+
 
 void StatisticsWindow::copy()
 {
@@ -151,12 +226,12 @@ void StatisticsWindow::exportSelection()
             tr("Error exporting selection"),
             tr("Could open file for writing."),
             QMessageBox::Ok);
-        
+
         return;
     }
 
     QTextStream textstream(&file);
-    
+
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream, ";", true);
 
@@ -166,22 +241,22 @@ void StatisticsWindow::exportSelection()
 void StatisticsWindow::createActions()
 {
     // @TODO: move this non action related ui code to somewhere else. The .ui file preferably.
-   
+
     // Requires initialized UI.
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTable->verticalHeader()->hide();
     d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
     d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
-    
+
     // Only allow valid xpath queries to be submitted
     //d_ui->filterLineEdit->setValidator(d_xpathValidator.data());
-        
+
     // When a row is activated, generate a query to be used in the main window to
     // filter all the results so only the results which are accumulated in this
     // row will be shown.
     connect(d_ui->resultsTable, SIGNAL(activated(QModelIndex const &)),
         SLOT(generateQuery(QModelIndex const &)));
-    
+
     // Toggle percentage column checkbox (is this needed?)
     connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
         SLOT(showPercentageChanged()));
@@ -195,14 +270,14 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
     // Get the text from the first column, that is the found value
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
 
-    if (data == MISSING_ATTRIBUTE)
+    if (data == QueryModel::MISSING_ATTRIBUTE)
       return;
-    
+
     QString query = ::generateQuery(
         d_filter,
         d_ui->attributeComboBox->currentText(),
         data);
-    
+
     emit entryActivated(data, query);
 }
 
@@ -211,13 +286,13 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
     // If there is no model attached (e.g. no corpus loaded) do nothing
     if (!d_model)
         return;
-    
+
     QModelIndexList rows = d_ui->resultsTable->selectionModel()->selectedRows();
-    
+
     // If there is nothing selected, do nothing
     if (rows.isEmpty())
         return;
-    
+
     foreach (QModelIndex const &row, rows)
     {
         // This only works if the selection behavior is SelectRows
@@ -225,7 +300,7 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
             output << '"' << d_model->data(row).toString().replace("\"", "\"\"") << '"'; // value
         else
             output << d_model->data(row).toString();
-        
+
         output
             << separator
             << d_model->data(row.sibling(row.row(), 1)).toString() // count
@@ -251,18 +326,9 @@ void StatisticsWindow::startQuery()
 
     d_ui->totalHitsLabel->clear();
 
-    QString attrWithMissing = QString("%1/(@%2/string(), '%3')[1]")
-        .arg(d_filter)
-        .arg(d_ui->attributeComboBox->currentText())
-        .arg(MISSING_ATTRIBUTE);
-    
-    if (d_model->validQuery(attrWithMissing))
-        d_model->runQuery(attrWithMissing);
-    else
-        d_model->runQuery(QString("%1/@%2")
-            .arg(d_filter)
-            .arg(d_ui->attributeComboBox->currentText()));
+    d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText());
 
+    emit saveStateChanged();
 }
 
 void StatisticsWindow::showPercentageChanged()
@@ -277,14 +343,15 @@ void StatisticsWindow::progressStarted(int total)
     d_ui->filterProgress->setVisible(true);
 }
 
-void StatisticsWindow::progressChanged(int n, int total)
+void StatisticsWindow::progressChanged(int percentage)
 {
-    d_ui->filterProgress->setValue(n);
+    d_ui->filterProgress->setValue(percentage);
 }
 
 void StatisticsWindow::progressStopped(int n, int total)
 {
     d_ui->filterProgress->setVisible(false);
+    emit saveStateChanged();
 }
 
 void StatisticsWindow::closeEvent(QCloseEvent *event)
@@ -343,6 +410,16 @@ void StatisticsWindow::readNodeAttributes()
     xmlFreeDtd(dtd);
 }
 
+bool StatisticsWindow::saveEnabled() const
+{
+    if (d_model.isNull())
+        return false;
+    if (d_model->rowCount(QModelIndex()) == 0)
+        return false;
+
+    return true;
+}
+
 void StatisticsWindow::readSettings()
 {
     QSettings settings;
@@ -368,4 +445,24 @@ void StatisticsWindow::writeSettings()
     // Window geometry
     settings.setValue("query_pos", pos());
     settings.setValue("query_size", size());
+}
+
+QString StatisticsWindow::XMLescape(QString s)
+{
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+}
+
+QString StatisticsWindow::XMLescape(std::string s)
+{
+    return XMLescape(QString(s.c_str()));
+}
+
+QString StatisticsWindow::HTMLescape(QString s)
+{
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+}
+
+QString StatisticsWindow::HTMLescape(std::string s)
+{
+    return HTMLescape(QString(s.c_str()));
 }

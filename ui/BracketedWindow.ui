@@ -32,26 +32,65 @@
     </layout>
    </item>
    <item>
-    <widget class="DactListView" name="resultsList" native="true">
+    <widget class="DactTableView" name="resultsTable" native="true">
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
      <property name="contextMenuPolicy">
-      <enum>Qt::ActionsContextMenu</enum>
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="showGrid">
+      <bool>false</bool>
+     </property>
+     <property name="alternatingRowColors">
+       <bool>true</bool>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
      <addaction name="copyResultsAction"/>
      <addaction name="exportResultsAction"/>
     </widget>
    </item>
    <item>
-    <widget class="QProgressBar" name="filterProgressBar">
-     <property name="visible">
-      <bool>false</bool>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="filenamesCheckBox">
+       <property name="text">
+        <string>Show Filenames</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+       <widget class="QProgressBar" name="filterProgressBar">
+         <property name="visible">
+           <bool>false</bool>
+         </property>
+       </widget>
+     </item>
+    </layout>
    </item>
   </layout>
   <action name="copyResultsAction">
@@ -80,9 +119,15 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DactListView</class>
-   <extends>QWidget</extends>
-   <header>DactListView.hh</header>
+   <class>DactTableView</class>
+   <extends>QTableView</extends>
+   <header>DactTableView.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>DactToolsMenu</class>
+   <extends>QMenu</extends>
+   <header>DactToolsMenu.hh</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -108,6 +153,12 @@
    <signal>triggered()</signal>
    <receiver>BracketedWindow</receiver>
    <slot>exportSelection()</slot>
+  </connection>
+  <connection>
+   <sender>resultsTable</sender>
+   <signal>customContextMenuRequested(const QPoint &amp;)</signal>
+   <receiver>BracketedWindow</receiver>
+   <slot>showToolsMenu(QPoint const &amp;)</slot>
   </connection>
  </connections>
 </ui>

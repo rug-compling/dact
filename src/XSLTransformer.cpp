@@ -35,7 +35,8 @@ XSLTransformer::~XSLTransformer()
 void XSLTransformer::initWithStylesheet(QString const &xsl)
 {
     QByteArray xslData(xsl.toUtf8());
-    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0, 0);
+    xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0,
+        XSLT_PARSE_OPTIONS);
     d_xslPtr = xsltParseStylesheetDoc(xslDoc);
 }
 
@@ -69,6 +70,7 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
     cParams[params.size() * 2] = 0; // Terminator
 
     xsltTransformContextPtr ctx = xsltNewTransformContext(d_xslPtr, doc);
+    xsltSetCtxtParseOptions(ctx, XSLT_PARSE_OPTIONS);
 
     // Transform...
     xmlDocPtr res = xsltApplyStylesheetUser(d_xslPtr, doc, cParams, NULL,

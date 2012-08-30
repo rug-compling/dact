@@ -30,6 +30,7 @@ class FilterModel : public QAbstractTableModel
 public:
     FilterModel(CorpusPtr corpus, QObject *parent = 0);
     ~FilterModel();
+    QString asXML() const;
     int columnCount(QModelIndex const &index) const;
     int rowCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role) const;
@@ -48,10 +49,10 @@ signals:
     void queryFinished(int n, int totalEntries, bool cached);
     void queryStopped(int n, int totalEntries);
     void nEntriesFound(int entries, int hits);
+    void progressChanged(int percentage);
     
 private:
-    void getEntries(EntryIterator const &begin, EntryIterator const &end,
-        bool withStylesheet);
+    void getEntries(EntryIterator const &i, bool withStylesheet);
     void getEntriesWithQuery(QString const &query, QString const &stylesheet);
     
 private slots:

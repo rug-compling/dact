@@ -1,6 +1,7 @@
 #include <QChar>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QList>
@@ -9,42 +10,50 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QProcess>
 #include <QProgressDialog>
 #include <QRegExp>
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
 #include <QtCore>
-
 #include <QtDebug>
-
-#include <ArchiveModel.hh>
-#include <DownloadWindow.hh>
 #include <QtIOCompressor.hh>
+
+#include "OpenCorpusDialog.hh"
+#include "ArchiveListItemDelegate.hh"
+#include "ArchiveModel.hh"
+
 #include <config.hh>
 
-#include <ui_DownloadWindow.h>
+#include <AlpinoCorpus/CorpusReaderFactory.hh>
+#include <AlpinoCorpus/Error.hh>
+
+#include "ui_OpenCorpusDialog.h"
+
+namespace ac = alpinocorpus;
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
-DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
-    QWidget(parent, f),
-    d_ui(QSharedPointer<Ui::DownloadWindow>(new Ui::DownloadWindow)),
-    d_archiveModel(new ArchiveModel),
-    d_corpusAccessManager(new QNetworkAccessManager),
-    d_downloadProgressDialog(new QProgressDialog()),
-    d_inflateProgressDialog(new QProgressDialog()),
+OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
+:
+    QDialog(parent, f),
+    d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
+    d_archiveModel(new ArchiveModel()),
+    d_corpusAccessManager(new QNetworkAccessManager()),
+    d_downloadProgressDialog(new QProgressDialog(this)),
+    d_inflateProgressDialog(new QProgressDialog(this)),
     d_reply(0),
     d_cancelInflate(false)
 {
     d_ui->setupUi(this);
 
-    d_ui->archiveTreeView->setModel(d_archiveModel.data());
-    d_ui->archiveTreeView->hideColumn(2);
+    d_ui->corpusListView->setModel(d_archiveModel.data());
+
+    d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
     
     // We only enable the download button when a corpus is selected.
-    d_ui->downloadPushButton->setEnabled(false);
-    d_ui->informationGroupBox->setEnabled(false);
+    d_ui->openButton->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
@@ -58,27 +67,32 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     connect(d_archiveModel.data(), SIGNAL(processingError(QString)),
         SLOT(archiveProcessingError(QString)));
         
-    connect(d_ui->archiveTreeView->selectionModel(),
+    connect(d_ui->corpusListView->selectionModel(),
         SIGNAL(currentRowChanged(QModelIndex const &, QModelIndex const &)),
         SLOT(rowChanged(QModelIndex const &, QModelIndex const &)));
+
+    connect(d_ui->corpusListView,
+        SIGNAL(activated(QModelIndex const &)),
+        SLOT(openSelectedCorpus(QModelIndex const &)));
+
     connect(d_archiveModel.data(), SIGNAL(retrievalFinished()),
             SLOT(archiveRetrieved()));
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
-    connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
+    
+    connect(d_downloadProgressDialog, SIGNAL(canceled()),
         SLOT(downloadCanceled()));
-    connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
+    connect(d_inflateProgressDialog, SIGNAL(canceled()),
             SLOT(cancelInflate()));
-    connect(d_ui->refreshPushButton, SIGNAL(clicked()),
-        SLOT(refreshCorpusList()));
-    connect(d_ui->downloadPushButton, SIGNAL(clicked()),
-        SLOT(download()));
+    
     connect(this, SIGNAL(inflateProgressed(int)),
-        d_inflateProgressDialog.data(), SLOT(setValue(int)));
+        d_inflateProgressDialog, SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
-        d_inflateProgressDialog.data(), SLOT(accept()));
+        d_inflateProgressDialog, SLOT(accept()));
+    connect(this, SIGNAL(inflateFinished()),
+        SLOT(accept()));
     
     connect(d_archiveModel.data(), SIGNAL(retrieving()),
         d_ui->activityIndicator, SLOT(show()));
@@ -90,11 +104,12 @@ DownloadWindow::DownloadWindow(QWidget *parent, Qt::WindowFlags f) :
     refreshCorpusList();
 }
 
-DownloadWindow::~DownloadWindow()
+OpenCorpusDialog::~OpenCorpusDialog()
 {
+    // 
 }
 
-void DownloadWindow::archiveNetworkError(QString error)
+void OpenCorpusDialog::archiveNetworkError(QString error)
 {
     QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
         QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
@@ -103,7 +118,7 @@ void DownloadWindow::archiveNetworkError(QString error)
     box.exec();
 }
 
-void DownloadWindow::archiveProcessingError(QString error)
+void OpenCorpusDialog::archiveProcessingError(QString error)
 {
     QMessageBox box(QMessageBox::Warning, "Could not process archive index",
                     QString("Could not process the index of the archive: %1").arg(error),
@@ -112,14 +127,12 @@ void DownloadWindow::archiveProcessingError(QString error)
     box.exec();
 }
 
-void DownloadWindow::archiveRetrieved()
+void OpenCorpusDialog::archiveRetrieved()
 {
-    d_ui->archiveTreeView->resizeColumnToContents(0);
-    d_ui->archiveTreeView->resizeColumnToContents(1);
-    d_ui->archiveTreeView->resizeColumnToContents(3);
+    //
 }
 
-void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
+void OpenCorpusDialog::corpusReplyFinished(QNetworkReply *reply)
 {
     d_reply = 0;
     QNetworkReply::NetworkError error = reply->error();
@@ -147,56 +160,40 @@ void DownloadWindow::corpusReplyFinished(QNetworkReply *reply)
     d_inflateProgressDialog->setValue(0);
     d_inflateProgressDialog->open();
     
-    QtConcurrent::run(this, &DownloadWindow::inflate, reply);
+    QtConcurrent::run(this, &OpenCorpusDialog::inflate, reply);
 }
 
-void DownloadWindow::download()
+void OpenCorpusDialog::download(ArchiveEntry const &entry)
 {
-    QItemSelectionModel *selectionModel =
-      d_ui->archiveTreeView->selectionModel();
-
-    if (selectionModel->selectedRows().size() == 0)
-      return;
-
-    int row = selectionModel->selectedRows().at(0).row();
-
-    ArchiveEntry const &entry = d_archiveModel->entryAtRow(row);
-    
     QString name = entry.name;
     QString hash = entry.checksum;
     
     QString corpusName = name + DOWNLOAD_EXTENSION;
-    QString finalCorpusName = name + ".dact";
+    QString filename = entry.filePath();
     
-    QString filename(QFileDialog::getSaveFileName(this,
-        "Download corpus", finalCorpusName, "*.dact"));
-    
-    if (filename.isNull())
-        return;
-    else {
-        d_filename = filename;
-        d_hash = hash;
-    }
-    
+    d_filename = filename;
+    d_hash = hash;
+
     d_downloadProgressDialog->setLabelText(QString("Downloading '%1'").arg(corpusName));
     d_downloadProgressDialog->reset();
     d_downloadProgressDialog->open();
     
-    QString corpusUrl = QString("%1/%2").arg(d_baseUrl).arg(corpusName);
-    QNetworkRequest request(corpusUrl);    
+    QString corpusUrl = entry.url;
+    
+    QNetworkRequest request(corpusUrl);
     d_reply = d_corpusAccessManager->get(request);
-        
+    
     connect(d_reply, SIGNAL(downloadProgress(qint64, qint64)),
         SLOT(downloadProgress(qint64, qint64)));
 }
 
-void DownloadWindow::downloadCanceled()
+void OpenCorpusDialog::downloadCanceled()
 {
     Q_ASSERT(d_reply != 0);
     d_reply->abort();
 }
 
-void DownloadWindow::downloadProgress(qint64 progress, qint64 maximum)
+void OpenCorpusDialog::downloadProgress(qint64 progress, qint64 maximum)
 {
     if (maximum == 0)
         return;
@@ -204,7 +201,26 @@ void DownloadWindow::downloadProgress(qint64 progress, qint64 maximum)
     d_downloadProgressDialog->setValue((progress * 100) / maximum);
 }
 
-void DownloadWindow::inflate(QIODevice *dev)
+QString OpenCorpusDialog::getCorpusFileName(QWidget *parent)
+{
+    OpenCorpusDialog dialog(parent);
+
+    return dialog.exec() == QDialog::Accepted
+        ? dialog.d_filename
+        : QString();
+}
+
+QSharedPointer<ac::CorpusReader> OpenCorpusDialog::getCorpusReader(QWidget *parent)
+{
+    // In the most ideal case, the OpenCorpusDialog would return just a corpus reader
+    // which could be reading a local file, or a webservice, or anything else Dact
+    // can open. All code to open a file and create a reader would be moved to
+    // OpenCorpusDialog. One problem remains: where should the code live that is used
+    // to open files passed as arguments on the command line?
+    return QSharedPointer<ac::CorpusReader>(0);
+}
+
+void OpenCorpusDialog::inflate(QIODevice *dev)
 {
     qint64 initAvailable = dev->bytesAvailable();
         
@@ -217,6 +233,14 @@ void DownloadWindow::inflate(QIODevice *dev)
         return;
     }
     
+    // Make sure the directory exists in which we want to store the result
+    if (!QDir::current().mkpath(QFileInfo(d_filename).path()))
+    {
+        dev->deleteLater();
+        emit inflateError("could not create output directory");
+        return;
+    }
+
     QFile out(d_filename);
     if (!out.open(QIODevice::WriteOnly))
     {
@@ -253,15 +277,14 @@ void DownloadWindow::inflate(QIODevice *dev)
     }
     
     emit inflateFinished();
-    
 }
 
-void DownloadWindow::cancelInflate()
+void OpenCorpusDialog::cancelInflate()
 {
     d_cancelInflate = true;
 }
 
-void DownloadWindow::inflateHandleError(QString error)
+void OpenCorpusDialog::inflateHandleError(QString error)
 {
     d_inflateProgressDialog->accept();
     
@@ -272,60 +295,137 @@ void DownloadWindow::inflateHandleError(QString error)
     box.exec();
 }
 
-void DownloadWindow::keyPressEvent(QKeyEvent *event)
+void OpenCorpusDialog::keyPressEvent(QKeyEvent *event)
 {
     // Close window on ESC and CMD + W.
     if (event->key() == Qt::Key_Escape
         || (event->key() == Qt::Key_W && event->modifiers() == Qt::ControlModifier))
     {
-        hide();
+        reject();
         event->accept();
     }
     else
         QWidget::keyPressEvent(event);
 }
 
-void DownloadWindow::refreshCorpusList()
+void OpenCorpusDialog::openLocalFile()
+{
+    d_filename = QFileDialog::getOpenFileName(this,
+        "Open corpus", QString(), "Dact corpora (*.dact)");
+
+    if (!d_filename.isNull())
+        accept();
+}
+
+void OpenCorpusDialog::openLocalDirectory()
+{
+    d_filename = QFileDialog::getExistingDirectory(this,
+        "Open directory", QString());
+
+    if (!d_filename.isNull())
+        accept();
+}
+
+void OpenCorpusDialog::openSelectedCorpus()
+{
+    QItemSelectionModel *selectionModel =
+      d_ui->corpusListView->selectionModel();
+
+    if (selectionModel->selectedIndexes().size() > 0)
+      openSelectedCorpus(selectionModel->selectedIndexes().at(0));
+}
+
+void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
+{
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
+    
+    if (entry.existsLocally())
+    {
+        d_filename = entry.filePath();
+        accept();
+    }
+    else
+    {
+        download(entry);
+    }
+}
+
+QModelIndex OpenCorpusDialog::selectedCorpusIndex() const
+{
+    QItemSelectionModel *selectionModel = d_ui->corpusListView->selectionModel();
+
+    Q_ASSERT(selectionModel->selectedIndexes().size() > 0);
+    
+    return selectionModel->selectedIndexes().at(0);
+}
+
+ArchiveEntry const &OpenCorpusDialog::selectedCorpus() const
+{
+    return d_archiveModel->entryAtRow(selectedCorpusIndex().row());
+}
+
+void OpenCorpusDialog::deleteSelectedCorpus()
+{
+    d_archiveModel->deleteLocalFiles(selectedCorpusIndex());
+}
+
+void OpenCorpusDialog::revealSelectedCorpus()
+{
+    ArchiveEntry const &entry(selectedCorpus());
+    // source: http://lynxline.com/show-in-finder-show-in-explorer/
+
+    #ifdef Q_WS_MAC
+        QStringList args;
+        args << "-e";
+        args << "tell application \"Finder\"";
+        args << "-e";
+        args << "activate";
+        args << "-e";
+        args << "select POSIX file \""+entry.filePath()+"\"";
+        args << "-e";
+        args << "end tell";
+        QProcess::startDetached("osascript", args);
+
+    #elif Q_WS_WIN
+        QStringList args;
+        args << "/select," << QDir::toNativeSeparators(entry.filePath());
+        QProcess::startDetached("explorer", args);
+
+    #else
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(entry.filePath()).path()));
+
+    #endif
+}
+
+void OpenCorpusDialog::refreshCorpusList()
 {
     QSettings settings;
     d_baseUrl = settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString();
     
-    d_archiveModel->setUrl(QUrl(QString("%1/index.xml").arg(d_baseUrl)));
+    d_archiveModel->setUrl(d_baseUrl);
 }
 
-void DownloadWindow::rowChanged(QModelIndex const &current, QModelIndex const &previous)
+void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const &previous)
 {
     Q_UNUSED(previous);
-    
-    if (current.isValid()) {
-        d_ui->downloadPushButton->setEnabled(true);
-        d_ui->informationGroupBox->setEnabled(true);
-        
-        // Retrieve the active entry.
-        int row = current.row();
-        ArchiveEntry const &entry(d_archiveModel->entryAtRow(row));
-        
-        // Show detailed information.
-        if (entry.sentences == 0)
-            d_ui->sentenceCountLabel->setText("unknown");
-        else
-            d_ui->sentenceCountLabel->setText(QString("%L1").arg(entry.sentences));
-        d_ui->descriptionTextBrowser->setText(entry.longDescription);
-    }
-    else {
-        d_ui->downloadPushButton->setEnabled(false);
-        d_ui->informationGroupBox->setEnabled(false);
-        
-        d_ui->sentenceCountLabel->clear();
-        d_ui->descriptionTextBrowser->clear();
-    }
+
+    ArchiveEntry const &entry = d_archiveModel->entryAtRow(current.row());
+
+    // Disable/enable Open button
+    d_ui->openButton->setEnabled(current.isValid());
+
+    // Disable/enable Reveal & Remove local files context menu items
+    bool corpusExistsLocally(entry.existsLocally());
+    d_ui->deleteLocalFilesAction->setEnabled(corpusExistsLocally);
+    d_ui->revealLocalFilesAction->setEnabled(corpusExistsLocally);
 }
 
-QString DownloadWindow::networkErrorToString(QNetworkReply::NetworkError error)
+QString OpenCorpusDialog::networkErrorToString(QNetworkReply::NetworkError error)
 {
     QString errorValue;
     QMetaObject meta = QNetworkReply::staticMetaObject;
-    for (int i = 0; i < meta.enumeratorCount(); ++i) {
+    for (int i = 0; i < meta.enumeratorCount(); ++i)
+    {
         QMetaEnum m = meta.enumerator(i);
         if (m.name() == QLatin1String("NetworkError"))
         {

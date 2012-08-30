@@ -12,6 +12,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "AutoUpdater.hh"
 #include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -22,10 +23,12 @@ namespace Ui {
 }
 
 class AboutWindow;
-class DownloadWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
+#ifdef USE_WEBSERVICE
+class WebserviceWindow;
+#endif // USE_WEBSERVICE
 class DactMacrosModel;
 class DactQueryHistory;
 class PreferencesWindow;
@@ -45,6 +48,7 @@ public:
     ~MainWindow();
 
 signals:
+    void corpusReaderCreated();
     void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
@@ -65,6 +69,12 @@ public slots:
     void openWorkspace();
 
     /*!
+     Calls the open file dialog and filters on the .data.dz extension
+     \sa readCorpus
+     */
+    void openCorpus();
+
+    /*!
      Start loading a corpus
      \param corpusPath path to a .dz or directory with the XML files
     */
@@ -77,9 +87,31 @@ public slots:
     void saveWorkspaceAs();
 
     /*!
-     Instantiate (if not already instantiated) and raise the download window.
+     The save state of a widget was modified.
+    */
+    void saveStateChanged();
+
+    /*!
+     Changes the filter query field used to filter the file list and calls
+     filterChanged. Used to set the filter from one of the child windows.
+     Currently the statistics window uses it to display all the entries
+     that make up one of it's results rows.
+     \param filter the XPath query.
+     \sa filterChanged
      */
-    void showDownloadWindow();
+    void setFilter(QString const &filter);
+
+    /*!
+     Toggle toolbar visibility.
+    */
+    void setToolbarVisible(bool visible);
+
+#ifdef USE_WEBSERVICE
+    /*!
+     Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
+     */
+    void showWebserviceWindow();
+#endif // USE_WEBSERVICE
 
 #ifdef USE_REMOTE_CORPUS
     /*!
@@ -89,6 +121,14 @@ public slots:
 
     void openRemoteCorpus(QString const &url);
 #endif // USE_REMOTE_CORPUS
+
+    void saveAs();
+
+    void statusMessage(QString message);
+
+    void openCookbook();
+
+    void checkForUpdates();
 
 private slots:
     /*!
@@ -127,11 +167,26 @@ private slots:
     void clearQueryHistory();
 
     /*!
-     Listens for the finished signal from the corpus reader. When heard, it hides
+      Convert a compact corpus to a Dact corpus.
+     */
+    void convertCompactCorpus();
+
+    /*!
+      Convert a directory corpus to a Dact corpus.
+     */
+    void convertDirectoryCorpus();
+
+    /*!
+     Listens for the finished signal from the corpus readers. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.
      \sa addFiles
     */
+    void corporaRead();
+
+    /*!
+     One out of multiple corpora is read. Updates the opening progressbar.
+     */
     void corpusRead();
 
     void corpusWritten(int idx);
@@ -173,12 +228,6 @@ private slots:
      */
     void help();
 
-    /*!
-     Calls the open file dialog and filters on the .data.dz extension
-     \sa readCorpus
-     */
-    void openCorpus();
-
     void openMacrosFile();
 
     /*!
@@ -192,17 +241,6 @@ private slots:
     void print();
 
     void setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QString const &path);
-
-    /*!
-     Changes the filter query field used to filter the file list and calls
-     filterChanged. Used to set the filter from one of the child windows.
-     Currently the statistics window uses it to display all the entries
-     that make up one of it's results rows.
-     \param filter the XPath query.
-     \sa setHighlight
-     \sa filterChanged
-     */
-    void setFilter(QString const &filter);
 
     /*!
      Displays a critical error dialog with the suplied error message.
@@ -245,6 +283,8 @@ private slots:
 
     void setInspectorVisible(bool);
 
+    void toggleFullScreen();
+
     void saveMacrosToWorkspace();
 
 protected:
@@ -255,6 +295,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    void convertCorpus(QString const &path);
+
     void activateWorkspace();
 
     /*!
@@ -262,11 +304,6 @@ private:
      */
     void createActions();
 
-    /*!
-     Retrieve a list of corpus extensions from the alpinocorpus library.
-    */
-    QString corpusExtensions();
-    
     /*!
      Focus on the next or previous tree node in the current tree scene. It finds the
      currently focussed node, and then walks using direction towards the next node
@@ -302,7 +339,8 @@ private:
      \sa exportProgress
      \sa exportError
      */
-    bool writeCorpus(QString const &filename, QList<QString> const &files);
+    bool writeCorpus(QString const &filename, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+        QList<QString> const &files);
 
     /*!
      Given a path create one CorpusReader. In an error occurs, an openError(QString)
@@ -339,9 +377,13 @@ private:
      */
     void setupUi();
 
+    void enableFullScreen();
+
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
-    DownloadWindow *d_downloadWindow;
+#ifdef USE_WEBSERVICE
+    WebserviceWindow *d_webserviceWindow;
+#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     RemoteWindow *d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -443,6 +485,8 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
+
+    QSharedPointer<AutoUpdater> d_autoUpdater;
 };
 
 #endif // MAINWINDOW_H

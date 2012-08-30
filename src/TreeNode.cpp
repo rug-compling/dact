@@ -1,17 +1,22 @@
+#include <QDebug>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsView>
 #include <QPainter>
 #include <QSettings>
+#include <QTextDocument>
 
 #include "TreeNode.hh"
 #include "PopupItem.hh"
+
+static const QPointF popupCursorOffset(0, -16);
 
 TreeNode::TreeNode(QGraphicsItem *parent) :
     QGraphicsItem(parent),
     d_active(false),
     d_attributes(),
+    d_parentNode(0),
     d_childNodes(),
-    d_labels(),
     d_popupItem(0),
     d_spaceBetweenLayers(40),
     d_spaceBetweenNodes(10),
@@ -21,6 +26,8 @@ TreeNode::TreeNode(QGraphicsItem *parent) :
 {
     setFlags(ItemIsSelectable | ItemIsFocusable);
     setAcceptHoverEvents(true);
+    d_label.setDefaultFont(font());
+    d_label.setDocumentMargin(d_leafPadding);
 }
 
 bool TreeNode::isLeaf() const
@@ -30,13 +37,37 @@ bool TreeNode::isLeaf() const
 
 void TreeNode::appendChild(TreeNode *child)
 {
-    child->setParentItem(this);
+    child->setParentNode(this);
     d_childNodes.append(child);
 }
 
-void TreeNode::appendLabel(QString const &label)
+void TreeNode::setLabel(QString const &label)
 {
-    d_labels.append(label);
+    d_label.setHtml(label);
+}
+
+void TreeNode::setTooltip(QString const &tooltip)
+{
+    d_tooltip = tooltip;
+
+    if (d_popupItem)
+        d_popupItem->setContent(tooltip);
+}
+
+QString const &TreeNode::tooltip() const
+{
+    return d_tooltip;
+}
+
+TreeNode *TreeNode::parentNode()
+{
+    return d_parentNode;
+}
+
+void TreeNode::setParentNode(TreeNode *parent)
+{
+    d_parentNode = parent;
+    setParentItem(parent);
 }
 
 QList<TreeNode*> TreeNode::children()
@@ -62,14 +93,24 @@ void TreeNode::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void TreeNode::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d_popupItem && d_popupItem->isVisible())
+    if (d_popupItem && d_popupItem->isVisible()) {
+
         d_popupItem->setVisible(false);
+        event->accept();
+    }
 }
 
 void TreeNode::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d_popupItem && d_popupItem->isVisible())
-        d_popupItem->setPos(event->scenePos());
+    if (d_popupItem && d_popupItem->isVisible()) {
+        if (event->screenPos() == event->lastScreenPos())
+        {
+            d_popupItem->setPos(event->scenePos() + popupCursorOffset / viewScale());
+        }
+        else
+            d_popupItem->setPos(event->scenePos() + popupCursorOffset / viewScale());
+        event->accept();
+    }
 }
 
 void TreeNode::setAttribute(QString const &name, QString const &value)
@@ -79,12 +120,7 @@ void TreeNode::setAttribute(QString const &name, QString const &value)
 
 QString TreeNode::asString(QString const &indent) const
 {
-    QString dump = indent + "[node labels:";
-    
-    foreach (QString const &line, d_labels)
-    {
-        dump += " \"" + line + "\"";
-    }
+    QString dump = indent + "[node label: \"" + d_label.toHtml() + "\"";
     
     dump += "\n" + indent + QString("      attributes: (%1)").arg(d_attributes.size());
     
@@ -148,21 +184,7 @@ QRectF TreeNode::leafRect() const
 
 QSizeF TreeNode::leafSize() const
 {
-    QFontMetricsF metrics(font());
-    QSizeF leaf(d_leafMinimumWidth, d_leafMinimumHeight);
-    
-    foreach (QString const &label, d_labels)
-    {
-        qreal labelWidth = metrics.width(label) + 2 * d_leafPadding;
-        if (labelWidth > leaf.width())
-            leaf.setWidth(labelWidth);
-    }
-    
-    qreal labelsHeight = d_labels.size() * metrics.lineSpacing() + 2 * d_leafPadding;
-    if (labelsHeight > leaf.height())
-        leaf.setHeight(labelsHeight);
-    
-    return leaf;
+    return d_label.size();
 }
 
 QSizeF TreeNode::branchSize() const
@@ -197,10 +219,8 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     QSettings settings;
     settings.beginGroup("Tree");
 
-    QColor activeNodeForeground(settings.value("activeNodeForeground",
-        QColor(Qt::white)).value<QColor>());
-    QColor activeNodeBackground(settings.value("activeNodeBackground",
-        QColor(Qt::darkGreen)).value<QColor>());
+    QColor activeNodeBorder(settings.value("activeNodeBorder",
+        QColor(Qt::black)).value<QColor>());
     
     QRectF branch(branchBoundingRect());
     QRectF leaf(leafRect());
@@ -215,43 +235,36 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     
     painter->setRenderHint(QPainter::Antialiasing, true);
     
-    QColor background = isActive() ? activeNodeBackground : QColor(Qt::white);
-    
-    if (isSelected())
-        background = background.darker(125);
+    QColor background(Qt::white);
+
+    if (isActive())
+        background = background.darker(120);
+   
+    QPen borderPen(isSelected() ?
+        activeNodeBorder : QColor(Qt::black),
+        isSelected() ? 3 : 1);
+
+    //if (isActive())
+    //  borderPen.setStyle(Qt::DotLine);
+    //if (!isSelected() && !isActive())
+    //    borderPen.setStyle(Qt::DashLine);
     
     painter->fillRect(leaf, background);
-    
-    QPen borderPen(Qt::black, hasFocus() ? 3 : 1);
     painter->setPen(borderPen);
     painter->drawRect(leaf);
     
-    painter->setPen(isActive() ? activeNodeForeground : QColor(Qt::black));
-    paintLabels(painter, leaf);
+    paintLabel(painter, leaf);
 }
 
-void TreeNode::paintLabels(QPainter *painter, QRectF const &leaf)
+void TreeNode::paintLabel(QPainter *painter, QRectF const &leaf)
 {
-    // @TODO currently I draw all the labels by just concatenating them together
-    // but if I could implement drawing each line separately, it would be easy as pie
-    // to implement colors, weights etc for each line separately.
-    QString labels;
-    foreach (QString const &label, d_labels)
-        labels += QString("%1\n").arg(label);
+    // Necessary for centred text.
+    d_label.setTextWidth(leaf.width());
     
-    QRectF textBox(leaf);
-    
-    textBox.setWidth(leaf.width() - 2*d_leafPadding);
-    textBox.setHeight(leaf.height() - 2*d_leafPadding);
-    textBox.translate(d_leafPadding, d_leafPadding);
-
-    // You can't be serious... Yes you can.
-    double appDpi = qt_defaultDpi();
-    double ratio = appDpi / painter->device()->logicalDpiY();
-    QFont painterFont(font());
-    painterFont.setPointSizeF(painterFont.pointSize() * ratio);
-    painter->setFont(painterFont);
-    painter->drawText(textBox, Qt::AlignCenter, labels);
+    painter->save();
+    painter->translate(leaf.topLeft());
+    d_label.drawContents(painter, QRectF(QPointF(0,0), leaf.size()));
+    painter->restore();
 }
 
 void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
@@ -268,4 +281,12 @@ void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
         
         painter->drawLine(origin, target);
     }
+}
+
+qreal TreeNode::viewScale() const
+{
+    if (!scene() || scene()->views().isEmpty())
+        return 1.0;
+    
+    return scene()->views().first()->transform().m11();
 }

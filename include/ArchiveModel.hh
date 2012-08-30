@@ -13,11 +13,15 @@
 
 struct ArchiveEntry {
     QString name;
+    QString url;
     size_t sentences;
     double size;
     QString description;
     QString longDescription;
     QString checksum;
+
+    QString filePath() const;
+    bool existsLocally() const;
 };
 
 class ArchiveModel : public QAbstractTableModel
@@ -25,16 +29,19 @@ class ArchiveModel : public QAbstractTableModel
     Q_OBJECT
 public:
     ArchiveModel(QObject *parent = 0);
-    ArchiveModel(QUrl const &archiveUrl, QObject *parent = 0);
+    ArchiveModel(QString const &archiveUrl, QObject *parent = 0);
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
     int columnCount(QModelIndex const &parent = QModelIndex()) const;
-    ArchiveEntry const &entryAtRow(int row);
+    ArchiveEntry const &entryAtRow(int row) const;
     QVariant headerData(int column, Qt::Orientation orientation,
         int role) const;
     void refresh();
     int rowCount(QModelIndex const &parent = QModelIndex()) const;
-    void setUrl(QUrl const &archiveUrl);
-    private slots:
+    void setUrl(QString const &archiveUrl);
+
+    void deleteLocalFiles(QModelIndex const &index);
+
+private slots:
     void replyFinished(QNetworkReply *reply);
 
 signals:
@@ -43,19 +50,28 @@ signals:
     void retrieving();
     void retrievalFinished();
     
-private:    
+private:
+    void init();
+
     QString networkErrorToString(QNetworkReply::NetworkError error);
-    
-    QUrl d_archiveUrl;
+    void addLocalFiles();
+
+    void writeLocalArchiveIndex(QByteArray const &data);
+    QByteArray readLocalArchiveIndex() const;
+
+    bool parseArchiveIndex(QByteArray const &xmlData, bool listLocalFilesOnly = false);
+
+    QString d_archiveUrl;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
     QVector<ArchiveEntry> d_corpora;
 
 };
 
-inline ArchiveEntry const &ArchiveModel::entryAtRow(int row)
+inline ArchiveEntry const &ArchiveModel::entryAtRow(int row) const
 {
+    Q_ASSERT(row >= 0 && row < d_corpora.size());
+    
     return d_corpora.at(row);
 }
-
 
 #endif // DOWNLOADWINDOW_H

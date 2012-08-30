@@ -1,4 +1,6 @@
 #include <cmath>
+#include <list>
+
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPalette>
@@ -43,7 +45,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    QList<Chunk> chunks(parseChunks(index));
+    std::list<Chunk> chunks(parseChunks(index));
     QRectF textBox(option.rect);
     
     QBrush brush(option.state & QStyle::State_Selected

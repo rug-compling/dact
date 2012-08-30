@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OpenCorpusDialog</class>
+ <widget class="QDialog" name="OpenCorpusDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>601</width>
+    <height>435</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Open Corpus</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QListView" name="corpusListView">
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+     <property name="uniformItemSizes">
+      <bool>true</bool>
+     </property>
+     <addaction name="revealLocalFilesAction"/>
+     <addaction name="deleteLocalFilesAction"/>
+     <addaction name="separatorAction"/>
+     <addaction name="reloadAction"/>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="openLocalFileButton">
+       <property name="text">
+        <string>Open &amp;local file…</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+L</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="openLocalDirectoryPushButton">
+       <property name="text">
+        <string>Open directory…</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="activityIndicator">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="openButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Open</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <action name="revealLocalFilesAction">
+   <property name="text">
+    <string>Reveal local files</string>
+   </property>
+  </action>
+  <action name="deleteLocalFilesAction">
+   <property name="text">
+    <string>Delete local files</string>
+   </property>
+  </action>
+  <action name="reloadAction">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="separatorAction">
+   <property name="separator" stdset="0">
+    <bool>true</bool>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>openLocalFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>openLocalFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>openSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reloadAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>refreshCorpusList()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteLocalFilesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>deleteSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>revealLocalFilesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>revealSelectedCorpus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>495</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openLocalDirectoryPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OpenCorpusDialog</receiver>
+   <slot>openLocalDirectory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>300</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,6 +1,8 @@
+#include <QAbstractItemView>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QModelIndex>
 #include <QSettings>
 #include <QVariant>
 #include <QtDebug>
@@ -9,15 +11,25 @@
 #include <Workspace.hh>
 
 HistoryComboBox::HistoryComboBox(QWidget *parent, QString settingsKey) :
-  QComboBox(parent)
+  QComboBox(parent),
+  d_listViewWasClicked(false)
 {
   setEditable(true);
   setDuplicatesEnabled(true);
   setInsertPolicy(InsertAtTop);
   //setMaxCount(64);
-  
+
   connect(lineEdit(), SIGNAL(returnPressed()),
-      SLOT(returnPressed()));
+    SLOT(returnPressed()));
+
+  // Listen for activation. If an entry was selected from the list view,
+  // and then the activation event fired, it was probably caused by the click.
+  // Handle this case as if the user pressed the enter key.
+  connect(this, SIGNAL(activated(QString const &)),
+    SLOT(comboBoxActivated(QString const &)));
+
+  connect(view(), SIGNAL(pressed(QModelIndex const &)),
+    SLOT(listViewClicked(QModelIndex const &)));
 }
 
 HistoryComboBox::~HistoryComboBox()
@@ -29,6 +41,12 @@ void HistoryComboBox::clearHistory()
   clear();
 }
 
+void HistoryComboBox::itemClicked()
+{
+  emit returnOrClick();
+}
+
+void HistoryComboBox::readHistory(QString const &settingsKey)
 void HistoryComboBox::readHistory(Workspace *workspace)
 {
   clear();
@@ -38,8 +56,12 @@ void HistoryComboBox::readHistory(Workspace *workspace)
 
 void HistoryComboBox::returnPressed()
 {
-  if (text().trimmed().isEmpty())
+  QString compact = text().trimmed();
+
+  if (compact.isEmpty())
     emit activated(QString(""));
+
+  emit returnOrClick();
 }
 
 void HistoryComboBox::revalidate()
@@ -68,4 +90,18 @@ void HistoryComboBox::writeHistory(Workspace *workspace)
       history << itemText(i);
 
     workspace->setHistory(history);
+}
+
+void HistoryComboBox::comboBoxActivated(QString const &text)
+{
+  if (d_listViewWasClicked)
+  {
+    d_listViewWasClicked = false;
+    returnPressed();
+  }
+}
+
+void HistoryComboBox::listViewClicked(QModelIndex const &index)
+{
+  d_listViewWasClicked = true;
 }

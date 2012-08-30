@@ -3,22 +3,25 @@
 
 #include <QGraphicsItem>
 #include <QList>
+#include <QTextDocument>
 
 extern int qt_defaultDpi();
 
 class PopupItem : public QGraphicsItem
 {
 public:
-    PopupItem(QGraphicsItem *parent = 0,
-    QList<QString> lines = QList<QString>());
+    PopupItem(QGraphicsItem *parent = 0, QString const &html = QString());
     QRectF boundingRect() const;
     QFont font() const;
     void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
     QSizeF size() const;
     QRectF rect() const;
+
+    QString content() const;
+    void setContent(QString const &content);
 private:
     qreal viewScale() const;
-    QList<QString> d_lines;
+    QTextDocument d_content;
     qreal d_padding;
 };
 

@@ -1,9 +1,11 @@
+#include <QFileDialog>
 #include <QFont>
 #include <QFontDialog>
 #include <QKeyEvent>
 #include <QObject>
 #include <QSettings>
 
+#include <DactSettings.hh>
 #include <PreferencesWindow.hh>
 #include <config.hh>
 
@@ -20,6 +22,10 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     d_ui->groupBox_x->hide();
 #endif
 
+#ifndef USE_WEBSERVICE
+    d_ui->groupBoxWebservice->hide();
+#endif
+
 
 #ifndef __APPLE__
     applyAppFont();
@@ -33,12 +39,11 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     loadColorsTab();
     loadNetworkTab();
     loadRemoteTab();
+    loadToolsTab();
 
-    connect(d_ui->treeActiveNodeForegroundColor, SIGNAL(colorSelected(QColor)),
+    connect(d_ui->treeActiveNodeBorderColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
-    connect(d_ui->treeActiveNodeBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-
+    
     connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
     connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
@@ -57,6 +62,12 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     connect(d_ui->remoteBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveRemoteBaseUrl()));
 
+    connect(d_ui->webserviceBaseUrlLineEdit, SIGNAL(editingFinished()),
+        SLOT(saveWebserviceBaseUrl()));
+    
+    connect(d_ui->toolsFilePath, SIGNAL(editingFinished()),
+        SLOT(saveToolsTab()));
+    
     connect(d_ui->restoreDefaultColorsButton, SIGNAL(clicked()),
         SLOT(restoreDefaultColors()));
 
@@ -65,6 +76,12 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
     connect(d_ui->restoreDefaultRemoteButton, SIGNAL(clicked()),
         SLOT(restoreDefaultRemote()));
+
+    connect(d_ui->restoreDefaultWebserviceButton, SIGNAL(clicked()),
+        SLOT(restoreDefaultWebservice()));
+
+    connect(d_ui->selectToolsFilePath, SIGNAL(clicked()),
+        SLOT(selectToolsFilePath()));
 }
 
 PreferencesWindow::~PreferencesWindow() {}
@@ -88,17 +105,25 @@ void PreferencesWindow::selectAppFont()
     applyAppFont();
 }
 
+void PreferencesWindow::selectToolsFilePath()
+{
+    QString path(QFileDialog::getOpenFileName(this, "Select Tools configuration file"));
+
+    if (path.isNull())
+        return;
+
+    d_ui->toolsFilePath->setText(path);
+    saveToolsTab();
+}
+
 void PreferencesWindow::loadColorsTab()
 {
     QSettings settings;
 
     settings.beginGroup("Tree");
 
-    d_ui->treeActiveNodeForegroundColor->setColor(
-        settings.value("activeNodeForeground", QColor(Qt::white)).value<QColor>());
-
-    d_ui->treeActiveNodeBackgroundColor->setColor(
-        settings.value("activeNodeBackground", QColor(Qt::darkGreen)).value<QColor>());
+    d_ui->treeActiveNodeBorderColor->setColor(
+        settings.value("activeNodeBorder", QColor(Qt::black)).value<QColor>());
 
     settings.endGroup();
 
@@ -133,6 +158,9 @@ void PreferencesWindow::loadNetworkTab()
     QSettings settings;
     d_ui->archiveBaseUrlLineEdit->setText(
         settings.value(ARCHIVE_BASEURL_KEY, DEFAULT_ARCHIVE_BASEURL).toString());
+
+    d_ui->webserviceBaseUrlLineEdit->setText(
+        settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
 }
 
 void PreferencesWindow::loadRemoteTab()
@@ -140,6 +168,12 @@ void PreferencesWindow::loadRemoteTab()
     QSettings settings;
     d_ui->remoteBaseUrlLineEdit->setText(
         settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString());
+}
+
+void PreferencesWindow::loadToolsTab()
+{
+    d_ui->toolsFilePath->setText(
+        DactSettings::sharedInstance()->value("toolsFilePath", "").toString());
 }
 
 void PreferencesWindow::saveArchiveBaseUrl()
@@ -154,13 +188,18 @@ void PreferencesWindow::saveRemoteBaseUrl()
     settings.setValue(REMOTE_BASEURL_KEY, d_ui->remoteBaseUrlLineEdit->text());
 }
 
+void PreferencesWindow::saveWebserviceBaseUrl()
+{
+    QSettings settings;
+    settings.setValue(WEBSERVICE_BASEURL_KEY, d_ui->webserviceBaseUrlLineEdit->text());
+}
+
 void PreferencesWindow::saveColorsTab()
 {
     QSettings settings;
 
     settings.beginGroup("Tree");
-    settings.setValue("activeNodeForeground", d_ui->treeActiveNodeForegroundColor->color());
-    settings.setValue("activeNodeBackground", d_ui->treeActiveNodeBackgroundColor->color());
+    settings.setValue("activeNodeBorder", d_ui->treeActiveNodeBorderColor->color());
     settings.endGroup();
 
     settings.beginGroup("KeywordsInContext");
@@ -173,6 +212,13 @@ void PreferencesWindow::saveColorsTab()
     settings.beginGroup("CompleteSentence");
     settings.setValue("background", d_ui->completeSentencesBackgroundColor->color());
     settings.endGroup();
+
+    emit colorChanged();
+}
+
+void PreferencesWindow::saveToolsTab()
+{
+    DactSettings::sharedInstance()->setValue("toolsFilePath", d_ui->toolsFilePath->text());
 }
 
 void PreferencesWindow::restoreDefaultColors()
@@ -210,6 +256,15 @@ void PreferencesWindow::restoreDefaultRemote()
     settings.remove(REMOTE_BASEURL_KEY);
 
     loadRemoteTab();
+}
+
+void PreferencesWindow::restoreDefaultWebservice()
+{
+    QSettings settings;
+
+    settings.remove(WEBSERVICE_BASEURL_KEY);
+
+    loadNetworkTab();
 }
 
 void PreferencesWindow::keyPressEvent(QKeyEvent *event)

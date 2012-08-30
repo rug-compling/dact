@@ -87,7 +87,7 @@
      <x>0</x>
      <y>0</y>
      <width>789</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -102,6 +102,8 @@
     <addaction name="openAction"/>
     <addaction name="remoteAction"/>
     <addaction name="menuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="saveAsAction"/>
     <addaction name="separator"/>
     <addaction name="openWorkspaceAction"/>
     <addaction name="saveWorkspaceAsAction"/>
@@ -141,20 +143,34 @@
     <addaction name="nextTreeNodeAction"/>
     <addaction name="separator"/>
     <addaction name="inspectorAction"/>
+    <addaction name="toolbarAction"/>
+    <addaction name="separator"/>
+    <addaction name="toggleFullScreenAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="downloadAction"/>
+    <widget class="QMenu" name="menuConvertCorpus">
+     <property name="title">
+      <string>Convert corpus</string>
+     </property>
+     <addaction name="convertDirectoryCorpusAction"/>
+     <addaction name="convertCompactCorpusAction"/>
+    </widget>
+    <addaction name="webserviceAction"/>
+    <addaction name="menuConvertCorpus"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
+    <addaction name="separator"/>
+    <addaction name="checkForUpdatesAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="helpAction"/>
+    <addaction name="cookbookAction"/>
     <addaction name="aboutAction"/>
    </widget>
    <widget class="DactMacrosMenu" name="menuMacros">
@@ -421,12 +437,17 @@
     <string>Ctrl+R</string>
    </property>
   </action>
-  <action name="saveCorpus">
+  <action name="saveAsAction">
    <property name="text">
-    <string>Export to corpus…</string>
+    <string>&amp;Save as…</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="saveCorpus">
+   <property name="text">
+    <string>Export to corpus…</string>
    </property>
   </action>
   <action name="preferencesAction">
@@ -474,12 +495,9 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="downloadAction">
+  <action name="webserviceAction">
    <property name="text">
-    <string>Download corpus...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
+    <string>Parse sentences...</string>
    </property>
   </action>
   <action name="filterOnAttributeAction">
@@ -531,6 +549,50 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="toolbarAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionConvert_corpus">
+   <property name="text">
+    <string>Convert corpus…</string>
+   </property>
+  </action>
+  <action name="convertDirectoryCorpusAction">
+   <property name="text">
+    <string>Directory corpus…</string>
+   </property>
+  </action>
+  <action name="convertCompactCorpusAction">
+   <property name="text">
+    <string>Compact corpus…</string>
+   </property>
+  </action>
+  <action name="cookbookAction">
+   <property name="text">
+    <string>Cookbook</string>
+   </property>
+  </action>
+  <action name="toggleFullScreenAction">
+   <property name="text">
+    <string>Toggle Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+F</string>
+   </property>
+  </action>
+  <action name="checkForUpdatesAction">
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>
@@ -641,6 +703,44 @@
      <y>329</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>cookbookAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openCookbook()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toggleFullScreenAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggleFullScreen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkForUpdatesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>checkForUpdates()</slot>
   </connection>
  </connections>
 </ui>

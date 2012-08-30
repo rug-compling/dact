@@ -15,6 +15,7 @@
 #include "ui_DependencyTreeWidget.h"
 
 class DactMacrosModel;
+class DactToolsModel;
 class DactTreeScene;
 class QPainter;
 class QItemSelectionModel;
@@ -24,7 +25,11 @@ class DependencyTreeWidget : public CorpusWidget
     Q_OBJECT
 public:
     DependencyTreeWidget(QWidget *parent);
+    ~DependencyTreeWidget();
     
+    // Provide access to the sentence widget.
+    BracketedSentenceWidget *sentenceWidget();
+
     // XXX - do we want this?
     QItemSelectionModel *selectionModel();
     
@@ -32,6 +37,8 @@ public:
     void setMacrosModel(QSharedPointer<DactMacrosModel> macrosModel);
     void readSettings();
     void renderTree(QPainter *painter);
+
+    bool saveEnabled() const;
     
     // XXX - hack, kill asap
     DactTreeScene *scene();
@@ -43,6 +50,7 @@ signals:
     
 public slots:
     void cancelQuery();
+    void saveAs();
     
     /*!
      Focus the highlight query entry field
@@ -85,6 +93,8 @@ public slots:
     void zoomOut();
 
     void copy();
+
+    void showToolMenu(QPoint const &position);
 
 private slots:
     /*!
@@ -167,6 +177,11 @@ private slots:
      \sa mapperProgressed
      */
     void mapperStopped(int processedEntries, int totalEntries);
+
+    /*!
+     * The progress in the processing of the query changed.
+     */
+    void progressChanged(int percentage);
     
 private:
     void addConnections();
@@ -213,6 +228,8 @@ private:
      The macros model. Used to store and apply macros to XPath queries.
      */
     QSharedPointer<DactMacrosModel> d_macrosModel;
+
+    QSharedPointer<DactToolsModel> d_toolModel;
     
     QSharedPointer<XPathValidator> d_xpathValidator;
     

@@ -9,11 +9,19 @@ IF("${isSystemDir}" STREQUAL "-1")
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
+if(WIN32)
+  # Let CPack include the required libraries.
+  include (InstallRequiredSystemLibraries)
+endif()
 
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
   set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
+  set(ENABLE_CODESIGN OFF CACHE BOOL "Sign the application bundle")
+  if(ENABLE_CODESIGN)
+    set(CODESIGN_IDENTITY "John Doe" CACHE STRING "Code signing identity")
+  endif(ENABLE_CODESIGN)
 else(APPLE)
   set(ENABLE_BUNDLE OFF)
 endif(APPLE)
@@ -77,15 +85,19 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
+find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
 option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+
+option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
 
 # Dact sources
 SET(dact_SRCS
   src/AboutWindow.cpp
   src/ArchiveModel.cpp
+  src/ArchiveListItemDelegate.cpp
+  src/ArchiveListItemWidget.cpp
   src/DactColorWell.cpp
   src/BracketedDelegates/BracketedDelegate.cpp
   src/BracketedDelegates/BracketedColorDelegate.cpp
@@ -93,14 +105,19 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
+  src/Chunk.cpp
   src/DependencyTreeWidget.cpp
-  src/DownloadWindow.cpp
   src/DactApplication.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
   src/DactMacrosFile.cpp
   src/DactMacrosMenu.cpp
   src/DactMacrosModel.cpp
+  src/DactSettings.cpp
+  src/DactTableView.cpp
+  src/DactTool.cpp
+  src/DactToolsMenu.cpp
+  src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
   src/QtIOCompressor.cpp
@@ -111,7 +128,9 @@ SET(dact_SRCS
   src/GlobalCutCommand.cpp
   src/GlobalEditCommand.cpp
   src/GlobalPasteCommand.cpp
+  src/HumanReadableSize.cpp
   src/MainWindow.cpp
+  src/OpenCorpusDialog.cpp
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
@@ -129,7 +148,11 @@ SET(dact_SRCS
 
 SET(dact_HDRS
   include/AboutWindow.hh
+  include/AppleUtils.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
+  include/AutoUpdater.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -138,7 +161,6 @@ SET(dact_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/config.hh
   include/DactApplication.hh
   include/DactColorWell.hh
@@ -148,6 +170,11 @@ SET(dact_HDRS
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
   include/DactQueryHistory.hh
+  include/DactSettings.hh
+  include/DactTableView.hh
+  include/DactTool.hh
+  include/DactToolsMenu.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -157,6 +184,8 @@ SET(dact_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/HistoryComboBox.hh
+  include/HumanReadableSize.hh
+  include/OpenCorpusDialog.hh
   include/MainWindow.hh
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
@@ -177,6 +206,8 @@ SET(dact_HDRS
 SET(dact_MOC_HDRS
   include/AboutWindow.hh
   include/ArchiveModel.hh
+  include/ArchiveListItemDelegate.hh
+  include/ArchiveListItemWidget.hh
   include/DactApplication.hh
   include/DactColorWell.hh
   include/BracketedDelegate.hh
@@ -187,11 +218,14 @@ SET(dact_MOC_HDRS
   include/BracketedWindow.hh
   include/CorpusWidget.hh
   include/DependencyTreeWidget.hh
-  include/DownloadWindow.hh
   include/DactListView.hh
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
+  include/DactSettings.hh
+  include/DactTableView.hh
+  include/DactTool.hh
+  include/DactToolsModel.hh
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
@@ -204,6 +238,7 @@ SET(dact_MOC_HDRS
   include/GlobalEditCommand.hh
   include/GlobalPasteCommand.hh
   include/MainWindow.hh
+  include/OpenCorpusDialog.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
   include/RecentFilesMenu.hh
@@ -214,10 +249,11 @@ SET(dact_MOC_HDRS
 
 SET(dact_UI
   ui/AboutWindow.ui
+  ui/ArchiveListItemWidget.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
-  ui/DownloadWindow.ui
   ui/MainWindow.ui
+  ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui
   ui/StatisticsWindow.ui
   ui/TreeNodeInspector.ui
@@ -229,13 +265,27 @@ SET(dact_RCS
 
 if(USE_REMOTE_CORPUS)
   list(APPEND dact_HEADERS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_MOC_HDRS
-    include/RemoteWindow.hh)
+    include/RemoteWindow.hh
+    include/RemoteArchiveModel.hh)
   list(APPEND dact_SRCS
-    src/RemoteWindow.cpp)
+    src/RemoteWindow.cpp
+    src/RemoteArchiveModel.cpp)
   list(APPEND dact_UI
     ui/RemoteWindow.ui)
+endif()
+
+if(USE_WEBSERVICE)
+  list(APPEND dact_HEADERS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_MOC_HDRS
+    include/WebserviceWindow.hh)
+  list(APPEND dact_SRCS
+    src/WebserviceWindow.cpp)
+  list(APPEND dact_UI
+    ui/WebserviceWindow.ui)
 endif()
 
 if(WIN32)
@@ -244,6 +294,32 @@ if(WIN32)
     resources/dact.rc
   )
 endif(WIN32)
+
+# OS X Full Screen support
+if(APPLE)
+  list(APPEND dact_SRCS
+    src/AppleUtils.mm)
+  set_source_files_properties(
+    src/AppleUtils.mm
+    PROPERTIES COMPILE_FLAGS "-x objective-c++")
+  set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit")
+endif(APPLE)
+
+# Sparkle Auto updater
+if(APPLE)
+  option(USE_SPARKLE "Enable Sparkle updates" OFF)
+
+  if(USE_SPARKLE)
+    list(APPEND dact_HEADERS
+      include/SparkleAutoUpdater.hh)
+    list(APPEND dact_SRCS
+      src/SparkleAutoUpdater.mm)
+    set_source_files_properties(
+      src/SparkleAutoUpdater.mm
+      PROPERTIES COMPILE_FLAGS "-x objective-c++")
+    set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
+  endif(USE_SPARKLE)
+endif(APPLE)
 
 set(dact_MACOSX_RESOURCE_FILES
   ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
@@ -305,6 +381,7 @@ if(APPLE)
 
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "nl.rug.Dact")
     set(MACOSX_BUNDLE_ICON_FILE "dact-espresso.icns")
+    set(MACOSX_BUNDLE_BUNDLE_NAME ${PROGNAME} )
     set(MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION} )
 
     set_target_properties(${PROGNAME}
@@ -321,7 +398,74 @@ if(APPLE)
       fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
 
+    # XXX - Automatically find frameworks?
+    if(ENABLE_CODESIGN)
+      INSTALL(CODE "
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtCore.framework/Versions/4/QtCore\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtGui.framework/Versions/4/QtGui\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtNetwork.framework/Versions/4/QtNetwork\")
+      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
+      " COMPONENT Runtime)
+    endif(ENABLE_CODESIGN)
+
     set(CPACK_BINARY_DRAGNDROP ON)
     include(CPack)
   endif(ENABLE_BUNDLE)
 endif(APPLE)
+
+# Windows installer
+if(WIN32)
+  set(CPACK_GENERATOR NSIS)
+  set(CPACK_MONOLITHIC_INSTALL TRUE)
+  set(CPACK_PACKAGE_NAME "Dact")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Decaffeinated Alpino Corpus Tool")
+  set(CPACK_PACKAGE_VENDOR "Daniel de Kok")
+  set(CPACK_NSIS_PACKAGE_NAME "Dact")
+  set(CPACK_NSIS_DISPLAY_NAME "Dact")
+  set(CPACK_PACKAGE_VERSION ${VERSION})
+  set(CPACK_NSIS_CONTACT "me@danieldk.eu")
+  set(CPACK_PACKAGE_EXECUTABLES ${PROGNAME} ${PROGNAME})
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Dact-${VERSION}")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+  set(CPACK_PACKAGE_ICON "${DACT_SOURCE_DIR}/resources\\\\dact-espresso.bmp")
+  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Decaffeinated Alpino Corpus Tool")
+
+  install(FILES
+      "${QT_BINARY_DIR}/QtCore${QT_VERSION_MAJOR}.dll"
+      "${QT_BINARY_DIR}/QtGui${QT_VERSION_MAJOR}.dll"
+      "${QT_BINARY_DIR}/QtNetwork${QT_VERSION_MAJOR}.dll"
+    DESTINATION bin
+  )
+
+  # Ok, now things are getting really annoying. We could apply
+  # all kinds of fun path manipulations to get the DLLs. But
+  # we'll just assume the you've put them in the runtime directory
+  # of the source directory.
+  #
+  # Yes, this makes you long for Linux' package management.
+  set(DACT_DEPENDENCY_DIR "${DACT_SOURCE_DIR}/runtime")
+  install(FILES
+      "${DACT_DEPENDENCY_DIR}/alpino_corpus.dll"
+      "${DACT_DEPENDENCY_DIR}/iconv.dll"
+      "${DACT_DEPENDENCY_DIR}/libdb48.dll"
+      "${DACT_DEPENDENCY_DIR}/libdbxml25.dll"
+      "${DACT_DEPENDENCY_DIR}/libexslt.dll"
+      "${DACT_DEPENDENCY_DIR}/libxml2.dll"
+      "${DACT_DEPENDENCY_DIR}/libxslt.dll"
+      "${DACT_DEPENDENCY_DIR}/xerces-c_3_0.dll"
+      "${DACT_DEPENDENCY_DIR}/xqilla22.dll"
+      "${DACT_DEPENDENCY_DIR}/zlib1.dll"
+    DESTINATION bin
+  )
+
+  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    !include ${DACT_SOURCE_DIR}/resources/nsis\\\\FileAssociation.nsh
+    \\\${registerExtension} \\\"\\\$INSTDIR\\\\bin\\\\dact.exe\\\" \\\".dact\\\" \\\"Dact Corpus\\\"
+  ")
+
+  set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+    ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+    "\\\${unregisterExtension} \\\".dact\\\" \\\"Dact Corpus\\\"")
+
+  include(CPack)
+endif(WIN32)

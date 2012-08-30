@@ -1,11 +1,13 @@
 #include <QCache>
 #include <QDebug>
+#include <QDateTime>
 #include <QString>
 #include <QStringList>
 #include <QtConcurrentRun>
 
 #include <algorithm>
 
+#include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 #include "FilterModel.hh"
 
@@ -47,18 +49,32 @@ int FilterModel::rowCount(QModelIndex const &index) const
 
 QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
-    QMutexLocker locker(&d_resultsMutex);
+    if (role == Qt::TextAlignmentRole)
+    {
+        if (index.column() == 1)
+            return (Qt::AlignTop + Qt::AlignHCenter);
+        else
+            return Qt::AlignTop;
+    }
+
+
+    size_t nResults;
+    {
+        QMutexLocker locker(&d_resultsMutex);
+        nResults = d_results.size();
+    }
 
     if (!index.isValid()
-        || index.row() >= d_results.size()
+        || index.row() >= nResults
         || index.row() < 0
         || !(role == Qt::DisplayRole || role == Qt::UserRole))
         return QVariant();
-    
+
+    QMutexLocker locker(&d_resultsMutex);
     switch (index.column())
     {
         case 0:
-            return d_results.at(index.row()).name;            
+            return d_results.at(index.row()).name;
         case 1:
             return d_results.at(index.row()).hits;
         case 2:
@@ -66,6 +82,40 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
         default:
             return QVariant();
     }
+}
+
+QString FilterModel::asXML() const
+{
+    QStringList docList;
+    docList.append("<entries>");
+
+    docList.append("<entriesinfo>");
+    docList.append(QString("<corpus>%1</corpus>")
+        .arg(QString::fromUtf8(d_corpus->name().c_str())));
+    docList.append(QString("<filter>%1</filter>").arg(d_query));
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    docList.append(QString("<date>%1</date>").arg(date));
+    docList.append("</entriesinfo>");
+
+    int count = rowCount(QModelIndex());
+    for (size_t i = 0; i < count; i++) {
+        QString filename = data(index(i, 0), Qt::DisplayRole).toString();
+        QString count = data(index(i, 1), Qt::DisplayRole).toString();
+        QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
+            .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+
+        QString line = QString("<entry><filename>%1</filename><count>%2</count>%3</entry>")
+            .arg(filename)
+            .arg(count)
+            .arg(xmlData);
+
+        docList.append(line);
+    }
+    docList.append("</entries>");
+
+    QString doc = docList.join("\n");
+
+    return doc;
 }
 
 void FilterModel::finalizeQuery(int n, int totalEntries, bool cached)
@@ -82,7 +132,7 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
     if (orientation != Qt::Horizontal
         || role != Qt::DisplayRole)
         return QVariant();
-    
+
     switch (column)
     {
         case 0:
@@ -108,23 +158,28 @@ QModelIndex FilterModel::indexOfFile(QString const &filename) const
             break;
         }
     }
-    
+
     return createIndex(index, 0);
 }
 
 void FilterModel::fireDataChanged()
 {
     // @TODO make this more robust so no assumption is required.
-   
+
     int rows;
     {
       QMutexLocker locker(&d_resultsMutex);
       rows = d_results.size();
     }
 
-    emit dataChanged(index(d_lastRow, 0), index(rows, 1));
+    emit layoutAboutToBeChanged();
+    emit dataChanged(index(d_lastRow, 0), index(rows - 1, 2));
     emit nEntriesFound(rows, d_hits);
-    
+    emit layoutChanged();
+
+    if (d_entryIterator.hasProgress())
+      emit progressChanged(static_cast<int>(d_entryIterator.progress()));
+
     d_lastRow = rows - 1;
 }
 
@@ -150,22 +205,22 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
 void FilterModel::runQuery(QString const &query, QString const &stylesheet)
 {
     cancelQuery(); // just in case
-    
+
     int size;
     {
       QMutexLocker locker(&d_resultsMutex);
       size = d_results.size();
       d_results.clear();
     }
-    
+
     emit dataChanged(index(0, 0), index(size, 0));
-    
+
     d_query = query;
-    
+
     // Do nothing if this is a dummy filter model with a stupid null pointer
     if (!d_corpus)
         return;
-   
+
     d_timer->setInterval(100);
     d_timer->setSingleShot(false);
     d_lastRow = 0;
@@ -177,11 +232,11 @@ void FilterModel::runQuery(QString const &query, QString const &stylesheet)
     else {
         if (stylesheet.isNull())
             d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->begin(), d_corpus->end(), false);
+                d_corpus->entries(), false);
         else
             d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->beginWithStylesheet(stylesheet.toUtf8().constData()),
-                d_corpus->end(), true);
+                d_corpus->entriesWithStylesheet(stylesheet.toUtf8().constData()),
+                true);
 
     }
 }
@@ -214,7 +269,7 @@ void FilterModel::getEntriesWithQuery(QString const &query,
         emit queryFinished(d_results.size(), d_results.size(), true);
         return;
     }
-    
+
     std::string cQuery = query.toUtf8().constData();
 
     try {
@@ -222,7 +277,6 @@ void FilterModel::getEntriesWithQuery(QString const &query,
             FilterModel::getEntries(
                 d_corpus->query(alpinocorpus::CorpusReader::XPATH,
                     cQuery),
-                d_corpus->end(),
                 false);
         else
             FilterModel::getEntries(
@@ -230,7 +284,6 @@ void FilterModel::getEntriesWithQuery(QString const &query,
                     query.toUtf8().constData(), stylesheet.toUtf8().constData(),
                     std::list<ac::CorpusReader::MarkerQuery>(
                         1, ac::CorpusReader::MarkerQuery(cQuery, "active", "1"))),
-                d_corpus->end(),
                 true);
 
     } catch (alpinocorpus::Error const &e) {
@@ -243,25 +296,26 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 }
 
 // run async
-void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end,
-    bool withStylesheet)
+void FilterModel::getEntries(EntryIterator const &i, bool withStylesheet)
 {
-    try {
+    if (i.hasProgress())
+        emit queryStarted(100);
+    else
         emit queryStarted(0); // we don't know how many entries will be found
-        
+
+
+    try {
         d_cancelled = false;
         d_hits = 0;
-        d_entryIterator = begin;
-        
-        for (; !d_cancelled && d_entryIterator != end;
-          ++d_entryIterator)
+        d_entryIterator = i;
+
+        while (!d_cancelled && d_entryIterator.hasNext())
         {
             ++d_hits;
 
-            QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
+            alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
 
-            // Lock the results list.
-            QMutexLocker locker(&d_resultsMutex);
+            QString name(QString::fromUtf8(e.name.c_str()));
 
             /*
              * WARNING: This assumes all the hits per result only occur right after
@@ -269,20 +323,26 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
              * or QMap for fast lookup.
              */
             int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].name == entry)
+            if (row >= 0 && d_results[row].name == name) {
+                QMutexLocker locker(&d_resultsMutex);
                 ++d_results[row].hits;
+            }
             // Add found file to the list
             else
             {
                 ++row;
-                if (withStylesheet)
-                    d_results.append(Entry(entry, 1,
-                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str())));
-                else
-                    d_results.append(Entry(entry, 1, QString::null));
+                if (withStylesheet) {
+                    QString contents =
+                        QString::fromUtf8((e.contents.c_str()));
+                    d_results.append(Entry(name, 1, contents));
+                }
+                else {
+                    QMutexLocker locker(&d_resultsMutex);
+                    d_results.append(Entry(name, 1, QString::null));
+                }
             }
         }
-        
+
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
         else

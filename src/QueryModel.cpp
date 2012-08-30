@@ -1,11 +1,16 @@
 #include <assert.h>
+#include <QDateTime>
 #include <QDebug>
+#include <QStringList>
 #include <QtConcurrentRun>
+#include <QTimer>
 
 #include <algorithm>
 
 #include <AlpinoCorpus/Error.hh>
 #include "QueryModel.hh"
+
+QString const QueryModel::MISSING_ATTRIBUTE("[missing attribute]");
 
 QueryModel::HitsCompare::HitsCompare(QueryModel const &parent)
 :
@@ -28,17 +33,68 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 :
     QAbstractTableModel(parent),
     d_corpus(corpus),
-    d_entryCache(new EntryCache())
+    d_entryCache(new EntryCache()),
+    d_timer(new QTimer)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
         SLOT(mapperEntryFound(QString)));
     connect(this, SIGNAL(queryFinished(int, int, bool)),
         SLOT(finalizeQuery(int, int, bool)));
+
+    // Timer for progress updates.
+    connect(d_timer.data(), SIGNAL(timeout()),
+        SLOT(updateProgress()));
+    connect(this, SIGNAL(queryStopped(int, int)),
+        SLOT(stopProgress()));
+    connect(this, SIGNAL(queryFinished(int, int, bool)),
+        SLOT(stopProgress()));
+    connect(this, SIGNAL(queryFailed(QString)),
+        SLOT(stopProgress()));
 }
 
 QueryModel::~QueryModel()
 {
     cancelQuery();
+}
+
+QString QueryModel::asXML() const
+{
+    int rows = rowCount(QModelIndex());
+
+    // TODO: Remove selected attribute from the filter...
+
+    QStringList outList;
+    outList.append("<statistics>");
+    outList.append("<statisticsinfo>");
+    outList.append(QString("<corpus>%1</corpus>")
+        .arg(QString::fromUtf8(d_corpus->name().c_str())));
+    outList.append(QString("<filter>%1</filter>")
+        .arg(d_query));
+    outList.append(QString("<attribute>%1</attribute>")
+        .arg(d_attribute));
+    outList.append(QString("<variants>%1</variants>")
+        .arg(rows));
+    outList.append(QString("<hits>%1</hits>")
+        .arg(totalHits()));
+    QString date(QDateTime::currentDateTime().toLocalTime().toString());
+    outList.append(QString("<date>%1</date>")
+        .arg(date));
+    outList.append("</statisticsinfo>");
+
+    for (int i = 0; i < rows; ++i) {
+        outList.append("<statistic>");
+        outList.append(QString("<value>%1</value>")
+            .arg(data(index(i, 0)).toString()));
+        outList.append(QString("<frequency>%1</frequency>")
+            .arg(data(index(i, 1)).toString()));
+        outList.append(QString("<percentage>%1</percentage>")
+            .arg(data(index(i, 2)).toDouble() * 100.0, 0, 'f', 1));
+        outList.append("</statistic>");
+    }
+
+    outList.append("</statistics>");
+
+    return outList.join("\n");
 }
 
 int QueryModel::columnCount(QModelIndex const &index) const
@@ -74,6 +130,28 @@ QVariant QueryModel::data(QModelIndex const &index, int role) const
         default:
             return QVariant();
     }
+}
+
+QString QueryModel::expandQuery(QString const &query,
+    QString const &attribute) const
+{
+    QString expandedQuery = QString("%1/(@%2/string(), '%3')[1]")
+        .arg(query)
+        .arg(attribute)
+        .arg(MISSING_ATTRIBUTE);
+
+    // Not all corpus readers support this styntax.
+    if (!validQuery(expandedQuery))
+        expandedQuery = QString("%1/@%2")
+            .arg(query)
+            .arg(attribute);
+
+    return expandedQuery;
+}
+
+void QueryModel::updateProgress()
+{
+    emit progressChanged(d_entryIterator.progress());
 }
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
@@ -156,7 +234,7 @@ void QueryModel::mapperEntryFound(QString entry)
     emit dataChanged(index(idx, 0), index(idx + 1, 2));
 }
 
-void QueryModel::runQuery(QString const &query)
+void QueryModel::runQuery(QString const &query, QString const &attribute)
 {
     cancelQuery(); // just in case
     
@@ -171,20 +249,25 @@ void QueryModel::runQuery(QString const &query)
     d_totalHits = 0;
     
     d_query = query;
+    d_attribute = attribute;
        
     // Do nothing if we where given a null-pointer
     if (!d_corpus)
         return;
-    
+
     if (!query.isEmpty())
-        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery, query);
-    else
-        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntries,
-            d_corpus->begin(),
-            d_corpus->end());
+    {
+        d_timer->setInterval(100);
+        d_timer->setSingleShot(false);
+        d_timer->start();
+
+        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
+            expandQuery(query, attribute));
+    }
+    // If the query is empty, QueryModel is not supposed to do anything.
 }
 
-bool QueryModel::validQuery(QString const &query)
+bool QueryModel::validQuery(QString const &query) const
 {
     return d_corpus->isValidQuery(alpinocorpus::CorpusReader::XPATH,
         false, query.toUtf8().constData());    
@@ -195,6 +278,7 @@ void QueryModel::cancelQuery()
     d_cancelled = true;
     d_entryIterator.interrupt();
     d_entriesFuture.waitForFinished();
+    d_timer->stop();
 }
 
 void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
@@ -232,8 +316,7 @@ void QueryModel::getEntriesWithQuery(QString const &query)
         }
 
         QueryModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            d_corpus->end());
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()));
     } catch (std::exception const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -241,16 +324,22 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 }
 
 // run async
-void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end)
+void QueryModel::getEntries(EntryIterator const &i)
 {
+        if (i.hasProgress())
+          emit queryStarted(100);
+        else
+          emit queryStarted(0);
+        
     try {
-        queryStarted(0);
-        
         d_cancelled = false;
-        d_entryIterator = begin;
-        
-        for (; !d_cancelled && d_entryIterator != end; ++d_entryIterator)
-            emit queryEntryFound(QString::fromUtf8(d_entryIterator.contents(*d_corpus).c_str()));
+        d_entryIterator = i;
+       
+        while (!d_cancelled && d_entryIterator.hasNext())
+        {
+            alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
+            emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
+        }
             
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
@@ -266,3 +355,9 @@ void QueryModel::getEntries(EntryIterator const &begin, EntryIterator const &end
         emit queryFailed(e.what());
     }
 }
+
+void QueryModel::stopProgress()
+{
+    d_timer->stop();
+}
+

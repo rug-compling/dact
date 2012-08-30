@@ -80,22 +80,12 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_2">
               <property name="text">
-               <string>Active Node Text:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_1">
-              <property name="text">
-               <string>Active Node Background:</string>
+               <string>Active Node Border:</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="DactColorWell" name="treeActiveNodeForegroundColor"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="DactColorWell" name="treeActiveNodeBackgroundColor"/>
+             <widget class="DactColorWell" name="treeActiveNodeBorderColor"/>
             </item>
            </layout>
           </item>
@@ -268,6 +258,56 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="groupBoxWebservice">
+         <property name="title">
+          <string>Alpino webservice</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutWebservice">
+          <item>
+           <layout class="QFormLayout" name="formLayoutWebservice">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::ExpandingFieldsGrow</enum>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>URL:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="webserviceBaseUrlLineEdit"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutWebservice">
+            <item>
+             <spacer name="horizontalSpacerWebservice">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="restoreDefaultWebserviceButton">
+              <property name="text">
+               <string>Restore to Default</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <layout class="QVBoxLayout" name="horizontalLayout_x">
          <item>
           <widget class="QGroupBox" name="groupBox_x">
@@ -331,6 +371,41 @@
             </size>
            </property>
           </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="toolsTab">
+      <attribute name="title">
+       <string>Tools</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <layout class="QFormLayout">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::ExpandingFieldsGrow</enum>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel">
+           <property name="text">
+            <string>Path:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QLineEdit" name="toolsFilePath"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="selectToolsFilePath">
+             <property name="text">
+              <string>Browse…</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>

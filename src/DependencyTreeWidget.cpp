@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <stdexcept>
 
 #include <QClipboard>
@@ -5,9 +7,12 @@
 #include <QSettings>
 #include <QSharedPointer>
 #include <QWidget>
+#include <QFile>
 
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
+#include <DactToolsMenu.hh>
+#include <DactToolsModel.hh>
 #include <DactTreeScene.hh>
 #include <DactTreeView.hh>
 #include <DependencyTreeWidget.hh>
@@ -31,6 +36,12 @@ DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     d_ui->statisticsLayout->setVerticalSpacing(0);
 }
 
+DependencyTreeWidget::~DependencyTreeWidget()
+{
+    // Define a destructor here to make sure the qsharedpointers are implemented where all
+    // the proper header files are available (not just forward declarations)
+}
+
 void DependencyTreeWidget::addConnections()
 {
     connect(d_ui->highlightLineEdit, SIGNAL(textChanged(QString const &)),
@@ -46,10 +57,26 @@ void DependencyTreeWidget::applyValidityColor(QString const &)
     ::applyValidityColor(sender());
 }
 
+BracketedSentenceWidget *DependencyTreeWidget::sentenceWidget()
+{
+    return d_ui->sentenceWidget;
+}
+
+
 void DependencyTreeWidget::cancelQuery()
 {
     if (d_model)
         d_model->cancelQuery();
+}
+
+void DependencyTreeWidget::saveAs()
+{
+    std::cerr << "Dependency Tree Widget Save As" << std::endl;
+}
+
+bool DependencyTreeWidget::saveEnabled() const
+{
+    return false;
 }
 
 void DependencyTreeWidget::copy()
@@ -199,15 +226,22 @@ void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
 void DependencyTreeWidget::nextEntry(bool)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
-    d_ui->fileListWidget->setCurrentIndex(
-                                          current.sibling(current.row() + 1, current.column()));
+    QModelIndex next = current.sibling(current.row() + 1, current.column());
+    if (next.isValid())
+        d_ui->fileListWidget->setCurrentIndex(next);
 }
 
 void DependencyTreeWidget::previousEntry(bool)
 {
     QModelIndex current(d_ui->fileListWidget->currentIndex());
-    d_ui->fileListWidget->setCurrentIndex(
-                                          current.sibling(current.row() - 1, current.column()));
+    QModelIndex previous = current.sibling(current.row() - 1, current.column());
+    if (previous.isValid())
+        d_ui->fileListWidget->setCurrentIndex(previous);
+}
+
+void DependencyTreeWidget::progressChanged(int progress)
+{
+    d_ui->filterProgressBar->setValue(progress);
 }
 
 void DependencyTreeWidget::readSettings()
@@ -252,8 +286,9 @@ void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_f
     }
 
     setHighlight(raw_filter);
-    
-    d_model->runQuery(d_filter);
+
+    if (d_model)
+        d_model->runQuery(d_filter);
 }
 
 void DependencyTreeWidget::setModel(FilterModel *model)
@@ -271,6 +306,8 @@ void DependencyTreeWidget::setModel(FilterModel *model)
             SLOT(mapperFinished(int, int, bool)));
     connect(model, SIGNAL(nEntriesFound(int, int)),
             SLOT(nEntriesFound(int, int)));
+    connect(model, SIGNAL(progressChanged(int)),
+            SLOT(progressChanged(int)));
     
     connect(d_ui->fileListWidget->selectionModel(),
             SIGNAL(currentChanged(QModelIndex,QModelIndex)),
@@ -401,4 +438,25 @@ void DependencyTreeWidget::zoomIn()
 void DependencyTreeWidget::zoomOut()
 {
     d_ui->treeGraphicsView->zoomOut();
+}
+
+void DependencyTreeWidget::showToolMenu(QPoint const &position)
+{
+    if (!d_ui->fileListWidget->model())
+        return;
+
+    QModelIndexList rows = d_ui->fileListWidget->selectionModel()->selectedRows();
+    QList<QString> selectedFiles;
+
+    if (rows.isEmpty())
+        return;
+
+    foreach (QModelIndex const &row, rows)
+        selectedFiles << row.data().toString();
+
+    DactToolsMenu::exec(
+        DactToolsModel::sharedInstance()->tools(QString::fromStdString(d_corpusReader->name())),
+        selectedFiles,
+        mapToGlobal(position),
+        d_ui->fileListWidget->actions());
 }

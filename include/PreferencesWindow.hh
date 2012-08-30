@@ -17,20 +17,29 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 
+signals:
+    void colorChanged(); // More fine-grained???
+    void toolsChanged();
+
 private slots:
     void restoreDefaultColors();
     void restoreDefaultNetwork();
     void restoreDefaultRemote();
+    void restoreDefaultWebservice();
     void saveArchiveBaseUrl();
     void saveRemoteBaseUrl();
+    void saveWebserviceBaseUrl();
     void saveColorsTab();
+    void saveToolsTab();
     void selectAppFont();
+    void selectToolsFilePath();
     
 private:
     void applyAppFont();
     void loadColorsTab();
     void loadNetworkTab();
     void loadRemoteTab();
+    void loadToolsTab();
     QSharedPointer<Ui::PreferencesWindow> d_ui;
 };
 

@@ -9,6 +9,7 @@
 #include <QList>
 #include <QPair>
 #include <QSharedPointer>
+#include <QTimer>
 
 class QueryModel : public QAbstractTableModel
 {
@@ -28,17 +29,21 @@ private:
     };
     
 public:
+    static QString const MISSING_ATTRIBUTE;
+
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
     ~QueryModel();
+    QString asXML() const;
     int rowCount(QModelIndex const &index) const;
     int columnCount(QModelIndex const &index) const;
     QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const;
+    QString expandQuery(QString const &query, QString const &attribute) const;
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     inline int totalHits() const { return d_totalHits; }
     
-    void runQuery(QString const &xpath_query = "");
+    void runQuery(QString const &query, QString const &attribute);
     void cancelQuery();
-    bool validQuery(QString const &query);
+    bool validQuery(QString const &query) const;
     
 signals:
     void queryFailed(QString error);
@@ -46,12 +51,15 @@ signals:
     void queryStopped(int n, int totalEntries);
     void queryFinished(int n, int totalEntries, bool cached);
     void queryEntryFound(QString entry);
+    void progressChanged(int progress);
     
 private:
-    void getEntries(EntryIterator const &begin, EntryIterator const &end);
+    void getEntries(EntryIterator const &i);
     void getEntriesWithQuery(QString const &query);
     
 private slots:
+    void updateProgress();
+    void stopProgress();
     void mapperEntryFound(QString entry);
     void finalizeQuery(int n, int totalEntries, bool cached);
     
@@ -77,7 +85,9 @@ private:
     EntryIndex d_hitsIndex;
     QList<value_type> d_results;
     int d_totalHits;
+    QSharedPointer<QTimer> d_timer;
     QFuture<void> d_entriesFuture;
+    QString d_attribute;
     QString d_query;
 
     mutable QMutex d_resultsMutex;
