@@ -116,6 +116,11 @@ The following set of macros establish this:
   %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) """
 ```
 
+To find topicalized indirect objects, do:
+
+```
+  //node[@rel="obj2" and %vorfeld%]
+```
 
 
 
