@@ -38,6 +38,7 @@ you may want to consider using macros.
 
 We define the following macros:
 
+...
 single_name = """( @ntype = 'eigen' or @postag='SPEC(deeleigen)'  )"""
 
 multi_name =  """( @cat='mwu' and node[@rel='mwp' and %single_name%] ) """
@@ -45,10 +46,13 @@ multi_name =  """( @cat='mwu' and node[@rel='mwp' and %single_name%] ) """
 name =        """( %single_name% or %multi_name% )"""
 
 name_phrase=  """( %name% or node[@rel="hd"  and %name%]  )"""
+...
 
 Then we can use the query:
 
+...
 //node[@rel="su" and %name_phrase%]
+...
 
 
    
