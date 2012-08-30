@@ -84,6 +84,7 @@ main clause.
 
 The following set of macros establish this:
 
+```
   headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
                or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
 
@@ -105,7 +106,7 @@ The following set of macros establish this:
 
   vorfeld = """
   %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) """
-
+```
 
 
 
