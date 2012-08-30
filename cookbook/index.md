@@ -5,15 +5,12 @@ title: Cookbook - Decaffeinated Alpino Corpus Tool
 
 ## Search a particular word
 
-```
-//node[@word='loopt']
-```
+    //node[@word='loopt']
+
 
 ## Proper name subjects
 
-```
-//node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
-```
+    //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
 
 (<a href="dact:/?filter=//node[@rel='su' and @pt='spec']">Run in Dact</a>)
 
@@ -48,44 +45,36 @@ We define the following macros:
 
 Then we can use the query:
 
-```
-//node[@rel="su" and %name_phrase%]
-```
+    //node[@rel="su" and %name_phrase%]
 
 ## Topicalization
 
 Since the numeric conversion of the value of the attributes "begin" and "end" is so common, we
 have the following two macros:
 
-```
-b = """number(@begin)"""
-e = """number(@end)"""
-```
+    b = """number(@begin)"""
+    e = """number(@end)"""
 
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
 two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
 then we use "begin_of_hd" and "end_of_hd". If we also want to capture complementizers, coordinators etc,
 we use "begin_of_head" and "end_of_head".
 
-```
-  headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
-               or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
+    headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
+                 or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
 
-  begin_of_head = """ node[%headrel%]/%b% """
-  end_of_head   = """ node[%headrel%]/%e% """
+    begin_of_head = """ node[%headrel%]/%b% """
+    end_of_head   = """ node[%headrel%]/%e% """
 
-  begin_of_hd   = """ node[@rel="hd"]/%b% """
-  end_of_hd     = """ node[@rel="hd"]/%e% """
-```
+    begin_of_hd   = """ node[@rel="hd"]/%b% """
+    end_of_hd     = """ node[@rel="hd"]/%e% """
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
 constituents which occupy the "vorfeld" position in a main clause), the following query
 may be proposed. In this query, we want to find elements of a main clause which start at the same 
 position as the main clause as a whole:
 
-```
-//node[../@cat="smain" and %b% = ../%b% ]
-```
+    //node[../@cat="smain" and %b% = ../%b% ]
 
 The query will find many genuine examples of topicalized constituents, but it will not find *all*
 relevant cases. This is so, because a topicalized constituent is not always an element of a
@@ -100,30 +89,21 @@ main clause.
 
 The following set of macros establish this:
 
-```
+    precedes_head_of_smain = """
+    (  ancestor::node[@cat="smain"]/
+                 node[@rel="hd"]/%b% 
+               > %begin_of_head% 
+       or 
+       ancestor::node[@cat="smain"]/
+                 node[@rel="hd"]/%b% 
+               > %b% and @pos
+    ) """
 
-  precedes_head_of_smain = """
-  (  ancestor::node[@cat="smain"]/
-               node[@rel="hd"]/%b% 
-             > %begin_of_head% 
-     or 
-     ancestor::node[@cat="smain"]/
-               node[@rel="hd"]/%b% 
-             > %b% and @pos
-  ) """
+    vorfeld = """
+    %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) """
 
-  vorfeld = """
-  %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) """
-```
 
 To find topicalized indirect objects, do:
 
-```
-  //node[@rel="obj2" and %vorfeld%]
-```
-
-
-
-
-   
+    //node[@rel="obj2" and %vorfeld%]
 
