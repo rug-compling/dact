@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 368.2 560" style="text-anchor:middle">
+  <svg:text x="166.6" y="50" font-style="italic"/>
+  <svg:text x="166.6" y="70">whq</svg:text>
+  <svg:line x1="166.6" y1="80" x2="23.8" y2="110" stroke="black"/>
+  <svg:line x1="166.6" y1="80" x2="190.4" y2="110" stroke="black"/>
+  <svg:text x="23.8" y="130" font-style="italic">whd</svg:text>
+  <svg:text x="23.8" y="150"><svg:tspan font-weight="bold" fill="red">1</svg:tspan>:pron</svg:text>
+  <svg:text x="23.8" y="170">wat</svg:text>
+  <svg:text x="190.4" y="130" font-style="italic">body</svg:text>
+  <svg:text x="190.4" y="150">sv1</svg:text>
+  <svg:line x1="190.4" y1="160" x2="71.4" y2="190" stroke="black"/>
+  <svg:line x1="190.4" y1="160" x2="119" y2="190" stroke="black"/>
+  <svg:line x1="190.4" y1="160" x2="238" y2="190" stroke="black"/>
+  <svg:text x="71.4" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="71.4" y="230">verb</svg:text>
+  <svg:text x="71.4" y="250">denk</svg:text>
+  <svg:text x="119" y="210" font-style="italic">su</svg:text>
+  <svg:text x="119" y="230">pron</svg:text>
+  <svg:text x="119" y="250">je</svg:text>
+  <svg:text x="238" y="210" font-style="italic">vc</svg:text>
+  <svg:text x="238" y="230">cp</svg:text>
+  <svg:line x1="238" y1="240" x2="166.6" y2="270" stroke="black"/>
+  <svg:line x1="238" y1="240" x2="261.8" y2="270" stroke="black"/>
+  <svg:text x="166.6" y="290" font-style="italic">cmp</svg:text>
+  <svg:text x="166.6" y="310">comp</svg:text>
+  <svg:text x="166.6" y="330">dat</svg:text>
+  <svg:text x="261.8" y="290" font-style="italic">body</svg:text>
+  <svg:text x="261.8" y="310">ssub</svg:text>
+  <svg:line x1="261.8" y1="320" x2="214.2" y2="350" stroke="black"/>
+  <svg:line x1="261.8" y1="320" x2="261.8" y2="350" stroke="black"/>
+  <svg:line x1="261.8" y1="320" x2="309.4" y2="350" stroke="black"/>
+  <svg:text x="214.2" y="370" font-style="italic">obj1</svg:text>
+  <svg:text x="214.2" y="390">
+    <svg:tspan font-weight="bold" fill="red">1</svg:tspan>
+  </svg:text>
+  <svg:text x="261.8" y="370" font-style="italic">su</svg:text>
+  <svg:text x="261.8" y="390">pron</svg:text>
+  <svg:text x="261.8" y="410">hij</svg:text>
+  <svg:text x="309.4" y="370" font-style="italic">hd</svg:text>
+  <svg:text x="309.4" y="390">verb</svg:text>
+  <svg:text x="309.4" y="410">zeg</svg:text>
+</svg:svg>

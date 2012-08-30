@@ -52,6 +52,66 @@ Then we can use the query:
 //node[@rel="su" and %name_phrase%]
 ```
 
+## Topicalization
+
+Since the numeric conversion of the value of the attributes "begin" and "end" is so common, we
+have the following two macros:
+
+```
+b = """number(@begin)"""
+e = """number(@end)"""
+```
+
+In order to find constituents which are "topicalized" in root sentences (in other words, 
+constituents which occupy the "vorfeld" position in a main clause), the following query
+may be proposed. In this query, we want to find elements of a main clause which start at the same 
+position as the main clause as a whole:
+
+```
+//node[../@cat="smain" and @number(begin) = ../number(@begin) ]
+```
+
+The query will find genuine examples of topicalized constituents, but it will not find *all*
+relevant cases. This is so, because a topicalized constituent is not always an element of a
+main clause. It can be embedded somewhere deeper in the sentence, as in:
+
+>   Wat denk je dat hij zei <a href="5.svg">(SVG)</a>
+
+In order to catch such cases as well, the query will be formulated in a more complicated
+manner as follows. We will define vorfeld as a constituent which precedes *a* head of a
+main clause, for which it holds that there is no dominating constituent which precedes a head of 
+main clause. 
+
+The following set of macros establish this:
+
+   headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" 
+                or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp" ) """
+
+   begin_of_head = """ node[%headrel%]/%b% """
+   end_of_head   = """ node[%headrel%]/%e% """
+
+   begin_of_hd   = """ node[@rel="hd"]/%b% """
+   end_of_hd     = """ node[@rel="hd"]/%e% """
+
+   precedes_head_of_smain = """
+   (  ancestor::node[@cat="smain"]/
+                node[@rel="hd"]/%b% 
+              > %begin_of_head% 
+      or 
+      ancestor::node[@cat="smain"]/
+                node[@rel="hd"]/%b% 
+              > %b% and @pos
+   )
+   """
+
+   vorfeld = """
+   %precedes_head_of_smain% and not (ancestor::node[%precedes_head_of_smain%]) 
+   """
+
+
+
+
+
 
    
 
