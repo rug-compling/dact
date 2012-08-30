@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 667.8 560" style="text-anchor:middle">
+  <svg:text x="316.4" y="50" font-style="italic"/>
+  <svg:text x="316.4" y="70">smain</svg:text>
+  <svg:line x1="316.4" y1="80" x2="163.8" y2="110" stroke="black"/>
+  <svg:line x1="316.4" y1="80" x2="364" y2="110" stroke="black"/>
+  <svg:line x1="316.4" y1="80" x2="469" y2="110" stroke="black"/>
+  <svg:line x1="316.4" y1="80" x2="585.2" y2="110" stroke="black"/>
+  <svg:text x="163.8" y="130" font-style="italic">su</svg:text>
+  <svg:text x="163.8" y="150">np</svg:text>
+  <svg:line x1="163.8" y1="160" x2="19.6" y2="190" stroke="black"/>
+  <svg:line x1="163.8" y1="160" x2="99.4" y2="190" stroke="black"/>
+  <svg:line x1="163.8" y1="160" x2="243.6" y2="190" stroke="black"/>
+  <svg:text x="19.6" y="210" font-style="italic">det</svg:text>
+  <svg:text x="19.6" y="230">det</svg:text>
+  <svg:text x="19.6" y="250">het</svg:text>
+  <svg:text x="99.4" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="99.4" y="230">mwu</svg:text>
+  <svg:line x1="99.4" y1="240" x2="63" y2="270" stroke="black"/>
+  <svg:line x1="99.4" y1="240" x2="123.2" y2="270" stroke="black"/>
+  <svg:text x="63" y="290" font-style="italic">mwp</svg:text>
+  <svg:text x="63" y="310">name</svg:text>
+  <svg:text x="63" y="330">FC</svg:text>
+  <svg:text x="123.2" y="290" font-style="italic">mwp</svg:text>
+  <svg:text x="123.2" y="310">name</svg:text>
+  <svg:text x="123.2" y="330">Utrecht</svg:text>
+  <svg:text x="243.6" y="210" font-style="italic">mod</svg:text>
+  <svg:text x="243.6" y="230">pp</svg:text>
+  <svg:line x1="243.6" y1="240" x2="183.4" y2="270" stroke="black"/>
+  <svg:line x1="243.6" y1="240" x2="267.4" y2="270" stroke="black"/>
+  <svg:text x="183.4" y="290" font-style="italic">hd</svg:text>
+  <svg:text x="183.4" y="310">prep</svg:text>
+  <svg:text x="183.4" y="330">van</svg:text>
+  <svg:text x="267.4" y="290" font-style="italic">obj1</svg:text>
+  <svg:text x="267.4" y="310">mwu</svg:text>
+  <svg:line x1="267.4" y1="320" x2="231" y2="350" stroke="black"/>
+  <svg:line x1="267.4" y1="320" x2="291.2" y2="350" stroke="black"/>
+  <svg:text x="231" y="370" font-style="italic">mwp</svg:text>
+  <svg:text x="231" y="390">name</svg:text>
+  <svg:text x="231" y="410">Jan</svg:text>
+  <svg:text x="291.2" y="370" font-style="italic">mwp</svg:text>
+  <svg:text x="291.2" y="390">name</svg:text>
+  <svg:text x="291.2" y="410">Wouters</svg:text>
+  <svg:text x="364" y="130" font-style="italic">hd</svg:text>
+  <svg:text x="364" y="150">verb</svg:text>
+  <svg:text x="364" y="170">verlies</svg:text>
+  <svg:text x="469" y="130" font-style="italic">obj1</svg:text>
+  <svg:text x="469" y="150">np</svg:text>
+  <svg:line x1="469" y1="160" x2="424.2" y2="190" stroke="black"/>
+  <svg:line x1="469" y1="160" x2="492.8" y2="190" stroke="black"/>
+  <svg:text x="424.2" y="210" font-style="italic">det</svg:text>
+  <svg:text x="424.2" y="230">num</svg:text>
+  <svg:text x="424.2" y="250">drie</svg:text>
+  <svg:text x="492.8" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="492.8" y="230">noun</svg:text>
+  <svg:text x="492.8" y="250">wedstrijd</svg:text>
+  <svg:text x="585.2" y="130" font-style="italic">mod</svg:text>
+  <svg:text x="585.2" y="150">pp</svg:text>
+  <svg:line x1="585.2" y1="160" x2="561.4" y2="190" stroke="black"/>
+  <svg:line x1="585.2" y1="160" x2="609" y2="190" stroke="black"/>
+  <svg:text x="561.4" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="561.4" y="230">prep</svg:text>
+  <svg:text x="561.4" y="250">op</svg:text>
+  <svg:text x="609" y="210" font-style="italic">obj1</svg:text>
+  <svg:text x="609" y="230">noun</svg:text>
+  <svg:text x="609" y="250">rij</svg:text>
+</svg:svg>

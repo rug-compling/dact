@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 348.6 400" style="text-anchor:middle">
+  <svg:text x="156.8" y="50" font-style="italic"/>
+  <svg:text x="156.8" y="70">smain</svg:text>
+  <svg:line x1="156.8" y1="80" x2="23.8" y2="110" stroke="black"/>
+  <svg:line x1="156.8" y1="80" x2="75.6" y2="110" stroke="black"/>
+  <svg:line x1="156.8" y1="80" x2="208.6" y2="110" stroke="black"/>
+  <svg:text x="23.8" y="130" font-style="italic">su</svg:text>
+  <svg:text x="23.8" y="150">name</svg:text>
+  <svg:text x="23.8" y="170">Ajax</svg:text>
+  <svg:text x="75.6" y="130" font-style="italic">hd</svg:text>
+  <svg:text x="75.6" y="150">verb</svg:text>
+  <svg:text x="75.6" y="170">speel</svg:text>
+  <svg:text x="208.6" y="130" font-style="italic">obj1</svg:text>
+  <svg:text x="208.6" y="150">np</svg:text>
+  <svg:line x1="208.6" y1="160" x2="123.2" y2="190" stroke="black"/>
+  <svg:line x1="208.6" y1="160" x2="183.4" y2="190" stroke="black"/>
+  <svg:line x1="208.6" y1="160" x2="268.8" y2="190" stroke="black"/>
+  <svg:text x="123.2" y="210" font-style="italic">det</svg:text>
+  <svg:text x="123.2" y="230">det</svg:text>
+  <svg:text x="123.2" y="250">een</svg:text>
+  <svg:text x="183.4" y="210" font-style="italic">mod</svg:text>
+  <svg:text x="183.4" y="230">adj</svg:text>
+  <svg:text x="183.4" y="250">verloren</svg:text>
+  <svg:text x="268.8" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="268.8" y="230">noun</svg:text>
+  <svg:text x="268.8" y="250">wedstrijd</svg:text>
+</svg:svg>

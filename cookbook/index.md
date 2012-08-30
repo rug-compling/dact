@@ -19,19 +19,19 @@ title: Cookbook - Decaffeinated Alpino Corpus Tool
 
 Note that this query will only return single-word subjects, as in:
 
->   Ajax speelde een verloren wedstrijd
+>   Ajax speelde een verloren wedstrijd <a href="1.svg">(SVG)</a>
 
 We will not get examples such as
 
->   Het Feyenoord van van Hanegem boezemde elke tegenstander angst in
+>   Het Feyenoord van van Hanegem boezemde elke tegenstander angst in <a href="2.svg">(SVG)</a>
 
 or
 
->   FC Utrecht speelt zijn thuiswedstrijden in de Galgenwaard
+>   FC Utrecht speelt zijn thuiswedstrijden in de Galgenwaard <a href="3.svg">(SVG)</a>
    
 or the combination, as in 
 
->   Het FC Utrecht van Jan Wouters verloor drie wedstrijden op rij
+>   Het FC Utrecht van Jan Wouters verloor drie wedstrijden op rij <a href="4.svg">(SVG)</a>
       
 If you also want to find these cases, then the query becomes a bit more complicated. At this point,
 you may want to consider using macros.
