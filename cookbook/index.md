@@ -87,7 +87,7 @@ manner as follows. We will define vorfeld as a 'maximal' constituent which prece
 main clause. The head of a main clause normally is the finite verb. By 'maximal' we mean that we 
 do not want to find sub-parts of a vorfeld constituent. Consider:
 
->   De man met de zaag slaapt
+>   De man met de zaag slaapt <a href="6.svg">(SVG)</a>
 
 In this example, the constituent 'met de zaag' also precedes the finite verb, but it is not itself the vorfeld
 constituent, but only a part of it.
