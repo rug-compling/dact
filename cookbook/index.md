@@ -13,6 +13,27 @@ If you want to find all inflectional variants of the verb 'lopen', do:
 
     //node[@lemma='lopen']
 
+## Types of nodes
+
+Nodes with daughter nodes can be distinguished by the "cat" attribute.
+
+    //node[@cat]
+    
+Nodes without daughter nodes can be of two kinds: leaf nodes with a "word"
+attribute, or indexed nodes. Leaf nodes of the first kind can be selected
+with
+
+    //node[@word]
+    
+Indexed nodes are nodes which are co-indexed with another node where the information
+of that node is spelled out. Such nodes are leaf nodes, but have neither a "cat" nor
+a "word" attribute.
+
+    //node[@index and not(@word or @cat)]
+    
+To ensure that a node is not an indexed node, use
+
+    //node[@word or @cat]
 
 ## Proper name subjects
 
@@ -132,7 +153,7 @@ we want to select the head daughter:
 
 
 
-    //node[ (  ( @rel="obj1" and @lemma and ../node[@rel="hd" and @lemma="drinken"])
+    //node[ (  ( @rel="obj1" and @word and ../node[@rel="hd" and @lemma="drinken"])
             or ( @rel="hd" and ../@rel="obj1" and ../../node[@rel="hd" and @lemma="drinken"]] )
             )]
             
@@ -146,7 +167,7 @@ the same value for the attribute "index".
 
 If the antecedent is lexical, the query is:
 
-    //node[(@cat or @lemma) and @index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+    //node[(@cat or @word) and @index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
            
 If the antecedent is not lexical, we reason from its head:
 
