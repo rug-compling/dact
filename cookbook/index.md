@@ -77,17 +77,24 @@ position as the main clause as a whole:
     //node[../@cat="smain" and %b% = ../%b% ]
 
 The query will find many genuine examples of topicalized constituents, but it will not find *all*
-relevant cases. This is so, because a topicalized constituent is not always an element of a
+relevant cases. This is so, because a topicalized constituent is not always a child of a
 main clause. It can be embedded somewhere deeper in the sentence, as in:
 
 >   Wat denk je dat hij zei <a href="5.svg">(SVG)</a>
 
 In order to catch such cases as well, the query will be formulated in a more complicated
-manner as follows. We will define vorfeld as a constituent which precedes the head of a
-main clause, a long as there is no dominating constituent which precedes a head of 
-main clause. 
+manner as follows. We will define vorfeld as a 'maximal' constituent which precedes the head of a
+main clause. The head of a main clause normally is the finite verb. By 'maximal' we mean that we 
+do not want to find sub-parts of a vorfeld constituent. Consider:
 
-The following set of macros establish this:
+>   De man met de zaag slaapt
+
+In this example, the constituent 'met de zaag' also precedes the finite verb, but it is not itself the vorfeld
+constituent, but only a part of it.
+
+The following set of macros define vorfeld constituents. We first define 'precedes_head_of_smain'. A constituent
+then is a vorfeld if it precedes the head of an smain clause, and it is not part of a constituent which precedes
+the head of an smain clause.
 
     precedes_head_of_smain = """
     (  ancestor::node[@cat="smain"]/
