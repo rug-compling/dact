@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 312.2 560" style="text-anchor:middle">
+  <svg:text x="138.6" y="50" font-style="italic"/>
+  <svg:text x="138.6" y="70">smain</svg:text>
+  <svg:line x1="138.6" y1="80" x2="110.6" y2="110" stroke="black"/>
+  <svg:line x1="138.6" y1="80" x2="249.2" y2="110" stroke="black"/>
+  <svg:text x="110.6" y="130" font-style="italic">su</svg:text>
+  <svg:text x="110.6" y="150">np</svg:text>
+  <svg:line x1="110.6" y1="160" x2="19.6" y2="190" stroke="black"/>
+  <svg:line x1="110.6" y1="160" x2="63" y2="190" stroke="black"/>
+  <svg:line x1="110.6" y1="160" x2="154" y2="190" stroke="black"/>
+  <svg:text x="19.6" y="210" font-style="italic">det</svg:text>
+  <svg:text x="19.6" y="230">det</svg:text>
+  <svg:text x="19.6" y="250">de</svg:text>
+  <svg:text x="63" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="63" y="230">noun</svg:text>
+  <svg:text x="63" y="250">man</svg:text>
+  <svg:text x="154" y="210" font-style="italic">mod</svg:text>
+  <svg:text x="154" y="230">pp</svg:text>
+  <svg:line x1="154" y1="240" x2="110.6" y2="270" stroke="black"/>
+  <svg:line x1="154" y1="240" x2="177.8" y2="270" stroke="black"/>
+  <svg:text x="110.6" y="290" font-style="italic">hd</svg:text>
+  <svg:text x="110.6" y="310">prep</svg:text>
+  <svg:text x="110.6" y="330">met</svg:text>
+  <svg:text x="177.8" y="290" font-style="italic">obj1</svg:text>
+  <svg:text x="177.8" y="310">np</svg:text>
+  <svg:line x1="177.8" y1="320" x2="154" y2="350" stroke="black"/>
+  <svg:line x1="177.8" y1="320" x2="197.4" y2="350" stroke="black"/>
+  <svg:text x="154" y="370" font-style="italic">det</svg:text>
+  <svg:text x="154" y="390">det</svg:text>
+  <svg:text x="154" y="410">de</svg:text>
+  <svg:text x="197.4" y="370" font-style="italic">hd</svg:text>
+  <svg:text x="197.4" y="390">noun</svg:text>
+  <svg:text x="197.4" y="410">zaag</svg:text>
+  <svg:text x="249.2" y="130" font-style="italic">hd</svg:text>
+  <svg:text x="249.2" y="150">verb</svg:text>
+  <svg:text x="249.2" y="170">slaap</svg:text>
+</svg:svg>
