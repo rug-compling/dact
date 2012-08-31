@@ -39,8 +39,6 @@ To ensure that a node is not an indexed node, use
 
     //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
 
-(<a href="dact:/?filter=//node[@rel='su' and @pt='spec']">Run in Dact</a>)
-
 Note that this query will only return single-word subjects, as in:
 
 >   Ajax speelde een verloren wedstrijd <a href="1.svg">(SVG)</a>
