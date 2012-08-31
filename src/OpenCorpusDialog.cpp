@@ -376,15 +376,8 @@ void OpenCorpusDialog::revealSelectedCorpus()
 
     #ifdef Q_WS_MAC
         QStringList args;
-        args << "-e";
-        args << "tell application \"Finder\"";
-        args << "-e";
-        args << "activate";
-        args << "-e";
-        args << "select POSIX file \""+entry.filePath()+"\"";
-        args << "-e";
-        args << "end tell";
-        QProcess::startDetached("osascript", args);
+        args << "-R" << entry.filePath();
+        QProcess::startDetached("open", args);
 
     #elif Q_WS_WIN
         QStringList args;
