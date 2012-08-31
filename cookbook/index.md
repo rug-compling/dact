@@ -120,3 +120,27 @@ To find topicalized indirect objects, do:
 
     //node[@rel="obj2" and %vorfeld%]
 
+## Antecedents of co-indexed nodes
+
+Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
+We might try
+
+    //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]
+    
+This will give all noun-phrases. In case the noun phrases are lexical, we are done. Otherwise,
+we want to select the head daughter:
+
+
+
+    //node[ (  ( @rel="obj1" and @lemma and ../node[@rel="hd" and @lemma="drinken"])
+            or ( @rel="hd" and ../@rel="obj1" and ../../node[@rel="hd" and @lemma="drinken"]] )
+            )]
+            
+This will give good examples, but it will miss to find for instance:
+
+> " Wat drinkt de Belg ? " <a href="7.svg">(SVG)</a>
+
+
+           
+
+
