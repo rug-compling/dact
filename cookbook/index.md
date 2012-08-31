@@ -140,7 +140,19 @@ This will give good examples, but it will miss to find for instance:
 
 > " Wat drinkt de Belg ? " <a href="7.svg">(SVG)</a>
 
+The reason is, that the direct object of  "drinken" in this case is an index node. In order to get at the
+information associated with that node, we need to find the antecedent of the index node. This is a node with
+the same value for the attribute "index".
 
+If the antecedent is lexical, the query is:
+
+    //node[(@cat or @lemma) and @index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
            
+If the antecedent is not lexical, we reason from its head:
 
+    //node[@rel="hd" and ../@index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+
+The various queries could be combined to find all relevant cases in one go, but it would probably be easier
+to use macros for that. 
+    
 
