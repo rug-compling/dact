@@ -602,6 +602,8 @@ void MainWindow::openMacrosFile()
         return;
 
     d_macrosModel->loadFile(filePath);
+
+    d_ui->filterComboBox->revalidate();
 }
 
 void MainWindow::readMacros(QStringList const &fileNames)
