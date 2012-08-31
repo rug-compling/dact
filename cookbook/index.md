@@ -7,6 +7,12 @@ title: Cookbook - Decaffeinated Alpino Corpus Tool
 
     //node[@word='loopt']
 
+This is case-sensitive.
+
+If you want to find all inflectional variants of the verb 'lopen', do:
+
+    //node[@lemma='lopen']
+
 
 ## Proper name subjects
 
