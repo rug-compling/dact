@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 273 480" style="text-anchor:middle">
+  <svg:text x="119" y="50" font-style="italic"/>
+  <svg:text x="119" y="70">whq</svg:text>
+  <svg:line x1="119" y1="80" x2="23.8" y2="110" stroke="black"/>
+  <svg:line x1="119" y1="80" x2="142.8" y2="110" stroke="black"/>
+  <svg:text x="23.8" y="130" font-style="italic">whd</svg:text>
+  <svg:text x="23.8" y="150"><svg:tspan font-weight="bold" fill="red">1</svg:tspan>:pron</svg:text>
+  <svg:text x="23.8" y="170">wat</svg:text>
+  <svg:text x="142.8" y="130" font-style="italic">body</svg:text>
+  <svg:text x="142.8" y="150">sv1</svg:text>
+  <svg:line x1="142.8" y1="160" x2="71.4" y2="190" stroke="black"/>
+  <svg:line x1="142.8" y1="160" x2="123.2" y2="190" stroke="black"/>
+  <svg:line x1="142.8" y1="160" x2="194.6" y2="190" stroke="black"/>
+  <svg:text x="71.4" y="210" font-style="italic">obj1</svg:text>
+  <svg:text x="71.4" y="230">
+    <svg:tspan font-weight="bold" fill="red">1</svg:tspan>
+  </svg:text>
+  <svg:text x="123.2" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="123.2" y="230">verb</svg:text>
+  <svg:text x="123.2" y="250">drink</svg:text>
+  <svg:text x="194.6" y="210" font-style="italic">su</svg:text>
+  <svg:text x="194.6" y="230">np</svg:text>
+  <svg:line x1="194.6" y1="240" x2="170.8" y2="270" stroke="black"/>
+  <svg:line x1="194.6" y1="240" x2="214.2" y2="270" stroke="black"/>
+  <svg:text x="170.8" y="290" font-style="italic">det</svg:text>
+  <svg:text x="170.8" y="310">det</svg:text>
+  <svg:text x="170.8" y="330">de</svg:text>
+  <svg:text x="214.2" y="290" font-style="italic">hd</svg:text>
+  <svg:text x="214.2" y="310">noun</svg:text>
+  <svg:text x="214.2" y="330">Belg</svg:text>
+</svg:svg>
