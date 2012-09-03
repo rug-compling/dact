@@ -74,11 +74,12 @@ Then we can use the query:
 
 ## Topicalization
 
-Since the numeric conversion of the value of the attributes "begin" and "end" is so common, we
+Since the numeric conversion of the value of the attributes "begin", "end" and "index" is so common, we
 have the following two macros:
 
     b = """number(@begin)"""
     e = """number(@end)"""
+    i = """number(@index)"""
 
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
 two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
@@ -212,4 +213,16 @@ If the antecedent is not lexical, we reason from its head:
 The various queries could be combined to find all relevant cases in one go, but it would probably be easier
 to use macros for that. 
     
+## Secondary object passives with "krijgen"
 
+A sentence such as 
+
+>  hij krijgt een microfoon onder de neus geduwd
+
+is analysed such that "hij" is both the subject of the verb "krijgt" as well as 
+the secondary object of the verb "geduwd".  In order to find examples of this construction, the following
+query can be used:
+
+    //node[ node[@rel="hd" and @lemma="krijgen"] and
+            node[@rel="su"]/%i% = node[@rel="vc"]/node[@rel="obj2"]/%i% 
+          ]
