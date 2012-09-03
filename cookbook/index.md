@@ -173,6 +173,10 @@ Given the discussion of vorfeld in the previous section, the query can be improv
           ]
 
 
+Note that this construction is rather infrequent (some linguists even claim it to be ungrammatical). In some
+treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
+are found!
+
 ## Antecedents of co-indexed nodes
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
