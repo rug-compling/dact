@@ -139,6 +139,39 @@ To find topicalized indirect objects, do:
 
     //node[@rel="obj2" and %vorfeld%]
 
+## Fronted comparative phrases 
+
+This example is taken from Leonoor van der Beek, Gosse Bouma, Gertjan van Noord. Een brede computationele 
+grammatica voor het Nederlands. Nederlandse Taalkunde, jaargang 7, 2002-4. 353--374.
+
+Comparatives are often combined with a complement, as in:
+
+> Lager dan ik dacht
+
+The complement of the comparative is assigned the relation "obcomp". If the comparative ends up in the
+vorfeld, its obcomp can be part of the vorfeld too, or it can be placed at the end of the sentence:
+
+> Belangrijker nog dan de ligging was de uitmuntende bescherming van de graaf van de Champagne .
+> Eerder staat een machine een half uur stil dan dure voorraden te produceren .
+
+In order to find cases of the second type (extraposition of comparative complements out of topic position),
+we used the following query:
+
+    //node[@cat="smain" and 
+           node[
+                node[@rel="obcomp"]/%e% > ../node[@rel="hd"]/%b%
+                ]/%b% = %b%
+          ]
+
+Given the discussion of vorfeld in the previous section, the query can be improved to:
+
+    //node[ %vorfeld% and 
+            node[@rel="obcomp" and 
+                 %b% > ../../node[@rel="hd"]/%b%
+                 ]
+          ]
+
+
 ## Antecedents of co-indexed nodes
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
