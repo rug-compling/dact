@@ -226,3 +226,28 @@ query can be used:
     //node[ node[@rel="hd" and @lemma="krijgen"] and
             node[@rel="su"]/%i% = node[@rel="vc"]/node[@rel="obj2"]/%i% 
           ]
+          
+Note that this identifies the dominating node of this construction. If, on the other hand, we are interested to
+identify the various verbs which occur in this construction ("geduwd" in the example), we need to define the query
+in a somewhat different way:
+
+    //node[@rel="hd" and @pt="ww" and 
+           ../../node[@rel="hd" and @lemma="krijgen"] and 
+           ../node[@rel="obj2"]/%i% = ../../node[@rel="su"]/%i%
+           ] 
+           
+Counting the attribute "word" of the matching nodes, might produce something like:
+
+    ingeplant       5
+    gedaan	        3
+    geslingerd	    3
+    opgelegd	    3
+    voorgeschoteld	3
+    aangenaaid	    2
+    geworpen	    2
+    uitgekeerd	    2
+    aangerekend	    1
+    betaald	        1
+
+
+
