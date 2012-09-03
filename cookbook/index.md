@@ -72,7 +72,21 @@ Then we can use the query:
 
     //node[@rel="su" and %name_phrase%]
 
-## Topicalization
+## Surface order: comparison of attributes with numeric values
+
+In the implementation of XPATH2 that is used in Dact, the comparison of numeric values may be
+somewhat counter-intuitive. For instance, in order to find a prenominal modifiers in a noun-phrase,
+the following query might be attemped:
+
+    //node[../@cat="np" and @rel="mod" and @begin < ../node[@rel="hd"]/@begin]
+
+However, this will not find any hits. Instead, we must explicitly convert the value of the attribute
+@begin to numeric:
+
+    //node[../@cat="np" and @rel="mod" and number(@begin) < ../node[@rel="hd"]/number(@begin)]
+
+Typical attributes with numeric values are "begin", "end" and "index". The operators which require
+the conversion include "<", ">" and "=".
 
 Since the numeric conversion of the value of the attributes "begin", "end" and "index" is so common, we
 have the following two macros:
@@ -81,8 +95,10 @@ have the following two macros:
     e = """number(@end)"""
     i = """number(@index)"""
 
+## Surface order: location of the head of a phrase
+
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
-two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
+macros in two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
 then we use "begin_of_hd" and "end_of_hd". If we also want to capture complementizers, coordinators etc,
 we use "begin_of_head" and "end_of_head".
 
@@ -94,6 +110,8 @@ we use "begin_of_head" and "end_of_head".
 
     begin_of_hd   = """ node[@rel="hd"]/%b% """
     end_of_hd     = """ node[@rel="hd"]/%e% """
+
+## Topicalization
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
 constituents which occupy the "vorfeld" position in a main clause), the following query
