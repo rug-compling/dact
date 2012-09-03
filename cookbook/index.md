@@ -152,6 +152,7 @@ The complement of the comparative is assigned the relation "obcomp". If the comp
 vorfeld, its obcomp can be part of the vorfeld too, or it can be placed at the end of the sentence:
 
 > Belangrijker nog dan de ligging was de uitmuntende bescherming van de graaf van de Champagne .
+
 > Eerder staat een machine een half uur stil dan dure voorraden te produceren .
 
 In order to find cases of the second type (extraposition of comparative complements out of topic position),
