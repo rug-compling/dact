@@ -111,10 +111,11 @@ we use "begin_of_head" and "end_of_head".
     begin_of_hd   = """ node[@rel="hd"]/%b% """
     end_of_hd     = """ node[@rel="hd"]/%e% """
 
-## Topicalization
+## Topicalization, fronting, the "vorfeld"
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
-constituents which occupy the "vorfeld" position in a main clause), the following query
+constituents which occupy the "vorfeld" position in a main clause, in other words, constituents
+which are "fronted"), the following query
 may be proposed. In this query, we want to find elements of a main clause which start at the same 
 position as the main clause as a whole:
 
