@@ -234,6 +234,11 @@ to use macros for that.
     
 ## Secondary object passives with "krijgen"
 
+This example is taken from Valia Kordoni and Gertjan van Noord. Passives in Germanic
+Languages: the case of Dutch and German. In: Groninger Arbeiten zur
+Germanistischen Linguistik (GAGL). Volume 49. pp 77-96. December 2009
+(appeared in 2010). 
+
 A sentence such as 
 
 >  hij krijgt een microfoon onder de neus geduwd
