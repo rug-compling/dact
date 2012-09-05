@@ -136,7 +136,7 @@ all nodes dominated by the current node:
     //node[@cat="np" and not(.//node[@cat="np"])]
     
 Rather than "minimal" nodes, we might also want to identify "maximal" nodes. Such an example occurs in the next
-section on topicalization.
+section on topicalization, where the "ancestor::" axis is helpful.
 
 ## Topicalization, fronting, the "vorfeld"
 
