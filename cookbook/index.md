@@ -273,5 +273,38 @@ Counting the attribute "word" of the matching nodes, might produce something lik
     aangerekend	    1
     betaald	        1
 
+## Agreement mismatches and other surprises
+
+It is sometimes interesting to search for constructions which you might think do not occur. The following query
+finds plural heads which are combined with a determiner which usually combines only with singular heads:
+
+    //node[node[@getal="mv" and @rel="hd"] and 
+           node[@rel="det" and (@lemma="het" or 
+                                @lemma="een" or 
+                                @lemma="dit" or 
+                                @lemma="dat")
+                ]
+          ]
+
+Some of these identify sentences with grammatical errors, or annotation mistakes. 
+
+Relative pronouns which are not part of a relative clause:
+
+    //node[@vwtype="betr" and not(@rel="rhd" or ../@rel="rhd")]
+    
+Relative clauses without a relative pronoun:
+
+     //node[@rel="rhd" and @word and 
+            not(@vwtype="betr" or 
+                @vwtype="vb" or
+                @pt="bw")
+           ]
+           
+Subjects which do not occur in the context of a verb:
+
+    //node[node[@rel="hd" and @pt and not(@pt="ww")] and
+           node[@rel="su"]
+           ]
+
 
 
