@@ -307,4 +307,31 @@ Subjects which do not occur in the context of a verb:
            ]
 
 
+## Using quantifiers in XPATH2
 
+In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
+As an example of the potential use of quantified expressions, consider
+the query in which we want to identify a NP which contains a VC complement
+(infinite VP complement), in such a way that there is a noun which is preceded by
+the head of that NP, and which precedes the VC complement. 
+
+In this example:
+
+> Ik heb de hoop opgegeven hem ooit terug te zien
+
+the VP "hem ooit terug te zien" is a VC complement of "hoop". Is it the case that such a VC
+complement is always associated with the most "recent" noun? Such a query can be formulated as
+follows:
+
+    //node[@cat="np" and 
+          ( some $tussen in //node[@pos="noun"] 
+           satisfies (   $tussen/%b% 
+                       < node[@rel="vc"]/%b% and 
+                         $tussen/%e% 
+                       > node[@rel="hd"]/%e%
+                     )
+         )]
+         
+As it turns out, such cases occur regularly, as in:
+
+> Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
