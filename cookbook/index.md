@@ -111,6 +111,33 @@ we use "begin_of_head" and "end_of_head".
     begin_of_hd   = """ node[@rel="hd"]/%b% """
     end_of_hd     = """ node[@rel="hd"]/%e% """
 
+## Minimal dominating node
+
+In some cases you want to find a node with particular properties, and that node has to be
+the "minimal" node in the sense that it does not dominate a node with such properties. For example,
+in Catherine Lai and Steven Bird, Querying and updating treebanks: A critical survey and requirements analysis,
+in: Proceedings of the Australasian Language Technology Workshop, pages 139-146, 2004, an example of such
+a query is given. We paraphrase the query as: identify the minimal node with dominates a NP PP sequence.
+
+We first define "dominates_np_pp_seq" and then use that definition in the solution for this problem.
+A node dominates a NP PP sequence if it dominates an NP and a PP, where the NP directly precedes the PP:
+
+    dominates_np_pp_seq = """ .//node[@cat="np"]/%e% = .//node[@cat="pp"]/%b% """
+  
+The minimal node is then identified by the following query:
+  
+    //node[%dominates_np_pp_seq% and
+            not(node[%dominates_np_pp_seq%])]
+            
+In this particular case, it suffices to inspect only potential daughter nodes. In other cases, things may be
+somewhat more complicated. For instance, if we want to find minimal NP's, we use the ".//" axis which identifies
+all nodes dominated by the current node:
+
+    //node[@cat="np" and not(.//node[@cat="np"])]
+    
+Rather than "minimal" nodes, we might also want to identify "maximal" nodes. Such an example occurs in the next
+section on topicalization.
+
 ## Topicalization, fronting, the "vorfeld"
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
