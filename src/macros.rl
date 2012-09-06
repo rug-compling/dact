@@ -16,12 +16,13 @@
 
 #include <cstring>
 
+namespace {
+
 %%{
 	machine macros;
 	write data;
 }%%
 
-namespace {
 
 struct Substitution
 {
