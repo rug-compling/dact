@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <sstream>
 #include <cstring>
 
@@ -18,7 +19,9 @@
 	write data;
 }%%
 
-void parseMacros(char const *data)
+typedef std::map<std::string, std::string> Macros;
+
+Macros parseMacros(char const *data)
 {
 	int cs = 0;
 	char const *p = data;
@@ -26,7 +29,12 @@ void parseMacros(char const *data)
 	char const *eof = p + std::strlen(data);
 
 	char const *strStart = p;
-	char const *strEnd = eof;
+
+	char const *substStart = 0;
+
+	Macros macros;
+
+	std::string lastKey;
 
 	std::ostringstream buf;
 %%{
@@ -35,7 +43,7 @@ void parseMacros(char const *data)
 	}
 
 	action key {
-		std::cout << "key: " << buf.str() << std::endl;
+		lastKey = buf.str();
 		buf.str("");
 	}
 
@@ -45,7 +53,16 @@ void parseMacros(char const *data)
 
 	action queryEnd {
 		std::string query(strStart, p - 3);
-		std::cout << "value: " << query << std::endl;
+		macros[lastKey] = query;
+	}
+
+	action substBegin {
+		substStart = p;
+	}
+
+	action substEnd {
+		std::string subst(substStart, p);
+		std::cerr << "Found substitution: " << subst << std::endl;
 	}
 
 	separator = "\"\"\"";
@@ -53,7 +70,8 @@ void parseMacros(char const *data)
 
 	key = ([A-Za-z0-9_]+) $ str_char % key;
 
-	query = (any* -- separator);
+	substitution = ('%' % substBegin) (any - '%')+ ('%' > substEnd);
+	query = (substitution | (any - '%')+)* -- separator;
 	queryVal = (separator % queryStart) query (separator % queryEnd);
 
 	main := (whitespace* key whitespace* '=' whitespace* queryVal)*;
@@ -61,6 +79,8 @@ void parseMacros(char const *data)
 	write init;
 	write exec;
 }%%
+
+	return macros;
 }
 
 int main(int argc, char const *argv[])
@@ -80,6 +100,11 @@ int main(int argc, char const *argv[])
 		std::ostream_iterator<char>(iss));
 
 	std::string data = iss.str();
+	//std::string test = "\"\"\"test\"\"\"";
 
-	parseMacros(data.c_str());
+	//parseMacros(test.c_str());
+
+	Macros macros = parseMacros(data.c_str());
+	for (Macros::const_iterator iter = macros.begin(); iter != macros.end(); ++iter)
+		std::cout << iter->first << ": " << iter->second << std::endl;
 }
