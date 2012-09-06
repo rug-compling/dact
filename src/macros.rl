@@ -2,8 +2,8 @@
 //
 // TODO:
 //
-// - Store macros and keys nicely in a map
-// - Expand queries, marked with percent signs.
+// - Eat whitespace between opening/closing quotes and the actual query.
+// - Add error handling.
 // - If everything works, remove main.
 
 #include <algorithm>
@@ -12,6 +12,8 @@
 #include <iterator>
 #include <map>
 #include <sstream>
+#include <vector>
+
 #include <cstring>
 
 %%{
@@ -19,7 +21,19 @@
 	write data;
 }%%
 
+namespace {
+
+struct Substitution
+{
+	size_t begin;
+	size_t n;
+	std::string macro;
+};
+
+}
+
 typedef std::map<std::string, std::string> Macros;
+typedef std::vector<Substitution> Substitutions;
 
 Macros parseMacros(char const *data)
 {
@@ -33,6 +47,8 @@ Macros parseMacros(char const *data)
 	char const *substStart = 0;
 
 	Macros macros;
+
+	Substitutions substitutions;
 
 	std::string lastKey;
 
@@ -52,7 +68,25 @@ Macros parseMacros(char const *data)
 	}
 
 	action queryEnd {
+		// This action is executed when the query is closed ("""), we have to
+		// three to avoid including the quotes.
 		std::string query(strStart, p - 3);
+
+		// Apply substitutions that were found in the macro.
+		for (Substitutions::const_reverse_iterator iter = substitutions.rbegin();
+			iter != substitutions.rend(); ++iter)
+		{
+			Macros::const_iterator mIter = macros.find(iter->macro);
+			if (mIter == macros.end())
+			{
+				std::cerr << "Unknown macro: " << iter->macro << std::endl;
+				continue;
+			}
+
+			query.replace(iter->begin, iter->n, mIter->second);
+		}
+
+		substitutions.clear();
 		macros[lastKey] = query;
 	}
 
@@ -61,8 +95,17 @@ Macros parseMacros(char const *data)
 	}
 
 	action substEnd {
-		std::string subst(substStart, p);
-		std::cerr << "Found substitution: " << subst << std::endl;
+		std::string macro(substStart, p);
+
+		// substStart is the position of the macro name. Decrement by one to
+		// get the position of the percentage sign.
+		size_t begin = substStart - strStart - 1;
+
+		// Add two, to account for both percentage signs.
+		size_t n = p - substStart + 2;
+
+		Substitution subst = {begin, n, macro};
+		substitutions.push_back(subst);
 	}
 
 	separator = "\"\"\"";
