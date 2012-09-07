@@ -5,13 +5,15 @@
 #include <QString>
 
 class DactMacrosModel;
+class QMutex;
 
 class DelayedLoadFileCallback : public QObject
 {
     Q_OBJECT
 
 public:
-    DelayedLoadFileCallback(DactMacrosModel *model, QString const &fileName, QObject *parent = 0);
+    DelayedLoadFileCallback(DactMacrosModel *model, QMutex *reloadMutex,
+    	QString const &fileName, QObject *parent = 0);
 
 public slots:
     void invokeOnce();
@@ -19,7 +21,7 @@ public slots:
 private:
     DactMacrosModel *d_model;
     QString d_fileName;
+    QMutex *d_reloadMutex;
 };
 
 #endif
-

@@ -50,8 +50,7 @@ private:
 private:
     QList<DactMacrosFile *> d_files;
     QFileSystemWatcher d_watcher;
-    QMutex d_lastReloadMutex;
-    quint64 d_lastReload;
+    QMutex d_reloadMutex;
 
     static const QChar d_symbol;
 };
