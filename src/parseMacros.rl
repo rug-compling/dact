@@ -3,19 +3,22 @@
 // TODO:
 //
 // - Eat whitespace between opening/closing quotes and the actual query.
-// - Add error handling.
-// - If everything works, remove main.
+//
+// The C++ source file is automatically generated using Ragel. If you
+// make changes to the automaton, use:
+//
+//  ragel parseMacros.rl -o parseMacros.cpp
+//
 
-#include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
 
 #include <cstring>
+
+#include <parseMacros.hh>
 
 namespace {
 
@@ -34,7 +37,6 @@ struct Substitution
 
 }
 
-typedef std::map<std::string, std::string> Macros;
 typedef std::vector<Substitution> Substitutions;
 
 Macros parseMacros(char const *data)
@@ -153,36 +155,4 @@ Macros parseMacros(char const *data)
 	}
 
 	return macros;
-}
-
-int main(int argc, char const *argv[])
-{
-	if (argc != 2)
-		return 1;
-
-	std::ifstream in(argv[1]);
-	if (!in)
-		return 1;
-
-	in >> std::noskipws;
-
-	std::ostringstream iss;
-	std::copy(std::istream_iterator<char>(in),
-		std::istream_iterator<char>(),
-		std::ostream_iterator<char>(iss));
-
-	std::string data = iss.str();
-	//std::string test = "\"\"\"test\"\"\"";
-
-	//parseMacros(test.c_str());
-
-	Macros macros;
-	try {
-		macros = parseMacros(data.c_str());
-	} catch (std::runtime_error &e) {
-		std::cerr << e.what() << std::endl;
-	}
-
-	for (Macros::const_iterator iter = macros.begin(); iter != macros.end(); ++iter)
-		std::cout << iter->first << ": " << iter->second << std::endl;
 }

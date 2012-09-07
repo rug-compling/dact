@@ -1,5 +1,9 @@
+#include <stdexcept>
+
+#include <QDateTime>
 #include <QDebug>
 #include <QFileInfo>
+#include <QMutexLocker>
 #include <QStringList>
 #include <QTimer>
 
@@ -11,7 +15,8 @@ const QChar DactMacrosModel::d_symbol('%');
 
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
-    QAbstractItemModel(parent)
+    QAbstractItemModel(parent),
+    d_lastReload(0)
 {
     connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
         SLOT(loadFileDelayed(QString const &)));
@@ -156,10 +161,19 @@ QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 
 void DactMacrosModel::loadFile(QString const &path)
 {
+    {
+        QMutexLocker lock(&d_lastReloadMutex);
+        d_lastReload = QDateTime::currentMSecsSinceEpoch();
+    }
+
     if (!d_watcher.files().contains(path))
         d_watcher.addPath(path);
-    
-    readFile(path);
+
+    try {    
+        readFile(path);
+    } catch (std::runtime_error &e) {
+        emit readError(QString::fromUtf8(e.what()));
+    }
 }
 
 void DactMacrosModel::unloadFile(QString const &fileName)
@@ -212,6 +226,26 @@ QString DactMacrosModel::expand(QString const &expression)
 
 void DactMacrosModel::loadFileDelayed(QString const &fileName)
 {
+    quint64 now = QDateTime::currentMSecsSinceEpoch();
+
+    // Some editors seem to cause multiple fileChanged events. I am
+    // looking at you vim and Sublime Text 2! Let's ignore such events
+    // if they were sent in the last 1s. Would be nice if the signal
+    // provided more information on what was actually modified... :/
+    //
+    // We could be smarter about this and lock a mutex that the delayed
+    // callback will free. Any subsequent calls could return immediately
+    // if the mutex is locked. It'd get a little messy without some
+    // changes to the delayed callback.
+    {
+        QMutexLocker lock(&d_lastReloadMutex);
+
+        if (now - d_lastReload < 1000)
+            return;
+
+        d_lastReload = now;
+    }
+
     QTimer::singleShot(500, new DelayedLoadFileCallback(this, fileName), SLOT(invokeOnce()));
 }
 

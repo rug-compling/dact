@@ -142,6 +142,7 @@ SET(dact_SRCS
   src/XSLTransformer.cpp
   src/generateQuery.cpp
   src/main.cpp
+  src/parseMacros.cpp
   src/validityColor.cpp
 )
 
@@ -199,6 +200,7 @@ SET(dact_HDRS
   include/ValidityColor.hh
   include/XPathValidator.hh
   include/XSLTransformer.hh
+  include/parseMacros.hh
 )  
 
 SET(dact_MOC_HDRS
