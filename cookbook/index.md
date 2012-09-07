@@ -224,6 +224,14 @@ Note that this construction is rather infrequent (some linguists even claim it t
 treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
 are found!
 
+## Verb Clusters
+
+In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
+sentence from Lassy:
+
+> De reactie was zwakker toen de proefpersonen het geld bij de belastingen zagen terechtkomen .
+
+
 ## Antecedents of co-indexed nodes
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
