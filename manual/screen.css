@@ -1,10 +1,11 @@
 body {
   max-width: 800px;
-  margin: 0px auto;
+  margin: 1em auto;
   padding: 0 1em;
 
-  font-family: verdana, arial, helvetica, sans-serif;
+  font: 1em/1.5em helvetica, verdana, arial, sans-serif;
   font-size: 90%;
+  color: #333;
 }
 
 img {
@@ -12,58 +13,110 @@ img {
 }
 
 h2 {
-  color: #990000;
+  margin: .5em 0;
+  padding: .5em 0;
+  color: #000;
+  border-bottom: 1px solid #ddd;
 }
 
-p {
-  text-align: justify;
-}
 div.caption p {
-        text-align: center;
+  text-align: center;
 }
 
 table {
-    border: 1px solid #000;
-    border-width: 0px;
-    border-spacing: 0px;
-    border-collapse: collapse;
+  border: 1px solid #000;
+  border-width: 0px;
+  border-spacing: 0px;
+  border-collapse: collapse;
 }
 
 table th {
-    padding: 0.2em;
+  padding: 0.2em;
 }
 
 table td {
-    padding: 0.2em;
+  padding: 0.2em;
 }
 
 .italic {
   font-style: italic;
 }
 
+/* Code blocks */
+
 pre {
-  overflow: auto;
+  background: #f8f8f8;
+  padding: 1em;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: monospace;
+  color: #222;
+  padding: 0;
+  width: 100%;
+
+  position: relative;
+  overflow: hidden;
 }
 
-pre.screen {
-  border: 1px dashed #94da3a;
-  background-color: #e7ffc7;
-  color: #000000;
-  padding: 0.5em;
-  margin-bottom: 0.5em;
+/* (Let the code element scroll instead of the pre element so we can attach buttons to the pre element that won't scroll with the code.) */
+
+pre code {
+  display: block;
+  width: 100%;
+  padding: 1em;
+  overflow: scroll;
 }
 
-pre.programlisting {
-  border: 1px dashed #b4baea;
-  background-color: #f0f4ff;
-  color: #000000;
-  padding: 0.5em;
-  margin-bottom: 0.5em;
+/* Quotes */
+
+blockquote {
+  display: inline-block;
+  margin: 0;
+  padding: .25em .25em .25em 1em;
+  color: #666;
+  border-left: 4px solid #ccc;
 }
 
-.type {
-    font-family: monospace;
+blockquote p {
+  margin: 0;
 }
+
+blockquote a {
+  color: #55f;
+}
+
+/* Nested links only show their underline when hovered */
+
+blockquote a,
+pre a {
+  text-decoration: none;
+}
+
+blockquote a:hover,
+pre a:hover {
+  text-decoration: underline;
+}
+
+/* Make query blocks pretty, and prettify their "open in dact" links. */
+
+pre .query {
+  
+}
+
+pre .open-in-dact {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  font: 0.75em/1.0em helvetica, verdana, arial, sans-serif;
+  text-decoration: none;
+  color: #333;
+  background: #eee;
+  padding: 0.25em;
+  border: 1px solid #ddd;
+  border-radius: 0 0 0 3px;
+}
+
+/* Notes and tips in the manual */
 
 .note, .tip {
   margin: inherit !important;
@@ -82,9 +135,9 @@ pre.programlisting {
 }
 
 .note {
-  border-left: .5em solid #8cff80;
+  border-left: 4px solid #8cff80;
 }
 
 .tip {
-  border-left: .5em solid #97afff;
+  border-left: 4px solid #97afff;
 }

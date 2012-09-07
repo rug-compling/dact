@@ -57,23 +57,10 @@ function linkQuery(query)
 
 	var link = document.createElement('a');
 	link.href = 'dact:/?filter=' + encodeURIComponent(query);
+	link.className = 'open-in-dact';
 	link.appendChild(document.createTextNode('Run in Dact'));
 
-	var wrapper = document.createElement('p');
-	wrapper.className = 'open-in-dact';
-	wrapper.appendChild(document.createTextNode('('));
-	wrapper.appendChild(link);
-	wrapper.appendChild(document.createTextNode(')'))
-
-	return wrapper;
-}
-
-function insertAfter(newElement, existingElement)
-{
-	if (existingElement.nextSibling)
-		existingElement.parentNode.insertBefore(newElement, existingElement.nextSibling);
-	else
-		existingElement.parentNode.appendChild(newElement);
+	return link;
 }
 
 function main()
@@ -89,8 +76,12 @@ function main()
 			extractAllMacros(code, macros);
 
 		else if (isQuery(code))
-			insertAfter(linkQuery(expandQuery(code, macros, [])),
-				blocksOfCode[i].parentNode);
+		{
+			blocksOfCode[i].className = 'query';
+			
+			blocksOfCode[i].parentNode.appendChild(
+				linkQuery(expandQuery(code, macros, [])));
+		}
 	}
 }
 
