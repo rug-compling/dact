@@ -12,6 +12,7 @@
 #include <iterator>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 #include <cstring>
@@ -118,11 +119,38 @@ Macros parseMacros(char const *data)
 	query = (substitution | (any - '%')+)* -- separator;
 	queryVal = (separator % queryStart) query (separator % queryEnd);
 
-	main := (whitespace* key whitespace* '=' whitespace* queryVal)*;
+	main := (whitespace* key whitespace* '=' whitespace* queryVal whitespace*)*;
 
 	write init;
 	write exec;
 }%%
+
+	if (cs < macros_first_final)
+	{
+		if (p == pe)
+			throw std::runtime_error("Unexpected end of file");
+		else {
+			std::ostringstream err;
+			size_t errPos = p - data;
+			err << "Error in macro file at position " << errPos << ":" << std::endl << std::endl;
+
+			// Extract the line where the error occured
+			std::string str(data);
+			size_t ctxBegin = str.find_last_of("\r\n", errPos);
+			ctxBegin = ctxBegin == std::string::npos ? 0 : ++ctxBegin;
+			size_t ctxEnd = str.find_first_of("\r\n", errPos);
+
+			std::string context = str.substr(ctxBegin, ctxEnd - ctxBegin);
+			err << context << std::endl;
+
+			size_t cursor = errPos - ctxBegin;
+			for (size_t i = 0; i < cursor; ++i)
+				err << " ";
+			err << "^";
+
+			throw std::runtime_error(err.str());
+		}
+	}
 
 	return macros;
 }
@@ -148,7 +176,13 @@ int main(int argc, char const *argv[])
 
 	//parseMacros(test.c_str());
 
-	Macros macros = parseMacros(data.c_str());
+	Macros macros;
+	try {
+		macros = parseMacros(data.c_str());
+	} catch (std::runtime_error &e) {
+		std::cerr << e.what() << std::endl;
+	}
+
 	for (Macros::const_iterator iter = macros.begin(); iter != macros.end(); ++iter)
 		std::cout << iter->first << ": " << iter->second << std::endl;
 }
