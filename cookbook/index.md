@@ -229,8 +229,19 @@ are found!
 In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
 sentence from Lassy:
 
-> De reactie was zwakker toen de proefpersonen het geld bij de belastingen zagen terechtkomen .
+> De reactie was zwakker toen de proefpersonen het geld bij de belastingen zagen terechtkomen . <a href="dpc-ind-001634-nl-sen.p.9.s.4.svg.svg">(SVG)</a>
 
+In order to identify such constructions nonetheless, we can use the following macro definition to identify 
+the complement verb which is part of the verb cluster together with its dependents. In the example above, this query
+identifies the VP headed by "terechtkomen".
+
+    verbcluster = """( @rel="vc" and 
+                      (@cat="ti" or @cat="inf") and 
+                       node/%b% < ../node[@rel="hd" and @pt="ww"]/%b%
+
+                     )"""
+                     
+                     
 
 ## Antecedents of co-indexed nodes
 
