@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:exslt="http://exslt.org/common" viewBox="-35 -40 900.2 720" style="text-anchor:middle">
+  <svg:text x="432.6" y="50" font-style="italic"/>
+  <svg:text x="432.6" y="70">smain</svg:text>
+  <svg:line x1="432.6" y1="80" x2="56" y2="110" stroke="black"/>
+  <svg:line x1="432.6" y1="80" x2="135.8" y2="110" stroke="black"/>
+  <svg:line x1="432.6" y1="80" x2="187.6" y2="110" stroke="black"/>
+  <svg:line x1="432.6" y1="80" x2="540.4" y2="110" stroke="black"/>
+  <svg:text x="56" y="130" font-style="italic">su</svg:text>
+  <svg:text x="56" y="150">np</svg:text>
+  <svg:line x1="56" y1="160" x2="19.6" y2="190" stroke="black"/>
+  <svg:line x1="56" y1="160" x2="75.6" y2="190" stroke="black"/>
+  <svg:text x="19.6" y="210" font-style="italic">det</svg:text>
+  <svg:text x="19.6" y="230">det</svg:text>
+  <svg:text x="19.6" y="250">de</svg:text>
+  <svg:text x="75.6" y="210" font-style="italic">hd</svg:text>
+  <svg:text x="75.6" y="230">noun</svg:text>
+  <svg:text x="75.6" y="250">reactie</svg:text>
+  <svg:text x="135.8" y="130" font-style="italic">hd</svg:text>
+  <svg:text x="135.8" y="150">verb</svg:text>
+  <svg:text x="135.8" y="170">ben</svg:text>
+  <svg:text x="187.6" y="130" font-style="italic">predc</svg:text>
+  <svg:text x="187.6" y="150">adj</svg:text>
+  <svg:text x="187.6" y="170">zwak</svg:text>
+  <svg:text x="540.4" y="130" font-style="italic">mod</svg:text>
+  <svg:text x="540.4" y="150">cp</svg:text>
+  <svg:line x1="540.4" y1="160" x2="239.4" y2="190" stroke="black"/>
+  <svg:line x1="540.4" y1="160" x2="564.2" y2="190" stroke="black"/>
+  <svg:text x="239.4" y="210" font-style="italic">cmp</svg:text>
+  <svg:text x="239.4" y="230">comp</svg:text>
+  <svg:text x="239.4" y="250">toen</svg:text>
+  <svg:text x="564.2" y="210" font-style="italic">body</svg:text>
+  <svg:text x="564.2" y="230">ssub</svg:text>
+  <svg:line x1="564.2" y1="240" x2="340.2" y2="270" stroke="black"/>
+  <svg:line x1="564.2" y1="240" x2="460.6" y2="270" stroke="black"/>
+  <svg:line x1="564.2" y1="240" x2="527.8" y2="270" stroke="black"/>
+  <svg:line x1="564.2" y1="240" x2="708.4" y2="270" stroke="black"/>
+  <svg:text x="340.2" y="290" font-style="italic">su</svg:text>
+  <svg:text x="340.2" y="310">np</svg:text>
+  <svg:line x1="340.2" y1="320" x2="282.8" y2="350" stroke="black"/>
+  <svg:line x1="340.2" y1="320" x2="359.8" y2="350" stroke="black"/>
+  <svg:text x="282.8" y="370" font-style="italic">det</svg:text>
+  <svg:text x="282.8" y="390">det</svg:text>
+  <svg:text x="282.8" y="410">de</svg:text>
+  <svg:text x="359.8" y="370" font-style="italic">hd</svg:text>
+  <svg:text x="359.8" y="390">noun</svg:text>
+  <svg:text x="359.8" y="410">proefpersoon</svg:text>
+  <svg:text x="460.6" y="290" font-style="italic">obj1</svg:text>
+  <svg:text x="460.6" y="310"><svg:tspan font-weight="bold" fill="red">1</svg:tspan>:np</svg:text>
+  <svg:line x1="460.6" y1="320" x2="436.8" y2="350" stroke="black"/>
+  <svg:line x1="460.6" y1="320" x2="480.2" y2="350" stroke="black"/>
+  <svg:text x="436.8" y="370" font-style="italic">det</svg:text>
+  <svg:text x="436.8" y="390">det</svg:text>
+  <svg:text x="436.8" y="410">het</svg:text>
+  <svg:text x="480.2" y="370" font-style="italic">hd</svg:text>
+  <svg:text x="480.2" y="390">noun</svg:text>
+  <svg:text x="480.2" y="410">geld</svg:text>
+  <svg:text x="527.8" y="290" font-style="italic">hd</svg:text>
+  <svg:text x="527.8" y="310">verb</svg:text>
+  <svg:text x="527.8" y="330">zie</svg:text>
+  <svg:text x="708.4" y="290" font-style="italic">vc</svg:text>
+  <svg:text x="708.4" y="310">inf</svg:text>
+  <svg:line x1="708.4" y1="320" x2="567" y2="350" stroke="black"/>
+  <svg:line x1="708.4" y1="320" x2="670.6" y2="350" stroke="black"/>
+  <svg:line x1="708.4" y1="320" x2="812" y2="350" stroke="black"/>
+  <svg:text x="567" y="370" font-style="italic">su</svg:text>
+  <svg:text x="567" y="390">
+    <svg:tspan font-weight="bold" fill="red">1</svg:tspan>
+  </svg:text>
+  <svg:text x="670.6" y="370" font-style="italic">ld</svg:text>
+  <svg:text x="670.6" y="390">pp</svg:text>
+  <svg:line x1="670.6" y1="400" x2="606.2" y2="430" stroke="black"/>
+  <svg:line x1="670.6" y1="400" x2="694.4" y2="430" stroke="black"/>
+  <svg:text x="606.2" y="450" font-style="italic">hd</svg:text>
+  <svg:text x="606.2" y="470">prep</svg:text>
+  <svg:text x="606.2" y="490">bij</svg:text>
+  <svg:text x="694.4" y="450" font-style="italic">obj1</svg:text>
+  <svg:text x="694.4" y="470">np</svg:text>
+  <svg:line x1="694.4" y1="480" x2="649.6" y2="510" stroke="black"/>
+  <svg:line x1="694.4" y1="480" x2="714" y2="510" stroke="black"/>
+  <svg:text x="649.6" y="530" font-style="italic">det</svg:text>
+  <svg:text x="649.6" y="550">det</svg:text>
+  <svg:text x="649.6" y="570">de</svg:text>
+  <svg:text x="714" y="530" font-style="italic">hd</svg:text>
+  <svg:text x="714" y="550">noun</svg:text>
+  <svg:text x="714" y="570">belasting</svg:text>
+  <svg:text x="812" y="370" font-style="italic">hd</svg:text>
+  <svg:text x="812" y="390">verb</svg:text>
+  <svg:text x="812" y="410">kom_terecht</svg:text>
+</svg:svg>
