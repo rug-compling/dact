@@ -261,6 +261,19 @@ macro definitions are provided to identify such constituents:
                     not (%verbcluster%)
                   )"""
 
+With these macros in place, we can find extraposition of PP's out of NP, as in cases like
+
+>  Lange tijd is de stad tevens het belangrijkste internationale centrum geweest van cultuur, kennis en geleerdheid
+
+Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", but it is placed to the
+right of the main verb. The following query identifies such constructions:
+
+    //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
+
+TODO: we do not get extraposed constituents which are part of an extraposed clause:
+
+> Het is Clemenceau echter niet ontgaan dat er die maand kennelijk wel middelen genoeg waren om 1200 lichte tanks extra te bestellen 
+
 ## Antecedents of co-indexed nodes
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
