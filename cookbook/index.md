@@ -238,10 +238,28 @@ identifies the VP headed by "terechtkomen".
     verbcluster = """( @rel="vc" and 
                       (@cat="ti" or @cat="inf") and 
                        node/%b% < ../node[@rel="hd" and @pt="ww"]/%b%
-
                      )"""
                      
-                     
+## Extraposition, the "nachfeld"         
+
+Constituents which are placed to the right of the head of a VP or a subordinate clause are
+often said to be "extraposed", or to occupy the "nachfeld" position. The following set of
+macro definitions are provided to identify such constituents:
+
+    vp = """ (@cat="inf" or @cat="ti" or @cat="ssub" or @cat="oti" or @cat="ppart") """
+
+    follows_head_of_vp = """
+    ( ancestor::node[%vp%]/node[@rel="hd"]/%b%
+              < %begin_of_head%
+      or
+      ancestor::node[%vp%]/node[@rel="hd"]/%b%
+              < %b% and @word
+    )"""
+
+    nachfeld = """( %follows_head_of_vp% and 
+                    not (ancestor::node[%follows_head_of_vp%]) and 
+                    not (%verbcluster%)
+    )"""
 
 ## Antecedents of co-indexed nodes
 
