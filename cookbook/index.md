@@ -236,7 +236,7 @@ the complement verb which is part of the verb cluster together with its dependen
 identifies the VP headed by "terechtkomen".
 
     verbcluster = """( @rel="vc" and 
-                      (@cat="ti" or @cat="inf") and 
+                       (@cat="ti" or @cat="inf" or @cat="ppart") and 
                        node/%b% < ../node[@rel="hd" and @pt="ww"]/%b%
                      )"""
                      
@@ -259,7 +259,7 @@ macro definitions are provided to identify such constituents:
     nachfeld = """( %follows_head_of_vp% and 
                     not (ancestor::node[%follows_head_of_vp%]) and 
                     not (%verbcluster%)
-    )"""
+                  )"""
 
 ## Antecedents of co-indexed nodes
 
@@ -270,8 +270,6 @@ We might try
     
 This will give all noun-phrases. In case the noun phrases are lexical, we are done. Otherwise,
 we want to select the head daughter:
-
-
 
     //node[ (  ( @rel="obj1" and @word and ../node[@rel="hd" and @lemma="drinken"])
             or ( @rel="hd" and ../@rel="obj1" and ../../node[@rel="hd" and @lemma="drinken"]] )
