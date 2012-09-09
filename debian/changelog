@@ -1,3 +1,9 @@
+alpino-dact (1.4.0-1quantal1) quantal; urgency=low
+
+  * Build for Quantal Quetzal.
+
+ -- Daniël de Kok <me@danieldk.eu>  Sun, 09 Sep 2012 18:48:12 +0200
+
 alpino-dact (1.4.0-1) precise; urgency=low
 
   * New upstream release.
