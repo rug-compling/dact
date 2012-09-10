@@ -15,14 +15,20 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
 
 std::list<Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
 {
-    QString filename(index.data(Qt::UserRole).toString());
-
+    QString filename(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
     if (!d_cache.contains(filename))
     {
-        QString bracketed_sentence(
-            index.sibling(index.row(), 2).data(Qt::UserRole).toString().trimmed());
+        ac::CorpusReader::MarkerQuery query(
+            reinterpret_cast<FilterModel const *>(
+                index.model())->lastQuery().toUtf8().constData(),
+            "active", "1");
+        std::list<ac::CorpusReader::MarkerQuery> queries;
+        queries.push_back(query);
 
-        std::list<Chunk> *chunks = Chunk::parseSentence(bracketed_sentence);
+        QString xmlData = QString::fromUtf8(d_corpus->read(
+            filename.toUtf8().constData(), queries).c_str());
+
+        std::list<Chunk> *chunks = Chunk::parseSentence(xmlData);
 
         d_cache.insert(filename, chunks);
     }

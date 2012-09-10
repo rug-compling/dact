@@ -48,7 +48,7 @@ void BracketedSentenceWidget::updateText()
     if (!d_parse.isEmpty())
     {
         QString sentence = transformXML(d_parse);
-        std::list<Chunk> *chunks = Chunk::parseSentence(sentence);
+        std::list<Chunk> *chunks = Chunk::parseSentence(d_parse);
 
         clear();
 
