@@ -1,0 +1,2 @@
+- fullText does not include the left context.
+- Punctuation is not yet correctly handled, because it is not marked.
