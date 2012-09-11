@@ -240,6 +240,30 @@ identifies the VP headed by "terechtkomen".
                        node/%b% < ../node[@rel="hd" and @pt="ww"]/%b%
                      )"""
                      
+The "verbcluster" macro is useful to find, for instance, occurrences of the infamous cross-serial dependency 
+construction. In that construction, the direct object of a verb such as "zien", "horen" or "laten" is identified
+as the subject of the embedded infinite verb phrase. The macro "cross_serial_verbcluster" identifies such verb phrases:
+
+    cross_serial_verbcluster = """ ( 
+            //node[%verbcluster% and @cat="inf" and 
+                   ../node[@rel="obj1"]/%i% = node[@rel="su"]/%i%
+                  ]                ) """
+                    
+To find out which governing verbs occur in a cross serial dependeny construction, we can then do:
+
+    //node[@rel="hd" and ../node[%cross_serial_verbcluster%]]
+                        
+Counting the frequency of the value of the "lemma" attribute gives:
+                    
+    laten    199
+    doen	  42
+    zien	  32
+    hebben	   7
+    vinden	   3
+    helpen	   2
+    horen	   2
+    voelen	   1                    
+                    
 ## Extraposition, the "nachfeld"         
 
 Constituents which are placed to the right of the head of a VP or a subordinate clause are
