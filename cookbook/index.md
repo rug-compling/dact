@@ -257,8 +257,9 @@ macro definitions are provided to identify such constituents:
     )"""
 
     nachfeld = """( %follows_head_of_vp% and 
-                    not (ancestor::node[%follows_head_of_vp%]) and 
-                    not (%verbcluster%)
+                    not (parent::node[%follows_head_of_vp%]) and 
+                    not (%verbcluster%) and
+                    not (@rel="hd" and parent::node[%verbcluster%])
                   )"""
 
 With these macros in place, we can find extraposition of PP's out of NP, as in cases like
@@ -266,11 +267,12 @@ With these macros in place, we can find extraposition of PP's out of NP, as in c
 >  Lange tijd is de stad tevens het belangrijkste internationale centrum geweest van cultuur, kennis en geleerdheid
 
 Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", but it is placed to the
-right of the main verb. The following query identifies such constructions:
+right of the main verb. The following query used the "nachfeld" macro to find extraposition of PP out of NP:
 
     //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
 
-TODO: we do not get extraposed constituents which are part of an extraposed clause:
+NB.  The definition of nachfeld is not optimal yet: we do not get extraposed constituents which are part of
+an extraposed clause:
 
 > Het is Clemenceau echter niet ontgaan dat er die maand kennelijk wel middelen genoeg waren om 1200 lichte tanks extra te bestellen 
 
