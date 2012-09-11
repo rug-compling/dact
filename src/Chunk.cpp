@@ -39,7 +39,7 @@ void Chunk::markLexicals(xmlNode *node, QHash<xmlNode *, size_t> *matchDepth)
 {
     // Don't attempt to handle a node that we can't.
     if (node->type != XML_ELEMENT_NODE ||
-          std::strcmp(reinterpret_cast<char const *>(node->name), "node") != 0)
+          std::strcmp(fromXmlStr(node->name), "node") != 0)
         return;
 
     xmlAttrPtr wordProp = xmlHasProp(node, toXmlStr("word"));
@@ -67,7 +67,7 @@ std::vector<Chunk::LexItem> Chunk::collectLexicals(xmlDoc *doc,
     }
 
     xmlXPathObjectPtr xpObj = xmlXPathEvalExpression(
-        reinterpret_cast<xmlChar const *>("//node[@word]"), xpCtx);
+        toXmlStr("//node[@word]"), xpCtx);
     if (xpObj == 0) {
         qDebug() << "Could not make XPath expression to select active nodes.";
         xmlXPathFreeContext(xpCtx);
@@ -183,13 +183,13 @@ void Chunk::processTree(xmlNode *node, size_t depth, std::list<Chunk> *chunks) {
     for (; node; node = node->next) {
         // Element node, recurse, increase depth.
         if (node->type == XML_ELEMENT_NODE &&
-                std::strcmp(reinterpret_cast<char const *>(node->name), "bracket") == 0)
+                std::strcmp(fromXmlStr(node->name), "bracket") == 0)
             processTree(node->children, depth + 1, chunks);
         else if (node->type == XML_TEXT_NODE) {
             xmlChar *cText = xmlNodeGetContent(node->parent);
             QString text;
             if (cText != NULL) {
-                text = QString::fromUtf8(reinterpret_cast<const char *>(cText));
+                text = QString::fromUtf8(fromXmlStr(cText));
                 xmlFree(cText);
             }
 
@@ -202,7 +202,7 @@ void Chunk::processTree(xmlNode *node, size_t depth, std::list<Chunk> *chunks) {
                 {
                     cText = xmlNodeGetContent(right);
                     if (cText != NULL) {
-                        rightList.append(QString::fromUtf8(reinterpret_cast<const char *>(cText)));
+                        rightList.append(QString::fromUtf8(fromXmlStr(cText)));
                         xmlFree(cText);
                     }
                 }
@@ -210,7 +210,7 @@ void Chunk::processTree(xmlNode *node, size_t depth, std::list<Chunk> *chunks) {
             }
 
             chunks->push_back(Chunk(depth, QString(),
-                QString::fromUtf8(reinterpret_cast<const char *>(node->content)),
+                QString::fromUtf8(fromXmlStr(node->content)),
                 text, QString(), rightList.join(" ")));
         }
     }
@@ -241,7 +241,7 @@ std::list<Chunk> *Chunk::parseSentence(QString treeStr)
     }
 
     xmlXPathObjectPtr xpObj = xmlXPathEvalExpression(
-        reinterpret_cast<xmlChar const *>("//node[@active='1']"), xpCtx);
+        toXmlStr("//node[@active='1']"), xpCtx);
     if (xpObj == 0) {
         qDebug() << "Could not make XPath expression to select active nodes.";
         xmlXPathFreeContext(xpCtx);
