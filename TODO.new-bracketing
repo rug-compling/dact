@@ -1,2 +1,12 @@
-- fullText does not include the left context.
 - Punctuation is not yet correctly handled, because it is not marked.
+- It's not really simple to make the 'only matches' overview, since words
+  that belong together are not together anymore. Do we want to keep a
+  set of identifiers with each word, rather than simply their depth?
+- What do we do with keywords in context?
+- Is the Chunk representation still appropriate? I start to believe that
+  it's simpler to just walk through the list of lexical nodes:
+
+  * Bracketed sentences: walk left to right, color by depth (set size).
+  * Only matches: for each set identifier in the number of hits, concat
+    the words in that set.
+  * KWIC: I don't have a clue yet what this should look like ;).
