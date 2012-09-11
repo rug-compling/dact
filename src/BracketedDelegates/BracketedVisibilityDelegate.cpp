@@ -4,6 +4,7 @@
 #include <QPalette>
 
 #include "BracketedVisibilityDelegate.hh"
+#include "../parseString.hh"
 
 #include <QtDebug>
 
@@ -14,36 +15,23 @@ BracketedVisibilityDelegate::BracketedVisibilityDelegate(CorpusReaderPtr corpus)
 
 QString BracketedVisibilityDelegate::formatSentence(QModelIndex const &index) const
 {
-    QString result;
+    QStringList result;
     
-    int previousDepth = 0;
-    foreach (Chunk const &chunk, parseChunks(index))
+    std::vector<LexItem> items = retrieveSentence(index);
+    int hits = index.sibling(index.row(), 1).data().toInt();
+
+    for (int i = 0; i < hits; ++i)
     {
-        // Indeed, this is copy-pastework from ~20
-        bool skip = false;
+        QStringList line;
 
-        if (chunk.depth() <= previousDepth)
-            skip = true;
+        foreach (LexItem const &item, items)
+            if (item.matches.contains(i))
+                line.append(item.word);
 
-        if (chunk.text().isEmpty())
-            skip = true;
-
-        previousDepth = chunk.depth();
-
-        if (skip)
-            continue;
-        
-        // each result on a new line, like they are individual entries.
-        if (!result.isEmpty())
-            result += '\n'; // use this for one line per match (broken)
-            //result += ", "; // or this for one line per file
-        
-        // note that text() currently does not contain the text of the full match
-        // because it could contain submatches, which are separate chunks.
-        result += chunk.fullText();
+        result.append(line.join(" "));
     }
     
-    return result;
+    return result.join("\n");
 }
 
 QSize BracketedVisibilityDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const

@@ -1,8 +1,11 @@
 #include <iostream>
 #include <list>
+#include <vector>
+
+#include <QSet>
 
 #include "BracketedDelegate.hh"
-#include "Chunk.hh"
+#include "LexItem.hh"
 #include "FilterModel.hh"
 
 namespace ac = alpinocorpus;
@@ -13,7 +16,7 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
     d_corpus(corpus)
 {}
 
-std::list<Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
+std::vector<LexItem> const &BracketedDelegate::retrieveSentence(QModelIndex const &index) const
 {
     QString filename(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
     if (!d_cache.contains(filename))
@@ -28,9 +31,9 @@ std::list<Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
         QString xmlData = QString::fromUtf8(d_corpus->read(
             filename.toUtf8().constData(), queries).c_str());
 
-        std::list<Chunk> *chunks = Chunk::parseSentence(xmlData);
+        std::vector<LexItem> *items = LexItem::parseSentence(xmlData);
 
-        d_cache.insert(filename, chunks);
+        d_cache.insert(filename, items);
     }
 
     return *d_cache[filename];
@@ -41,24 +44,23 @@ QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
     QString sent;
     QTextStream sentStream(&sent);
 
-    std::list<Chunk> chunks = parseChunks(index);
+    std::vector<LexItem> lexItems = retrieveSentence(index);
 
     size_t prevDepth = 0;
-    foreach (Chunk const &chunk, chunks)
+    foreach (LexItem const &lexItem, lexItems)
     {
-        if (chunk.text().isEmpty())
-          continue;
+        size_t depth = lexItem.matches.size();
 
-        if (chunk.depth() != prevDepth) {
-          if (prevDepth < chunk.depth())
-            sentStream << QString(chunk.depth() - prevDepth, QChar('['));
+        if (depth != prevDepth) {
+          if (prevDepth < depth)
+            sentStream << QString(depth - prevDepth, QChar('['));
           else
-            sentStream << QString(prevDepth - chunk.depth(), QChar(']'));
+            sentStream << QString(prevDepth - depth, QChar(']'));
 
-          prevDepth = chunk.depth();
+          prevDepth = depth;
         }
 
-        sentStream << chunk.text();
+        sentStream << lexItem.word;
     }
 
     return sent.trimmed();

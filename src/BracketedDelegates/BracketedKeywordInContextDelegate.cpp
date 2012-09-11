@@ -17,6 +17,18 @@ BracketedKeywordInContextDelegate::BracketedKeywordInContextDelegate(CorpusReade
     loadColorSettings();
 }
 
+QString BracketedKeywordInContextDelegate::extractFragment(
+    std::vector<LexItem> const &items, size_t first, size_t last) const
+{
+    QStringList fragment;
+
+    for (size_t i = first; i <= last; ++i)
+        fragment.append(items[i].word);
+
+    return fragment.join(" ");
+}
+
+
 void BracketedKeywordInContextDelegate::loadColorSettings()
 {
     QSettings settings;
@@ -45,80 +57,75 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    std::list<Chunk> chunks(parseChunks(index));
+    std::vector<LexItem> lexItems(retrieveSentence(index));
+
     QRectF textBox(option.rect);
     
     QBrush brush(option.state & QStyle::State_Selected
                  ? option.palette.highlightedText()
                  : option.palette.text());
     
-    int previousDepth = 0;
-    
-    foreach (Chunk const &chunk, chunks)
+    // Strategy: we recurse over the sentence, word by word. If a word belongs
+    // to one or more match and that match has not been displayed before, we
+    // known that we have to display this in a KWIC. We then scan forward, to
+    // extract the words that belong to the KWIC.
+    QSet<size_t> matchesSeen;
+    for (size_t i = 0; i < lexItems.size(); ++i)
     {
-        // Indeed, this is copy-pastework from ~20
-        bool skip = false;
-        
-        if (chunk.depth() <= previousDepth)
-            skip = true;
-        
-        if (chunk.text().isEmpty())
-            skip = true;
-        
-        previousDepth = chunk.depth();
-        
-        if (skip)
-            continue;
-        
-        /*
-                  This is [my sentence] for now
-              and this is [my other sentence] also
-          leftContentBox |---matchBox--|-----| rightContentBox
-        |--------------------textBox---------------------------|
-         
-        leftContentBox has a static width,
-        matchBox is moved $that_static_width to the right, and gets
-        its dimensions once drawn. rightContentBox is then moved
-        $that_static_width + $just_drawn_text_width to the right
-        and is drawn. Width of this box doen't really matter,
-        sizeHint determines the area that is shown.
-        textBox is the box that is used to draw a line, and is then
-        moved one line downwards to draw the next one. sizeHint is
-        quite important here since we are allowed to draw on other
-        ListItems.
-        */
-         
-        QRectF leftContextBox(textBox);
-        leftContextBox.setWidth(400);
-        
-        QRectF matchBox(textBox);
-        matchBox.moveLeft(matchBox.left() + leftContextBox.width());
-        
-        QRectF rightContextBox(textBox);
-        
-        painter->save();
-        
-        painter->setPen(option.state & QStyle::State_Selected
-                     ? option.palette.highlightedText().color()
-                     : d_contextForeground);
-        painter->drawText(leftContextBox, Qt::AlignRight, chunk.left());
-        
-        QRectF usedSpace;
-        painter->setPen(option.state & QStyle::State_Selected
-                     ? option.palette.highlightedText().color()
-                     : d_keywordForeground);
-        painter->drawText(matchBox, Qt::AlignLeft, chunk.fullText(), &usedSpace);
-        
-        rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
-        
-        painter->setPen(option.state & QStyle::State_Selected
-                     ? option.palette.highlightedText().color()
-                     : d_contextForeground);
-        painter->drawText(rightContextBox, Qt::AlignLeft, chunk.remainingRight());
-        
-        painter->restore();
-        
-        // move textBox one line lower.
-        textBox.setTop(textBox.top() + usedSpace.height());
+        for (QSet<size_t>::const_iterator matchIter = lexItems[i].matches.begin();
+            matchIter != lexItems[i].matches.end(); ++matchIter)
+        {
+            // Did we already display this match?
+            if (matchesSeen.contains(*matchIter))
+                continue;
+
+            matchesSeen.insert(*matchIter);
+
+            // Find the last word that belongs to this match.
+            size_t lastMatchedWord = i;
+            for (size_t j = lastMatchedWord + 1; j < lexItems.size(); ++j)
+                if (lexItems[j].matches.contains(*matchIter))
+                    lastMatchedWord = j;
+
+            // We now know the first and last words, let's build the fields.
+            QString left = i > 0 ? extractFragment(lexItems, 0, i - 1) : QString();
+            QString match = extractFragment(lexItems, i, lastMatchedWord);
+            QString right = lastMatchedWord < lexItems.size() - 1 ?
+                extractFragment(lexItems, lastMatchedWord + 1, lexItems.size() - 1) :
+                QString();
+
+            QRectF leftContextBox(textBox);
+            leftContextBox.setWidth(400);
+            
+            QRectF matchBox(textBox);
+            matchBox.moveLeft(matchBox.left() + leftContextBox.width());
+            
+            QRectF rightContextBox(textBox);
+            
+            painter->save();
+
+            painter->setPen(option.state & QStyle::State_Selected
+                         ? option.palette.highlightedText().color()
+                         : d_contextForeground);
+            painter->drawText(leftContextBox, Qt::AlignRight, left + " ");
+            
+            QRectF usedSpace;
+            painter->setPen(option.state & QStyle::State_Selected
+                         ? option.palette.highlightedText().color()
+                         : d_keywordForeground);
+            painter->drawText(matchBox, Qt::AlignLeft, match, &usedSpace);
+            
+            rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
+            
+            painter->setPen(option.state & QStyle::State_Selected
+                         ? option.palette.highlightedText().color()
+                         : d_contextForeground);
+            painter->drawText(rightContextBox, Qt::AlignLeft, QString(" ") + right);
+            
+            painter->restore();
+            
+            // move textBox one line lower.
+            textBox.setTop(textBox.top() + usedSpace.height());
+        }
     }
 }

@@ -5,7 +5,7 @@
 #include <QSettings>
 
 #include "BracketedSentenceWidget.hh"
-#include "Chunk.hh"
+#include "LexItem.hh"
 
 BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
 :
@@ -48,27 +48,39 @@ void BracketedSentenceWidget::updateText()
     if (!d_parse.isEmpty())
     {
         QString sentence = transformXML(d_parse);
-        std::list<Chunk> *chunks = Chunk::parseSentence(d_parse);
+        //std::list<LexItem> *LexItems = LexItem::parseSentence(d_parse);
+        //std::list<LexItem> *LexItems = new std::list<LexItem>;
+        std::vector<LexItem> *items = LexItem::parseSentence(d_parse);
 
         clear();
 
-        foreach (Chunk const &chunk, *chunks)
+        size_t prevDepth = 0;
+        foreach (LexItem const &item, *items)
         {
-            if (chunk.depth() > 0) {
-                setTextColor(Qt::white);
-                d_highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
-                    static_cast<size_t>(255)));
-                setTextBackgroundColor(d_highlightColor);
-            }
-            else {
-                setTextColor(Qt::black);
-                setTextBackgroundColor(Qt::white);
+            size_t depth = item.matches.size();
+
+            if (depth != prevDepth) {
+                if (depth == 0)
+                {
+                    setTextColor(Qt::black);
+                    setTextBackgroundColor(Qt::white);
+                }
+                else
+                {
+                    setTextColor(Qt::white);
+                    d_highlightColor.setAlpha(std::min(85 + 42 * depth,
+                        static_cast<size_t>(255)));
+                    setTextBackgroundColor(d_highlightColor);
+                }
+
+                prevDepth = depth;
             }
 
-            insertPlainText(chunk.text());
+            insertPlainText(item.word);
+            insertPlainText(" ");
         }
 
-        delete chunks;
+        delete items;
     }
 }
 

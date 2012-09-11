@@ -51,7 +51,6 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
     
-        std::list<Chunk> chunks(parseChunks(index));
         QRectF textBox(option.rect);
         QRectF usedSpace;
         QColor highlightColor(d_backgroundColor);
@@ -59,34 +58,37 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         QBrush brush(option.state & QStyle::State_Selected
             ? option.palette.highlightedText()
             : option.palette.text());
-    
-        foreach (Chunk const &chunk, chunks)
+   
+        std::vector<LexItem> const &items(retrieveSentence(index));
+        int prevDepth = -1;
+        foreach (LexItem const &item, items)
         {
-            if (chunk.text().isEmpty())
-                continue;
+            size_t depth = item.matches.size();
         
-            QRectF chunkBox(textBox);
-            chunkBox.setWidth(option.fontMetrics.width(chunk.text()));
+            QRectF wordBox(textBox);
+            QString word = item.word + " ";
+            wordBox.setWidth(option.fontMetrics.width(word));
         
-            // if the depth is greater than 0, it must be part of a matching node.
-            if (chunk.depth() > 0)
-            {
-                highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
-                    static_cast<size_t>(255)));
-                painter->setPen(QColor(Qt::white));
-                painter->fillRect(chunkBox, highlightColor);
+            if (depth != prevDepth) {
+                if (depth == 0)
+                {
+                    painter->setPen(brush.color());
+                    painter->setBrush(brush);
+                }
+                else
+                {
+                    highlightColor.setAlpha(std::min(85 + 42 * depth,
+                        static_cast<size_t>(255)));
+                    painter->setPen(QColor(Qt::white));
+                    painter->fillRect(wordBox, highlightColor);
+                }
             }
-            else
-            {
-                painter->setPen(brush.color());
-                painter->setBrush(brush);
-            }
-        
-            painter->drawText(chunkBox, Qt::AlignLeft, chunk.text());
+
+            painter->drawText(wordBox, Qt::AlignLeft, word);
         
             // move the left border of the box to the right to start drawing
-            // right next to the just drawn chunk of text.
-            textBox.setLeft(textBox.left() + chunkBox.width());
+            // right next to the just drawn LexItem of text.
+            textBox.setLeft(textBox.left() + wordBox.width());
         }
     }
     catch (std::runtime_error const &e)
