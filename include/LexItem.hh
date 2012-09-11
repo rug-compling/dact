@@ -27,7 +27,7 @@ struct LexItem
           return word < other.word;
     }
 
-    static std::vector<LexItem> *parseSentence(QString sentence);
+    static std::vector<LexItem> *parseSentence(QString const &sentence);
 
 private:
     static void markLexicals(xmlNode *node,

@@ -111,7 +111,7 @@ std::vector<LexItem> *LexItem::collectLexicals(xmlDoc *doc,
     return items;
 }
 
-std::vector<LexItem> *LexItem::parseSentence(QString treeStr)
+std::vector<LexItem> *LexItem::parseSentence(QString const &treeStr)
 {
     QByteArray xmlData(treeStr.toUtf8());
 
