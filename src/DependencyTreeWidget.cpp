@@ -399,7 +399,7 @@ void DependencyTreeWidget::showFile(QString const &entry)
 
 void DependencyTreeWidget::showSentence(QString const &entry, QString const &query)
 {
-    d_ui->sentenceWidget->setEntry(entry, query);
+    d_ui->sentenceWidget->setEntry(entry, d_macrosModel->expand(query));
 }
 
 void DependencyTreeWidget::showTree(QString const &xml)
