@@ -35,6 +35,76 @@ To ensure that a node is not an indexed node, use
 
     //node[@word or @cat]
 
+## Sentence types
+
+In some cases, this is straightforward. 
+
+To find main clauses:
+
+    //node[@cat="smain"]
+    
+Finite subordinate clauses:
+
+    //node[@cat="cp" and node[@rel="body" and @cat="ssub"]]
+
+Finite relative clauses:
+
+    //node[@cat="rel" and node[@rel="body" and @cat="ssub"]]
+
+To find direct wh-questions:
+
+    //node[@cat="whq"]
+    
+To find indirect questions:
+
+    //node[@cat="whsub"]
+    
+The following query:
+
+    //node[@cat="sv1"]
+    
+identifies imparatives as well as yes/no-questions and indeed some further constructions. If we want to find 
+imparatives only, the following query is useful:
+
+    //node[@cat="sv1" and not(node[@rel="su"])]
+
+However, this will also identify "topic-drop" sentences in which the subject is dropped, as in:
+
+> Wordt behandeld in de volgende sectie.
+> Is ook regelmatig te zien in stadstuinen.
+> Vormen samen het Duitse taalgebied in België.
+
+Some of these can be ruled out if we require that the finite verb is not plural:
+
+    //node[@cat="sv1" and not(node[@rel="su"]) and not(node[@rel="hd" and @pvagr="mv"])]
+
+We may be tempted to rule out cases with "@pvagr='met-t'" as well, but that will rule out more old-fashioned
+imparatives such as:
+
+> Eert uw vader en uw moeder
+
+Note that in this example, the annotation guidelines regrettably do not impose a distinction between the imparative reading and
+the topic-drop reading. 
+
+We identify (mostly) proper yes/no-questions with the following query:
+
+    //node[@cat="sv1" and node[@rel="su"] and 
+           not(@rel="body") and 
+           not(@rel="cnj" and ../@rel="body")]
+    
+Most false hits involve conjunctions of the following type:
+
+> Ditvoorst beschikte overduidelijk over het eerste talent , maar kwam de andere twee tekort .
+
+The clause "kwam aan de andere twee tekort" is specified as SV1. We can rule out such cases if the query is
+extended as follows. Note that we do not rule out all coordinations, but only those coordinations where one of
+the conjuncts is an smain clause.
+
+    //node[@cat="sv1" and node[@rel="su"] and 
+           not(@rel="body") and 
+           not(@rel="cnj" and ../@rel="body")
+           not(@rel="cnj" and ../node[@rel="cnj" and @cat="smain"])]
+
 ## Proper name subjects
 
     //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
@@ -241,8 +311,9 @@ identifies the VP headed by "terechtkomen".
                      )"""
                      
 The "verbcluster" macro is useful to find, for instance, occurrences of the infamous cross-serial dependency 
-construction. In that construction, the direct object of a verb such as "zien", "horen" or "laten" is identified
-as the subject of the embedded infinite verb phrase. The macro "cross_serial_verbcluster" identifies such verb phrases:
+construction (also known as AcI - Accusativus cum infinitivo). In that construction, the direct object of a verb 
+such as "zien", "horen" or "laten" is identified as the subject of the embedded infinite verb phrase. The 
+macro "cross_serial_verbcluster" identifies such verb phrases:
 
     cross_serial_verbcluster = """ ( 
             //node[%verbcluster% and @cat="inf" and 
@@ -263,7 +334,7 @@ Counting the frequency of the value of the "lemma" attribute gives:
     helpen	   2
     horen	   2
     voelen	   1                    
-                    
+
 ## Extraposition, the "nachfeld"         
 
 Constituents which are placed to the right of the head of a VP or a subordinate clause are
