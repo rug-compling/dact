@@ -51,6 +51,25 @@ Finite relative clauses:
 
     //node[@cat="rel" and node[@rel="body" and @cat="ssub"]]
 
+Free relatives are marked with a separate value for the "cat" attribute:
+
+    //node[@cat="whrel"]
+
+We can find the various roles that such free relatives play by counting the attribute "rel" in
+the statistics window:
+
+    mod   469
+    obj1  244
+    su	  169
+    predc  61
+    dp	   42
+    cnj	   41
+    sat	   35
+    --	   29
+    body   13
+    nucl    9
+    tag	    3
+
 To find direct wh-questions:
 
     //node[@cat="whq"]
