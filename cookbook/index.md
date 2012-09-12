@@ -74,7 +74,15 @@ However, this will also identify "topic-drop" sentences in which the subject is 
 > Is ook regelmatig te zien in stadstuinen.
 > Vormen samen het Duitse taalgebied in België.
 
-Some of these can be ruled out if we require that the finite verb is not plural:
+Moreover, we rule out imparatives which actually do have a subject, as in:
+
+> Bewaart u hem bij uw reispapieren .
+> Houdt u zich aan de gebruiksaanwijzing van elektrische toestellen .
+
+Unless we rely on the presence of a question mark, the distinction between the question and the imparative
+is not encoded in the annotation.
+
+Some of topic-drop cases can be ruled out if we require that the finite verb is not plural:
 
     //node[@cat="sv1" and not(node[@rel="su"]) and not(node[@rel="hd" and @pvagr="mv"])]
 
@@ -89,10 +97,10 @@ the topic-drop reading.
 We identify (mostly) proper yes/no-questions with the following query:
 
     //node[@cat="sv1" and node[@rel="su"] and 
-           not(@rel="body") and 
-           not(@rel="cnj" and ../@rel="body")]
+           not(@rel="body" or @rel="tag" or @rel="sat") and 
+           not(@rel="cnj" and (../@rel="body" or ../@rel="tag" or ../@rel="sat"))]
     
-Most false hits involve conjunctions of the following type:
+Some false hits involve conjunctions of the following type:
 
 > Ditvoorst beschikte overduidelijk over het eerste talent , maar kwam de andere twee tekort .
 
@@ -101,9 +109,16 @@ extended as follows. Note that we do not rule out all coordinations, but only th
 the conjuncts is an smain clause.
 
     //node[@cat="sv1" and node[@rel="su"] and 
-           not(@rel="body") and 
-           not(@rel="cnj" and ../@rel="body")
+           not(@rel="body" or @rel="tag" or @rel="sat") and 
+           not(@rel="cnj" and (../@rel="body" or ../@rel="tag" or ../@rel="sat")) and
            not(@rel="cnj" and ../node[@rel="cnj" and @cat="smain"])]
+           
+This query still finds quite a few cases of SV1 which are not yes/no-questions. The most practical solution may
+simply be to require that the clause is followed by a question mark.
+
+    //node[@cat="sv1" and 
+           not(@rel="body") and
+           %e% < //node[@word="?"]/%e%]
 
 ## Proper name subjects
 
