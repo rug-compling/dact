@@ -18,20 +18,10 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
     d_corpus(corpus)
 {}
 
-std::vector<ac::LexItem> const &BracketedDelegate::retrieveSentence(QModelIndex const &index) const
+std::vector<ac::LexItem> BracketedDelegate::retrieveSentence(QModelIndex const &index) const
 {
     QString filename(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
-    if (!d_cache.contains(filename))
-    {
-        std::vector<ac::LexItem> *items = new std::vector<ac::LexItem>(
-            d_corpus->sentence(filename.toUtf8().constData(),
-            reinterpret_cast<FilterModel const *>(
-                index.model())->lastQuery().toUtf8().constData()));
-
-        d_cache.insert(filename, items);
-    }
-
-    return *d_cache[filename];
+    return reinterpret_cast<FilterModel const *>(index.model())->bracketedSentence(filename);
 }
 
 QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const

@@ -154,7 +154,7 @@ void BracketedWindow::startQuery()
     // of sentences to the model where nothing is bracketed. If this
     // happens, this is the place to start looking.
 
-    d_model->runQuery(d_filter);
+    d_model->runQuery(d_filter, true);
 
     showFilenamesChanged();
 }

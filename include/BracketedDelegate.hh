@@ -28,7 +28,7 @@ protected:
     open and closing brackets.
     \param sentence the brackets containing sentence to be parsed
     */
-    std::vector<alpinocorpus::LexItem> const &retrieveSentence(QModelIndex const &index) const;
+    std::vector<alpinocorpus::LexItem> retrieveSentence(QModelIndex const &index) const;
 
     QString bracketedSentence(QModelIndex const &index) const;
     

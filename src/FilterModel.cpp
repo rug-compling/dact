@@ -106,8 +106,8 @@ QString FilterModel::asXML() const
         //QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
         //    .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
 
-        std::vector<alpinocorpus::LexItem> lexItems = d_corpus->sentence(
-            filename.toUtf8().constData(), d_query.toUtf8().constData());
+        std::vector<alpinocorpus::LexItem> lexItems =
+            bracketedSentence(filename);
 
         QStringList sent;
         sent.append("<sentence>");
@@ -231,7 +231,7 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
   d_timer->stop();
 }
 
-void FilterModel::runQuery(QString const &query, QString const &stylesheet)
+void FilterModel::runQuery(QString const &query, bool bracketedSentences)
 {
     cancelQuery(); // just in case
 
@@ -257,16 +257,10 @@ void FilterModel::runQuery(QString const &query, QString const &stylesheet)
 
     if (!d_query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this,
-            &FilterModel::getEntriesWithQuery, d_query, stylesheet);
+            &FilterModel::getEntriesWithQuery, d_query, bracketedSentences);
     else {
-        if (stylesheet.isNull())
-            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->entries(), false);
-        else
-            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->entriesWithStylesheet(stylesheet.toUtf8().constData()),
-                true);
-
+        d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
+            d_corpus->entries(), false);
     }
 }
 
@@ -285,7 +279,7 @@ void FilterModel::cancelQuery()
 
 // run async, because query() starts searching immediately
 void FilterModel::getEntriesWithQuery(QString const &query,
-    QString const &stylesheet)
+    bool bracketedSentences)
 {
     if (d_entryCache->contains(query)) {
         {
@@ -302,19 +296,9 @@ void FilterModel::getEntriesWithQuery(QString const &query,
     std::string cQuery = query.toUtf8().constData();
 
     try {
-        if (stylesheet.isNull())
             FilterModel::getEntries(
                 d_corpus->query(alpinocorpus::CorpusReader::XPATH,
-                    cQuery),
-                false);
-        else
-            FilterModel::getEntries(
-                d_corpus->queryWithStylesheet(alpinocorpus::CorpusReader::XPATH,
-                    query.toUtf8().constData(), stylesheet.toUtf8().constData(),
-                    std::list<ac::CorpusReader::MarkerQuery>(
-                        1, ac::CorpusReader::MarkerQuery(cQuery, "active", "1"))),
-                true);
-
+                    cQuery), bracketedSentences);
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Alpino Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -325,7 +309,7 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 }
 
 // run async
-void FilterModel::getEntries(EntryIterator const &i, bool withStylesheet)
+void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 {
     if (i.hasProgress())
         emit queryStarted(100);
@@ -360,14 +344,15 @@ void FilterModel::getEntries(EntryIterator const &i, bool withStylesheet)
             else
             {
                 ++row;
-                if (withStylesheet) {
-                    QString contents =
-                        QString::fromUtf8((e.contents.c_str()));
-                    d_results.append(Entry(name, 1, contents));
-                }
-                else {
-                    QMutexLocker locker(&d_resultsMutex);
-                    d_results.append(Entry(name, 1, QString::null));
+
+                QMutexLocker locker(&d_resultsMutex);
+                d_results.append(Entry(name, 1, QString::null));
+
+                if (bracketedSentences)
+                {
+                    std::vector<alpinocorpus::LexItem> lexItems =
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData());
+                    d_bracketedSentences[name] = lexItems;
                 }
             }
         }
