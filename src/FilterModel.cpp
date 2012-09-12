@@ -9,6 +9,8 @@
 
 #include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "FilterModel.hh"
 
 namespace ac = alpinocorpus;
@@ -101,13 +103,40 @@ QString FilterModel::asXML() const
     for (size_t i = 0; i < count; i++) {
         QString filename = data(index(i, 0), Qt::DisplayRole).toString();
         QString count = data(index(i, 1), Qt::DisplayRole).toString();
-        QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
-            .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+        //QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
+        //    .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+
+        std::vector<alpinocorpus::LexItem> lexItems = d_corpus->sentence(
+            filename.toUtf8().constData(), d_query.toUtf8().constData());
+
+        QStringList sent;
+        sent.append("<sentence>");
+        size_t prevDepth = 0;
+        foreach (ac::LexItem const &lexItem, lexItems)
+        {
+            size_t depth = lexItem.matches.size();
+
+            if (depth != prevDepth) {
+              if (prevDepth < depth)
+                sent.append(QString("<bracket>").repeated(depth - prevDepth));
+              else
+                sent.append(QString("</bracket>").repeated(prevDepth - depth));
+
+              prevDepth = depth;
+            }
+
+            sent.append(QString::fromUtf8(lexItem.word.c_str()).replace("&", "&amp;"));
+        }
+
+        if (prevDepth > 0)
+            sent.append(QString("</bracket>").repeated(prevDepth));
+
+        sent.append("</sentence>");
 
         QString line = QString("<entry><filename>%1</filename><count>%2</count>%3</entry>")
             .arg(filename)
             .arg(count)
-            .arg(xmlData);
+            .arg(sent.join(" "));
 
         docList.append(line);
     }
