@@ -268,6 +268,11 @@ void MainWindow::convertDirectoryCorpus()
     convertCorpus(corpusPath);
 }
 
+void MainWindow::macrosReadError(QString error)
+{
+    QMessageBox::critical(this, "Error reading macros", error);
+}
+
 #ifdef USE_WEBSERVICE
 void MainWindow::showWebserviceWindow()
 {
@@ -473,6 +478,8 @@ void MainWindow::createActions()
         SLOT(focusHighlight()));
     connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
+    connect(d_macrosModel.data(), SIGNAL(readError(QString)),
+        SLOT(macrosReadError(QString)));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
     connect(d_ui->toolbarAction, SIGNAL(toggled(bool)),

@@ -1,4 +1,5 @@
 #include "DactMacrosFile.hh"
+#include <parseMacros.hh>
 
 #include <QStringList>
 #include <QTextStream>
@@ -31,7 +32,7 @@ QList<DactMacro> const &DactMacrosFile::macros() const
 
 QList<DactMacro> DactMacrosFile::read(QFile &file) const
 {   
-    QList<DactMacro> macros;
+    QList<DactMacro> dactMacros;
     QString data;
     
     // XXX - a nice parser would parse directly from the QTextStream
@@ -42,47 +43,17 @@ QList<DactMacro> DactMacrosFile::read(QFile &file) const
         file.close();
     }
 
-    int cursor = 0;
-
-    while (cursor < data.size())
+    Macros macros = parseMacros(data.toUtf8().constData());
+    for (Macros::const_iterator iter = macros.begin();
+        iter != macros.end(); ++iter)
     {
-        // find '=' symbol, which indicates the end of the name of the macro
-        int assignment_symbol_pos = data.indexOf(d_assignment_symbol, cursor);
-
-        if (assignment_symbol_pos == -1)
-            break;
-
-        // find the '"""' symbol which indicates the start of the replacement
-        int opening_quotes_pos = data.indexOf(d_start_replacement_symbol,
-            assignment_symbol_pos + d_assignment_symbol.size());
-
-        if (opening_quotes_pos == -1)
-            break;
-
-        // find the second '"""' symbol which marks the end of the replacement
-        int closing_quotes_pos = data.indexOf(d_end_replacement_symbol,
-            opening_quotes_pos + d_start_replacement_symbol.size());
-
-        if (closing_quotes_pos == -1)
-            break;
-
-        // and go get it!
-        DactMacro macro;
-        macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
-        macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
-          closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
-
-        // Apply substitutions
-        for (QList<DactMacro>::const_iterator iter = macros.begin();
-            iter != macros.end(); ++iter)
-          macro.replacement = macro.replacement.replace("%" + iter->pattern + "%", iter->replacement);
-
-        macros.append(macro);
-
-        cursor = closing_quotes_pos + d_end_replacement_symbol.size();
+        DactMacro macro = { QString::fromUtf8(iter->first.c_str()),
+            QString::fromUtf8(iter->second.c_str()) };
+        dactMacros.push_back(macro);
     }
 
-    return macros;
+
+    return dactMacros;
 }
 
 void DactMacrosFile::write(QFile &file, QList<DactMacro> const &macros) const

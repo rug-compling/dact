@@ -6,6 +6,7 @@
 #include <QChar>
 #include <QFile>
 #include <QFileSystemWatcher>
+#include <QMutex>
 #include <QString>
 
 #include "DactMacro.hh"
@@ -40,12 +41,16 @@ public slots:
     void loadFileDelayed(QString const &path);
     void unloadFile(QString const &path);
 
+signals:
+    void readError(QString error);
+
 private:
     void readFile(QString const &path);
 
 private:
     QList<DactMacrosFile *> d_files;
     QFileSystemWatcher d_watcher;
+    QMutex d_reloadMutex;
 
     static const QChar d_symbol;
 };

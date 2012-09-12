@@ -223,6 +223,11 @@ private slots:
      */
     void help();
 
+    /*!
+     Report an error in reading macros.
+     */
+    void macrosReadError(QString error);
+
     void openMacrosFile();
 
     /*!
