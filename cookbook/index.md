@@ -37,7 +37,7 @@ To ensure that a node is not an indexed node, use
 
 ## Sentence types
 
-In some cases, this is straightforward. 
+In some cases, this is straightforward. In other cases, this is almost impossible given the annotation scheme.
 
 To find main clauses:
 
@@ -94,7 +94,7 @@ imparatives such as:
 Note that in this example, the annotation guidelines regrettably do not impose a distinction between the imparative reading and
 the topic-drop reading. 
 
-We identify (mostly) proper yes/no-questions with the following query:
+We identify many yes/no-questions with the following query:
 
     //node[@cat="sv1" and node[@rel="su"] and 
            not(@rel="body" or @rel="tag" or @rel="sat") and 
@@ -104,7 +104,7 @@ Some false hits involve conjunctions of the following type:
 
 > Ditvoorst beschikte overduidelijk over het eerste talent , maar kwam de andere twee tekort .
 
-The clause "kwam aan de andere twee tekort" is specified as SV1. We can rule out such cases if the query is
+The clause "kwam aan de andere twee tekort" is specified as cat=sv1. We can rule out such cases if the query is
 extended as follows. Note that we do not rule out all coordinations, but only those coordinations where one of
 the conjuncts is an smain clause.
 
@@ -114,7 +114,7 @@ the conjuncts is an smain clause.
            not(@rel="cnj" and ../node[@rel="cnj" and @cat="smain"])]
            
 This query still finds quite a few cases of SV1 which are not yes/no-questions. The most practical solution may
-simply be to require that the clause is followed by a question mark.
+simply be to require that the clause is followed by a question mark, and is not part of a WH-question:
 
     //node[@cat="sv1" and 
            not(@rel="body") and
