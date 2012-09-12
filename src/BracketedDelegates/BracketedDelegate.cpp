@@ -2,6 +2,7 @@
 #include <list>
 #include <vector>
 
+#include <QStringList>
 #include <QSet>
 
 #include <AlpinoCorpus/LexItem.hh>
@@ -35,8 +36,7 @@ std::vector<ac::LexItem> const &BracketedDelegate::retrieveSentence(QModelIndex 
 
 QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
 {
-    QString sent;
-    QTextStream sentStream(&sent);
+    QStringList sent;
 
     std::vector<ac::LexItem> lexItems = retrieveSentence(index);
 
@@ -47,17 +47,17 @@ QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
 
         if (depth != prevDepth) {
           if (prevDepth < depth)
-            sentStream << QString(depth - prevDepth, QChar('['));
+            sent.append(QString(depth - prevDepth, QChar('[')));
           else
-            sentStream << QString(prevDepth - depth, QChar(']'));
+            sent.append(QString(prevDepth - depth, QChar(']')));
 
           prevDepth = depth;
         }
 
-        sentStream << QString::fromUtf8(lexItem.word.c_str());
+        sent.append(QString::fromUtf8(lexItem.word.c_str()));
     }
 
-    return sent.trimmed();
+    return sent.join(" ");
 }
 
 QString BracketedDelegate::sentenceForClipboard(QModelIndex const &index) const
