@@ -110,23 +110,41 @@ int QueryModel::rowCount(QModelIndex const &index) const
 QVariant QueryModel::data(QModelIndex const &index, int role) const
 {
     if (!index.isValid()
-        || (role != Qt::DisplayRole && role != Qt::UserRole)
         || index.row() >= d_results.size()
         || index.row() < 0
         || index.column() > 2
         || index.column() < 0)
         return QVariant();
-    
-    switch (index.column())
+
+    switch (role)
     {
-        case 0:
-            // map positions of the hits index to the positions in d_results
-            return d_results[d_hitsIndex[index.row()]].first;
-        case 1:
-            return d_results[d_hitsIndex[index.row()]].second;
-        case 2:
-            return static_cast<double>(d_results[d_hitsIndex[index.row()]].second)
-                 / static_cast<double>(d_totalHits);
+        case Qt::UserRole:
+        case Qt::DisplayRole:
+            switch (index.column())
+            {
+                case 0:
+                    // map positions of the hits index to the positions in d_results
+                    return d_results[d_hitsIndex[index.row()]].first;
+                case 1:
+                    return d_results[d_hitsIndex[index.row()]].second;
+                case 2:
+                    return static_cast<double>(d_results[d_hitsIndex[index.row()]].second)
+                         / static_cast<double>(d_totalHits);
+                default:
+                    return QVariant();
+            }
+
+        case Qt::TextAlignmentRole:
+            switch (index.column())
+            {
+                case 1:
+                case 2:
+                    return Qt::AlignRight;
+
+                default:
+                    return Qt::AlignLeft;
+            }
+
         default:
             return QVariant();
     }
