@@ -7,6 +7,8 @@
 #include <QSettings>
 #include <QHash>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedColorDelegate.hh"
 
 #include <QtDebug>
@@ -59,14 +61,14 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             ? option.palette.highlightedText()
             : option.palette.text());
    
-        std::vector<LexItem> const &items(retrieveSentence(index));
+        std::vector<alpinocorpus::LexItem> const &items(retrieveSentence(index));
         int prevDepth = -1;
-        foreach (LexItem const &item, items)
+        foreach (alpinocorpus::LexItem const &item, items)
         {
             size_t depth = item.matches.size();
         
             QRectF wordBox(textBox);
-            QString word = item.word + " ";
+            QString word = QString::fromUtf8(item.word.c_str()) + " ";
             wordBox.setWidth(option.fontMetrics.width(word));
         
             if (depth != prevDepth) {
@@ -87,7 +89,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             painter->drawText(wordBox, Qt::AlignLeft, word);
         
             // move the left border of the box to the right to start drawing
-            // right next to the just drawn LexItem of text.
+            // right next to the just drawn alpinocorpus::LexItem of text.
             textBox.setLeft(textBox.left() + wordBox.width());
         }
     }

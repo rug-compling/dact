@@ -4,14 +4,13 @@
 #include <QTextEdit>
 #include <QSettings>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedSentenceWidget.hh"
-#include "LexItem.hh"
 
 BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
 :
-    QTextEdit(parent),
-    d_stylesheet(":/stylesheets/bracketed-sentence-xml.xsl"),
-    d_transformer(d_stylesheet)
+    QTextEdit(parent)
 {
     QFontMetrics m(document()->defaultFont());
     int ruleHeight = m.lineSpacing();
@@ -36,26 +35,31 @@ void BracketedSentenceWidget::loadSettings()
         settings.value("background", QColor(Qt::green)).value<QColor>();
 }
 
-void BracketedSentenceWidget::setParse(QString const &parse)
+void BracketedSentenceWidget::setCorpusReader(QSharedPointer<alpinocorpus::CorpusReader> reader)
 {
-    d_parse = parse;
+    d_corpusReader = reader;
+}
+
+
+void BracketedSentenceWidget::setEntry(QString const &entry, QString const &query)
+{
+    d_entry = entry;
+    d_query = query;
 
     updateText();
 }
 
 void BracketedSentenceWidget::updateText()
 {
-    if (!d_parse.isEmpty())
+    if (!d_entry.isEmpty() && d_corpusReader)
     {
-        QString sentence = transformXML(d_parse);
-        //std::list<LexItem> *LexItems = LexItem::parseSentence(d_parse);
-        //std::list<LexItem> *LexItems = new std::list<LexItem>;
-        std::vector<LexItem> *items = LexItem::parseSentence(d_parse);
+        std::vector<alpinocorpus::LexItem> items = d_corpusReader->sentence(
+            d_entry.toUtf8().constData(), d_query.toUtf8().constData());
 
         clear();
 
         size_t prevDepth = 0;
-        foreach (LexItem const &item, *items)
+        foreach (alpinocorpus::LexItem const &item, items)
         {
             size_t depth = item.matches.size();
 
@@ -76,16 +80,8 @@ void BracketedSentenceWidget::updateText()
                 prevDepth = depth;
             }
 
-            insertPlainText(item.word);
+            insertPlainText(QString::fromUtf8(item.word.c_str()));
             insertPlainText(" ");
         }
-
-        delete items;
     }
-}
-
-QString BracketedSentenceWidget::transformXML(QString const &xml) const
-{
-    QHash<QString, QString> params;
-    return d_transformer.transform(xml, params);
 }

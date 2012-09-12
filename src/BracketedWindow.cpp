@@ -96,8 +96,8 @@ void BracketedWindow::setModel(FilterModel *model)
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
 
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    d_ui->resultsTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    d_ui->resultsTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    d_ui->resultsTable->verticalHeader()->setResizeMode(QHeaderView::Stretch);
     d_ui->resultsTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     // disables horizontal jumping when a sentence is selected

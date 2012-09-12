@@ -3,8 +3,9 @@
 
 #include <vector>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedDelegate.hh"
-#include "LexItem.hh"
 
 class BracketedKeywordInContextDelegate : public BracketedDelegate
 {
@@ -17,7 +18,7 @@ public:
 
 private:
     void loadColorSettings();
-    QString extractFragment(std::vector<LexItem> const &items, size_t first, size_t last) const;
+    QString extractFragment(std::vector<alpinocorpus::LexItem> const &items, size_t first, size_t last) const;
     QColor d_keywordForeground;
     QColor d_keywordBackground;
     QColor d_contextForeground;

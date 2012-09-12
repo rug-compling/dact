@@ -1,10 +1,13 @@
 #include <cmath>
 #include <list>
+#include <set>
 
 #include <QPainter>
 #include <QFontMetrics>
 #include <QPalette>
 #include <QSettings>
+
+#include <AlpinoCorpus/LexItem.hh>
 
 #include "BracketedKeywordInContextDelegate.hh"
 
@@ -18,12 +21,12 @@ BracketedKeywordInContextDelegate::BracketedKeywordInContextDelegate(CorpusReade
 }
 
 QString BracketedKeywordInContextDelegate::extractFragment(
-    std::vector<LexItem> const &items, size_t first, size_t last) const
+    std::vector<alpinocorpus::LexItem> const &items, size_t first, size_t last) const
 {
     QStringList fragment;
 
     for (size_t i = first; i <= last; ++i)
-        fragment.append(items[i].word);
+        fragment.append(QString::fromUtf8(items[i].word.c_str()));
 
     return fragment.join(" ");
 }
@@ -57,7 +60,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
     
-    std::vector<LexItem> lexItems(retrieveSentence(index));
+    std::vector<alpinocorpus::LexItem> lexItems(retrieveSentence(index));
 
     QRectF textBox(option.rect);
     
@@ -72,7 +75,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
     QSet<size_t> matchesSeen;
     for (size_t i = 0; i < lexItems.size(); ++i)
     {
-        for (QSet<size_t>::const_iterator matchIter = lexItems[i].matches.begin();
+        for (std::set<size_t>::const_iterator matchIter = lexItems[i].matches.begin();
             matchIter != lexItems[i].matches.end(); ++matchIter)
         {
             // Did we already display this match?
@@ -84,7 +87,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
             // Find the last word that belongs to this match.
             size_t lastMatchedWord = i;
             for (size_t j = lastMatchedWord + 1; j < lexItems.size(); ++j)
-                if (lexItems[j].matches.contains(*matchIter))
+                if (lexItems[j].matches.count(*matchIter) != 0)
                     lastMatchedWord = j;
 
             // We now know the first and last words, let's build the fields.

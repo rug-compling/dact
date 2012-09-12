@@ -105,7 +105,6 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
-  src/LexItem.cpp
   src/DependencyTreeWidget.cpp
   src/DactApplication.cpp
   src/HistoryComboBox.cpp

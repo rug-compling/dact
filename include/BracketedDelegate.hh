@@ -8,8 +8,7 @@
 #include <QModelIndex>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
-
-#include "LexItem.hh"
+#include <AlpinoCorpus/LexItem.hh>
 
 class BracketedDelegate : public QStyledItemDelegate
 {
@@ -29,13 +28,13 @@ protected:
     open and closing brackets.
     \param sentence the brackets containing sentence to be parsed
     */
-    std::vector<LexItem> const &retrieveSentence(QModelIndex const &index) const;
+    std::vector<alpinocorpus::LexItem> const &retrieveSentence(QModelIndex const &index) const;
 
     QString bracketedSentence(QModelIndex const &index) const;
     
 
 private:        
-    mutable QCache<QString,std::vector<LexItem> > d_cache;
+    mutable QCache<QString,std::vector<alpinocorpus::LexItem> > d_cache;
     CorpusReaderPtr d_corpus;
 };
 

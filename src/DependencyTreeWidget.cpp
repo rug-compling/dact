@@ -369,7 +369,7 @@ void DependencyTreeWidget::showFile(QString const &entry)
         
         try {
             showTree(xml);
-            showSentence(xml, params);
+            showSentence(entry, d_highlight);
             
             // I try to find my file back in the file list to keep the list
             // in sync with the treegraph since showFile can be called from
@@ -397,9 +397,9 @@ void DependencyTreeWidget::showFile(QString const &entry)
     }
 }
 
-void DependencyTreeWidget::showSentence(QString const &xml, QHash<QString, QString> const &params)
+void DependencyTreeWidget::showSentence(QString const &entry, QString const &query)
 {
-    d_ui->sentenceWidget->setParse(xml);
+    d_ui->sentenceWidget->setEntry(entry, query);
 }
 
 void DependencyTreeWidget::showTree(QString const &xml)
@@ -420,6 +420,8 @@ void DependencyTreeWidget::switchCorpus(QSharedPointer<alpinocorpus::CorpusReade
     d_ui->highlightLineEdit->insert(query);
     
     d_model->runQuery(d_macrosModel->expand(d_filter));
+
+    d_ui->sentenceWidget->setCorpusReader(d_corpusReader);
 }
 
 void DependencyTreeWidget::writeSettings()

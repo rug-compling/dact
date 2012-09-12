@@ -5,7 +5,10 @@
 #include <QFile>
 #include <QList>
 #include <QTextEdit>
+#include <QSharedPointer>
 #include <QString>
+
+#include <AlpinoCorpus/CorpusReader.hh>
 
 #include "XSLTransformer.hh"
 
@@ -15,20 +18,20 @@ class BracketedSentenceWidget : public QTextEdit
     
 public:
     BracketedSentenceWidget(QWidget *parent = 0);
-    void setParse(QString const &parse);
+    void setEntry(QString const &entry, QString const &query);
+    void setCorpusReader(QSharedPointer<alpinocorpus::CorpusReader> reader);
 
 public slots:
 	void colorChanged();
 
 private:
 	void loadSettings();
-    QString transformXML(QString const &xml) const;
     void updateText();
 
+    QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QColor d_highlightColor;
-    QString d_parse;
-    QFile d_stylesheet;
-    XSLTransformer d_transformer;
+    QString d_entry;
+    QString d_query;
 };
 
 #endif // BRACKETEDSENTENCEWIDGET_HH

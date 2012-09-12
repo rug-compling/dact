@@ -3,6 +3,8 @@
 #include <QFontMetrics>
 #include <QPalette>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedVisibilityDelegate.hh"
 #include "../parseString.hh"
 
@@ -17,16 +19,16 @@ QString BracketedVisibilityDelegate::formatSentence(QModelIndex const &index) co
 {
     QStringList result;
     
-    std::vector<LexItem> items = retrieveSentence(index);
+    std::vector<alpinocorpus::LexItem> items = retrieveSentence(index);
     int hits = index.sibling(index.row(), 1).data().toInt();
 
     for (int i = 0; i < hits; ++i)
     {
         QStringList line;
 
-        foreach (LexItem const &item, items)
-            if (item.matches.contains(i))
-                line.append(item.word);
+        foreach (alpinocorpus::LexItem const &item, items)
+            if (item.matches.count(i) != 0)
+                line.append(QString::fromUtf8(item.word.c_str()));
 
         result.append(line.join(" "));
     }
