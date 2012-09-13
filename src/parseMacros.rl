@@ -114,6 +114,7 @@ Macros parseMacros(char const *data)
 
 	separator = "\"\"\"";
 	whitespace = [\n\r\t ]+;
+	comment = '#' [^\n]+ '\n';
 
 	key = ([A-Za-z0-9_]+) $ str_char % key;
 
@@ -121,7 +122,7 @@ Macros parseMacros(char const *data)
 	query = (substitution | (any - '%')+)* -- separator;
 	queryVal = (separator % queryStart) query (separator % queryEnd);
 
-	main := (whitespace* key whitespace* '=' whitespace* queryVal whitespace*)*;
+	main := ((whitespace | comment)* key whitespace* '=' whitespace* queryVal whitespace*)*;
 
 	write init;
 	write exec;
