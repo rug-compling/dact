@@ -443,7 +443,7 @@ With these macros in place, we can find extraposition of PP's out of NP, as in c
 >  Lange tijd is de stad tevens het belangrijkste internationale centrum geweest van cultuur, kennis en geleerdheid
 
 Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", but it is placed to the
-right of the main verb. The following query used the "nachfeld" macro to find extraposition of PP out of NP:
+right of the main verb. The following query uses the "nachfeld" macro to find extraposition of PP out of NP:
 
     //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
 
