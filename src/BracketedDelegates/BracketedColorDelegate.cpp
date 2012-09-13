@@ -63,12 +63,28 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
    
         std::vector<alpinocorpus::LexItem> const &items(retrieveSentence(index));
         int prevDepth = -1;
-        foreach (alpinocorpus::LexItem const &item, items)
+        bool adoptSpace = false;
+         for (std::vector<alpinocorpus::LexItem>::const_iterator iter = items.begin();
+            iter != items.end(); ++iter)
         {
-            size_t depth = item.matches.size();
+           size_t depth = iter->matches.size();
         
             QRectF wordBox(textBox);
-            QString word = QString::fromUtf8(item.word.c_str()) + " ";
+            QString word = QString::fromUtf8(iter->word.c_str());
+
+                        if (adoptSpace) {
+                word = QString(" ") + word;
+                adoptSpace = false;
+            }
+
+            std::vector<alpinocorpus::LexItem>::const_iterator next = iter + 1;
+            if (next != items.end()) {
+                if (next->matches.size() < depth)
+                    adoptSpace = true;
+                else
+                    word += " ";
+            }
+
             wordBox.setWidth(option.fontMetrics.width(word));
         
             if (depth != prevDepth) {

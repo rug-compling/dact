@@ -58,10 +58,12 @@ void BracketedSentenceWidget::updateText()
 
         clear();
 
+        bool adoptSpace = false;
         size_t prevDepth = 0;
-        foreach (alpinocorpus::LexItem const &item, items)
+        for (std::vector<alpinocorpus::LexItem>::const_iterator iter = items.begin();
+            iter != items.end(); ++iter)
         {
-            size_t depth = item.matches.size();
+            size_t depth = iter->matches.size();
 
             if (depth != prevDepth) {
                 if (depth == 0)
@@ -80,8 +82,20 @@ void BracketedSentenceWidget::updateText()
                 prevDepth = depth;
             }
 
-            insertPlainText(QString::fromUtf8(item.word.c_str()));
-            insertPlainText(" ");
+            if (adoptSpace) {
+                insertPlainText(" ");
+                adoptSpace = false;
+            }
+
+            insertPlainText(QString::fromUtf8(iter->word.c_str()));
+
+            std::vector<alpinocorpus::LexItem>::const_iterator next = iter + 1;
+            if (next != items.end()) {
+                if (next->matches.size() < depth)
+                    adoptSpace = true;
+                else
+                    insertPlainText(" ");
+            }
         }
     }
 }
