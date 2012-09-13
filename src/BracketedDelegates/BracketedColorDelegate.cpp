@@ -72,7 +72,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             QRectF wordBox(textBox);
             QString word = QString::fromUtf8(iter->word.c_str());
 
-                        if (adoptSpace) {
+            if (adoptSpace) {
                 word = QString(" ") + word;
                 adoptSpace = false;
             }
@@ -98,15 +98,19 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
                     highlightColor.setAlpha(std::min(85 + 42 * depth,
                         static_cast<size_t>(255)));
                     painter->setPen(QColor(Qt::white));
-                    painter->fillRect(wordBox, highlightColor);
                 }
             }
+
+            if (depth != 0)
+                painter->fillRect(wordBox, highlightColor);
 
             painter->drawText(wordBox, Qt::AlignLeft, word);
         
             // move the left border of the box to the right to start drawing
             // right next to the just drawn alpinocorpus::LexItem of text.
             textBox.setLeft(textBox.left() + wordBox.width());
+
+            prevDepth = depth;
         }
     }
     catch (std::runtime_error const &e)
