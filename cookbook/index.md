@@ -47,7 +47,18 @@ Finite subordinate clauses:
 
     //node[@cat="cp" and node[@rel="body" and @cat="ssub"]]
 
-Finite relative clauses:
+In order to determine the proportion of verb-second and verb-final finite clauses, wen pose
+the following query:
+
+    //node[@cat="smain" or @cat="ssub"]
+    
+and count the frequency of the "cat" attribute in the statistics widget:
+
+    smain    58608    70.8%
+    ssub     24211    29.2%
+
+
+# Finite relative clauses:
 
     //node[@cat="rel" and node[@rel="body" and @cat="ssub"]]
 
