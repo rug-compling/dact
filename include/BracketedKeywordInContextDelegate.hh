@@ -19,10 +19,7 @@ public:
 private:
     void loadColorSettings();
     QString extractFragment(std::vector<alpinocorpus::LexItem> const &items, size_t first, size_t last) const;
-    QColor d_keywordForeground;
-    QColor d_keywordBackground;
-    QColor d_contextForeground;
-    QColor d_contextBackground;
+    mutable QColor d_highlightColor;
 };
 
 #endif

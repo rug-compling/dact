@@ -35,16 +35,10 @@ QString BracketedKeywordInContextDelegate::extractFragment(
 void BracketedKeywordInContextDelegate::loadColorSettings()
 {
     QSettings settings;
-    settings.beginGroup("KeywordsInContext");
-    
-    d_keywordForeground = settings.value("keywordForeground",
-        QColor(Qt::black)).value<QColor>();
-    d_keywordBackground = settings.value("keywordBackground",
-        QColor(Qt::white)).value<QColor>();
-    d_contextForeground = settings.value("contextForeground",
-        QColor(Qt::darkGray)).value<QColor>();
-    d_contextBackground = settings.value("contextBackground",
-        QColor(Qt::white)).value<QColor>();
+
+    settings.beginGroup("CompleteSentence");
+    d_highlightColor = settings.value("background", QColor(Qt::green)).value<QColor>();
+    settings.endGroup();
 }
 
 QSize BracketedKeywordInContextDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -59,20 +53,22 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 {
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
-    
-    std::vector<alpinocorpus::LexItem> lexItems(retrieveSentence(index));
-
-    QRectF textBox(option.rect);
-    
+        
     QBrush brush(option.state & QStyle::State_Selected
                  ? option.palette.highlightedText()
                  : option.palette.text());
+
+    int fontHeight = option.fontMetrics.height();
     
+    std::vector<alpinocorpus::LexItem> lexItems(retrieveSentence(index));
+
     // Strategy: we recurse over the sentence, word by word. If a word belongs
     // to one or more match and that match has not been displayed before, we
     // known that we have to display this in a KWIC. We then scan forward, to
     // extract the words that belong to the KWIC.
     QSet<size_t> matchesSeen;
+    QRectF containerBox(option.rect);
+
     for (size_t i = 0; i < lexItems.size(); ++i)
     {
         for (std::set<size_t>::const_iterator matchIter = lexItems[i].matches.begin();
@@ -84,51 +80,76 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
 
             matchesSeen.insert(*matchIter);
 
-            // Find the last word that belongs to this match.
-            size_t lastMatchedWord = i;
-            for (size_t j = lastMatchedWord + 1; j < lexItems.size(); ++j)
-                if (lexItems[j].matches.count(*matchIter) != 0)
-                    lastMatchedWord = j;
-
-            // We now know the first and last words, let's build the fields.
+            // Extract the text left of the match.
             QString left = i > 0 ? extractFragment(lexItems, 0, i - 1) : QString();
-            QString match = extractFragment(lexItems, i, lastMatchedWord);
-            QString right = lastMatchedWord < lexItems.size() - 1 ?
-                extractFragment(lexItems, lastMatchedWord + 1, lexItems.size() - 1) :
-                QString();
 
-            QRectF leftContextBox(textBox);
+            QRectF leftContextBox(containerBox);
             leftContextBox.setWidth(400);
             
-            QRectF matchBox(textBox);
-            matchBox.moveLeft(matchBox.left() + leftContextBox.width());
-            
-            QRectF rightContextBox(textBox);
+            QRectF textBox(containerBox);
+            textBox.moveLeft(textBox.left() + leftContextBox.width());
             
             painter->save();
 
-            painter->setPen(option.state & QStyle::State_Selected
-                         ? option.palette.highlightedText().color()
-                         : d_contextForeground);
-            painter->drawText(leftContextBox, Qt::AlignRight, left + " ");
-            
             QRectF usedSpace;
-            painter->setPen(option.state & QStyle::State_Selected
-                         ? option.palette.highlightedText().color()
-                         : d_keywordForeground);
-            painter->drawText(matchBox, Qt::AlignLeft, match, &usedSpace);
+
+            painter->setPen(brush.color());
+            painter->setBrush(brush);
+            painter->drawText(leftContextBox, Qt::AlignRight, left + " ", &usedSpace);
             
-            rightContextBox.moveLeft(rightContextBox.left() + 400 + usedSpace.width());
+            bool adoptSpace = false;
+            size_t prevDepth = 0;
+            for (int j = i; j < lexItems.size(); ++j)
+            {
+                size_t depth = lexItems[j].matches.size();
             
-            painter->setPen(option.state & QStyle::State_Selected
-                         ? option.palette.highlightedText().color()
-                         : d_contextForeground);
-            painter->drawText(rightContextBox, Qt::AlignLeft, QString(" ") + right);
+                QRectF wordBox(textBox);
+                QString word = QString::fromUtf8(lexItems[j].word.c_str());
+
+                if (adoptSpace) {
+                    word = QString(" ") + word;
+                    adoptSpace = false;
+                }
+
+                if (j + 1 != lexItems.size()) {
+                    if (lexItems[j + 1].matches.size() < depth)
+                        adoptSpace = true;
+                    else
+                        word += " ";
+                }
+
+                wordBox.setWidth(option.fontMetrics.width(word));
+                wordBox.setHeight(fontHeight);
+
+                if (depth != prevDepth) {
+                    if (depth == 0)
+                    {
+                        painter->setPen(brush.color());
+                        painter->setBrush(brush);
+                    }
+                    else
+                    {
+                        d_highlightColor.setAlpha(std::min(85 + 42 * depth,
+                            static_cast<size_t>(255)));
+                        painter->setPen(QColor(Qt::white));
+                    }
+                }
+
+                if (depth != 0)
+                    painter->fillRect(wordBox, d_highlightColor);
+                painter->drawText(wordBox, Qt::AlignLeft, word);
+            
+                // move the left border of the box to the right to start drawing
+                // right next to the just drawn word.
+                textBox.setLeft(textBox.left() + wordBox.width());
+
+                prevDepth = depth;
+            }
             
             painter->restore();
             
             // move textBox one line lower.
-            textBox.setTop(textBox.top() + usedSpace.height());
+            containerBox.setTop(containerBox.top() + usedSpace.height());
         }
     }
 }
