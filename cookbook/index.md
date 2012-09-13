@@ -39,6 +39,8 @@ To ensure that a node is not an indexed node, use
 
 In some cases, this is straightforward. In other cases, this is almost impossible given the annotation scheme.
 
+### Finite clauses
+
 To find main clauses:
 
     //node[@cat="smain"]
@@ -57,8 +59,9 @@ and count the frequency of the "cat" attribute in the statistics widget:
     smain    58608    70.8%
     ssub     24211    29.2%
 
+### Relative clauses
 
-# Finite relative clauses:
+Finite relative clauses:
 
     //node[@cat="rel" and node[@rel="body" and @cat="ssub"]]
 
@@ -81,6 +84,8 @@ the statistics window:
     nucl    9
     tag	    3
 
+### Questions
+
 To find direct wh-questions:
 
     //node[@cat="whq"]
@@ -88,6 +93,8 @@ To find direct wh-questions:
 To find indirect questions:
 
     //node[@cat="whsub"]
+    
+### Verb-initial clauses
     
 The following query:
 
