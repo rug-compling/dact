@@ -387,6 +387,35 @@ Counting the frequency of the value of the "lemma" attribute gives:
     horen	   2
     voelen	   1                    
 
+## Using quantifiers in XPATH2
+
+In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
+As an example of the potential use of quantified expressions, consider
+the query in which we want to identify a NP which contains a VC complement
+(infinite VP complement), in such a way that there is a noun which is preceded by
+the head of that NP, and which precedes the VC complement. 
+
+In this example:
+
+> Ik heb de hoop opgegeven hem ooit terug te zien
+
+the VP "hem ooit terug te zien" is a VC complement of "hoop". Is it the case that such a VC
+complement is always associated with the most "recent" noun? Such a query can be formulated as
+follows:
+
+    //node[@cat="np" and 
+          ( some $tussen in //node[@pos="noun"] 
+           satisfies (   $tussen/%b% 
+                       < node[@rel="vc"]/%b% and 
+                         $tussen/%e% 
+                       > node[@rel="hd"]/%e%
+                     )
+         )]
+         
+As it turns out, such cases occur regularly, as in:
+
+> Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
+
 ## Extraposition, the "nachfeld"         
 
 Constituents which are placed to the right of the head of a VP or a subordinate clause are
@@ -395,19 +424,20 @@ macro definitions are provided to identify such constituents:
 
     vp = """ (@cat="inf" or @cat="ti" or @cat="ssub" or @cat="oti" or @cat="ppart") """
 
-    follows_head_of_vp = """
-    ( ancestor::node[%vp%]/node[@rel="hd"]/%b%
-              < %begin_of_head%
-      or
-      ancestor::node[%vp%]/node[@rel="hd"]/%b%
-              < %b% and @word
-    )"""
-
-    nachfeld = """( %follows_head_of_vp% and 
-                    not (parent::node[%follows_head_of_vp%]) and 
-                    not (%verbcluster%) and
-                    not (@rel="hd" and parent::node[%verbcluster%])
-                  )"""
+    nachfeld = """
+    ( not(%verbcluster%) and
+      not(@rel="hd" and parent::node[%verbcluster%]) and
+      ( some $v in ( ancestor::node[%vp%]/node[@rel="hd"] ) 
+        satisfies
+  	       (
+                (  $v/%b% < %begin_of_head%
+                or (  $v/%b%  < %b% and @word )
+                )
+                and not( parent::node[$v/%b% < %begin_of_head%] )
+  	       )		
+  )
+)
+"""
 
 With these macros in place, we can find extraposition of PP's out of NP, as in cases like
 
@@ -417,11 +447,6 @@ Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", b
 right of the main verb. The following query used the "nachfeld" macro to find extraposition of PP out of NP:
 
     //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
-
-NB.  The definition of nachfeld is not optimal yet: we do not get extraposed constituents which are part of
-an extraposed clause:
-
-> Het is Clemenceau echter niet ontgaan dat er die maand kennelijk wel middelen genoeg waren om 1200 lichte tanks extra te bestellen 
 
 ## Antecedents of co-indexed nodes
 
@@ -531,31 +556,4 @@ Subjects which do not occur in the context of a verb:
            ]
 
 
-## Using quantifiers in XPATH2
 
-In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
-As an example of the potential use of quantified expressions, consider
-the query in which we want to identify a NP which contains a VC complement
-(infinite VP complement), in such a way that there is a noun which is preceded by
-the head of that NP, and which precedes the VC complement. 
-
-In this example:
-
-> Ik heb de hoop opgegeven hem ooit terug te zien
-
-the VP "hem ooit terug te zien" is a VC complement of "hoop". Is it the case that such a VC
-complement is always associated with the most "recent" noun? Such a query can be formulated as
-follows:
-
-    //node[@cat="np" and 
-          ( some $tussen in //node[@pos="noun"] 
-           satisfies (   $tussen/%b% 
-                       < node[@rel="vc"]/%b% and 
-                         $tussen/%e% 
-                       > node[@rel="hd"]/%e%
-                     )
-         )]
-         
-As it turns out, such cases occur regularly, as in:
-
-> Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
