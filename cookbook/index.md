@@ -435,9 +435,8 @@ macro definitions are provided to identify such constituents:
                 )
                 and not( parent::node[$v/%b% < %begin_of_head%] )
   	       )		
-  )
-)
-"""
+      )
+    )"""
 
 With these macros in place, we can find extraposition of PP's out of NP, as in cases like
 
