@@ -35,6 +35,138 @@ To ensure that a node is not an indexed node, use
 
     //node[@word or @cat]
 
+## Sentence types
+
+In some cases, this is straightforward. In other cases, this is almost impossible given the annotation scheme.
+
+### Finite clauses
+
+To find main clauses:
+
+    //node[@cat="smain"]
+    
+Finite subordinate clauses:
+
+    //node[@cat="cp" and node[@rel="body" and @cat="ssub"]]
+
+In order to determine the proportion of verb-second and verb-final finite clauses, wen pose
+the following query:
+
+    //node[@cat="smain" or @cat="ssub"]
+    
+and count the frequency of the "cat" attribute in the statistics widget:
+
+    smain    58608    70.8%
+    ssub     24211    29.2%
+
+### Relative clauses
+
+Finite relative clauses:
+
+    //node[@cat="rel" and node[@rel="body" and @cat="ssub"]]
+
+Free relatives are marked with a separate value for the "cat" attribute:
+
+    //node[@cat="whrel"]
+
+We can find the various roles that such free relatives play by counting the attribute "rel" in
+the statistics window:
+
+    mod   469
+    obj1  244
+    su	  169
+    predc  61
+    dp	   42
+    cnj	   41
+    sat	   35
+    --	   29
+    body   13
+    nucl    9
+    tag	    3
+
+### Questions
+
+To find direct wh-questions:
+
+    //node[@cat="whq"]
+    
+To find indirect questions:
+
+    //node[@cat="whsub"]
+    
+The following query identifies WH-elements which are associated with an embedded finite verb (non-local 
+dependency), as in:
+
+> Wat denk je dat er gaat gebeuren ?
+> Wie denken ze wel dat ze zijn bij Urbanbite ? 
+> ,, Bedoel je wat ik denk dat je bedoelt ? '' vroeg Bush nors . 
+> " Hoe zeg je dat die groep heet , Solex ? '' , vraagt Bouwens . 
+
+    //node[@rel="whd" and %i% = //node[../../@cat="cp" and ../../@rel="vc"]/%i%]
+    
+### Verb-initial clauses
+
+The following query:
+
+    //node[@cat="sv1"]
+    
+identifies imparatives as well as yes/no-questions and indeed some further constructions. If we want to find 
+imparatives only, the following query is useful:
+
+    //node[@cat="sv1" and not(node[@rel="su"])]
+
+However, this will also identify "topic-drop" sentences in which the subject is dropped, as in:
+
+> Wordt behandeld in de volgende sectie.
+> Is ook regelmatig te zien in stadstuinen.
+> Vormen samen het Duitse taalgebied in België.
+
+Moreover, we rule out imparatives which actually do have a subject, as in:
+
+> Bewaart u hem bij uw reispapieren .
+> Houdt u zich aan de gebruiksaanwijzing van elektrische toestellen .
+
+Unless we rely on the presence of a question mark, the distinction between the question and the imparative
+is not encoded in the annotation.
+
+Some of topic-drop cases can be ruled out if we require that the finite verb is not plural:
+
+    //node[@cat="sv1" and not(node[@rel="su"]) and not(node[@rel="hd" and @pvagr="mv"])]
+
+We may be tempted to rule out cases with "@pvagr='met-t'" as well, but that will rule out more old-fashioned
+imparatives such as:
+
+> Eert uw vader en uw moeder
+
+Note that in this example, the annotation guidelines regrettably do not impose a distinction between the imparative reading and
+the topic-drop reading. 
+
+We identify many yes/no-questions with the following query:
+
+    //node[@cat="sv1" and node[@rel="su"] and 
+           not(@rel="body" or @rel="tag" or @rel="sat") and 
+           not(@rel="cnj" and (../@rel="body" or ../@rel="tag" or ../@rel="sat"))]
+    
+Some false hits involve conjunctions of the following type:
+
+> Ditvoorst beschikte overduidelijk over het eerste talent , maar kwam de andere twee tekort .
+
+The clause "kwam aan de andere twee tekort" is specified as cat=sv1. We can rule out such cases if the query is
+extended as follows. Note that we do not rule out all coordinations, but only those coordinations where one of
+the conjuncts is an smain clause.
+
+    //node[@cat="sv1" and node[@rel="su"] and 
+           not(@rel="body" or @rel="tag" or @rel="sat") and 
+           not(@rel="cnj" and (../@rel="body" or ../@rel="tag" or ../@rel="sat")) and
+           not(@rel="cnj" and ../node[@rel="cnj" and @cat="smain"])]
+           
+This query still finds quite a few cases of SV1 which are not yes/no-questions. The most practical solution may
+simply be to require that the clause is followed by a question mark, and is not part of a WH-question:
+
+    //node[@cat="sv1" and 
+           not(@rel="body") and
+           %e% < //node[@word="?"]/%e%]
+
 ## Proper name subjects
 
     //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
@@ -72,7 +204,9 @@ Then we can use the query:
 
     //node[@rel="su" and %name_phrase%]
 
-## Surface order: comparison of attributes with numeric values
+## Surface order
+
+### Comparison of attributes with numeric values
 
 In the implementation of XPATH2 that is used in Dact, the comparison of numeric values may be
 somewhat counter-intuitive. For instance, in order to find a prenominal modifiers in a noun-phrase,
@@ -95,7 +229,24 @@ have the following two macros:
     e = """number(@end)"""
     i = """number(@index)"""
 
-## Surface order: location of the head of a phrase
+### Bigrams, trigrams
+
+To find occurrences of a bigram, e.g. "wel niet", use:
+
+    //node[@lemma="wel" and 
+           %e%=//node[@lemma="niet"]/%b%]
+
+This technique can be extended to longer N-grams, e.g. for "wel of niet" use:
+
+    //node[@lemma="wel" and 
+           %e%=//node[@lemma="of" and 
+                      %e%=//node[@lemma="niet"]/%b%
+                     ]/%b%
+          ]
+
+These examples can be improved if we have access to parameterized macros.
+
+### Location of the head of a phrase
 
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
 macros in two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
@@ -219,7 +370,6 @@ Given the discussion of vorfeld in the previous section, the query can be improv
                  ]
           ]
 
-
 Note that this construction is rather infrequent (some linguists even claim it to be ungrammatical). In some
 treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
 are found!
@@ -229,10 +379,103 @@ are found!
 In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
 sentence from Lassy:
 
-> De reactie was zwakker toen de proefpersonen het geld bij de belastingen zagen terechtkomen .
+> De reactie was zwakker toen de proefpersonen het geld bij de belastingen zagen terechtkomen . <a href="dpc-ind-001634-nl-sen.p.9.s.4.svg">(SVG)</a>
 
+In order to identify such constructions nonetheless, we can use the following macro definition to identify 
+the complement verb which is part of the verb cluster together with its dependents. In the example above, this query
+identifies the VP headed by "terechtkomen".
 
-## Antecedents of co-indexed nodes
+    verbcluster = """( @rel="vc" and 
+                       (@cat="ti" or @cat="inf" or @cat="ppart") and 
+                       node/%b% < ../node[@rel="hd" and @pt="ww"]/%b%
+                     )"""
+                     
+The "verbcluster" macro is useful to find, for instance, occurrences of the infamous cross-serial dependency 
+construction (also known as AcI - Accusativus cum infinitivo). In that construction, the direct object of a verb 
+such as "zien", "horen" or "laten" is identified as the subject of the embedded infinite verb phrase. The 
+macro "cross_serial_verbcluster" identifies such verb phrases:
+
+    cross_serial_verbcluster = """ ( 
+            //node[%verbcluster% and @cat="inf" and 
+                   ../node[@rel="obj1"]/%i% = node[@rel="su"]/%i%
+                  ]                ) """
+                    
+To find out which governing verbs occur in a cross serial dependeny construction, we can then do:
+
+    //node[@rel="hd" and ../node[%cross_serial_verbcluster%]]
+                        
+Counting the frequency of the value of the "lemma" attribute gives:
+                    
+    laten    199
+    doen	  42
+    zien	  32
+    hebben	   7
+    vinden	   3
+    helpen	   2
+    horen	   2
+    voelen	   1                    
+
+## Using quantifiers in XPATH2
+
+In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
+As an example of the potential use of quantified expressions, consider
+the query in which we want to identify a NP which contains a VC complement
+(infinite VP complement), in such a way that there is a noun which is preceded by
+the head of that NP, and which precedes the VC complement. 
+
+In this example:
+
+> Ik heb de hoop opgegeven hem ooit terug te zien
+
+the VP "hem ooit terug te zien" is a VC complement of "hoop". Is it the case that such a VC
+complement is always associated with the most "recent" noun? Such a query can be formulated as
+follows:
+
+    //node[@cat="np" and 
+          ( some $tussen in //node[@pos="noun"] 
+           satisfies (   $tussen/%b% 
+                       < node[@rel="vc"]/%b% and 
+                         $tussen/%e% 
+                       > node[@rel="hd"]/%e%
+                     )
+         )]
+         
+As it turns out, such cases occur regularly, as in:
+
+> Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
+
+## Extraposition, the "nachfeld"         
+
+Constituents which are placed to the right of the head of a VP or a subordinate clause are
+often said to be "extraposed", or to occupy the "nachfeld" position. The following set of
+macro definitions are provided to identify such constituents:
+
+    vp = """ (@cat="inf" or @cat="ti" or @cat="ssub" or @cat="oti" or @cat="ppart") """
+
+    nachfeld = """
+    ( not(%verbcluster%) and
+      not(@rel="hd" and parent::node[%verbcluster%]) and
+      ( some $v in ( ancestor::node[%vp%]/node[@rel="hd"] ) 
+        satisfies
+  	       (
+                (  $v/%b% < %begin_of_head%
+                or (  $v/%b%  < %b% and @word )
+                )
+                and not( parent::node[$v/%b% < %begin_of_head%] )
+  	       )		
+      )
+    )"""
+
+With these macros in place, we can find extraposition of PP's out of NP, as in cases like
+
+>  Lange tijd is de stad tevens het belangrijkste internationale centrum geweest van cultuur, kennis en geleerdheid
+
+Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", but it is placed to the
+right of the main verb. The following query uses the "nachfeld" macro to find extraposition of PP out of NP:
+
+    //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
+
+## Antecedents of co-indexed nodes; find all dependents of a particular type for a particular word
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
 We might try
@@ -241,8 +484,6 @@ We might try
     
 This will give all noun-phrases. In case the noun phrases are lexical, we are done. Otherwise,
 we want to select the head daughter:
-
-
 
     //node[ (  ( @rel="obj1" and @word and ../node[@rel="hd" and @lemma="drinken"])
             or ( @rel="hd" and ../@rel="obj1" and ../../node[@rel="hd" and @lemma="drinken"]] )
@@ -256,17 +497,60 @@ The reason is, that the direct object of  "drinken" in this case is an index nod
 information associated with that node, we need to find the antecedent of the index node. This is a node with
 the same value for the attribute "index".
 
+Recall we have the following macro to refer to the index of a node:
+
+    i = """number(@index)"""
+    
 If the antecedent is lexical, the query is:
 
-    //node[(@cat or @word) and @index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+    //node[(@cat or @word) and %i% = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/%i%]
            
 If the antecedent is not lexical, we reason from its head:
 
-    //node[@rel="hd" and ../@index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+    //node[@rel="hd" and ../%i% = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/%i%]
 
-The various queries could be combined to find all relevant cases in one go, but it would probably be easier
-to use macros for that. 
+The various queries could be combined to find all relevant cases in one go, but it is much easier
+to use macros for that:
+
+
+    obj1_drinken_lexical = """
+    ( @rel="obj1" and 
+      @word and 
+      ../node[@rel="hd" and 
+              @lemma="drinken"]
+    )"""
+
+    obj1_drinken_phrase = """
+    ( @rel="hd" and 
+      ../@rel="obj1" and 
+      ../../node[@rel="hd" and 
+                 @lemma="drinken"]
+    )"""
+
+    obj1_drinken_lexical_nonlocal = """
+    ( (@cat or @word) and 
+      %i% = //node[@rel="obj1" and 
+                   ../node[@rel="hd" and 
+                           @lemma="drinken"]]/%i%
+    )"""
     
+    obj1_drinken_phrase_nonlocal = """
+    ( @rel="hd" and 
+      ../%i% = //node[@rel="obj1" and 
+                      ../node[@rel="hd" and 
+                      @lemma="drinken"]]/%i%
+    )"""
+    
+    obj1_drinken = """
+    (  %obj1_drinken_lexical%
+    or %obj1_drinken_phrase%
+    or %obj1_drinken_lexical_nonlocal%
+    or %obj1_drinken_phrase_nonlocal%
+    )
+    """
+
+This example also illustrate that parameterized macros would be a nice extension for DACT.
+
 ## Secondary object passives with "krijgen"
 
 This example is taken from Valia Kordoni and Gertjan van Noord. Passives in Germanic
@@ -342,31 +626,4 @@ Subjects which do not occur in the context of a verb:
            ]
 
 
-## Using quantifiers in XPATH2
 
-In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
-As an example of the potential use of quantified expressions, consider
-the query in which we want to identify a NP which contains a VC complement
-(infinite VP complement), in such a way that there is a noun which is preceded by
-the head of that NP, and which precedes the VC complement. 
-
-In this example:
-
-> Ik heb de hoop opgegeven hem ooit terug te zien
-
-the VP "hem ooit terug te zien" is a VC complement of "hoop". Is it the case that such a VC
-complement is always associated with the most "recent" noun? Such a query can be formulated as
-follows:
-
-    //node[@cat="np" and 
-          ( some $tussen in //node[@pos="noun"] 
-           satisfies (   $tussen/%b% 
-                       < node[@rel="vc"]/%b% and 
-                         $tussen/%e% 
-                       > node[@rel="hd"]/%e%
-                     )
-         )]
-         
-As it turns out, such cases occur regularly, as in:
-
-> Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
