@@ -54,10 +54,10 @@ the following query:
 
     //node[@cat="smain" or @cat="ssub"]
     
-and count the frequency of the "cat" attribute in the statistics widget:
+and count the frequency of the "cat" attribute in the statistics widget
 
-|    smain   | 58608    |70.8% |
-|    ssub    | 24211    |29.2% |
+    smain    58608    70.8% 
+    ssub    |24211    29.2% 
 
 ### Relative clauses
 
