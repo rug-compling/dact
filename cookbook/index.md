@@ -94,6 +94,16 @@ To find indirect questions:
 
     //node[@cat="whsub"]
     
+The following query identifies WH-elements which are associated with an embedded finite verb (non-local 
+dependency), as in:
+
+> Wat denk je dat er gaat gebeuren ?
+> Wie denken ze wel dat ze zijn bij Urbanbite ? 
+> ,, Bedoel je wat ik denk dat je bedoelt ? '' vroeg Bush nors . 
+> " Hoe zeg je dat die groep heet , Solex ? '' , vraagt Bouwens . 
+
+    //node[@rel="whd" and %i% = //node[../../@cat="cp" and ../../@rel="vc"]/%i%]
+    
 ### Verb-initial clauses
     
 The following query:
@@ -340,7 +350,6 @@ Given the discussion of vorfeld in the previous section, the query can be improv
                  %b% > ../../node[@rel="hd"]/%b%
                  ]
           ]
-
 
 Note that this construction is rather infrequent (some linguists even claim it to be ungrammatical). In some
 treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
