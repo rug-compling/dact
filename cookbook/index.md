@@ -105,7 +105,7 @@ dependency), as in:
     //node[@rel="whd" and %i% = //node[../../@cat="cp" and ../../@rel="vc"]/%i%]
     
 ### Verb-initial clauses
-    
+
 The following query:
 
     //node[@cat="sv1"]
@@ -495,17 +495,60 @@ The reason is, that the direct object of  "drinken" in this case is an index nod
 information associated with that node, we need to find the antecedent of the index node. This is a node with
 the same value for the attribute "index".
 
+Recall we have the following macro to refer to the index of a node:
+
+    i = """number(@index)"""
+    
 If the antecedent is lexical, the query is:
 
-    //node[(@cat or @word) and @index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+    //node[(@cat or @word) and %i% = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/%i%]
            
 If the antecedent is not lexical, we reason from its head:
 
-    //node[@rel="hd" and ../@index = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/@index]
+    //node[@rel="hd" and ../%i% = //node[@rel="obj1" and ../node[@rel="hd" and @lemma="drinken"]]/%i%]
 
-The various queries could be combined to find all relevant cases in one go, but it would probably be easier
-to use macros for that. 
+The various queries could be combined to find all relevant cases in one go, but it is much easier
+to use macros for that:
+
+
+    obj1_drinken_lexical = """
+    ( @rel="obj1" and 
+      @word and 
+      ../node[@rel="hd" and 
+              @lemma="drinken"]
+    )"""
+
+    obj1_drinken_phrase = """
+    ( @rel="hd" and 
+      ../@rel="obj1" and 
+      ../../node[@rel="hd" and 
+                 @lemma="drinken"]
+    )"""
+
+    obj1_drinken_lexical_nonlocal = """
+    ( (@cat or @word) and 
+      %i% = //node[@rel="obj1" and 
+                   ../node[@rel="hd" and 
+                           @lemma="drinken"]]/%i%
+    )"""
     
+    obj1_drinken_phrase_nonlocal = """
+    ( @rel="hd" and 
+      ../%i% = //node[@rel="obj1" and 
+                      ../node[@rel="hd" and 
+                      @lemma="drinken"]]/%i%
+    )"""
+    
+    obj1_drinken = """
+    (  %obj1_drinken_lexical%
+    or %obj1_drinken_phrase%
+    or %obj1_drinken_lexical_nonlocal%
+    or %obj1_drinken_phrase_nonlocal%
+    )
+    """
+
+This example also illustrate that parameterized macros would be a nice extension for DACT.
+
 ## Secondary object passives with "krijgen"
 
 This example is taken from Valia Kordoni and Gertjan van Noord. Passives in Germanic
