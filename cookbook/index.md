@@ -204,7 +204,9 @@ Then we can use the query:
 
     //node[@rel="su" and %name_phrase%]
 
-## Surface order: comparison of attributes with numeric values
+## Surface order
+
+### Comparison of attributes with numeric values
 
 In the implementation of XPATH2 that is used in Dact, the comparison of numeric values may be
 somewhat counter-intuitive. For instance, in order to find a prenominal modifiers in a noun-phrase,
@@ -227,7 +229,22 @@ have the following two macros:
     e = """number(@end)"""
     i = """number(@index)"""
 
-## Surface order: location of the head of a phrase
+### Bigrams, trigrams
+
+To find occurrences of a bigram, e.g. "wel niet", use:
+
+    //node[@lemma="wel" and 
+           %e%=//node[@lemma="niet"]/%b%]
+
+This technique can be extended to longer N-grams, e.g. for "wel of niet" use:
+
+    //node[@lemma="wel" and 
+           %e%=//node[@lemma="of" and 
+                      %e%=//node[@lemma="niet"]/%b%
+                     ]/%b%
+          ]
+
+### Location of the head of a phrase
 
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
 macros in two versions, depending on the notion of head that we wish to use. If the relation has to be "hd",
