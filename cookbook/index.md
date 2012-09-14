@@ -57,7 +57,7 @@ the following query:
 and count the frequency of the "cat" attribute in the statistics widget
 
     smain    58608    70.8% 
-    ssub    |24211    29.2% 
+    ssub     24211    29.2% 
 
 ### Relative clauses
 
