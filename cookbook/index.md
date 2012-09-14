@@ -473,7 +473,7 @@ right of the main verb. The following query uses the "nachfeld" macro to find ex
 
     //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
 
-## Antecedents of co-indexed nodes
+## Antecedents of co-indexed nodes; find all dependents of a particular type for a particular word
 
 Suppose we want to find all nouns which can be used as the direct object of the verb "drinken".
 We might try
