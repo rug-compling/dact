@@ -244,6 +244,8 @@ This technique can be extended to longer N-grams, e.g. for "wel of niet" use:
                      ]/%b%
           ]
 
+These examples can be improved if we have access to parameterized macros.
+
 ### Location of the head of a phrase
 
 It is also very common to refer to the begin and end positions of the head of a phrase. We define
