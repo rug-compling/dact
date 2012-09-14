@@ -121,22 +121,19 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
                 wordBox.setWidth(option.fontMetrics.width(word));
                 wordBox.setHeight(fontHeight);
 
-                if (depth != prevDepth) {
-                    if (depth == 0)
-                    {
-                        painter->setPen(brush.color());
-                        painter->setBrush(brush);
-                    }
-                    else
-                    {
-                        d_highlightColor.setAlpha(std::min(85 + 42 * depth,
-                            static_cast<size_t>(255)));
-                        painter->setPen(QColor(Qt::white));
-                    }
+                if (depth == 0 || lexItems[j].matches.count(*matchIter) == 0)
+                {
+                    painter->setPen(brush.color());
+                    painter->setBrush(brush);
+                }
+                else
+                {
+                    d_highlightColor.setAlpha(std::min(85 + 42 * depth,
+                        static_cast<size_t>(255)));
+                    painter->setPen(QColor(Qt::white));
+                    painter->fillRect(wordBox, d_highlightColor);
                 }
 
-                if (depth != 0)
-                    painter->fillRect(wordBox, d_highlightColor);
                 painter->drawText(wordBox, Qt::AlignLeft, word);
             
                 // move the left border of the box to the right to start drawing
