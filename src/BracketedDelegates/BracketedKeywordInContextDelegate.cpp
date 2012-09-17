@@ -37,7 +37,7 @@ void BracketedKeywordInContextDelegate::loadColorSettings()
     QSettings settings;
 
     settings.beginGroup("CompleteSentence");
-    d_highlightColor = settings.value("background", QColor(Qt::green)).value<QColor>();
+    d_highlightColor = settings.value("background", QColor(140, 50, 255)).value<QColor>();
     settings.endGroup();
 }
 

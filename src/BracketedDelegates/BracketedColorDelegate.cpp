@@ -25,7 +25,7 @@ void BracketedColorDelegate::loadSettings()
     QSettings settings;
     settings.beginGroup("CompleteSentence");
     
-    d_backgroundColor = settings.value("background", QColor(Qt::green)).value<QColor>();
+    d_backgroundColor = settings.value("background", QColor(140, 50, 255)).value<QColor>();
 }
 
 QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

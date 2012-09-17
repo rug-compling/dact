@@ -148,7 +148,7 @@ void PreferencesWindow::loadColorsTab()
     settings.beginGroup("CompleteSentence");
 
     d_ui->completeSentencesBackgroundColor->setColor(
-           settings.value("background", QColor(Qt::green)).value<QColor>());
+           settings.value("background", QColor(140, 50, 255)).value<QColor>());
 
     settings.endGroup();
 }
