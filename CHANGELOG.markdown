@@ -10,5 +10,5 @@
    of *query1* through *query2*. This is useful when *query2* is very slow,
    and a fast preselection query *query1* is available.
  * Full-screen support on Mac OS X.
- * The macro file parser is rewritten, and should give more accuracte
-   information then the macro file contains errors.
+ * The macro file parser is rewritten, and should give more accurate
+   information if the macro file contains errors.
