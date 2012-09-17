@@ -377,6 +377,12 @@ Also note that this construction is rather infrequent (some linguists even claim
 treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
 are found!
 
+> Eerder zullen zij de wetten der fysica beheersen dan die van het fatsoen . 
+> Liever wilde hij zijn Führer door overreding tot inkeer brengen , dan zijn toevlucht nemen tot een moordaanslag . 
+> Zozeer heeft Dominique de Villepin aan gezag ingeboet dat ook in zijn eigen centrumrechtse UMP-partij hoe langer hoe meer parlementsleden om zijn aftreden begonnen te roepen . 
+> slechter kan de Nederlandse bolletjesslikker het niet treffen dan in de cellencomplexen van de politiebureaus in Paramaribo , zoals bij bureau Keizerstraat 
+> Wat anders kan hij doen dan zijn schouders ophalen , zwijgen of , beter nog , in lachen uitbarsten ? 
+
 ## Verb Clusters
 
 In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
