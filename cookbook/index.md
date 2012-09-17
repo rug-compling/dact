@@ -362,15 +362,18 @@ we used the following query:
                 ]/%b% = %b%
           ]
 
-Given the discussion in section [vorfeld](#topicalization-fronting-the-vorfeld) and section [nachfeld](#extraposition-the-nachfeld) in other sections of the cookbook,  the query can be improved to:
+Given the discussion in section [vorfeld](#topicalization-fronting-the-vorfeld) and 
+section [nachfeld](#extraposition-the-nachfeld) in other sections of the cookbook, we may also write:
 
     //node[%vorfeld% and 
             node[@rel="obcomp" and 
                  %nachfeld%
                 ]
           ]
+          
+Note that both queries are not equivalent.
 
-Note that this construction is rather infrequent (some linguists even claim it to be ungrammatical). In some
+Also note that this construction is rather infrequent (some linguists even claim it to be ungrammatical). In some
 treebanks, you may not get any hits. In the Lassy Large treebank, many hits are mis-parses. But some genuine examples 
 are found!
 
@@ -474,6 +477,28 @@ Here, the PP "van cultuur, kennis en geleerdheid" is a dependent of "centrum", b
 right of the main verb. The following query uses the "nachfeld" macro to find extraposition of PP out of NP:
 
     //node[%nachfeld% and @cat="pp" and ../node[@rel="hd" and @pt="n"]]
+
+Note that in root sentences in which the finite verb occupies the first or second position, and in which there
+are nu further verbs, no extraposed phrases are found with the previous query. For instance, in:
+
+> Ik ben bang voor muizen
+
+the clause "voor muizen" is not extraposed according to our query. In this case, there are two corresponding
+subordinate sentences, one of which contains an instance of extraposition.
+
+> Omdat ik bang voor muizen ben
+> Omdat ik bang ben voor muizen
+
+A somewhat counter-intuitive result is obtained for root sentences in which there is only a corresponding
+subordinate sentence with extraposition, as in:
+
+> Hij is langer dan ik dacht
+> Omdat hij langer is dan ik dacht
+> *Omdat hij langer dan ik dacht is
+
+So even if it appears to be the case that the main clause also contains an extraposed phrase, the query above will not
+find it.
+
 
 ## Antecedents of co-indexed nodes; find all dependents of a particular type for a particular word
 
