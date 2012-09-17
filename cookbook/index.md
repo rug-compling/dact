@@ -601,8 +601,8 @@ take into account [section Query pipelines](#query-pipelines)
 ## Query pipelines
 
 As a special extension to XPATH, DACT supports the use of a query pipeline. A query pipeline is a sequence
-of queries separated by the special string "+|+". Only document for which the N-th query succeeds are input for the
-N+1 query. An important motivation for query pipelines is efficiency. Consider the query:
+of queries separated by the special string "+|+". Only documents for which the N-th query succeeds are input for the
+N+1-th query. An important motivation for query pipelines is efficiency. Consider the query:
 
     //node[%obj1_drinken%]
     
@@ -618,8 +618,6 @@ scheme is not powerful enough. Query pipelines come to the rescue:
 
 The complicated query needs to be evaluated only on the documents which contain the verb "drinken". This saves
 hours of computation time.
-
-
 
 ## Secondary object passives with "krijgen"
 
