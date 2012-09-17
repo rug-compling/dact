@@ -393,6 +393,8 @@ are found!
 
 > Wat anders kan hij doen dan zijn schouders ophalen , zwijgen of , beter nog , in lachen uitbarsten ? 
 
+> Klassieker kan een beurscorrectie niet verlopen dan de afgelopen dagen . 
+
 ## Verb Clusters
 
 In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
