@@ -289,7 +289,7 @@ all nodes dominated by the current node:
 Rather than "minimal" nodes, we might also want to identify "maximal" nodes. Such an example occurs in the next
 section on topicalization, where the "ancestor::" axis is helpful.
 
-## Topicalization, fronting, the "vorfeld" [vorfeld]
+## <a id="vorfeld"></a>Topicalization, fronting, the "vorfeld"
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
 constituents which occupy the "vorfeld" position in a main clause, in other words, constituents
@@ -362,7 +362,7 @@ we used the following query:
                 ]/%b% = %b%
           ]
 
-Given the discussion in section [vorfeld][] and section [nachfeld][] in other sections of the cookbook,  the query can be improved to:
+Given the discussion in section [vorfeld](#vorfeld) and section [nachfeld][] in other sections of the cookbook,  the query can be improved to:
 
     //node[%vorfeld% and 
             node[@rel="obcomp" and 
