@@ -595,7 +595,31 @@ to use macros for that:
     )
     """
 
-This example also illustrate that parameterized macros would be a nice extension for DACT.
+This example also illustrate that parameterized macros would be a nice extension for DACT. For efficiency,
+take into account [section Query pipelines](#query-pipelines)
+
+## Query pipelines
+
+As a special extension to XPATH, DACT supports the use of a query pipeline. A query pipeline is a sequence
+of queries separated by the special string "+|+". Only document for which the N-th query succeeds are input for the
+N+1 query. An important motivation for query pipelines is efficiency. Consider the query:
+
+    //node[%obj1_drinken%]
+    
+on a large corpus, this query takes a very long time. Yet, from the definition of the query it is clear that
+the only documents which might contain hits contain a node with @lemma="drinken". A query 
+
+    //node[@lemma="drinken"]
+
+is very efficient because of the underlying index-mechanism of the database. For the compliated query the indexing
+scheme is not powerful enough. Query pipelines come to the rescue:
+
+    //node[@lemma='drinken'] +|+ //node[%obj1_drinken%]
+
+The complicated query needs to be evaluated only on the documents which contain the verb "drinken". This saves
+hours of computation time.
+
+
 
 ## Secondary object passives with "krijgen"
 
