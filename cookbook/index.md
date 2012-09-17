@@ -98,8 +98,11 @@ The following query identifies WH-elements which are associated with an embedded
 dependency), as in:
 
 > Wat denk je dat er gaat gebeuren ?
+
 > Wie denken ze wel dat ze zijn bij Urbanbite ? 
+
 > ,, Bedoel je wat ik denk dat je bedoelt ? '' vroeg Bush nors . 
+
 > " Hoe zeg je dat die groep heet , Solex ? '' , vraagt Bouwens . 
 
     //node[@rel="whd" and %i% = //node[../../@cat="cp" and ../../@rel="vc"]/%i%]
@@ -118,12 +121,15 @@ imparatives only, the following query is useful:
 However, this will also identify "topic-drop" sentences in which the subject is dropped, as in:
 
 > Wordt behandeld in de volgende sectie.
+
 > Is ook regelmatig te zien in stadstuinen.
+
 > Vormen samen het Duitse taalgebied in België.
 
 Moreover, we rule out imparatives which actually do have a subject, as in:
 
 > Bewaart u hem bij uw reispapieren .
+
 > Houdt u zich aan de gebruiksaanwijzing van elektrische toestellen .
 
 Unless we rely on the presence of a question mark, the distinction between the question and the imparative
@@ -378,9 +384,13 @@ treebanks, you may not get any hits. In the Lassy Large treebank, many hits are 
 are found!
 
 > Eerder zullen zij de wetten der fysica beheersen dan die van het fatsoen . 
+
 > Liever wilde hij zijn Führer door overreding tot inkeer brengen , dan zijn toevlucht nemen tot een moordaanslag . 
+
 > Zozeer heeft Dominique de Villepin aan gezag ingeboet dat ook in zijn eigen centrumrechtse UMP-partij hoe langer hoe meer parlementsleden om zijn aftreden begonnen te roepen . 
+
 > slechter kan de Nederlandse bolletjesslikker het niet treffen dan in de cellencomplexen van de politiebureaus in Paramaribo , zoals bij bureau Keizerstraat 
+
 > Wat anders kan hij doen dan zijn schouders ophalen , zwijgen of , beter nog , in lachen uitbarsten ? 
 
 ## Verb Clusters
@@ -493,13 +503,16 @@ the clause "voor muizen" is not extraposed according to our query. In this case,
 subordinate sentences, one of which contains an instance of extraposition.
 
 > Omdat ik bang voor muizen ben
+
 > Omdat ik bang ben voor muizen
 
 A somewhat counter-intuitive result is obtained for root sentences in which there is only a corresponding
 subordinate sentence with extraposition, as in:
 
 > Hij is langer dan ik dacht
+
 > Omdat hij langer is dan ik dacht
+
 > *Omdat hij langer dan ik dacht is
 
 So even if it appears to be the case that the main clause also contains an extraposed phrase, the query above will not
