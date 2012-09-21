@@ -141,3 +141,28 @@ pre .open-in-dact {
 .tip {
   border-left: 4px solid #97afff;
 }
+
+/* ToC in the cookbook */
+
+#markdown-toc a {
+  text-decoration: none;
+}
+
+#markdown-toc a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (min-width:1300px) {
+  #markdown-toc {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 100%;
+    background: #eee;
+    border-right: 1px solid #ccc;
+    margin: 0;
+    padding: 1em 1em 1em 2em;
+    overflow: auto;
+  }
+}

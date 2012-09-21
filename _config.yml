@@ -1,3 +1,4 @@
 lsi: false
 pygments: true
 baseurl: /dact
+markdown: kramdown
