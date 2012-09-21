@@ -1,8 +1,14 @@
-#include "DactMacrosFile.hh"
-#include <parseMacros.hh>
+#include <stdexcept>
+#include <string>
 
 #include <QStringList>
 #include <QTextStream>
+#include <QtDebug>
+
+#include <AlpinoCorpus/macros.hh>
+
+#include "DactMacrosFile.hh"
+
 
 const QString DactMacrosFile::d_assignment_symbol("=");
 const QString DactMacrosFile::d_start_replacement_symbol("\"\"\"");
@@ -33,18 +39,20 @@ QList<DactMacro> const &DactMacrosFile::macros() const
 QList<DactMacro> DactMacrosFile::read(QFile &file) const
 {   
     QList<DactMacro> dactMacros;
-    QString data;
+
+    std::string fn = file.fileName().toUtf8().constData();
     
-    // XXX - a nice parser would parse directly from the QTextStream
-    {
-        file.open(QIODevice::ReadOnly);
-        QTextStream macro_data(&file);
-        data = macro_data.readAll();
-        file.close();
+
+    alpinocorpus::Macros macros;
+
+    try {
+        macros = alpinocorpus::loadMacros(fn);
+    } catch (std::runtime_error &e) {
+        qDebug() << "Could not load macro file!";
+        return dactMacros;
     }
 
-    Macros macros = parseMacros(data.toUtf8().constData());
-    for (Macros::const_iterator iter = macros.begin();
+    for (alpinocorpus::Macros::const_iterator iter = macros.begin();
         iter != macros.end(); ++iter)
     {
         DactMacro macro = { QString::fromUtf8(iter->first.c_str()),
