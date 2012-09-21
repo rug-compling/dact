@@ -2,12 +2,12 @@
 
 function isMacro(code)
 {
-	return /^[a-z_]+\s+=\s+"""/.test(code);
+	return /^[a-z_][a-z0-9_]*\s+=\s+"""/.test(code);
 }
 
 function isQuery(code)
 {
-	return /^\/\/[a-z]+/.test(code);
+	return /^\s*\/\/[a-z_][a-z0-9_]*/.test(code);
 }
 
 function containsPlaceholders(code)
@@ -17,10 +17,15 @@ function containsPlaceholders(code)
 
 function extractAllMacros(code, macros)
 {
-	var match, re = /([a-z_]+)\s*=\s*"""([\s\S]+?)"""/g;
+	var match, re = /([a-z_][a-z0-9_]*)\s*=\s*"""([\s\S]+?)"""/g;
 
 	while (match = re.exec(code))
+	{
+		if (console.warn && macros[match[1]])
+			console.warn('Redefining macro', match[1]);
+
 		macros[match[1]] = match[2];
+	}
 }
 
 function expandQuery(code, macros, stack)
@@ -29,7 +34,7 @@ function expandQuery(code, macros, stack)
 		return code;
 
 	return code.replace(
-		/%([a-z_]+)%/gi,
+		/%([a-z_][a-z0-9_]*)%/gi,
 		function(match, name) {
 			return replaceInQuery(macros, name, stack);
 		});
@@ -63,27 +68,80 @@ function linkQuery(query)
 	return link;
 }
 
+function annotateQuery(query, macros)
+{
+	var container = document.createElement('span'),
+		chunks = query.split(/(%[a-z_][a-z0-9_]*%)/gi);
+
+	container.className = 'annotated-query query';
+
+	for (var i = 0; i < chunks.length; ++i)
+	{
+		var chunk = chunks[i];
+
+		if (/^%.+%$/.test(chunk))
+		{
+			var placeholder = document.createElement('span');
+			placeholder.className = 'placeholder'
+			placeholder.title = replaceInQuery(macros, chunk.substr(1, chunk.length - 2), []).trim();
+			placeholder.appendChild(document.createTextNode(chunk));
+			container.appendChild(placeholder);
+		}
+		else
+		{
+			container.appendChild(document.createTextNode(chunk));
+		}
+	}
+
+	return container;
+}
+
 function main()
 {
 	var blocksOfCode = document.getElementsByTagName('code'),
 		macros = {};
 
+	// First, find all the macros.
+	for (var i = 0; i < blocksOfCode.length; ++i)
+	{
+		var code = blocksOfCode[i].textContent;
+
+		try {
+			if (isMacro(code))
+				extractAllMacros(code, macros);
+		} catch (e) {
+			if (console.log)
+				console.log(blocksOfCode[i], e);
+		}
+	}
+
+	// Then, replace all the placeholders in the queries.
 	for (var i = 0; i < blocksOfCode.length; ++i)
 	{
 		try {
 			var code = blocksOfCode[i].textContent;
 
-			if (isMacro(code))
-				extractAllMacros(code, macros);
-
-			else if (isQuery(code))
+			if (isQuery(code))
 			{
 				blocksOfCode[i].className = 'query';
-				
+
+				// Add link to dact
 				blocksOfCode[i].parentNode.appendChild(
 					linkQuery(expandQuery(code, macros, [])));
+
+				// Annotate placeholders
+				// blocksOfCode[i].parentNode.replaceChild(
+				// 	annotateQuery(code, macros), blocksOfCode[i]);
 			}
-		} catch(e) {
+
+			
+			else if (isMacro(code))
+			{
+				// Annotate placeholders
+				// blocksOfCode[i].parentNode.replaceChild(
+				// 	annotateQuery(code, macros), blocksOfCode[i]);
+			}
+		} catch (e) {
 			if (console.log)
 				console.log(blocksOfCode[i], e);
 		}

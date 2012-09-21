@@ -70,7 +70,7 @@ pre code {
 /* Quotes */
 
 blockquote {
-  display: inline-block;
+  display: block;
   margin: 0;
   padding: .25em .25em .25em 1em;
   color: #666;
