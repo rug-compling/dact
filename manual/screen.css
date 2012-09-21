@@ -158,12 +158,16 @@ pre .open-in-dact {
   color: blue;
 }
 
-@media screen and (min-width:1300px) {
+@media screen and (min-width:74em) {
+  body {
+    padding-left: 17em;
+  }
+
   #markdown-toc {
     position: fixed;
     left: 0;
     top: 0;
-    width: 200px;
+    width: 15em;
     height: 100%;
     background: #eee;
     border-right: 1px solid #ccc;
@@ -174,7 +178,6 @@ pre .open-in-dact {
 
   /* a little spacer that makes sure you can scroll all the way to the bottom of the list */
   #markdown-toc:after {
-    content: '';
     display: block;
     height: 2em;
   }
