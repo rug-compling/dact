@@ -107,6 +107,7 @@ SET(dact_SRCS
   src/BracketedWindow.cpp
   src/DependencyTreeWidget.cpp
   src/DactApplication.cpp
+  src/DactApplicationEvent.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
   src/DactMacrosFile.cpp
@@ -161,6 +162,7 @@ SET(dact_HDRS
   include/DependencyTreeWidget.hh
   include/config.hh
   include/DactApplication.hh
+  include/DactApplicationEvent.hh
   include/DactColorWell.hh
   include/DactListView.hh
   include/DactMacro.hh

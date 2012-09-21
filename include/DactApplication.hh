@@ -3,7 +3,6 @@
 
 #include <QApplication>
 #include <QScopedPointer>
-#include <QTimer>
 #include <QUrl>
 #include "MainWindow.hh"
 
@@ -16,6 +15,7 @@ public:
     void openCorpora(QStringList const &fileNames);
     void openMacros(QStringList const &fileNames);
     void openUrl(QUrl const &url);
+    int exec();
    
 public slots:
 	void showOpenCorpus();
@@ -24,8 +24,11 @@ protected:
     bool event(QEvent *event);
 
 private:
+    void _openCorpora(QStringList const &fileNames);
+    void _openMacros(QStringList const &fileNames);
+    void _openUrl(QUrl const &url);
     QScopedPointer<MainWindow> d_mainWindow;
-    QTimer d_showOpenCorpusTimer;
+    bool d_dactStartedWithCorpus;
 };
 
 #endif
