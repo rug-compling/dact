@@ -578,6 +578,9 @@
    <property name="text">
     <string>Check for updates</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

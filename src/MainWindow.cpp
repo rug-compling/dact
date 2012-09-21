@@ -136,6 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #if defined(Q_WS_MAC) && defined(USE_SPARKLE)
     d_autoUpdater = QSharedPointer<SparkleAutoUpdater>(new SparkleAutoUpdater("http://localhost/appcast.xml"));
+    d_ui->checkForUpdatesAction->setVisible(true);
 #endif
 }
 
