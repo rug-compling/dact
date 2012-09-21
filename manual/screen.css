@@ -165,4 +165,11 @@ pre .open-in-dact {
     padding: 1em 1em 1em 2em;
     overflow: auto;
   }
+
+  /* a little spacer that makes sure you can scroll all the way to the bottom of the list */
+  #markdown-toc:after {
+    content: '';
+    display: block;
+    height: 2em;
+  }
 }
