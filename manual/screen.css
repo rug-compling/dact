@@ -145,11 +145,17 @@ pre .open-in-dact {
 /* ToC in the cookbook */
 
 #markdown-toc a {
+  color: blue;
   text-decoration: none;
 }
 
-#markdown-toc a:hover {
+#markdown-toc a:hover,
+#markdown-toc a.current {
   text-decoration: underline;
+}
+
+#markdown-toc a:visited {
+  color: blue;
 }
 
 @media screen and (min-width:1300px) {
