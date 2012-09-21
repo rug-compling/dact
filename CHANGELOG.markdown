@@ -2,7 +2,7 @@
 
 # 1.6 (not released)
 
- * Recursively open directories of Dact corpora.
+ * Recursively open directories of Dact corpora, such as Lassy large.
  * Provide query processing progress information when opening multiple corpora.
  * Correctly bracket discontinuous constituents.
  * Colored matches in keyword in context output.
