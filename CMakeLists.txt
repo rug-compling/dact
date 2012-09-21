@@ -17,8 +17,8 @@ endif()
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
-  set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
-  set(ENABLE_CODESIGN OFF CACHE BOOL "Sign the application bundle")
+  set(ENABLE_BUNDLE ON CACHE BOOL "Compile an application bundle")
+  set(ENABLE_CODESIGN ON CACHE BOOL "Sign the application bundle")
   if(ENABLE_CODESIGN)
     set(CODESIGN_IDENTITY "John Doe" CACHE STRING "Code signing identity")
   endif(ENABLE_CODESIGN)
@@ -33,13 +33,13 @@ else()
 endif()
 
 
-set(VERSION "0.0.1")
+set(VERSION "1.6.0")
 
-set(GIT_REVISION "unknown")
-exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
-  OUTPUT_VARIABLE GIT_REVISION 
-)
+set(GIT_REVISION ${VERSION})
+#exec_program(git
+#  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
+#  OUTPUT_VARIABLE GIT_REVISION
+#)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
@@ -88,9 +88,9 @@ endif()
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
-option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
 
-option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
+option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
 SET(dact_SRCS
