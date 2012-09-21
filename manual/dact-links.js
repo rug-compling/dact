@@ -70,17 +70,22 @@ function main()
 
 	for (var i = 0; i < blocksOfCode.length; ++i)
 	{
-		var code = blocksOfCode[i].textContent;
+		try {
+			var code = blocksOfCode[i].textContent;
 
-		if (isMacro(code))
-			extractAllMacros(code, macros);
+			if (isMacro(code))
+				extractAllMacros(code, macros);
 
-		else if (isQuery(code))
-		{
-			blocksOfCode[i].className = 'query';
-			
-			blocksOfCode[i].parentNode.appendChild(
-				linkQuery(expandQuery(code, macros, [])));
+			else if (isQuery(code))
+			{
+				blocksOfCode[i].className = 'query';
+				
+				blocksOfCode[i].parentNode.appendChild(
+					linkQuery(expandQuery(code, macros, [])));
+			}
+		} catch(e) {
+			if (console.log)
+				console.log(blocksOfCode[i], e);
 		}
 	}
 }
