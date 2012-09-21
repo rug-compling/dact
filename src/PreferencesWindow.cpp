@@ -44,15 +44,6 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     connect(d_ui->treeActiveNodeBorderColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
     
-    connect(d_ui->keywordsInContextKeywordForegroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-    connect(d_ui->keywordsInContextKeywordBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-    connect(d_ui->keywordsInContextContextForegroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-    connect(d_ui->keywordsInContextContextBackgroundColor, SIGNAL(colorSelected(QColor)),
-        SLOT(saveColorsTab()));
-
     connect(d_ui->completeSentencesBackgroundColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
 
@@ -127,28 +118,10 @@ void PreferencesWindow::loadColorsTab()
 
     settings.endGroup();
 
-
-    settings.beginGroup("KeywordsInContext");
-
-    d_ui->keywordsInContextKeywordForegroundColor->setColor(
-        settings.value("keywordForeground", QColor(Qt::black)).value<QColor>());
-
-    d_ui->keywordsInContextKeywordBackgroundColor->setColor(
-        settings.value("keywordBackground", QColor(Qt::white)).value<QColor>());
-
-    d_ui->keywordsInContextContextForegroundColor->setColor(
-        settings.value("contextForeground", QColor(Qt::darkGray)).value<QColor>());
-
-    d_ui->keywordsInContextContextBackgroundColor->setColor(
-        settings.value("contextBackground", QColor(Qt::white)).value<QColor>());
-
-    settings.endGroup();
-
-
     settings.beginGroup("CompleteSentence");
 
     d_ui->completeSentencesBackgroundColor->setColor(
-           settings.value("background", QColor(Qt::green)).value<QColor>());
+           settings.value("background", QColor(140, 50, 255)).value<QColor>());
 
     settings.endGroup();
 }
@@ -202,13 +175,6 @@ void PreferencesWindow::saveColorsTab()
     settings.setValue("activeNodeBorder", d_ui->treeActiveNodeBorderColor->color());
     settings.endGroup();
 
-    settings.beginGroup("KeywordsInContext");
-    settings.setValue("keywordForeground", d_ui->keywordsInContextKeywordForegroundColor->color());
-    settings.setValue("keywordBackground", d_ui->keywordsInContextKeywordBackgroundColor->color());
-    settings.setValue("contextForeground", d_ui->keywordsInContextContextForegroundColor->color());
-    settings.setValue("contextBackground", d_ui->keywordsInContextContextBackgroundColor->color());
-    settings.endGroup();
-
     settings.beginGroup("CompleteSentence");
     settings.setValue("background", d_ui->completeSentencesBackgroundColor->color());
     settings.endGroup();
@@ -226,10 +192,6 @@ void PreferencesWindow::restoreDefaultColors()
     QSettings settings;
 
     settings.beginGroup("Tree");
-    settings.remove("");
-    settings.endGroup();
-
-    settings.beginGroup("KeywordsInContext");
     settings.remove("");
     settings.endGroup();
 

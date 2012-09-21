@@ -1,15 +1,14 @@
 #ifndef BRACKETEDDELEGATE_HH
 #define BRACKETEDDELEGATE_HH
 
-#include <list>
+#include <vector>
 
 #include <QCache>
 #include <QFile>
 #include <QModelIndex>
 #include <QStyledItemDelegate>
 #include <AlpinoCorpus/CorpusReader.hh>
-
-#include "Chunk.hh"
+#include <AlpinoCorpus/LexItem.hh>
 
 class BracketedDelegate : public QStyledItemDelegate
 {
@@ -29,13 +28,13 @@ protected:
     open and closing brackets.
     \param sentence the brackets containing sentence to be parsed
     */
-    std::list<Chunk> parseChunks(QModelIndex const &index) const;
+    std::vector<alpinocorpus::LexItem> retrieveSentence(QModelIndex const &index) const;
 
     QString bracketedSentence(QModelIndex const &index) const;
     
 
 private:        
-    mutable QCache<QString,std::list<Chunk> > d_cache;
+    mutable QCache<QString,std::vector<alpinocorpus::LexItem> > d_cache;
     CorpusReaderPtr d_corpus;
 };
 

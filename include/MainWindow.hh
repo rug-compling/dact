@@ -12,6 +12,7 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
+#include "AutoUpdater.hh"
 #include "CorpusWidget.hh"
 #include "XPathValidator.hh"
 #include "XSLTransformer.hh"
@@ -122,6 +123,8 @@ public slots:
 
     void openCookbook();
 
+    void checkForUpdates();
+
 private slots:
     /*!
      Raise the about window
@@ -220,6 +223,11 @@ private slots:
      */
     void help();
 
+    /*!
+     Report an error in reading macros.
+     */
+    void macrosReadError(QString error);
+
     void openMacrosFile();
 
     /*!
@@ -274,6 +282,8 @@ private slots:
     void updateTreeNodeButtons();
 
     void setInspectorVisible(bool);
+
+    void toggleFullScreen();
 
 protected:
     void changeEvent(QEvent *e);
@@ -362,6 +372,8 @@ private:
      * correctly. If this could be done in the ui file itself...
      */
     void setupUi();
+
+    void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
     AboutWindow *d_aboutWindow;
@@ -463,6 +475,8 @@ private:
     QVector<QPair<CorpusWidget *, bool> > d_taintedWidgets;
 
     bool d_inspectorVisible;
+
+    QSharedPointer<AutoUpdater> d_autoUpdater;
 };
 
 #endif // MAINWINDOW_H

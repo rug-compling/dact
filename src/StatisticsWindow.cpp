@@ -109,6 +109,9 @@ void StatisticsWindow::setModel(QueryModel *model)
 
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
         SLOT(progressStopped(int, int)));
+
+    connect(d_model.data(), SIGNAL(progressChanged(int)),
+        SLOT(progressChanged(int)));
 }
 
 void StatisticsWindow::updateResultsTotalCount()
@@ -340,9 +343,9 @@ void StatisticsWindow::progressStarted(int total)
     d_ui->filterProgress->setVisible(true);
 }
 
-void StatisticsWindow::progressChanged(int n, int total)
+void StatisticsWindow::progressChanged(int percentage)
 {
-    d_ui->filterProgress->setValue(n);
+    d_ui->filterProgress->setValue(percentage);
 }
 
 void StatisticsWindow::progressStopped(int n, int total)

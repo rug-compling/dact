@@ -141,6 +141,8 @@
     <addaction name="separator"/>
     <addaction name="inspectorAction"/>
     <addaction name="toolbarAction"/>
+    <addaction name="separator"/>
+    <addaction name="toggleFullScreenAction"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -157,6 +159,8 @@
     <addaction name="menuConvertCorpus"/>
     <addaction name="separator"/>
     <addaction name="clearHistoryAction"/>
+    <addaction name="separator"/>
+    <addaction name="checkForUpdatesAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -562,6 +566,22 @@
     <string>Cookbook</string>
    </property>
   </action>
+  <action name="toggleFullScreenAction">
+   <property name="text">
+    <string>Toggle Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+F</string>
+   </property>
+  </action>
+  <action name="checkForUpdatesAction">
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -676,6 +696,38 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>openCookbook()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toggleFullScreenAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggleFullScreen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkForUpdatesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>checkForUpdates()</slot>
   </connection>
  </connections>
 </ui>

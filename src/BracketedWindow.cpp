@@ -119,6 +119,9 @@ void BracketedWindow::setModel(FilterModel *model)
 
     connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
             SLOT(progressFinished(int, int, bool)));
+
+    connect(d_model.data(), SIGNAL(progressChanged(int)),
+        SLOT(progressChanged(int)));
 }
 
 void BracketedWindow::startQuery()
@@ -151,7 +154,7 @@ void BracketedWindow::startQuery()
     // of sentences to the model where nothing is bracketed. If this
     // happens, this is the place to start looking.
 
-    d_model->runQuery(d_filter, stylesheet);
+    d_model->runQuery(d_filter, true);
 
     showFilenamesChanged();
 }
@@ -268,9 +271,9 @@ void BracketedWindow::progressStarted(int totalEntries)
     d_ui->filterProgressBar->setVisible(true);
 }
 
-void BracketedWindow::progressChanged(int processedEntries, int totalEntries)
+void BracketedWindow::progressChanged(int percentage)
 {
-    d_ui->filterProgressBar->setValue(processedEntries);
+    d_ui->filterProgressBar->setValue(percentage);
 }
 
 void BracketedWindow::progressFinished(int processedEntries, int totalEntries, bool cached)

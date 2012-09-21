@@ -38,11 +38,13 @@
 #include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
 #include <AlpinoCorpus/MultiCorpusReader.hh>
+#include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 
 #include <config.hh>
 
 #include <AboutWindow.hh>
+#include <AppleUtils.hh>
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
@@ -68,6 +70,10 @@
 #include <GlobalCopyCommand.hh>
 #include <GlobalCutCommand.hh>
 #include <GlobalPasteCommand.hh>
+
+#if defined(Q_WS_MAC) && defined(USE_SPARKLE)
+#include <SparkleAutoUpdater.hh>
+#endif
 
 #ifdef Q_WS_MAC
 extern void qt_mac_set_dock_menu(QMenu *);
@@ -127,6 +133,11 @@ MainWindow::MainWindow(QWidget *parent) :
     createActions();
 
     d_ui->saveAsAction->setEnabled(false);
+
+#if defined(Q_WS_MAC) && defined(USE_SPARKLE)
+    d_autoUpdater = QSharedPointer<SparkleAutoUpdater>(new SparkleAutoUpdater("http://localhost/appcast.xml"));
+    d_ui->checkForUpdatesAction->setVisible(true);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -182,6 +193,12 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+void MainWindow::checkForUpdates()
+{
+    if (d_autoUpdater)
+        d_autoUpdater->checkForUpdates();
+}
+
 void MainWindow::clearQueryHistory()
 {
     d_ui->filterComboBox->clearHistory();
@@ -229,9 +246,9 @@ void MainWindow::convertCorpus(QString const &convertPath)
     d_exportProgressDialog->open();
 
     QList<QString> files;
-    for (ac::CorpusReader::EntryIterator iter = corpusReader->begin();
-            iter != corpusReader->end(); ++iter)
-        files.push_back(QString::fromUtf8((*iter).c_str()));
+    ac::CorpusReader::EntryIterator iter = corpusReader->entries();
+    while (iter.hasNext())
+        files.push_back(QString::fromUtf8(iter.next(*corpusReader).name.c_str()));
 
     d_writeCorpusCancelled = false;
     d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
@@ -250,6 +267,11 @@ void MainWindow::convertDirectoryCorpus()
         return;
 
     convertCorpus(corpusPath);
+}
+
+void MainWindow::macrosReadError(QString error)
+{
+    QMessageBox::critical(this, "Error reading macros", error);
 }
 
 #ifdef USE_WEBSERVICE
@@ -339,6 +361,9 @@ void MainWindow::statisticsEntryActivated(QString const &value, QString const &q
 void MainWindow::setupUi()
 {
     d_ui->setupUi(this);
+
+    // Enables the full screen button on the right window corner on OS X >= 10.7.
+    enableFullScreen();
 
     // Move a spacer between the buttons and the inspector action button
     // This will align the inspection action button to the right
@@ -454,6 +479,8 @@ void MainWindow::createActions()
         SLOT(focusHighlight()));
     connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
+    connect(d_macrosModel.data(), SIGNAL(readError(QString)),
+        SLOT(macrosReadError(QString)));
     connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
     connect(d_ui->toolbarAction, SIGNAL(toggled(bool)),
@@ -566,7 +593,12 @@ void MainWindow::openCorpus()
     if (corpusPath.isNull())
         return;
 
-    readCorpus(corpusPath);
+    QFileInfo fi(corpusPath);
+
+    if (fi.isDir())
+        readCorpus(corpusPath, true);
+    else
+        readCorpus(corpusPath);
 }
 
 void MainWindow::openMacrosFile()
@@ -578,6 +610,8 @@ void MainWindow::openMacrosFile()
         return;
 
     d_macrosModel->loadFile(filePath);
+
+    d_ui->filterComboBox->revalidate();
 }
 
 void MainWindow::readMacros(QStringList const &fileNames)
@@ -681,8 +715,13 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
     ac::CorpusReader* reader = 0;
 
     try {
-        if (recursive)
-            reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
+        if (recursive) {
+            if (QFileInfo(path).isDir())
+              reader = ac::CorpusReaderFactory::openRecursive(path.toUtf8().constData());
+            else
+              // Do not attempt to open as a recursive corpus.
+              reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
+        }
         else
             reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
@@ -702,12 +741,12 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
-        QPair< ac::CorpusReader*, QString> result = createCorpusReader(path, recursive);
-        if (result.first != 0) {
-            readers->push_back(deriveNameFromPath(path).toUtf8().constData(), result.first);
-            nLoadedCorpora++;
-            emit corpusReaderCreated();
-        }
+        if (QFileInfo(path).isDir())
+          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
+        else
+          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), false);
+        nLoadedCorpora++;
+        emit corpusReaderCreated();
     }
 
     return QPair< ac::CorpusReader*, QString>(readers,
@@ -844,9 +883,12 @@ void MainWindow::exportCorpus()
                 files.append(item.data(Qt::UserRole).toString());
         }
         else
-            for (ac::CorpusReader::EntryIterator iter = d_corpusReader->begin();
-                    iter != d_corpusReader->end(); ++iter)
-                files.push_back(QString::fromUtf8((*iter).c_str()));
+        {
+            ac::CorpusReader::EntryIterator iter = d_corpusReader->entries();
+            while (iter.hasNext())
+                files.push_back(QString::fromUtf8(iter.next(*d_corpusReader).name.c_str()));
+            
+        }
 
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
@@ -1021,4 +1063,23 @@ void MainWindow::updateTreeNodeButtons()
 void MainWindow::statusMessage(QString message)
 {
     statusBar()->showMessage(message, 4000);
+}
+
+void MainWindow::enableFullScreen()
+{
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+    enableFullScreenOnMac(this);
+#endif
+}
+
+void MainWindow::toggleFullScreen()
+{
+#if defined(__APPLE__) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+    toggleFullScreenOnMac(this);
+#else
+    if (isFullScreen())
+        showNormal();
+    else
+        showFullScreen();
+#endif
 }

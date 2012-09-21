@@ -74,10 +74,13 @@ int main(int argc, char *argv[])
                 
                 macroPaths.append(args[++i]);
             }
-            if (args[i].startsWith("dact:"))
-                a->openUrl(QUrl::fromUserInput(args[i]));
             else
-                corpusPaths.append(args[i]);
+            {
+                if (args[i].startsWith("dact:"))
+                    a->openUrl(QUrl::fromUserInput(args[i]));
+                else
+                    corpusPaths.append(args[i]);
+            }
         }
 
         a->openMacros(macroPaths);

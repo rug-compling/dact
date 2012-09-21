@@ -4,14 +4,13 @@
 #include <QTextEdit>
 #include <QSettings>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedSentenceWidget.hh"
-#include "Chunk.hh"
 
 BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
 :
-    QTextEdit(parent),
-    d_stylesheet(":/stylesheets/bracketed-sentence-xml.xsl"),
-    d_transformer(d_stylesheet)
+    QTextEdit(parent)
 {
     QFontMetrics m(document()->defaultFont());
     int ruleHeight = m.lineSpacing();
@@ -33,47 +32,70 @@ void BracketedSentenceWidget::loadSettings()
     settings.beginGroup("CompleteSentence");
 
     d_highlightColor =
-        settings.value("background", QColor(Qt::green)).value<QColor>();
+        settings.value("background", QColor(140, 50, 255)).value<QColor>();
 }
 
-void BracketedSentenceWidget::setParse(QString const &parse)
+void BracketedSentenceWidget::setCorpusReader(QSharedPointer<alpinocorpus::CorpusReader> reader)
 {
-    d_parse = parse;
+    d_corpusReader = reader;
+}
+
+
+void BracketedSentenceWidget::setEntry(QString const &entry, QString const &query)
+{
+    d_entry = entry;
+    d_query = query;
 
     updateText();
 }
 
 void BracketedSentenceWidget::updateText()
 {
-    if (!d_parse.isEmpty())
+    if (!d_entry.isEmpty() && d_corpusReader)
     {
-        QString sentence = transformXML(d_parse);
-        std::list<Chunk> *chunks = Chunk::parseSentence(sentence);
+        std::vector<alpinocorpus::LexItem> items = d_corpusReader->sentence(
+            d_entry.toUtf8().constData(), d_query.toUtf8().constData());
 
         clear();
 
-        foreach (Chunk const &chunk, *chunks)
+        bool adoptSpace = false;
+        size_t prevDepth = 0;
+        for (std::vector<alpinocorpus::LexItem>::const_iterator iter = items.begin();
+            iter != items.end(); ++iter)
         {
-            if (chunk.depth() > 0) {
-                setTextColor(Qt::white);
-                d_highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
-                    static_cast<size_t>(255)));
-                setTextBackgroundColor(d_highlightColor);
-            }
-            else {
-                setTextColor(Qt::black);
-                setTextBackgroundColor(Qt::white);
+            size_t depth = iter->matches.size();
+
+            if (depth != prevDepth) {
+                if (depth == 0)
+                {
+                    setTextColor(Qt::black);
+                    setTextBackgroundColor(Qt::white);
+                }
+                else
+                {
+                    setTextColor(Qt::white);
+                    d_highlightColor.setAlpha(std::min(85 + 42 * depth,
+                        static_cast<size_t>(255)));
+                    setTextBackgroundColor(d_highlightColor);
+                }
+
+                prevDepth = depth;
             }
 
-            insertPlainText(chunk.text());
+            if (adoptSpace) {
+                insertPlainText(" ");
+                adoptSpace = false;
+            }
+
+            insertPlainText(QString::fromUtf8(iter->word.c_str()));
+
+            std::vector<alpinocorpus::LexItem>::const_iterator next = iter + 1;
+            if (next != items.end()) {
+                if (next->matches.size() < depth)
+                    adoptSpace = true;
+                else
+                    insertPlainText(" ");
+            }
         }
-
-        delete chunks;
     }
-}
-
-QString BracketedSentenceWidget::transformXML(QString const &xml) const
-{
-    QHash<QString, QString> params;
-    return d_transformer.transform(xml, params);
 }

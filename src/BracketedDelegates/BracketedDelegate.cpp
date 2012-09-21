@@ -1,8 +1,13 @@
 #include <iostream>
 #include <list>
+#include <vector>
+
+#include <QStringList>
+#include <QSet>
+
+#include <AlpinoCorpus/LexItem.hh>
 
 #include "BracketedDelegate.hh"
-#include "Chunk.hh"
 #include "FilterModel.hh"
 
 namespace ac = alpinocorpus;
@@ -13,49 +18,36 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
     d_corpus(corpus)
 {}
 
-std::list<Chunk> BracketedDelegate::parseChunks(QModelIndex const &index) const
+std::vector<ac::LexItem> BracketedDelegate::retrieveSentence(QModelIndex const &index) const
 {
-    QString filename(index.data(Qt::UserRole).toString());
-
-    if (!d_cache.contains(filename))
-    {
-        QString bracketed_sentence(
-            index.sibling(index.row(), 2).data(Qt::UserRole).toString().trimmed());
-
-        std::list<Chunk> *chunks = Chunk::parseSentence(bracketed_sentence);
-
-        d_cache.insert(filename, chunks);
-    }
-
-    return *d_cache[filename];
+    QString filename(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
+    return reinterpret_cast<FilterModel const *>(index.model())->bracketedSentence(filename);
 }
 
 QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const
 {
-    QString sent;
-    QTextStream sentStream(&sent);
+    QStringList sent;
 
-    std::list<Chunk> chunks = parseChunks(index);
+    std::vector<ac::LexItem> lexItems = retrieveSentence(index);
 
     size_t prevDepth = 0;
-    foreach (Chunk const &chunk, chunks)
+    foreach (ac::LexItem const &lexItem, lexItems)
     {
-        if (chunk.text().isEmpty())
-          continue;
+        size_t depth = lexItem.matches.size();
 
-        if (chunk.depth() != prevDepth) {
-          if (prevDepth < chunk.depth())
-            sentStream << QString(chunk.depth() - prevDepth, QChar('['));
+        if (depth != prevDepth) {
+          if (prevDepth < depth)
+            sent.append(QString(depth - prevDepth, QChar('[')));
           else
-            sentStream << QString(prevDepth - chunk.depth(), QChar(']'));
+            sent.append(QString(prevDepth - depth, QChar(']')));
 
-          prevDepth = chunk.depth();
+          prevDepth = depth;
         }
 
-        sentStream << chunk.text();
+        sent.append(QString::fromUtf8(lexItem.word.c_str()));
     }
 
-    return sent.trimmed();
+    return sent.join(" ");
 }
 
 QString BracketedDelegate::sentenceForClipboard(QModelIndex const &index) const

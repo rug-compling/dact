@@ -24,3 +24,23 @@ If you want to build the current stable/release version of Dact, check out the
 
 When a corpus reader with XPath 1.0 is used, the statistics tab does not
 provide a count of matching nodes that do not have the given attribute.
+
+# License
+
+Copyright 2010-2012 Daniël de Kok<br/>
+Copyright 2010-2012 University of Groningen
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the 
+Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor,
+Boston, MA  02110-1301  USA

@@ -17,8 +17,8 @@ endif()
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
-  set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
-  set(ENABLE_CODESIGN OFF CACHE BOOL "Sign the application bundle")
+  set(ENABLE_BUNDLE ON CACHE BOOL "Compile an application bundle")
+  set(ENABLE_CODESIGN ON CACHE BOOL "Sign the application bundle")
   if(ENABLE_CODESIGN)
     set(CODESIGN_IDENTITY "John Doe" CACHE STRING "Code signing identity")
   endif(ENABLE_CODESIGN)
@@ -34,12 +34,11 @@ else()
 endif()
 
 
-set(VERSION "1.4.0")
+set(VERSION "1.6.0")
 
 set(GIT_REVISION ${VERSION})
 #exec_program(git
 #  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
-#  OUTPUT_VARIABLE GIT_REVISION 
 #)
 
 message(STATUS "Building revision: ${GIT_REVISION}")
@@ -89,9 +88,9 @@ endif()
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
-option(USE_REMOTE_CORPUS "Enable remote corpus" ON)
+option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
 
-option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
+option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
 SET(dact_SRCS
@@ -106,9 +105,9 @@ SET(dact_SRCS
   src/BracketedDelegates/BracketedKeywordInContextDelegate.cpp
   src/BracketedSentenceWidget.cpp
   src/BracketedWindow.cpp
-  src/Chunk.cpp
   src/DependencyTreeWidget.cpp
   src/DactApplication.cpp
+  src/DactApplicationEvent.cpp
   src/HistoryComboBox.cpp
   src/DactListView.cpp
   src/DactMacrosFile.cpp
@@ -148,9 +147,11 @@ SET(dact_SRCS
 
 SET(dact_HDRS
   include/AboutWindow.hh
+  include/AppleUtils.hh
   include/ArchiveModel.hh
   include/ArchiveListItemDelegate.hh
   include/ArchiveListItemWidget.hh
+  include/AutoUpdater.hh
   include/BracketedColorDelegate.hh
   include/BracketedDelegate.hh
   include/BracketedKeywordInContextDelegate.hh
@@ -161,6 +162,7 @@ SET(dact_HDRS
   include/DependencyTreeWidget.hh
   include/config.hh
   include/DactApplication.hh
+  include/DactApplicationEvent.hh
   include/DactColorWell.hh
   include/DactListView.hh
   include/DactMacro.hh
@@ -291,6 +293,32 @@ if(WIN32)
     resources/dact.rc
   )
 endif(WIN32)
+
+# OS X Full Screen support
+if(APPLE)
+  list(APPEND dact_SRCS
+    src/AppleUtils.mm)
+  set_source_files_properties(
+    src/AppleUtils.mm
+    PROPERTIES COMPILE_FLAGS "-x objective-c++")
+  set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit")
+endif(APPLE)
+
+# Sparkle Auto updater
+if(APPLE)
+  option(USE_SPARKLE "Enable Sparkle updates" OFF)
+
+  if(USE_SPARKLE)
+    list(APPEND dact_HEADERS
+      include/SparkleAutoUpdater.hh)
+    list(APPEND dact_SRCS
+      src/SparkleAutoUpdater.mm)
+    set_source_files_properties(
+      src/SparkleAutoUpdater.mm
+      PROPERTIES COMPILE_FLAGS "-x objective-c++")
+    set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
+  endif(USE_SPARKLE)
+endif(APPLE)
 
 set(dact_MACOSX_RESOURCE_FILES
   ${DACT_SOURCE_DIR}/resources/dact-espresso.icns

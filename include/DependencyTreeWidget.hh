@@ -177,6 +177,11 @@ private slots:
      \sa mapperProgressed
      */
     void mapperStopped(int processedEntries, int totalEntries);
+
+    /*!
+     * The progress in the processing of the query changed.
+     */
+    void progressChanged(int percentage);
     
 private:
     void addConnections();
@@ -204,7 +209,7 @@ private:
      \param xml the contents of the xml file from the corpus
      \param params key-value pairs used by the stylesheet
      */
-    void showSentence(QString const &xml, QHash<QString, QString> const &params);
+    void showSentence(QString const &entry, QString const &query);
     
     /*!
      Displays the xml file as a tree in the tree scene. It uses the tree styleheet

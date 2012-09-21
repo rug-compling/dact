@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <QDebug>
 #include <QFileInfo>
 #include <QStringList>
@@ -158,8 +160,12 @@ void DactMacrosModel::loadFile(QString const &path)
 {
     if (!d_watcher.files().contains(path))
         d_watcher.addPath(path);
-    
-    readFile(path);
+
+    try {    
+        readFile(path);
+    } catch (std::runtime_error &e) {
+        emit readError(QString::fromUtf8(e.what()));
+    }
 }
 
 void DactMacrosModel::unloadFile(QString const &fileName)
@@ -212,6 +218,15 @@ QString DactMacrosModel::expand(QString const &expression)
 
 void DactMacrosModel::loadFileDelayed(QString const &fileName)
 {
-    QTimer::singleShot(500, new DelayedLoadFileCallback(this, fileName), SLOT(invokeOnce()));
+    // Some editors seem to cause multiple fileChanged events. I am
+    // looking at you vim and Sublime Text 2! Let's ignore such events
+    // when we are already realoading a/the macro file.
+    //
+    // XXX - Maybe we should use a mutex per macro file?
+
+    if (!d_reloadMutex.tryLock())
+        return;
+
+    QTimer::singleShot(500, new DelayedLoadFileCallback(this, &d_reloadMutex, fileName), SLOT(invokeOnce()));
 }
 

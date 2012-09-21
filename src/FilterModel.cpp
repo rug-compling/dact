@@ -7,7 +7,10 @@
 
 #include <algorithm>
 
+#include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "FilterModel.hh"
 
 namespace ac = alpinocorpus;
@@ -49,10 +52,12 @@ int FilterModel::rowCount(QModelIndex const &index) const
 QVariant FilterModel::data(QModelIndex const &index, int role) const
 {
     if (role == Qt::TextAlignmentRole)
+    {
         if (index.column() == 1)
             return (Qt::AlignTop + Qt::AlignHCenter);
         else
             return Qt::AlignTop;
+    }
 
 
     size_t nResults;
@@ -98,13 +103,40 @@ QString FilterModel::asXML() const
     for (size_t i = 0; i < count; i++) {
         QString filename = data(index(i, 0), Qt::DisplayRole).toString();
         QString count = data(index(i, 1), Qt::DisplayRole).toString();
-        QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
-            .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+        //QString xmlData = data(index(i, 2), Qt::DisplayRole).toString().trimmed()
+        //    .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+
+        std::vector<alpinocorpus::LexItem> lexItems =
+            bracketedSentence(filename);
+
+        QStringList sent;
+        sent.append("<sentence>");
+        size_t prevDepth = 0;
+        foreach (ac::LexItem const &lexItem, lexItems)
+        {
+            size_t depth = lexItem.matches.size();
+
+            if (depth != prevDepth) {
+              if (prevDepth < depth)
+                sent.append(QString("<bracket>").repeated(depth - prevDepth));
+              else
+                sent.append(QString("</bracket>").repeated(prevDepth - depth));
+
+              prevDepth = depth;
+            }
+
+            sent.append(QString::fromUtf8(lexItem.word.c_str()).replace("&", "&amp;"));
+        }
+
+        if (prevDepth > 0)
+            sent.append(QString("</bracket>").repeated(prevDepth));
+
+        sent.append("</sentence>");
 
         QString line = QString("<entry><filename>%1</filename><count>%2</count>%3</entry>")
             .arg(filename)
             .arg(count)
-            .arg(xmlData);
+            .arg(sent.join(" "));
 
         docList.append(line);
     }
@@ -174,6 +206,9 @@ void FilterModel::fireDataChanged()
     emit nEntriesFound(rows, d_hits);
     emit layoutChanged();
 
+    if (d_entryIterator.hasProgress())
+      emit progressChanged(static_cast<int>(d_entryIterator.progress()));
+
     d_lastRow = rows - 1;
 }
 
@@ -196,7 +231,7 @@ void FilterModel::lastDataChanged(int n, int totalEntries, bool cached)
   d_timer->stop();
 }
 
-void FilterModel::runQuery(QString const &query, QString const &stylesheet)
+void FilterModel::runQuery(QString const &query, bool bracketedSentences)
 {
     cancelQuery(); // just in case
 
@@ -222,16 +257,10 @@ void FilterModel::runQuery(QString const &query, QString const &stylesheet)
 
     if (!d_query.isEmpty())
         d_entriesFuture = QtConcurrent::run(this,
-            &FilterModel::getEntriesWithQuery, d_query, stylesheet);
+            &FilterModel::getEntriesWithQuery, d_query, bracketedSentences);
     else {
-        if (stylesheet.isNull())
-            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->begin(), d_corpus->end(), false);
-        else
-            d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
-                d_corpus->beginWithStylesheet(stylesheet.toUtf8().constData()),
-                d_corpus->end(), true);
-
+        d_entriesFuture = QtConcurrent::run(this, &FilterModel::getEntries,
+            d_corpus->entries(), false);
     }
 }
 
@@ -250,7 +279,7 @@ void FilterModel::cancelQuery()
 
 // run async, because query() starts searching immediately
 void FilterModel::getEntriesWithQuery(QString const &query,
-    QString const &stylesheet)
+    bool bracketedSentences)
 {
     if (d_entryCache->contains(query)) {
         {
@@ -267,21 +296,9 @@ void FilterModel::getEntriesWithQuery(QString const &query,
     std::string cQuery = query.toUtf8().constData();
 
     try {
-        if (stylesheet.isNull())
             FilterModel::getEntries(
                 d_corpus->query(alpinocorpus::CorpusReader::XPATH,
-                    cQuery),
-                d_corpus->end(),
-                false);
-        else
-            FilterModel::getEntries(
-                d_corpus->queryWithStylesheet(alpinocorpus::CorpusReader::XPATH,
-                    query.toUtf8().constData(), stylesheet.toUtf8().constData(),
-                    std::list<ac::CorpusReader::MarkerQuery>(
-                        1, ac::CorpusReader::MarkerQuery(cQuery, "active", "1"))),
-                d_corpus->end(),
-                true);
-
+                    cQuery), bracketedSentences);
     } catch (alpinocorpus::Error const &e) {
         qDebug() << "Alpino Error in FilterModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -292,22 +309,26 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 }
 
 // run async
-void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &end,
-    bool withStylesheet)
+void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 {
-    try {
+    if (i.hasProgress())
+        emit queryStarted(100);
+    else
         emit queryStarted(0); // we don't know how many entries will be found
 
+
+    try {
         d_cancelled = false;
         d_hits = 0;
-        d_entryIterator = begin;
+        d_entryIterator = i;
 
-        for (; !d_cancelled && d_entryIterator != end;
-          ++d_entryIterator)
+        while (!d_cancelled && d_entryIterator.hasNext())
         {
             ++d_hits;
 
-            QString entry(QString::fromUtf8((*d_entryIterator).c_str()));
+            alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
+
+            QString name(QString::fromUtf8(e.name.c_str()));
 
             /*
              * WARNING: This assumes all the hits per result only occur right after
@@ -315,7 +336,7 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
              * or QMap for fast lookup.
              */
             int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].name == entry) {
+            if (row >= 0 && d_results[row].name == name) {
                 QMutexLocker locker(&d_resultsMutex);
                 ++d_results[row].hits;
             }
@@ -323,14 +344,15 @@ void FilterModel::getEntries(EntryIterator const &begin, EntryIterator const &en
             else
             {
                 ++row;
-                if (withStylesheet) {
-                    QString contents =
-                        QString::fromUtf8((d_entryIterator.contents(*d_corpus)).c_str());
-                    d_results.append(Entry(entry, 1, contents));
-                }
-                else {
-                    QMutexLocker locker(&d_resultsMutex);
-                    d_results.append(Entry(entry, 1, QString::null));
+
+                QMutexLocker locker(&d_resultsMutex);
+                d_results.append(Entry(name, 1, QString::null));
+
+                if (bracketedSentences)
+                {
+                    std::vector<alpinocorpus::LexItem> lexItems =
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData());
+                    d_bracketedSentences[name] = lexItems;
                 }
             }
         }

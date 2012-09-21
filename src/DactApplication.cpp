@@ -1,64 +1,109 @@
 #include "DactApplication.hh"
+#include "DactApplicationEvent.hh"
+#include <QDebug>
 #include <QFileOpenEvent>
+#include <QTimer>
 
 DactApplication::DactApplication(int &argc, char** argv)
 :
     QApplication(argc, argv),
-    d_mainWindow(0)
+    d_mainWindow(0)   
 {
-    d_showOpenCorpusTimer.setSingleShot(true);
-
-    connect(&d_showOpenCorpusTimer, SIGNAL(timeout()), SLOT(showOpenCorpus()));
+    //
 }
 
 void DactApplication::init()
 {
     d_mainWindow.reset(new MainWindow());
     d_mainWindow->show();
+}
 
-    d_showOpenCorpusTimer.start(50);
+int DactApplication::exec()
+{
+    // If there is not a corpus opened in the first 50 miliseconds after
+    // starting Dact, show the Open Corpus dialog. This because OS X sends
+    // signals instead of commandline arguments.
+    QTimer::singleShot(50, this, SLOT(showOpenCorpus()));
+
+    return QCoreApplication::exec();
 }
 
 bool DactApplication::event(QEvent *event)
 {
-    switch (event->type())
+    if (event->type() == QEvent::FileOpen)
     {
-        case QEvent::FileOpen:
-        {
-            QFileOpenEvent *fileEvent(static_cast<QFileOpenEvent *>(event));
-            
-            if (!fileEvent->file().isEmpty())
-            {
-                QStringList files;
-                files << fileEvent->file();
-                openCorpora(files);
-            }
+        QFileOpenEvent *fileEvent(static_cast<QFileOpenEvent *>(event));
+        
+        if (!fileEvent->file().isEmpty())
+            _openCorpora(QStringList(fileEvent->file()));
 
-            else if (!fileEvent->url().isEmpty())
-                openUrl(fileEvent->url());
-            
-            else
-                return false;
+        else if (!fileEvent->url().isEmpty())
+            _openUrl(fileEvent->url());
+        
+        else
+            return false;
 
-            return true;
-        }
-        default:
-            return QApplication::event(event);
+        return true;
     }
+
+    if (event->type() == DactApplicationEvent::CorpusOpen)
+    {
+        DactApplicationEvent *appEvent(static_cast<DactApplicationEvent *>(event));
+
+        _openCorpora(appEvent->data().toStringList());
+
+        return true;   
+    }
+
+    if (event->type() == DactApplicationEvent::MacroOpen)
+    {
+        DactApplicationEvent *appEvent(static_cast<DactApplicationEvent *>(event));
+
+        _openMacros(appEvent->data().toStringList());
+
+        return true;
+    }
+
+    if (event->type() == DactApplicationEvent::UrlOpen)
+    {
+        DactApplicationEvent *appEvent(static_cast<DactApplicationEvent *>(event));
+
+        _openUrl(appEvent->data().toUrl());
+
+        return true;
+    }
+        
+    
+    return QApplication::event(event);
 }
 
 void DactApplication::openCorpora(QStringList const &fileNames)
 {
-    d_showOpenCorpusTimer.stop();
-    d_mainWindow->readCorpora(fileNames);
+    postEvent(this, new DactApplicationEvent(DactApplicationEvent::CorpusOpen, fileNames));
+}
+
+void DactApplication::_openCorpora(QStringList const &fileNames)
+{
+    d_dactStartedWithCorpus = true;
+    d_mainWindow->readCorpora(fileNames, true);
 }
 
 void DactApplication::openMacros(QStringList const &fileNames)
+{
+    postEvent(this, new DactApplicationEvent(DactApplicationEvent::MacroOpen, fileNames));
+}
+
+void DactApplication::_openMacros(QStringList const &fileNames)
 {
     d_mainWindow->readMacros(fileNames);
 }
 
 void DactApplication::openUrl(QUrl const &url)
+{
+    postEvent(this, new DactApplicationEvent(DactApplicationEvent::UrlOpen, url));
+}
+
+void DactApplication::_openUrl(QUrl const &url)
 {
     if (url.scheme() != "dact")
         return;
@@ -90,5 +135,6 @@ void DactApplication::openUrl(QUrl const &url)
 
 void DactApplication::showOpenCorpus()
 {
-  d_mainWindow->openCorpus();
+    if (!d_dactStartedWithCorpus)
+        d_mainWindow->openCorpus();
 }

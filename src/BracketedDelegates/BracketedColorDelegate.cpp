@@ -7,6 +7,8 @@
 #include <QSettings>
 #include <QHash>
 
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedColorDelegate.hh"
 
 #include <QtDebug>
@@ -23,7 +25,7 @@ void BracketedColorDelegate::loadSettings()
     QSettings settings;
     settings.beginGroup("CompleteSentence");
     
-    d_backgroundColor = settings.value("background", QColor(Qt::green)).value<QColor>();
+    d_backgroundColor = settings.value("background", QColor(140, 50, 255)).value<QColor>();
 }
 
 QSize BracketedColorDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -51,7 +53,6 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
     
-        std::list<Chunk> chunks(parseChunks(index));
         QRectF textBox(option.rect);
         QRectF usedSpace;
         QColor highlightColor(d_backgroundColor);
@@ -59,34 +60,57 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         QBrush brush(option.state & QStyle::State_Selected
             ? option.palette.highlightedText()
             : option.palette.text());
-    
-        foreach (Chunk const &chunk, chunks)
+   
+        std::vector<alpinocorpus::LexItem> const &items(retrieveSentence(index));
+        int prevDepth = -1;
+        bool adoptSpace = false;
+         for (std::vector<alpinocorpus::LexItem>::const_iterator iter = items.begin();
+            iter != items.end(); ++iter)
         {
-            if (chunk.text().isEmpty())
-                continue;
+           size_t depth = iter->matches.size();
         
-            QRectF chunkBox(textBox);
-            chunkBox.setWidth(option.fontMetrics.width(chunk.text()));
-        
-            // if the depth is greater than 0, it must be part of a matching node.
-            if (chunk.depth() > 0)
-            {
-                highlightColor.setAlpha(std::min(85 + 42 * chunk.depth(),
-                    static_cast<size_t>(255)));
-                painter->setPen(QColor(Qt::white));
-                painter->fillRect(chunkBox, highlightColor);
+            QRectF wordBox(textBox);
+            QString word = QString::fromUtf8(iter->word.c_str());
+
+            if (adoptSpace) {
+                word = QString(" ") + word;
+                adoptSpace = false;
             }
-            else
-            {
-                painter->setPen(brush.color());
-                painter->setBrush(brush);
+
+            std::vector<alpinocorpus::LexItem>::const_iterator next = iter + 1;
+            if (next != items.end()) {
+                if (next->matches.size() < depth)
+                    adoptSpace = true;
+                else
+                    word += " ";
             }
+
+            wordBox.setWidth(option.fontMetrics.width(word));
         
-            painter->drawText(chunkBox, Qt::AlignLeft, chunk.text());
+            if (depth != prevDepth) {
+                if (depth == 0)
+                {
+                    painter->setPen(brush.color());
+                    painter->setBrush(brush);
+                }
+                else
+                {
+                    highlightColor.setAlpha(std::min(85 + 42 * depth,
+                        static_cast<size_t>(255)));
+                    painter->setPen(QColor(Qt::white));
+                }
+            }
+
+            if (depth != 0)
+                painter->fillRect(wordBox, highlightColor);
+
+            painter->drawText(wordBox, Qt::AlignLeft, word);
         
             // move the left border of the box to the right to start drawing
-            // right next to the just drawn chunk of text.
-            textBox.setLeft(textBox.left() + chunkBox.width());
+            // right next to the just drawn alpinocorpus::LexItem of text.
+            textBox.setLeft(textBox.left() + wordBox.width());
+
+            prevDepth = depth;
         }
     }
     catch (std::runtime_error const &e)

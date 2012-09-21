@@ -1,6 +1,10 @@
 #ifndef BRACKETEDKEYWORDINCONTEXTDELEGATE_HH
 #define BRACKETEDKEYWORDINCONTEXTDELEGATE_HH
 
+#include <vector>
+
+#include <AlpinoCorpus/LexItem.hh>
+
 #include "BracketedDelegate.hh"
 
 class BracketedKeywordInContextDelegate : public BracketedDelegate
@@ -14,10 +18,8 @@ public:
 
 private:
     void loadColorSettings();
-    QColor d_keywordForeground;
-    QColor d_keywordBackground;
-    QColor d_contextForeground;
-    QColor d_contextBackground;
+    QString extractFragment(std::vector<alpinocorpus::LexItem> const &items, size_t first, size_t last) const;
+    mutable QColor d_highlightColor;
 };
 
 #endif

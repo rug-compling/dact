@@ -50,7 +50,7 @@ private slots:
     void generateQuery(QModelIndex const &index);
     void startQuery();
     void progressStarted(int total);
-    void progressChanged(int n, int total);
+    void progressChanged(int percentage);
     void progressStopped(int n, int total);
     void queryFailed(QString error);
     void showPercentageChanged();

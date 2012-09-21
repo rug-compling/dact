@@ -1,7 +1,13 @@
-#include "DactMacrosFile.hh"
+#include <string>
 
 #include <QStringList>
 #include <QTextStream>
+#include <QtDebug>
+
+#include <AlpinoCorpus/macros.hh>
+
+#include "DactMacrosFile.hh"
+
 
 const QString DactMacrosFile::d_assignment_symbol("=");
 const QString DactMacrosFile::d_start_replacement_symbol("\"\"\"");
@@ -31,58 +37,24 @@ QList<DactMacro> const &DactMacrosFile::macros() const
 
 QList<DactMacro> DactMacrosFile::read(QFile &file) const
 {   
-    QList<DactMacro> macros;
-    QString data;
+    QList<DactMacro> dactMacros;
+
+    std::string fn = file.fileName().toUtf8().constData();
     
-    // XXX - a nice parser would parse directly from the QTextStream
+    alpinocorpus::Macros macros;
+
+    macros = alpinocorpus::loadMacros(fn);
+
+    for (alpinocorpus::Macros::const_iterator iter = macros.begin();
+        iter != macros.end(); ++iter)
     {
-        file.open(QIODevice::ReadOnly);
-        QTextStream macro_data(&file);
-        data = macro_data.readAll();
-        file.close();
+        DactMacro macro = { QString::fromUtf8(iter->first.c_str()),
+            QString::fromUtf8(iter->second.c_str()) };
+        dactMacros.push_back(macro);
     }
 
-    int cursor = 0;
 
-    while (cursor < data.size())
-    {
-        // find '=' symbol, which indicates the end of the name of the macro
-        int assignment_symbol_pos = data.indexOf(d_assignment_symbol, cursor);
-
-        if (assignment_symbol_pos == -1)
-            break;
-
-        // find the '"""' symbol which indicates the start of the replacement
-        int opening_quotes_pos = data.indexOf(d_start_replacement_symbol,
-            assignment_symbol_pos + d_assignment_symbol.size());
-
-        if (opening_quotes_pos == -1)
-            break;
-
-        // find the second '"""' symbol which marks the end of the replacement
-        int closing_quotes_pos = data.indexOf(d_end_replacement_symbol,
-            opening_quotes_pos + d_start_replacement_symbol.size());
-
-        if (closing_quotes_pos == -1)
-            break;
-
-        // and go get it!
-        DactMacro macro;
-        macro.pattern = data.mid(cursor, assignment_symbol_pos - cursor).trimmed();
-        macro.replacement = data.mid(opening_quotes_pos + d_start_replacement_symbol.size(),
-          closing_quotes_pos - (opening_quotes_pos + d_start_replacement_symbol.size())).trimmed();
-
-        // Apply substitutions
-        for (QList<DactMacro>::const_iterator iter = macros.begin();
-            iter != macros.end(); ++iter)
-          macro.replacement = macro.replacement.replace("%" + iter->pattern + "%", iter->replacement);
-
-        macros.append(macro);
-
-        cursor = closing_quotes_pos + d_end_replacement_symbol.size();
-    }
-
-    return macros;
+    return dactMacros;
 }
 
 void DactMacrosFile::write(QFile &file, QList<DactMacro> const &macros) const
