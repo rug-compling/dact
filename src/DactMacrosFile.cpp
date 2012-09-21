@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include <string>
 
 #include <QStringList>
@@ -42,15 +41,9 @@ QList<DactMacro> DactMacrosFile::read(QFile &file) const
 
     std::string fn = file.fileName().toUtf8().constData();
     
-
     alpinocorpus::Macros macros;
 
-    try {
-        macros = alpinocorpus::loadMacros(fn);
-    } catch (std::runtime_error &e) {
-        qDebug() << "Could not load macro file!";
-        return dactMacros;
-    }
+    macros = alpinocorpus::loadMacros(fn);
 
     for (alpinocorpus::Macros::const_iterator iter = macros.begin();
         iter != macros.end(); ++iter)

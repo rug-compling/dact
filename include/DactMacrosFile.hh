@@ -17,7 +17,6 @@ public:
 	QFile const &file() const;
 	QList<DactMacro> const &macros() const;
 
-
 public slots:
 	void reload();
 
@@ -35,5 +34,3 @@ private:
 };
 
 #endif
-
-
