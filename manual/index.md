@@ -466,7 +466,7 @@ When you have focused one of the XPath query fields in Dact, you can
 select one of the macros from the *Macros* menu to insert it at the
 position of your text cursor.
 
-### Macros file syntax
+### Macro file syntax
 
 Macro files are rather simple and can be created with any plain text
 editor. Macros have the following syntax:
