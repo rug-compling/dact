@@ -267,14 +267,14 @@ walk through each found entry. Or you can use the *Ctrl+Down* and
 After selecting an entry, its parse tree is shown in the right pane. To
 easier to spot interesting phenomena, or test a query, you can enter a
 separate query in the highlight field. Each node matching the highlight
-query will be coloured:
+query will be colored:
 
 ![](images/highlighted-nodes.png)
 
 Initially, the filter query is used as the highlight query.
 
 Matching nodes will be highlighted in the tree in green (you can alter
-this colour in the Preferences). The buttons *Zoom In* and *Zoom Out*
+this color in the Preferences). The buttons *Zoom In* and *Zoom Out*
 can be used to scale the tree. *Previous Node* and *Next Node* will walk
 you through all the matching nodes. You can use *Ctrl+Left*
 and*Ctrl+Right* as well. The focussed node will then be marked by a
@@ -354,7 +354,7 @@ dialog.
 
 > **Tip**
 >
-> Note that this menu item also works for other the Sentences tab.
+> Note that this menu item also works in the *Sentences* tab.
 
 ### Sentences
 
@@ -372,14 +372,14 @@ Currently three methods are implemented:
 
 -   *Complete Sentence* shows the matching nodes in the sentence on a
     different background. Nested matches have a more opaque background.
-    The colour can be changed in Dact's Preference Window.
+    The color can be changed in Dact's Preference Window.
 
 -   *Only Matches* shows only partial sentences of the nodes that
     matched.
 
 -   *Keywords in Context* shows all the matches directly underneath each
     other and prints the rest of the sentence left and right of the
-    match. These colours can also be configured in Dact's Preference
+    match. These colors can also be configured in Dact's Preference
     Window.
 
 ## Converting corpora
@@ -398,7 +398,7 @@ using the *File - Open…* menu item.
 ## Configuring Dact
 
 Dact has some preferences you can change it to suit more to your needs.
-You can configure the font and colours of the interface. You can find
+You can configure the font and colors of the interface. You can find
 these in the Preference window, which you can find in *Edit* menu. (On
 OS X, you will find it in the application menu like any other OS X
 application.) Changes are automatically applied and saved.
@@ -409,9 +409,9 @@ in a tab. The preferences will be restored to their default values.
 
 ![](images/preferences-window.png)
 
-### Font and colours
+### Font and colors
 
-Dact allows you to choose your own colours and font used in the
+Dact allows you to choose your own colors and font used in the
 interface to some extend.
 
 Note that the OS X version of Dact does not have a *Font* tab. In the
