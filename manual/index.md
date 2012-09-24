@@ -524,7 +524,7 @@ by the macros. In addition to this, you can use `%1` as placeholder for
 the filename of the selected file as shown by Dact in the Tree tab. For
 example, to define an "Edit Text" menu entry:
 
-    Edit Text = """gedit "~/treebanks/cdb/%1"""
+    Edit Text = """gedit "~/treebanks/cdb/%1""""
 
 > **Tip**
 >
