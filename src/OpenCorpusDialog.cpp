@@ -374,12 +374,12 @@ void OpenCorpusDialog::revealSelectedCorpus()
     ArchiveEntry const &entry(selectedCorpus());
     // source: http://lynxline.com/show-in-finder-show-in-explorer/
 
-    #ifdef Q_WS_MAC
+    #if defined(Q_WS_MAC)
         QStringList args;
         args << "-R" << entry.filePath();
         QProcess::startDetached("open", args);
 
-    #elif Q_WS_WIN
+    #elif defined(Q_WS_WIN)
         QStringList args;
         args << "/select," << QDir::toNativeSeparators(entry.filePath());
         QProcess::startDetached("explorer", args);

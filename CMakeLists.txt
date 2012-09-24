@@ -28,6 +28,8 @@ endif(APPLE)
 
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)
+elseif(WIN32)
+  set(PROGNAME Dact)
 else()
   set(PROGNAME dact)
 endif()
@@ -54,6 +56,11 @@ list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 
 include_directories(${DACT_SOURCE_DIR}/include)
 include_directories(${DACT_BINARY_DIR})
+
+find_package(Boost 1.46.1)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
 
 find_package(AlpinoCorpus REQUIRED)
 if(ALPINOCORPUS_FOUND)
@@ -318,11 +325,11 @@ if(APPLE)
       PROPERTIES COMPILE_FLAGS "-x objective-c++")
     set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
   endif(USE_SPARKLE)
-endif(APPLE)
 
-set(dact_MACOSX_RESOURCE_FILES
-  ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
-  ${DACT_SOURCE_DIR}/resources/dact-corpus.icns)
+  set(dact_MACOSX_RESOURCE_FILES
+    ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
+    ${DACT_SOURCE_DIR}/resources/dact-corpus.icns)
+endif(APPLE)
 
 set_source_files_properties(
   ${dact_MACOSX_RESOURCE_FILES}

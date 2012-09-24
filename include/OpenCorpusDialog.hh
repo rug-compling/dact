@@ -51,7 +51,6 @@ private slots:
     void downloadCanceled();
     void inflate(QIODevice *dev);
     void inflateHandleError(QString error);
-    void download(ArchiveEntry const &entry);
     void downloadProgress(qint64 progress, qint64 maximum);
     void refreshCorpusList();
     void rowChanged(QModelIndex const &current, QModelIndex const &previous);
@@ -65,7 +64,8 @@ private slots:
     void revealSelectedCorpus();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
+    void download(ArchiveEntry const &entry);
+	void keyPressEvent(QKeyEvent *event);
         
 private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
