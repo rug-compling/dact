@@ -8,24 +8,80 @@ title: Manual - Decaffeinated Alpino Corpus Tool
 
 ## Introduction
 
-If Dact could be started correctly, you can open a corpus in Dact. Dact
-can only work with Dact corpora, but can convert other types of corpora
-to a Dact corpus:
+Dact is an application for browsing and searching syntactically
+annotated treebanks such as Lassy Small and Lassy Large. This manual
+provides an introduction to the Dact interface and its query language.
+If you are already familiar with Dact and want to see a more in-depth
+treatment of interesting linguistic phenomena, you might be interested
+in the [Dact Cookbook](../cookbook).
 
--   Compact corpora, consisting of a data and index file (recognizable
-    by the `.data.dz` and `.index` extensions).
+## Installing and starting Dact
 
--   Directory corpora, which are directories that contain parses.
+Dact for Windows, Mac OS X, and Ubuntu can be obtained via the [Dact
+website](..). Here, we provide instructions for installing and starting
+Dact.
 
-Dact corpora can be opened using the *Ctrl+o* keyboard shortcut (on OS
-X, use Cmd instead of Ctrl). This will show a dialog that allows you to
-open the corpus. If you prefer, you can use the *File - Open…* menu item
-as well.
+### Windows
+
+After downloading the Windows installer, run it. The installer will
+copy Dact to your *Program Files* directory and add a *Start Menu* item.
+
+On Windows XP, Vista, and 7, you can start Dact by clicking on the
+*Start Menu* and selecting Dact from the list of programs. On Windows
+Vista, 7, and 8, you can press the Windows key and type *dact*. Dact
+should appear in the list of programs, where you can select it.
+
+### Mac OS X
+
+Dact is provided as a disk image. Click the on the disk image in your
+browser or double click on the disk image in Finder to open it. Then
+drag Dact to your *Applications* folder.
+
+You can start Dact by double clicking on Dact in Finder. It's usually
+faster to start Dact from Spotlight. Press *Cmd + Space* to open the
+Spotlight search popup, type *dact*, and press *Return*.
+
+### Ubuntu
+
+Dact is can be installed through Ubuntu's package manager. Open a Terminal
+and execute the following commands:
+
+    sudo add-apt-repository ppa:danieldk/dact
+    sudo apt-get update
+    sudo apt-get install alpino-dact
+
+To start Dact, press the *Super* (Windows) key to bring up the Dash,
+type *dact*, and press *Return*. You can also launch Dact in a terminal
+using the <tt>alpino-dact</tt> command.
+
+## Getting started
+
+Once Dact is started, the *Open Corpus* dialog will pop up:
+
+![](images/open-corpus-window.png)
+
+You have three options to open a corpus:
+
+* **Opening a publicly available corpus:** The dialog shows a list of
+  corpora that are publicly available. Selecting a corpus from the list
+  will open it. If the corpus is not available on your computer, Dact
+  will download it for you.
+
+* **Opening another corpus:** If you have a corpus that is not publicly
+  available, such as Lassy Small, you can open it by clicking on the
+  *Open local file* button (or press *Ctrl+l* or *Cmd+l on a Mac) and
+  selecting that corpus.
+
+* **Opening a directory with corpora:** You can also open a directory
+  with corpora using the *Open directory* button. This is especially
+  useful for large corpora, such as Lassy Large, which are distributed
+  as a collection of smaller Dact corpora.
+
+After opening a corpus, the window will resemble the following window:
 
 ![](images/dact-osx.png)
 
-After opening a corpus, the window will resemble that in the screenshot
-above. The main Dact Window consists of a filter field and three tabs:
+The main Dact Window consists of a filter field and three tabs:
 
 -   The Tree tab shows all entries with matching nodes in the corpus
     that match your filter query. You can click on an entry to show it
@@ -45,16 +101,6 @@ Although the corpus can be browsed entry by entry, most functionality of
 Dact is query-driven. After a short introduction to the query language
 in the next section, you will be prepared to use other functionality of
 Dact.
-
-## Getting a corpus
-
-Dact comes with a download tool for corpora. Select *Tools – Download
-corpus…* and choose the corpus you want to download, and press
-*Download*. You will be asked where you want to store the corpus. After
-downloading and unpacking the corpus you will have to open it manually
-using *File – Open…*.
-
-![](images/download-corpora-window.png)
 
 ## Queries
 
