@@ -288,7 +288,7 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
 bool QueryModel::validQuery(QString const &query) const
 {
     return d_corpus->isValidQuery(alpinocorpus::CorpusReader::XPATH,
-        false, query.toUtf8().constData());    
+        false, query.toUtf8().constData()).isRight();
 }
 
 void QueryModel::cancelQuery()
