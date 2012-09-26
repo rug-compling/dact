@@ -391,11 +391,12 @@ Currently three methods are implemented:
 For many users, the functionality described in this section is not
 relevant.
 
-Dact can only work with Dact corpora, but it can create these from any
-Directory and Compact corpus. To convert a Directory or Compact corpus,
+Dact can only work with Dact corpora. However, it also provides
+functionality to convert a directory of XML files or a compact corpus
+to the Dact format. To convert such a corpus,
 go to the *Tools - Convert corpus* submenu, and choose your type. Dact
 will prompt you for the location of your corpus, and where to save the
-new Dact corpus. Afterwards you can open the newly generated Dact corpus
+new Dact corpus. Afterwards you can open the newly created Dact corpus
 using the *File - Open…* menu item.
 
 > **Note**
@@ -404,14 +405,14 @@ using the *File - Open…* menu item.
 
 ## Configuring Dact
 
-Dact has some preferences you can change.
-You can configure the font and colors of the interface. You can find
+Dact has some preferences that you can change, such
+as the font and colors of the interface. You can find
 these in the Preference window, which you can find in *Edit* menu. (On
 OS X, you will find it in the application menu like any other OS X
 application.) Changes are automatically applied and saved.
 
-If you accidentally mess up, you can always return to the default
-preferences Dact ships with by clicking the *Return to Default* button
+If you accidentally mess up, you can always revert to the default
+preferences that Dact ships with, by clicking the *Return to Default* button
 in a tab. The preferences will be restored to their default values.
 
 ![](images/preferences-window.png)
@@ -434,7 +435,7 @@ services can be changed.
 > **Note**
 >
 > Note that not all of these features may be enabled in your version of
-> Dact as of the time of writing not all of the required web services
+> Dact, as of the time of writing not all of the required web services
 > are publicly available.
 
 ## Macros
@@ -487,7 +488,7 @@ a `=`, and the replacement has to be surrounded by three pairs of double
 quotes. `replacement` may span several lines.
 
 Dact also expands macros while loading them. This way, you can use
-macros you defined earlier on in a file in your macros.
+macros that were defined before in the same file.
 
     b = """number(@begin)"""
     e = """number(@end)"""
@@ -510,7 +511,7 @@ macros you defined earlier on in a file in your macros.
 
 ### Using tools
 
-In both the Tree and Sentences tab the individual files matching your
+In both the Tree and Sentences tabs the individual files matching your
 filter query are shown. You can add additional entries to the context
 menu for these files by configuring tools. For example, you could
 configure a text editor to show the raw XML data of the selected
