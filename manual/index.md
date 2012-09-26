@@ -43,7 +43,7 @@ Spotlight search popup, type *dact*, and press *Return*.
 
 ### Ubuntu
 
-Dact is can be installed through Ubuntu's package manager. Open a Terminal
+Dact can be installed through Ubuntu's package manager. Open a Terminal
 and execute the following commands:
 
     sudo add-apt-repository ppa:danieldk/dact
@@ -77,25 +77,25 @@ You have three options to open a corpus:
   useful for large corpora, such as Lassy Large, which are distributed
   as a collection of smaller Dact corpora.
 
-After opening a corpus, the window will resemble the following window:
+After opening a corpus, the window will resemble the following:
 
 ![](images/dact-osx.png)
 
 The main Dact Window consists of a filter field and three tabs:
 
 -   The Tree tab shows all entries with matching nodes in the corpus
-    that match your filter query. You can click on an entry to show it
+    that match your filter query. You can click on an entry to show its
     dependency tree. You can also open the Inspector using the button in
     the upper right corner (*Ctrl+i*) and inspect the attributes of
     individual nodes in the dependency tree by selecting them.
 
--   The Statistics tab shows the occurrences of values of a specific
+-   The Statistics tab shows the frequency of values of a specific
     attribute for all the nodes in the corpus that match your filter
-    query. You can specify which attribute with the dropdown menu on
-    this tab.
+    query. You can specify which attribute you want to count with the 
+    dropdown menu on this tab.
 
 -   The Sentences tab shows the entries containing matching nodes as
-    sentences, and highlights them.
+    sentences, and highlights them. 
 
 Although the corpus can be browsed entry by entry, most functionality of
 Dact is query-driven. After a short introduction to the query language
@@ -115,8 +115,8 @@ match any node in the tree by using two forward slashes:
     //node
 
 Of course, normally, you would want to match nodes with certain
-restrictions based on attributes of a node. Such restrictions can be
-entered between square brackets (`[` and `]`). And attributes are
+restrictions based on the context or specific attributes of a node. 
+Such restrictions can be entered between square brackets (`[` and `]`). Attributes are
 prefixed by the ‘at’ sign (`@`). Commonly-used attributes are:
 
 rel
@@ -125,31 +125,37 @@ rel
 cat
 :   category
 
-pos
+postag
 :   part of speech tag
 
-root
-:   the root/stem of a lexical node
+pt
+:   abbreviated part of speech tag
 
-For instance, the following query will match all nodes with the *pos*
+lemma
+:   the lemma of a lexical node
+
+word
+:   the word of a lexical node
+
+For instance, the following query will match all nodes with the *postag*
 attribute, or in other words lexical nodes:
 
-    //node[@pos]
+    //node[@postag]
 
 We can also restrict the selection by requiring that an attribute has a
 specific value using the equals sign (*=*). For instance, the following
-query will match all nodes, which have a *pos* attribute with the value
-*det*:
+query will match all nodes, which have a *postag* attribute with the value
+*BW()*:
 
-    //node[@pos="det"]
+    //node[@postag="BW()"]
 
 Such conditions can also be combined. Using the *and* operator will
 require both conditions to be true, while the *or*operator requires one
 of the conditions to be true. The following query will match all nodes
-with a *su* dependency relation, that also have *det* as their part of
+with a *mod* dependency relation, that also have *det* as their part of
 speech tag:
 
-    //node[@rel="su" and @pos="det"]
+    //node[@rel="mod" and @postag="BW()"]
 
 There are some functions available in XPath which may be useful. For
 example using `not` we could find any node that does not match a certain
@@ -159,34 +165,33 @@ condition. Say we want to match everything except nouns, we could write:
 
 Or say we wanted to match everything except nouns that are lexical nodes
 starting with the letter *v*. We can use the `starts-with` function to
-require that the *root* attribute starts with the text *v*. The *and*
+require that the *word* attribute starts with the text *v*. The *and*
 operator will tie them together.
 
-    //node[not(@pt) and starts-with(@root, "v")]
+    //node[not(@pt) and starts-with(@word, "v")]
 
-`contains` is another function that works just like `start-with`, except
-it match if the text is found anywhere in the attribute its value, not
-just at the beginning.
+`contains` is another function that works just like `starts-with`, except
+it matches if the pattern is contained in the value of the attribute.
 
 We can also make queries based on the structure of a tree. For example,
 the following query will match any node with a *su* dependency relation
-that has a determiner: one of the children of the matching node is a
-node which*pos* attribute has the value *det*.
+that has an adverb: one of the children of the matching node is a
+node of which the *postag* attribute equals *BW()t*.
 
-    //node[@rel="su" and node[@pos="det"]]
+    //node[@rel="su" and node[@postag="BW()"]]
 
-Now that query matched the *su* node, but we can also match the *det*
+Now that query matched the *su* node, but we can also match the adverbial
 node. This is useful in the Statistics Window, where the matching nodes
-are read. This query will do just that:
+are used to determine the frequencies. This query will do just that:
 
-    //node[@rel="su"]/node[@pos="det"]
+    //node[@rel="su"]/node[@postag="BW()"]
 
-It first finds the subject nodes, and then matches all the determiners
-found in these nodes. We can continue this to for example find all the
-nouns in the noun phrase in a preposition phrase. We first find the
-preposition phrase somewhere in the tree (mind the double slash), then
+It first finds the subject nodes, and then matches all the adverbs
+found in these nodes. Similarly, a query can be constructed which 
+selects nouns in the noun phrase of a prepositional phrase. We first find the
+prepositional phrase somewhere in the tree (mind the double slash), then
 find the noun phrase among one of its children (the single slash), and
-then find a noun among the noun phrase its children.
+then find a noun among the children of the noun phrase.
 
     //node[@cat="pp"]/node[@cat="np"]/node[@pt="n"]
 
@@ -197,41 +202,34 @@ then select all the children of this parent node:
 
     //node[@pt="n"]/../node
 
-Or we could select all nodes of which the parent node has a child node
+Or we could select all nodes with a parent node with a child node
 which is a noun:
 
     //node[../node[@pt="n"]]
 
 Note that strings, i.e. the text between quotes and attributes can be
 used interchangeably since an attribute has a string as a value. For
-example, say we would want to do something silly and try to find all
-lexical nodes with an attribute *pt* that has the same value al the word
-of the node, which would mostly be just the letter *n*. The word is
-accessible through the *word* attribute. So we end up comparing the
-*word* attribute with the *pt* attribute:
+example, we could identify nodes with a @lemma value that is identical to
+the @word value as follows:
 
-    //node[@pt=@word]
+    //node[@lemma=@word]
 
 And we are not just bound to the attributes of the current node. Say we
-wanted to find examples the dutch verb*krijgen* used in a passive form.
+wanted to find examples the dutch verb *krijgen* used in a passive form.
 To do this, we have to look for sentences where the subject of the
-sentence is also the object of the verb phrase. A translation takes
-place. In the corpus this is indicated by an *index* attribute. This
-attribute contains the same value on both nodes. I.e.. when we want to
-see translation 1, this query will highlight both the nodes before and
-after the translation:
+sentence is also the object of the verb phrase. 
+In the corpus this is indicated by an *index* attribute. This
+attribute contains the same value on both nodes. 
+We can find the node which contains the verb
+*krijgen*, a subject, and a object in the verb complement which
+share the value for *index*:
 
-    //node[@index=1]
+    //node[ node[@rel="hd" and 
+                 @root="krijg"] and 
+            node[@rel="su"]/@index=
+            node[@rel="vc"]/node[@rel="obj2"]/@index 
+          ]
 
-Now using that knowledge we can find the node which contains the verb
-*krijgen*, a subject, and a object in the verb complement which both
-share the same value for *index*:
-
-    //node[ node[@rel="hd" and @root="krijg"] and node[@rel="su"]/@index=node[@rel="vc"]/node[@rel="obj2"]/@index ]
-
-(This query was taken from the [manual for Treebank
-Tools](http://www.let.rug.nl/~vannoord/alp/Alpino/TreebankTools.html),
-which contains some more interesting queries.)
 
 > **Note**
 >
@@ -239,24 +237,31 @@ which contains some more interesting queries.)
 > XPath sees them as strings. If you want to compare them, you may want
 > to convert them to numbers first using `number()`. For example:
 >
->     //node[@cat="pp" and node[@rel="hd"]/number(@begin) > node[@rel="obj1"]/number(@begin)]
+>     //node[@cat="pp" and 
+>            node[@rel="hd"]/number(@begin) > 
+>            node[@rel="obj1"]/number(@begin)
+>           ]
 
 > **Note**
 >
 > Please do note that Dact expects queries that return nodes. A
-> highlight query returning the value of an attribute wont highlight any
+> highlight query returning the value of an attribute will not highlight any
 > nodes.
 
 ### Exploring a corpus
 
 The left pane on the Tree tab shows a list of corpus entries, where each
-entry represents a parsed sentence containing at least one node that
+entry represents a sentence containing at least one node that
 matched your filter query.
 
-After typing the query, press the *Enter* key, and Dact will start
-filtering the corpus. If you want to interrupt filtering, press the
-*Esc* key. You can also pick one of your previous queries form the
-history using the arrow on the right of the filter field.
+After typing a query, press the *Enter* key, and Dact will start
+listing entries which match the query. If you want to interrupt the query
+processing (e.g. because you have seen enough hits), simply press the
+*Esc* key. 
+
+The query widget keeps track of your previous queries. You can pick one of your 
+previous queries form the history using the arrow on the right of the filter field,
+and adapt the query if so desired.
 
 Using the *Next* and *Previous* arrows in the top left menu bar, you can
 walk through each found entry. Or you can use the *Ctrl+Down* and
@@ -264,8 +269,8 @@ walk through each found entry. Or you can use the *Ctrl+Down* and
 
 ### Highlighting nodes
 
-After selecting an entry, its parse tree is shown in the right pane. To
-easier to spot interesting phenomena, or test a query, you can enter a
+After selecting an entry, its analysis is shown in the right pane. To
+to spot interesting phenomena, or test a query, you can enter a
 separate query in the highlight field. Each node matching the highlight
 query will be colored:
 
@@ -275,19 +280,19 @@ Initially, the filter query is used as the highlight query.
 
 Matching nodes will be highlighted in the tree in green (you can alter
 this color in the Preferences). The buttons *Zoom In* and *Zoom Out*
-can be used to scale the tree. *Previous Node* and *Next Node* will walk
-you through all the matching nodes. You can use *Ctrl+Left*
-and*Ctrl+Right* as well. The focussed node will then be marked by a
+can be used to scale the tree. *Previous Node* and *Next Node* will guide you
+through all the matching nodes. You can use *Ctrl+Left*
+and *Ctrl+Right* as well. The node in focus will then be marked by a
 slightly thicker border. Normally, the scroll wheel is used for panning
 the tree. but when you press *Ctrl*, scrolling will cause the tree to
 scale. *Ctrl+=* and *Ctrl+-* can also be used to zoom in and out, and
-*Ctrl+0* resets the zoom level to show the whole tree, just like *Fit*
+*Ctrl+0* resets the zoom level to show the full tree, just like *Fit*
 button on the toolbar does.
 
 The leaf nodes have tool tips showing more details about the node.
 
 Below the tree the sentence is shown, and the parts in the sentence
-represented by the matching nodes are highlighted.
+that are part of the matching nodes are highlighted.
 
 ### Inspecting nodes
 
@@ -298,7 +303,7 @@ useful for writing queries.
 
 ![](images/inspector.png)
 
-The Inspector will show you every attribute the focussed node has. You
+The Inspector will show you all attributes with the corresponding values of the node in focus. You
 can right-click an attribute and use the context menu to directly add it
 to your search query.
 
@@ -309,31 +314,30 @@ to your search query.
 ### Gathering statistics
 
 The Statistics tab shows which values can be found for a certain
-attribute of the matching nodes throughout the corpus. These nodes can
-be filtered using the same XPath queries. If a node does match the
-filter, but does not have the attribute, it will be counted as *[missing
+attribute of matching nodes. If a node does match the
+query, but does not have the attribute, it will be counted as *[missing
 attribute]*.
 
 ![](images/statistics-tab.png)
 
-Make sure to use a filter which matches the nodes you want to know the
+Make sure to use a query which matches the nodes you want to know the
 values of. For example, say we wanted to know how often every
-preposition occurs in a preposition phrase. We need to filter for the
+preposition occurs in a prepositional phrase. We need to filter for the
 preposition nodes that are children of a preposition phrase node:
 
     //node[@cat="pp"]/node[@pt="vz"]
 
-If you are unsure whether your filter will match too many or too little
+If you are unsure whether your filter will match too many or too few
 nodes, try to test it visually in the Tree tab by using your query as
 the highlight query.
 
-Because we want to know how often the word occurs, we select the `word`
-or `lemma` attribute from the drop-down menu.
+Because we want to know how often the word occurs, we can select the `word`
+attribute (or perhaps the `lemma` attribute) from the drop-down menu.
 
 The *Value* column shows all the distinct values found, and the *Nodes*
 column shows how often nodes with these values where encountered. The
 *percentage* column puts this number into perspective by showing how
-much this is as a percentage of the total count of found values. This
+much this is as a percentage of the total count of found values. The
 total is shown in the bottom right of the window, as is the number of
 distinct values (i.e. the number of rows in the table).
 
@@ -358,7 +362,7 @@ dialog.
 
 ### Sentences
 
-To quickly get an impression which part of a sentence matches a query,
+To get an impression which parts of sentences matches a query,
 you can use the *Sentences* tab.
 
 ![](images/sentences-tab.png)
@@ -374,15 +378,18 @@ Currently three methods are implemented:
     different background. Nested matches have a more opaque background.
     The color can be changed in Dact's Preference Window.
 
--   *Only Matches* shows only partial sentences of the nodes that
-    matched.
+-   *Only Matches* shows only the words contained in the nodes that
+    matched your query.
 
 -   *Keywords in Context* shows all the matches directly underneath each
     other and prints the rest of the sentence left and right of the
-    match. These colors can also be configured in Dact's Preference
+    match. The colors can also be configured in Dact's Preference
     Window.
 
 ## Converting corpora
+
+For many users, the functionality described in this section is not
+relevant.
 
 Dact can only work with Dact corpora, but it can create these from any
 Directory and Compact corpus. To convert a Directory or Compact corpus,
@@ -397,7 +404,7 @@ using the *File - Open…* menu item.
 
 ## Configuring Dact
 
-Dact has some preferences you can change it to suit more to your needs.
+Dact has some preferences you can change.
 You can configure the font and colors of the interface. You can find
 these in the Preference window, which you can find in *Edit* menu. (On
 OS X, you will find it in the application menu like any other OS X
@@ -412,7 +419,7 @@ in a tab. The preferences will be restored to their default values.
 ### Font and colors
 
 Dact allows you to choose your own colors and font used in the
-interface to some extend.
+interface to some extent.
 
 Note that the OS X version of Dact does not have a *Font* tab. In the
 other versions of Dact you can change the font that is used for the
@@ -435,7 +442,8 @@ services can be changed.
 Dact supports macros in its XPath queries. You can insert simple
 placeholders in your query which are expanded before a query is
 evaluated. A placeholder is the name of the macro surrounded by
-percentage signs (`%`).
+percentage signs (`%`). A set of macros can be stored in a 
+separate file, which you can load from Dact.
 
 ### Using a macro
 
@@ -447,7 +455,7 @@ When you enter the following query in to the filter query field:
 
     //node[%interesting%]
 
-Dact replace the placeholder, and execute the following query:
+Dact replaces the placeholder, and executes the following query:
 
     //node[ @rel="su" or @rel="vc" ]
 
@@ -484,7 +492,8 @@ macros you defined earlier on in a file in your macros.
     b = """number(@begin)"""
     e = """number(@end)"""
 
-    headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" or @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp") """
+    headrel = """ ( @rel="hd" or @rel="cmp" or @rel="mwp" or @rel="crd" or 
+                    @rel="rhd" or @rel="whd" or @rel="nucl" or @rel="dp") """
 
     precedes_head_of_smain = """
     (  ancestor::node[@cat="smain"]/
@@ -559,7 +568,7 @@ context menu.
     [*/wikipedia*.dact]
     show xml = """gedit "/net/shared/treebanks/wikipedia/%1""""
 
-## Common errors
+## Common problems
 
 ### The application failed to initialize properly (0xc0000022)
 
