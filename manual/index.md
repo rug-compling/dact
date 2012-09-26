@@ -309,7 +309,7 @@ to your search query.
 
 > **Tip**
 >
-> The Inspector is detachable and can be torn of the Main window.
+> The Inspector is detachable and can be torn off the Main window.
 
 ### Gathering statistics
 
