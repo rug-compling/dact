@@ -176,6 +176,37 @@ simply be to require that the clause is followed by a question mark, and is not 
            not(@rel="body") and
            %e% < //node[@word="?"]/%e%]
 
+### Verbs which select an indirect question
+
+For Tristan. If you are interested in all verbs which can be used with an indirect WH-question, you can
+use the following query:
+
+    //node[@rel="hd" and 
+           @pt="ww" and
+           ../node[@rel="vc" and @cat="whsub"]
+          ]
+
+For the SONAR3 sub-part of the Lassy Large corpus, the most frequent verb lemmas are:
+
+    weten      112588
+    zien        29686
+    vragen      24283
+    zeggen      14398
+    vertellen   12811
+    
+Indirect yes/no-questions can be found with the query:
+
+    //node[@rel="hd" and
+           @pt="ww" and
+           ../node[@rel="vc" and 
+                   node[@rel="cmp" and
+                        @lemma="of"
+                       ]
+                   ]
+          ]
+          
+          
+
 ## Proper name subjects
 
     //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
