@@ -429,6 +429,28 @@ are found!
 
 > Klassieker kan een beurscorrectie niet verlopen dan de afgelopen dagen . 
 
+## Unbounded dependencies
+
+The following query will find WH-questions in which the WH-element is a dependent of an embedded finite verb,
+the prototypical case of a possibly unbounded dependency. 
+
+    //node[@rel="whd" and 
+           ../@cat="whq" and
+           %i% = //node[../@cat="ssub"]/%i%
+           ]
+           
+If you want to identify the verbs which "license" such a construction (the term "bridge verbs" is sometimes
+used for such cases), the query is:
+
+    //node[@rel="hd" and 
+           @pt="ww" and 
+           ../node/node[@cat="ssub" and 
+                        node[%i%=//node[@rel="whd" and 
+                                        ../@cat="whq"]/%i%  
+                            ]
+                        ] 
+           ]
+
 ## Verb Clusters
 
 In the Lassy corpora, verb clusters are typically not represented as a single node. For instance, the following
