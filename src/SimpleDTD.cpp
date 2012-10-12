@@ -15,8 +15,15 @@ void scanElement(void *payload, void *data, xmlChar *name)
     xmlElement *elem = reinterpret_cast<xmlElement*>(payload);
     ElementMap *elements = reinterpret_cast<ElementMap *>(data);
 
+    std::string elemName = reinterpret_cast<char const *>(elem->name);
+
+    // Some elements do not have attributes (e.g. 'sentence' in alpino_ds).
+    if (elements->find(elemName) == elements->end())
+        (*elements)[elemName] = std::set<std::string>();
+
+
     for (xmlAttributePtr attr = elem->attributes; attr != NULL; attr = reinterpret_cast<xmlAttributePtr>(attr->next))
-        (*elements)[reinterpret_cast<char const *>(elem->name)].insert(reinterpret_cast<char const *>(attr->name));
+        (*elements)[elemName].insert(reinterpret_cast<char const *>(attr->name));
 }
 }
 
