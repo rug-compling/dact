@@ -26,20 +26,27 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     d_ui->groupBoxWebservice->hide();
 #endif
 
-
-#ifndef __APPLE__
-    applyAppFont();
-
-    connect(d_ui->appFontPushButton, SIGNAL(clicked()),
-        SLOT(selectAppFont()));
-#else
-    d_ui->tabWidget->removeTab(0);
+// On OS X, setting the font becomes really awkward. So just don't.
+#ifdef __APPLE__
+    d_ui->fontsGroup->setVisible(false);
 #endif
 
+// This experimental feature is only available on Q_WS_MAC platforms
+#if !defined(Q_WS_MAC)
+    d_ui->experimentalGroup->setVisible(false);
+#endif
+
+    loadAppearanceTab();
     loadColorsTab();
     loadNetworkTab();
     loadRemoteTab();
     loadToolsTab();
+
+    connect(d_ui->appFontPushButton, SIGNAL(clicked()),
+        SLOT(selectAppFont()));
+    
+    connect(d_ui->useNativeGraphicsSystemCheckbox, SIGNAL(stateChanged(int)),
+        SLOT(saveAppearanceTab()));
 
     connect(d_ui->treeActiveNodeBorderColor, SIGNAL(colorSelected(QColor)),
         SLOT(saveColorsTab()));
@@ -77,9 +84,20 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
 PreferencesWindow::~PreferencesWindow() {}
 
-void PreferencesWindow::applyAppFont()
+void PreferencesWindow::loadAppearanceTab()
 {
+    QSettings settings;
+
     d_ui->appFontLineEdit->setText(qApp->font().family());
+
+    d_ui->useNativeGraphicsSystemCheckbox->setChecked(
+        settings.value("useNativeGraphicsSystem", false).toBool());
+}
+
+void PreferencesWindow::saveAppearanceTab()
+{
+    QSettings settings;
+    settings.setValue("useNativeGraphicsSystem", d_ui->useNativeGraphicsSystemCheckbox->isChecked());
 }
 
 void PreferencesWindow::selectAppFont()
@@ -93,7 +111,7 @@ void PreferencesWindow::selectAppFont()
 
     QSettings().setValue("appFont", newFont.toString());
 
-    applyAppFont();
+    loadAppearanceTab();
 }
 
 void PreferencesWindow::selectToolsFilePath()

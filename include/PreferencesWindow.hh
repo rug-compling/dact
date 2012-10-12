@@ -31,11 +31,12 @@ private slots:
     void saveWebserviceBaseUrl();
     void saveColorsTab();
     void saveToolsTab();
+    void saveAppearanceTab();
     void selectAppFont();
     void selectToolsFilePath();
     
 private:
-    void applyAppFont();
+    void loadAppearanceTab();
     void loadColorsTab();
     void loadNetworkTab();
     void loadRemoteTab();

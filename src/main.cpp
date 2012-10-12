@@ -36,21 +36,25 @@ int main(int argc, char *argv[])
     xmlXPathInit();
 
     int r = 0;
-#if defined(Q_WS_MAC)
-    // Work around a bug (#56) where Qt 4.8.x on Mac OS X does not
-    // invalidate the region of the popup when we hover as a result of
-    // mouse scrolling.
-    QApplication::setGraphicsSystem("raster");
-#endif
 
     try {
         QCoreApplication::setOrganizationName("RUG");
         QCoreApplication::setOrganizationDomain("rug.nl");
         QCoreApplication::setApplicationName("Dact");
 
+        QSettings settings;
+
+#if defined(Q_WS_MAC)
+        // Work around a bug (#56) where Qt 4.8.x on Mac OS X does not
+        // invalidate the region of the popup when we hover as a result of
+        // mouse scrolling.
+        if (!settings.value("useNativeGraphicsSystem", false).toBool())
+            QApplication::setGraphicsSystem("raster");
+#endif
+
+
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
     
-        QSettings settings;
         QVariant fontValue = settings.value("appFont", qApp->font().toString());
         
 #ifndef __APPLE__
