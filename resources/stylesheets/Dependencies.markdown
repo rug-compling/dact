@@ -18,3 +18,5 @@
 - @end
 - @cat | @root
 
+# Alpinocorpus dependencies
+Alpinocorpus::getSentence depends on `collectLexicals`, which selects nodes using `//node[@word]` and queries their `@begin` property.
