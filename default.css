@@ -346,6 +346,13 @@ article a {
 	margin: 16px;
 }
 
+#download .requirements {
+	display: inline-block;
+	font-size: 0.8em;
+	color: silver;	
+}
+
+
 #download #show-all-downloads-button {
 	display: block;
 	padding: 4px;
