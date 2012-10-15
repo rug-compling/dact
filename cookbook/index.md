@@ -62,12 +62,12 @@ and count the frequency of the "cat" attribute in the statistics widget
 
 
 
-<table align="right">
+<table>
 <tr>
-    <td>smain</td>    <td>58608</td>    <td>70.8%</td> 
+    <td>smain</td>    <td align='right'>58608</td>    <td>70.8%</td> 
 </tr>
 <tr>
-    <td>ssub</td>     <td>24211</td>    <td>29.2% </td>
+    <td>ssub</td>     <td align='right'>24211</td>    <td>29.2% </td>
 </tr>
 </table>
 
@@ -87,19 +87,19 @@ Free relatives are marked with a separate value for the "cat" attribute:
 We can find the various roles that such free relatives play by counting the attribute "rel" in
 the statistics window:
 
-<table align="right">
+<table>
 
-<tr><td>mod</td><td>469</td></tr>
-<tr><td>obj1</td><td>244</td></tr>
-<tr><td>su</td><td>169</td></tr>
-<tr><td>predc</td><td>61</td></tr>
-<tr><td>dp</td><td>42</td></tr>
-<tr><td>cnj</td><td>41</td></tr>
-<tr><td>sat</td><td>35</td></tr>
-<tr><td>--</td><td>29</td></tr>
-<tr><td>body</td><td>13</td></tr>
-<tr><td>nucl</td><td>9</td></tr>
-<tr><td>tag</td><td>3</td></tr>
+<tr><td>mod</td><td align='right'>469</td></tr>
+<tr><td>obj1</td><td align='right'>244</td></tr>
+<tr><td>su</td><td align='right'>169</td></tr>
+<tr><td>predc</td><td align='right'>61</td></tr>
+<tr><td>dp</td><td align='right'>42</td></tr>
+<tr><td>cnj</td><td align='right'>41</td></tr>
+<tr><td>sat</td><td align='right'>35</td></tr>
+<tr><td>--</td><td align='right'>29</td></tr>
+<tr><td>body</td><td align='right'>13</td></tr>
+<tr><td>nucl</td><td align='right'>9</td></tr>
+<tr><td>tag</td><td align='right'>3</td></tr>
 
 </table>
 
