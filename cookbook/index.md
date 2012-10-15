@@ -59,8 +59,10 @@ the following query:
     
 and count the frequency of the "cat" attribute in the statistics widget
 
-<br/>
-<div align="center">
+
+<div style="clear:both; width:100%; height:20px;"></div>
+
+
 <table align="right">
 <tr>
     <td>smain</td>    <td>58608</td>    <td>70.8%</td> 
@@ -69,7 +71,8 @@ and count the frequency of the "cat" attribute in the statistics widget
     <td>ssub</td>     <td>24211</td>    <td>29.2% </td>
 </tr>
 </table>
-</div>
+<div style="clear:both; width:100%; height:20px;"></div>
+
 <br/>
 
 
