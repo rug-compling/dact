@@ -60,7 +60,6 @@ the following query:
 and count the frequency of the "cat" attribute in the statistics widget
 
 
-<div style="clear:both; width:100%; height:20px;"></div>
 
 
 <table align="right">
@@ -71,9 +70,8 @@ and count the frequency of the "cat" attribute in the statistics widget
     <td>ssub</td>     <td>24211</td>    <td>29.2% </td>
 </tr>
 </table>
-<div style="clear:both; width:100%; height:20px;"></div>
 
-<br/>
+
 
 
 ### Relative clauses
@@ -89,17 +87,21 @@ Free relatives are marked with a separate value for the "cat" attribute:
 We can find the various roles that such free relatives play by counting the attribute "rel" in
 the statistics window:
 
-    mod   469
-    obj1  244
-    su	  169
-    predc  61
-    dp	   42
-    cnj	   41
-    sat	   35
-    --	   29
-    body   13
-    nucl    9
-    tag	    3
+<table>
+
+<tr><td>mod</td><td>469</td></tr>
+<tr><td>obj1</td><td>244</td></tr>
+<tr><td>su</td><td>169</td></tr>
+<tr><td>predc</td><td>61</td></tr>
+<tr><td>dp</td><td>42</td></tr>
+<tr><td>cnj</td><td>41</td></tr>
+<tr><td>sat</td><td>35</td></tr>
+<tr><td>--</td><td>29</td></tr>
+<tr><td>body</td><td>13</td></tr>
+<tr><td>nucl</td><td>9</td></tr>
+<tr><td>tag</td><td>3</td></tr>
+
+</table>
 
 ### Questions
 
