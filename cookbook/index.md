@@ -87,7 +87,7 @@ Free relatives are marked with a separate value for the "cat" attribute:
 We can find the various roles that such free relatives play by counting the attribute "rel" in
 the statistics window:
 
-<table>
+<table align="right">
 
 <tr><td>mod</td><td>469</td></tr>
 <tr><td>obj1</td><td>244</td></tr>
