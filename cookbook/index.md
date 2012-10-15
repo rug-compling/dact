@@ -204,11 +204,13 @@ use the following query:
 
 For the SONAR3 sub-part of the Lassy Large corpus, the most frequent verb lemmas are:
 
-    weten      112588
-    zien        29686
-    vragen      24283
-    zeggen      14398
-    vertellen   12811
+<table>
+<tr><td>weten</td><td align='right'>112588</td></tr>
+<tr><td>zien</td><td align='right'>29686</td></tr>
+<tr><td>vragen</td><td align='right'>24283</td></tr>
+<tr><td>zeggen</td><td align='right'>14398</td></tr>
+<tr><td>vertellen</td><td align='right'>12811</td></tr>
+</table>
     
 Indirect yes/no-questions can be found with the query:
 
@@ -499,14 +501,16 @@ To find out which governing verbs occur in a cross serial dependeny construction
                         
 Counting the frequency of the value of the "lemma" attribute gives:
                     
-    laten    199
-    doen	  42
-    zien	  32
-    hebben	   7
-    vinden	   3
-    helpen	   2
-    horen	   2
-    voelen	   1                    
+<table>
+<tr><td>laten</td><td align='right'>199</td></tr>
+<tr><td>doen</td><td align='right'>42</td></tr>
+<tr><td>zien</td><td align='right'>32</td></tr>
+<tr><td>hebben</td><td align='right'>7</td></tr>
+<tr><td>vinden</td><td align='right'>3</td></tr>
+<tr><td>helpen</td><td align='right'>2</td></tr>
+<tr><td>horen</td><td align='right'>2</td></tr>
+<tr><td>voelen</td><td align='right'>1</td></tr>
+</table>
 
 ## Using quantifiers in XPATH2
 
@@ -721,16 +725,18 @@ in a somewhat different way:
            
 Counting the attribute "word" of the matching nodes, might produce something like:
 
-    ingeplant       5
-    gedaan	        3
-    geslingerd	    3
-    opgelegd	    3
-    voorgeschoteld	3
-    aangenaaid	    2
-    geworpen	    2
-    uitgekeerd	    2
-    aangerekend	    1
-    betaald	        1
+<table>
+<tr><td>ingeplant</td><td align='right'>5</td></tr>
+<tr><td>gedaan</td><td align='right'>3</td></tr>
+<tr><td>geslingerd</td><td align='right'>3</td></tr>
+<tr><td>opgelegd</td><td align='right'>3</td></tr>
+<tr><td>voorgeschoteld</td><td align='right'>3</td></tr>
+<tr><td>aangenaaid</td><td align='right'>2</td></tr>
+<tr><td>geworpen</td><td align='right'>2</td></tr>
+<tr><td>uitgekeerd</td><td align='right'>2</td></tr>
+<tr><td>aangerekend</td><td align='right'>1</td></tr>
+<tr><td>betaald</td><td align='right'>1</td></tr>
+</table>
 
 ## Agreement mismatches and other surprises
 
