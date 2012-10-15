@@ -59,6 +59,8 @@ the following query:
     
 and count the frequency of the "cat" attribute in the statistics widget
 
+
+
 <table align="right">
 <tr>
     <td>smain</td>    <td>58608</td>    <td>70.8%</td> 
@@ -67,6 +69,9 @@ and count the frequency of the "cat" attribute in the statistics widget
     <td>ssub</td>     <td>24211</td>    <td>29.2% </td>
 </tr>
 </table>
+
+
+
 ### Relative clauses
 
 Finite relative clauses:
