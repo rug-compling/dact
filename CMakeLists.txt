@@ -140,6 +140,7 @@ SET(dact_SRCS
   src/QueryScope.cpp
   src/QtIOCompressor.cpp
   src/SimpleDTD.cpp
+  src/SimpleDTDAttribute.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
@@ -215,6 +216,7 @@ SET(dact_HDRS
   include/QueryScope.hh
   include/RecentFilesMenu.hh
   include/SimpleDTD.hh
+  include/SimpleDTDAttribute.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh

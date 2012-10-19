@@ -10,6 +10,7 @@
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/axis/NodeTest.hpp>
@@ -32,13 +33,65 @@ void ignoreStructuredError(void *userdata, xmlErrorPtr err)
 {
 }
 
+std::string getLiteral(VectorOfASTNodes const &nodes)
+{
+    for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+        if ((*it)->getType() == ASTNode::LITERAL)
+        {
+            XQLiteral *literal = reinterpret_cast<XQLiteral*>(*it);
+            return xercesc_3_0::XMLString::transcode(literal->getValue());
+        }
+
+    return std::string();
+}
+
+std::string getAttribute(VectorOfASTNodes const &nodes)
+{
+    ASTNode *expression = 0;
+
+    // First, find the Atomize node
+
+    for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+        if ((*it)->getType() == ASTNode::ATOMIZE)
+        {
+            XQAtomize *atomize = reinterpret_cast<XQAtomize*>(*it);
+            expression = atomize->getExpression();
+            break;
+        }
+    
+    if (expression == 0)
+        return std::string();
+
+    // Then, if there is a Navigation node, go to the last Step
+    if (expression->getType() == ASTNode::NAVIGATION)
+    {
+        XQNav *nav = reinterpret_cast<XQNav*>(expression);
+        XQNav::Steps steps(nav->getSteps());
+
+        expression = steps.back().step;
+    }
+    
+    // Then, traverse the Step node and get the attribute name
+    if (expression->getType() == ASTNode::STEP)
+    {
+        XQStep *step = reinterpret_cast<XQStep*>(expression);
+        NodeTest *test = step->getNodeTest();
+
+        char *nodeType = xercesc_3_0::XMLString::transcode(test->getNodeType());
+        if (strcmp(nodeType, "attribute") == 0)
+            return xercesc_3_0::XMLString::transcode(test->getNodeName());
+    }
+
+    // we failed.
+    return std::string();
+}
+
 bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &dtd)
 {
     switch (node->getType())
     {
         case ASTNode::NAVIGATION:
         {
-
             XQNav *nav = reinterpret_cast<XQNav*>(node);
             XQNav::Steps steps(nav->getSteps());
 
@@ -63,7 +116,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::FUNCTION:
         {
-
             XQFunction *fun = reinterpret_cast<XQFunction *>(node);
 
             VectorOfASTNodes const &args(fun->getArguments());
@@ -132,8 +184,8 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::OPERATOR:
         {
-
             XQOperator *op = reinterpret_cast<XQOperator *>(node);
+            char *operatorName = xercesc_3_0::XMLString::transcode(op->getOperatorName());
             VectorOfASTNodes const &args(op->getArguments());
 
             for (VectorOfASTNodes::const_iterator it = args.begin();
@@ -141,6 +193,18 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                 if (!inspect(*it, scope, dtd))
                     return false;
 
+            // If it is the comparison operator, test if the attribute can have the tested value
+            if (strcmp(operatorName, "comp") == 0)
+            {
+                // Find the literal and the atomized operants
+                std::string literal = getLiteral(args);
+                std::string attribute = getAttribute(args); 
+                
+                if (!literal.empty() && !attribute.empty())
+                    if (!dtd.allowValueForAttribute(literal, attribute))
+                        return false;
+            }
+            
             break;
         }
 
@@ -170,7 +234,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::XPATH1_CONVERT:
         {
-
             XPath1CompatConvertFunctionArg *conv =
                 reinterpret_cast<XPath1CompatConvertFunctionArg *>(node);
 
@@ -191,7 +254,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::DOCUMENT_ORDER:
         {
-
             XQDocumentOrder *docOrder = reinterpret_cast<XQDocumentOrder*>(node);
             if (!inspect(docOrder->getExpression(), scope, dtd))
                 return false;
@@ -201,7 +263,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::PREDICATE:
         {
-         
             XQPredicate *predicate = reinterpret_cast<XQPredicate*>(node);
             QSharedPointer<QueryScope> stepScope(new QueryScope(*scope));
             if (!inspect(predicate->getExpression(), stepScope, dtd))
@@ -215,7 +276,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::ATOMIZE:
         {
-
             XQAtomize *atomize = reinterpret_cast<XQAtomize*>(node);
             if (!inspect(atomize->getExpression(), scope, dtd))
                 return false;
@@ -361,6 +421,7 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
         AutoDelete<XQQuery> xqQuery(s_xqilla.parse(X(query.toUtf8().constData()), ctx));
 
         ASTNode *root = xqQuery->getQueryBody();
+        // std::cout << xqQuery->getQueryPlan() << std::endl;
 
         QSharedPointer<QueryScope> rootScope(new QueryScope());
         rootScope->setNodeName("[document root]");
