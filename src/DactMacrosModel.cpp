@@ -13,6 +13,7 @@ const QChar DactMacrosModel::d_symbol('%');
 
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
+    d_file(0),
     QAbstractItemModel(parent)
 {
     connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
@@ -21,8 +22,8 @@ DactMacrosModel::DactMacrosModel(QObject *parent)
 
 DactMacrosModel::~DactMacrosModel()
 {
-    foreach (DactMacrosFile *file, d_files)
-        delete file;
+    if (d_file)
+        delete d_file;
 }
     
 int DactMacrosModel::columnCount(const QModelIndex &parent) const
@@ -32,14 +33,10 @@ int DactMacrosModel::columnCount(const QModelIndex &parent) const
 
 int DactMacrosModel::rowCount(const QModelIndex &parent) const
 {
-    // No index? You must be new here. A row for each file
-    if (!parent.isValid())
-        return d_files.size();
+    // No index? You must be new here. A row for each macro
+    if (!parent.isValid() && d_file)
+        return d_file->macros().size();
 
-    // macrofiles have a row for each macro they contain
-    else if (parent.internalId() == ROOT_ID)
-        return d_files[parent.row()]->macros().size();
-    
     // macro's themselves have no rows
     return 0;
 }
@@ -70,58 +67,31 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     
-    // Aah, we are pointing at the root, also known as the list of macro files.
-    if (index.internalId() == ROOT_ID)
-    {
-        if (index.row() >= d_files.size() || index.column() != 0)
-            return QVariant();
-        
-        DactMacrosFile *file = d_files[index.row()];
-        QFileInfo fileInfo(file->file());
+    if (index.row() >= d_file->macros().size() || index.row() < 0 || index.column() > 1)
+        return QVariant();
 
-        switch (role)
+    DactMacro const &macro(d_file->macros().at(index.row()));
+    
+    if (role == Qt::DisplayRole)
+    {
+        switch (index.column())
         {
-            case Qt::DisplayRole:
-                return fileInfo.baseName();
+            case 0:
+                return macro.pattern;
             
-            case Qt::UserRole:
-                return fileInfo.filePath();
-            
-            default:
-                return QVariant();
+            case 1:
+                return macro.replacement;
         }
     }
-    // Are we pointing to a specific macro-file?
-    else if (index.internalId() >= 0 && index.internalId() < d_files.size())
+    else if (role == Qt::UserRole)
     {
-        DactMacrosFile *file = d_files[index.internalId()];
-
-        if (index.row() >= file->macros().size() || index.row() < 0 || index.column() > 1)
-            return QVariant();
-
-        DactMacro const &macro(file->macros().at(index.row()));
-        
-        if (role == Qt::DisplayRole)
+        switch (index.column())
         {
-            switch (index.column())
-            {
-                case 0:
-                    return macro.pattern;
-                
-                case 1:
-                    return macro.replacement;
-            }
-        }
-        else if (role == Qt::UserRole)
-        {
-            switch (index.column())
-            {
-                case 0:
-                    return d_symbol + macro.pattern + d_symbol;
-            }
+            case 0:
+                return d_symbol + macro.pattern + d_symbol;
         }
     }
-
+    
     // What is happening here?!
     //qDebug() << "Data asking for" << index.internalId() << index.row() << index.column() << "which does not exist";
     return QVariant();
@@ -129,90 +99,68 @@ QVariant DactMacrosModel::data(const QModelIndex &index, int role) const
 
 QModelIndex DactMacrosModel::index(int row, int column, QModelIndex const &parent) const
 {
-    // Invalid parent -> coordinates point to a file
-    if (!parent.isValid() && row < d_files.size() && column == 0)
-        return createIndex(row, column, ROOT_ID);
+    // Invalid parent -> coordinates point to a macro
+    if (!parent.isValid() && d_file && row < d_file->macros().size() && column == 0)
+        return createIndex(row, column);
     
-    // file-list is the parent -> coordinates point to a macro
-    if (parent.internalId() == ROOT_ID && parent.row() < d_files.size() && column < 2)
-        return createIndex(row, column, parent.row());
-
-    // yeah, that's it. This isn't Inception.
     return QModelIndex();
 }
 
 QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 {
-    if (!index.isValid())
-        return QModelIndex();
-    
-    // The First Man .. has no parents. Poor guy.
-    if (index.internalId() == ROOT_ID)
-        return QModelIndex();
-    
-    // otherwise it is probably pointing to a file,
-    // so let's return its position!
-    Q_ASSERT(index.internalId() >= 0);
-    return createIndex(index.internalId(), 0, ROOT_ID);
+    return QModelIndex();
 }
 
 void DactMacrosModel::loadFile(QString const &path)
 {
-    if (!d_watcher.files().contains(path))
-        d_watcher.addPath(path);
+    // Clear all previous telephone taps
+    d_watcher.removePaths(d_watcher.files());
 
-    try {    
+    try {
         readFile(path);
+
+        // If we can read it now, we should watch it for updates
+        d_watcher.addPath(path);
     } catch (std::runtime_error &e) {
         emit readError(QString::fromUtf8(e.what()));
     }
 }
 
-void DactMacrosModel::unloadFile(QString const &fileName)
+void DactMacrosModel::reloadFile()
 {
-    for (int i = 0; i < d_files.size(); ++i)
-    {
-        if (d_files[i]->file().fileName() == fileName)
-        {
-            d_files.removeAt(i);
-            dataChanged(index(i, 0), index(i, 0));
-            break;
-        }
-    }
+    if (!d_file)
+        return;
+
+    int prevCount = d_file->macros().size();
+    
+    d_file->reload();
+
+    dataChanged(index(0, 0), index(prevCount, 0));
 }
 
 void DactMacrosModel::readFile(QString const &fileName)
 {
-    int i;
-    // Is this file already loaded? Then just reload it.
-    for (i = 0; i < d_files.size(); ++i)
+    int prevCount = 0;
+
+    if (d_file)
     {
-        if (d_files[i]->file().fileName() == fileName)
-        {   
-            d_files[i]->reload();
-            break;
-        }   
+        prevCount = d_file->macros().size();
+        delete d_file;
     }
 
-    // Apparently it is a new file! CooL!
-    if (i == d_files.size())
-    {
-        DactMacrosFile *file = new DactMacrosFile(fileName);
-        d_files.insert(i, file);
-    }
+    d_file = new DactMacrosFile(fileName);
     
-    // Now tell everyone that that file changed
-    dataChanged(index(i, 0), index(i, 0));
+    dataChanged(index(0, 0), index(prevCount, 0));
 }
 
 QString DactMacrosModel::expand(QString const &expression)
 {
     QString query(expression);
     
-    foreach (DactMacrosFile *file, d_files)
-        foreach (DactMacro const &macro, file->macros())
+    if (d_file)   
+        foreach (DactMacro const &macro, d_file->macros())
             query = query.replace(d_symbol + macro.pattern + d_symbol, macro.replacement);
-    
+
     return query;
 }
 

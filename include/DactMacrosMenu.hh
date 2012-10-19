@@ -21,11 +21,10 @@ private slots:
 	void reload();
 	void macroActionTriggered();
 	void reloadActionTriggered();
-	void unloadActionTriggered();
 
 private:
 	QSharedPointer<DactMacrosModel> d_model;
-	QList<QMenu *> d_menus;
+	QList<QAction *> d_macroActions;
 };
 
 #endif

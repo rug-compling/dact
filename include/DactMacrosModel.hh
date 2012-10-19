@@ -16,10 +16,6 @@ class DactMacrosFile;
 class DactMacrosModel : public QAbstractItemModel
 {
     Q_OBJECT
-
-    // Make this zero or positive, and whatch the empire crumble. Seriously, don't do it.
-    static const int ROOT_ID = 1000;
-
 public:
     DactMacrosModel(QObject *parent = 0);
     ~DactMacrosModel();
@@ -39,7 +35,7 @@ public:
 public slots:
     void loadFile(QString const &path);
     void loadFileDelayed(QString const &path);
-    void unloadFile(QString const &path);
+    void reloadFile();
 
 signals:
     void readError(QString error);
@@ -48,7 +44,7 @@ private:
     void readFile(QString const &path);
 
 private:
-    QList<DactMacrosFile *> d_files;
+    DactMacrosFile *d_file;
     QFileSystemWatcher d_watcher;
     QMutex d_reloadMutex;
 
