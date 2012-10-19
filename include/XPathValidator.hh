@@ -28,6 +28,8 @@ public:
     void parseDTD();
     void setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader);
     State validate(QString &exprStr, int &pos) const;
+    bool validateAgainstDTD(QString const &exprStr) const;
+
 private:
     bool checkAgainstDTD(QString const &query) const;
 

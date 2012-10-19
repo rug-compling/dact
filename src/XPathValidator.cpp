@@ -432,6 +432,14 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
     }
 }
 
+bool XPathValidator::validateAgainstDTD(QString const &exprStr) const
+{
+    QString expandedExpr = d_macrosModel.isNull()
+        ? exprStr
+        : d_macrosModel->expand(exprStr); 
+    
+    return checkAgainstDTD(expandedExpr);
+}
 
 XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
 {
@@ -445,7 +453,7 @@ XPathValidator::State XPathValidator::validate(QString &exprStr, int &pos) const
         ? exprStr
         : d_macrosModel->expand(exprStr); 
     
-    bool valid = checkAgainstDTD(expandedExpr) && d_corpusReader->isValidQuery(alpinocorpus::CorpusReader::XPATH, d_variables,
+    bool valid = d_corpusReader->isValidQuery(alpinocorpus::CorpusReader::XPATH, d_variables,
         expandedExpr.toUtf8().constData()).isRight();
 
     return valid ? XPathValidator::Acceptable : XPathValidator::Intermediate;
