@@ -24,18 +24,21 @@ div.caption p {
 }
 
 table {
-  border: 1px solid #000;
-  border-width: 0px;
   border-spacing: 0px;
   border-collapse: collapse;
 }
 
-table th {
-  padding: 0.2em;
+table td {
+  border: 1px solid #ccc;
 }
 
-table td {
-  padding: 0.2em;
+table tr:nth-child(2n)
+{
+  background: #f8f8f8;
+}
+
+table th, table td {
+  padding: .25em .75em;
 }
 
 .italic {
