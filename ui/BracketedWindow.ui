@@ -32,21 +32,21 @@
     </layout>
    </item>
    <item>
-    <widget class="DactTableView" name="resultsTable" native="true">
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
-     </property>
+    <widget class="DactTableView" name="resultsTable">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
      </property>
-     <property name="showGrid">
-      <bool>false</bool>
-     </property>
      <property name="alternatingRowColors">
-       <bool>true</bool>
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="showGrid">
+      <bool>false</bool>
      </property>
      <attribute name="horizontalHeaderHighlightSections">
       <bool>false</bool>
@@ -84,11 +84,17 @@
       </spacer>
      </item>
      <item>
-       <widget class="QProgressBar" name="filterProgressBar">
-         <property name="visible">
-           <bool>false</bool>
-         </property>
-       </widget>
+      <widget class="QProgressBar" name="filterProgressBar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -98,7 +104,7 @@
     <string>&amp;Copy</string>
    </property>
    <property name="shortcut">
-    <enum>QKeySequence::Copy</enum>
+    <number>-1</number>
    </property>
    <property name="shortcutContext">
     <enum>Qt::WidgetShortcut</enum>
@@ -122,12 +128,6 @@
    <class>DactTableView</class>
    <extends>QTableView</extends>
    <header>DactTableView.hh</header>
-  </customwidget>
-  <customwidget>
-   <class>DactToolsMenu</class>
-   <extends>QMenu</extends>
-   <header>DactToolsMenu.hh</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -153,12 +153,32 @@
    <signal>triggered()</signal>
    <receiver>BracketedWindow</receiver>
    <slot>exportSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>resultsTable</sender>
    <signal>customContextMenuRequested(const QPoint &amp;)</signal>
    <receiver>BracketedWindow</receiver>
    <slot>showToolsMenu(QPoint const &amp;)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
