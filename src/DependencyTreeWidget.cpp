@@ -22,6 +22,15 @@
 
 #include "ui_DependencyTreeWidget.h"
 
+// Note that there is a race in this class, when a new filter is set.
+// d_model->runQuery may cancel an existing query, delivering a queryStopped()
+// signal. However, at that point d_filter is already reset. Since queries
+// run in a separate thread, we cannot connect signals directly.
+//
+// Consequence: don't rely on d_filter if the code path is treating stopping
+// of an older query.
+
+
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     CorpusWidget(parent),
     d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
@@ -211,8 +220,7 @@ void DependencyTreeWidget::mapperFinished(int processedEntries, int totalEntries
 
 void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
 {    
-    if (!d_filter.isEmpty())
-        d_ui->filterProgressBar->setVisible(false);
+    d_ui->filterProgressBar->setVisible(false);
     
     // Final counts. Doing this again is necessary, because the query may
     // have been cached. If so, it doesn't emit a signal for every entry.
@@ -277,12 +285,11 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
 }
 
 void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_filter)
-{    
-    d_filter = filter;
+{
     d_treeShown = false;
     d_file = QString();
     
-    if (d_filter.isEmpty()) {
+    if (filter.isEmpty()) {
         d_ui->statisticsGroupBox->hide();
         d_ui->hitsDescLabel->hide();
         d_ui->hitsLabel->hide();
@@ -297,7 +304,9 @@ void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_f
     setHighlight(raw_filter);
 
     if (d_model)
-        d_model->runQuery(d_filter);
+        d_model->runQuery(filter);
+
+    d_filter = filter;
 }
 
 void DependencyTreeWidget::setModel(FilterModel *model)
