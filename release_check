@@ -1,0 +1,48 @@
+#!/usr/bin/python
+#
+# This script performs checks that should be done before a new stable
+# release. Currently, there is only one check:
+#
+# * Verify that the DTD in the source tree is up to date.
+#
+
+import contextlib
+import difflib
+import os.path
+import urllib2
+
+ALPINODS_URL = r'https://bitbucket.org/alpino/alpino/raw/master/Treebank/alpino_ds.dtd'
+
+def fetchURL(url):
+	with contextlib.closing(urllib2.urlopen(url)) as f:
+		return f.read()
+
+
+def verifyDTD():
+	print "Checking freshness of the local alpino_ds DTD... ",
+
+	try:
+		currentDTD = fetchURL(ALPINODS_URL)
+	except urllib2.HTTPError:
+		print "Couldn't retrieve DTD!"
+		return
+
+	rootDir = os.path.dirname(os.path.realpath(__file__))
+
+	localDTD = str()
+	with open("%s/resources/dtd/alpino_ds.dtd" % rootDir, "r") as f:
+		localDTD = f.read()
+
+	if localDTD == currentDTD:
+		print "OK"
+		return
+
+	print "Local DTD is not up to date:\n"
+
+	# Print a fancy diff of the DTDs...
+	diff = difflib.context_diff(localDTD.split('\n'), currentDTD.split('\n'))
+	print '\n'.join(diff)
+
+
+if __name__ == "__main__":
+	verifyDTD()

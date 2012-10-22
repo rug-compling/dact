@@ -92,6 +92,16 @@ if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
 endif()
 
+find_package(XercesC REQUIRED)
+if (XERCESC_FOUND)
+  include_directories(${XERCESC_INCLUDE_DIR})
+endif()
+
+find_package(XQilla REQUIRED)
+if (XQILLA_FOUND)
+  include_directories(${XQILLA_INCLUDE_DIR})
+endif()
+
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
@@ -127,7 +137,10 @@ SET(dact_SRCS
   src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/QueryModel.cpp
+  src/QueryScope.cpp
   src/QtIOCompressor.cpp
+  src/SimpleDTD.cpp
+  src/SimpleDTDAttribute.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
@@ -200,7 +213,10 @@ SET(dact_HDRS
   include/QtIOCompressor.hh
   include/Query.hh
   include/QueryModel.hh
+  include/QueryScope.hh
   include/RecentFilesMenu.hh
+  include/SimpleDTD.hh
+  include/SimpleDTDAttribute.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -367,7 +383,8 @@ target_link_libraries(${PROGNAME} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXML2_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXSLT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})
-
+target_link_libraries(${PROGNAME} ${XERCESC_LIBRARY})
+target_link_libraries(${PROGNAME} ${XQILLA_LIBRARY})
 
 install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime
