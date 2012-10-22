@@ -1,6 +1,11 @@
 ## Changelog
 
-# 1.6 (not released)
+# 1.7 (not released)
+
+ * Validate queries against the DTD. If a query contains attributes or
+   elements that are not allowed by the DTD, query fields are yellow.
+
+# 1.6
 
  * Recursively open directories of Dact corpora, such as Lassy large.
  * Provide query processing progress information when opening multiple corpora.
