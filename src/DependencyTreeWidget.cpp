@@ -30,7 +30,11 @@ DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     d_ui->setupUi(this);
     
     addConnections();
-    
+
+    // Statistics are only shown after we have all entries, or when a
+    // query is executed...
+    d_ui->statisticsGroupBox->hide();
+
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);
@@ -177,10 +181,12 @@ void DependencyTreeWidget::mapperStarted(int totalEntries)
     d_ui->entriesLabel->setText(QString::number(0));
     d_ui->hitsLabel->setText(QString::number(0));
     
-    d_ui->filterProgressBar->setMinimum(0);
-    d_ui->filterProgressBar->setMaximum(totalEntries);
-    d_ui->filterProgressBar->setValue(0);
-    d_ui->filterProgressBar->setVisible(true);
+    if (!d_filter.isEmpty()) {
+        d_ui->filterProgressBar->setMinimum(0);
+        d_ui->filterProgressBar->setMaximum(totalEntries);
+        d_ui->filterProgressBar->setValue(0);
+        d_ui->filterProgressBar->setVisible(true);
+    }
 }
 
 void DependencyTreeWidget::mapperFailed(QString error)
@@ -205,7 +211,8 @@ void DependencyTreeWidget::mapperFinished(int processedEntries, int totalEntries
 
 void DependencyTreeWidget::mapperStopped(int processedEntries, int totalEntries)
 {    
-    d_ui->filterProgressBar->setVisible(false);
+    if (!d_filter.isEmpty())
+        d_ui->filterProgressBar->setVisible(false);
     
     // Final counts. Doing this again is necessary, because the query may
     // have been cached. If so, it doesn't emit a signal for every entry.
@@ -270,16 +277,18 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
 }
 
 void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_filter)
-{
+{    
     d_filter = filter;
     d_treeShown = false;
     d_file = QString();
     
     if (d_filter.isEmpty()) {
+        d_ui->statisticsGroupBox->hide();
         d_ui->hitsDescLabel->hide();
         d_ui->hitsLabel->hide();
         d_ui->statisticsLayout->setVerticalSpacing(0);
     } else {
+        d_ui->statisticsGroupBox->show();
         d_ui->statisticsLayout->setVerticalSpacing(-1);
         d_ui->hitsDescLabel->show();
         d_ui->hitsLabel->show();
