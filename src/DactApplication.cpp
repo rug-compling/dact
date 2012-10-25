@@ -1,14 +1,22 @@
-#include "DactApplication.hh"
-#include "DactApplicationEvent.hh"
 #include <QDebug>
 #include <QFileOpenEvent>
+#include <QScopedPointer>
 #include <QTimer>
+
+#include "DactApplication.hh"
+#include "DactApplicationEvent.hh"
+#include "GlobalMenuBar.hh"
 
 DactApplication::DactApplication(int &argc, char** argv)
 :
     QApplication(argc, argv),
-    d_mainWindow(0)   
+    d_mainWindow(0),
+    d_menu(new GlobalMenuBar)
+
 {
+#if defined(Q_WS_MAC)
+    setQuitOnLastWindowClosed(false);
+#endif
     //
 }
 

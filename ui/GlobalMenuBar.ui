@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GlobalMenuBar</class>
+  <widget class="QMenuBar" name="GlobalMenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>789</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="RecentFilesMenu" name="menuRecentFiles">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+    </widget>
+    <addaction name="openAction"/>
+    <addaction name="remoteAction"/>
+    <addaction name="menuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="saveAsAction"/>
+    <addaction name="separator"/>
+    <addaction name="saveCorpus"/>
+    <addaction name="xmlExportAction"/>
+    <addaction name="pdfExportAction"/>
+    <addaction name="printAction"/>
+    <addaction name="separator"/>
+    <addaction name="quitAction"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="focusFilterAction"/>
+    <addaction name="focusHighlightAction"/>
+    <addaction name="separator"/>
+    <addaction name="globalCopyAction"/>
+    <addaction name="globalCutAction"/>
+    <addaction name="globalPasteAction"/>
+    <addaction name="separator"/>
+    <addaction name="preferencesAction"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="previousAction"/>
+    <addaction name="nextAction"/>
+    <addaction name="separator"/>
+    <addaction name="fitAction"/>
+    <addaction name="zoomInAction"/>
+    <addaction name="zoomOutAction"/>
+    <addaction name="separator"/>
+    <addaction name="previousTreeNodeAction"/>
+    <addaction name="nextTreeNodeAction"/>
+    <addaction name="separator"/>
+    <addaction name="inspectorAction"/>
+    <addaction name="toolbarAction"/>
+    <addaction name="separator"/>
+    <addaction name="toggleFullScreenAction"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <widget class="QMenu" name="menuConvertCorpus">
+     <property name="title">
+      <string>Convert corpus</string>
+     </property>
+     <addaction name="convertDirectoryCorpusAction"/>
+     <addaction name="convertCompactCorpusAction"/>
+    </widget>
+    <addaction name="webserviceAction"/>
+    <addaction name="menuConvertCorpus"/>
+    <addaction name="separator"/>
+    <addaction name="clearHistoryAction"/>
+    <addaction name="separator"/>
+    <addaction name="checkForUpdatesAction"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="helpAction"/>
+    <addaction name="cookbookAction"/>
+    <addaction name="aboutAction"/>
+   </widget>
+   <widget class="DactMacrosMenu" name="menuMacros">
+    <property name="title">
+     <string>Macros</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="loadMacrosAction"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="minimizeAction"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuMacros"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  <action name="quitAction">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="fitAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/viewmagfit.png</normaloff>:/icons/viewmagfit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fit</string>
+   </property>
+   <property name="toolTip">
+    <string>Fit tree to tree view (Ctrl+0)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="zoomInAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/viewmag+.png</normaloff>:/icons/viewmag+.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom in</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom in on tree (Ctrl+=)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="zoomOutAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom out (Ctrl+-)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="nextTreeNodeAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next node</string>
+   </property>
+   <property name="toolTip">
+    <string>Next node (Ctrl+Right)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="previousTreeNodeAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>Previous node</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous node (Ctrl+Left)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="nextAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/next.png</normaloff>:/icons/next.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next</string>
+   </property>
+   <property name="toolTip">
+    <string>Next sentence/tree (Ctrl+Down)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="previousAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/previous.png</normaloff>:/icons/previous.png</iconset>
+   </property>
+   <property name="text">
+    <string>Previous</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous sentence/tree (Ctrl+Up)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="openAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="printAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/fileprint.png</normaloff>:/icons/fileprint.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Print…</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="xmlExportAction">
+   <property name="text">
+    <string>Export to XML…</string>
+   </property>
+  </action>
+  <action name="pdfExportAction">
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/pdf.png</normaloff>:/icons/pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export to PDF…</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="helpAction">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="remoteAction">
+   <property name="text">
+    <string>Open &amp;Remote…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="saveAsAction">
+   <property name="text">
+    <string>&amp;Save as…</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="saveCorpus">
+   <property name="text">
+    <string>Export to corpus…</string>
+   </property>
+  </action>
+  <action name="preferencesAction">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="focusFilterAction">
+   <property name="text">
+    <string>Filter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="focusHighlightAction">
+   <property name="text">
+    <string>Highlight</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+H</string>
+   </property>
+  </action>
+  <action name="inspectorAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/dact.qrc">
+     <normaloff>:/icons/documentinfo.png</normaloff>:/icons/documentinfo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Inspector</string>
+   </property>
+   <property name="toolTip">
+    <string>Show node inspector</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="webserviceAction">
+   <property name="text">
+    <string>Parse sentences...</string>
+   </property>
+  </action>
+  <action name="filterOnAttributeAction">
+   <property name="text">
+    <string>Filter on attribute</string>
+   </property>
+  </action>
+  <action name="loadMacrosAction">
+   <property name="text">
+    <string>Load file…</string>
+   </property>
+  </action>
+  <action name="globalCopyAction">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="globalCutAction">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="globalPasteAction">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="clearHistoryAction">
+   <property name="text">
+    <string>Clear query history</string>
+   </property>
+  </action>
+  <action name="minimizeAction">
+   <property name="text">
+    <string>Minimize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="toolbarAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionConvert_corpus">
+   <property name="text">
+    <string>Convert corpus…</string>
+   </property>
+  </action>
+  <action name="convertDirectoryCorpusAction">
+   <property name="text">
+    <string>Directory corpus…</string>
+   </property>
+  </action>
+  <action name="convertCompactCorpusAction">
+   <property name="text">
+    <string>Compact corpus…</string>
+   </property>
+  </action>
+  <action name="cookbookAction">
+   <property name="text">
+    <string>Cookbook</string>
+   </property>
+  </action>
+  <action name="toggleFullScreenAction">
+   <property name="text">
+    <string>Toggle Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+F</string>
+   </property>
+  </action>
+  <action name="checkForUpdatesAction">
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resources/dact.qrc"/>
+ </resources>
+ <customwidgets>
+   <customwidget>
+   <class>RecentFilesMenu</class>
+   <extends>QMenu</extends>
+   <header>RecentFilesMenu.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>DactMacrosMenu</class>
+   <extends>QMenu</extends>
+   <header>DactMacrosMenu.hh</header>
+  </customwidget>
+ </customwidgets>
+ <connections>
+  <connection>
+   <sender>quitAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>inspectorAction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setInspectorVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>749</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearHistoryAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clearQueryHistory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minimizeAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showMinimized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cookbookAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openCookbook()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toggleFullScreenAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggleFullScreen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkForUpdatesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>checkForUpdates()</slot>
+  </connection>
+ </connections>
+</ui>

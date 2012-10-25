@@ -2,6 +2,7 @@
 #define DACTAPPLICATION_H
 
 #include <QApplication>
+#include <QMenuBar>
 #include <QScopedPointer>
 #include <QUrl>
 #include "MainWindow.hh"
@@ -29,6 +30,7 @@ private:
     void _openUrl(QUrl const &url);
     QScopedPointer<MainWindow> d_mainWindow;
     bool d_dactStartedWithCorpus;
+    QScopedPointer<QMenuBar> d_menu;
 };
 
 #endif
