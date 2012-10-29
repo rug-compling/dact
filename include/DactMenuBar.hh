@@ -7,12 +7,19 @@
 
 #include "ui_DactMenuBar.h"
 
+class DactMacrosModel;
+
 class DactMenuBar : public QMenuBar
 {
 	Q_OBJECT
 public:
 	DactMenuBar(QWidget *parent = 0);
-	virtual ~DactMenuBar() {}
+	virtual ~DactMenuBar();
+
+	void addRecentFile(QString const &filename);
+	QSharedPointer<Ui::DactMenuBar const> ui();
+	void setMacrosModel(QSharedPointer<DactMacrosModel> model);
+
 private:
 	QSharedPointer<Ui::DactMenuBar> d_ui;
 };

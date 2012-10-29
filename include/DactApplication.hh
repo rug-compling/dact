@@ -5,7 +5,10 @@
 #include <QMenuBar>
 #include <QScopedPointer>
 #include <QUrl>
+
+#include "AboutWindow.hh"
 #include "MainWindow.hh"
+#include "PreferencesWindow.hh"
 
 class DactApplication: public QApplication
 {
@@ -19,7 +22,15 @@ public:
     int exec();
    
 public slots:
+    void openCookbook();
+    void showAboutWindow();
 	void showOpenCorpus();
+
+    /*!
+     Raises the PreferencesWindow.
+     */
+    void showPreferencesWindow();
+
 
 protected:
     bool event(QEvent *event);
@@ -28,9 +39,12 @@ private:
     void _openCorpora(QStringList const &fileNames);
     void _openMacros(QStringList const &fileNames);
     void _openUrl(QUrl const &url);
+
     QScopedPointer<MainWindow> d_mainWindow;
     bool d_dactStartedWithCorpus;
     QScopedPointer<QMenuBar> d_menu;
+    QScopedPointer<AboutWindow> d_aboutWindow;
+    QScopedPointer<PreferencesWindow> d_preferencesWindow;
 };
 
 #endif

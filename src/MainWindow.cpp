@@ -43,8 +43,8 @@
 
 #include <config.hh>
 
-#include <AboutWindow.hh>
 #include <AppleUtils.hh>
+#include <DactMenuBar.hh>
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
@@ -87,7 +87,6 @@ typedef std::list<std::string> ExtList;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
-    d_aboutWindow(new AboutWindow(this, Qt::Window)),
 #ifdef USE_WEBSERVICE
     d_webserviceWindow(0),
 #endif // USE_WEBSERVICE
@@ -95,18 +94,11 @@ MainWindow::MainWindow(QWidget *parent) :
     d_remoteWindow(0),
 #endif // USE_REMOTE_CORPUS
     d_openProgressDialog(new QProgressDialog(this)),
-    d_exportProgressDialog(new QProgressDialog(this)),
-    d_preferencesWindow(0)
+    d_exportProgressDialog(new QProgressDialog(this))
 {
     setupUi();
 
-#ifndef USE_WEBSERVICE
-    d_ui->menuTools->removeAction(d_ui->webserviceAction);
-#endif
-
-#ifndef USE_REMOTE_CORPUS
-    d_ui->menuFile->removeAction(d_ui->remoteAction);
-#endif
+    setMenuBar(new DactMenuBar(this));
 
     d_ui->filterComboBox->readHistory("filterHistory");
 
@@ -117,7 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
 
-    d_ui->menuMacros->setModel(d_macrosModel);
+    reinterpret_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
 
     d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
@@ -144,7 +136,6 @@ MainWindow::~MainWindow()
 {
     d_ui->filterComboBox->writeHistory("filterHistory");
 
-    delete d_aboutWindow;
 #ifdef USE_WEBSERVICE
     delete d_webserviceWindow;
 #endif // USE_WEBSERVICE
@@ -153,13 +144,6 @@ MainWindow::~MainWindow()
 #endif // USE_REMOTE_CORPUS
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
-    delete d_preferencesWindow;
-}
-
-void MainWindow::aboutDialog()
-{
-    d_aboutWindow->show();
-    d_aboutWindow->raise();
 }
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
@@ -431,69 +415,94 @@ void MainWindow::createActions()
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+
     // Actions
-    connect(d_ui->aboutAction, SIGNAL(triggered(bool)),
-        SLOT(aboutDialog()));
+    connect(menu->ui()->closeAction, SIGNAL(triggered(bool)),
+        SLOT(close()));
+
 #ifdef USE_REMOTE_CORPUS
+    // XXX: Move to DactMenuBar.
     connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
         SLOT(showRemoteWindow()));
 #endif // USE_REMOTE_CORPUS
+
+    // XXX: Move to DactMenuBar.
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         SLOT(openCorpus()));
-    connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
+
+    // XXX: Move to DactMenuBar.
+    connect(menu->ui()->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
-    connect(d_ui->saveAsAction, SIGNAL(triggered(bool)),
+
+    connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
       connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
           SLOT(exportCorpus()));
     else
       d_ui->saveCorpus->setDisabled(true);
-    connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
-    connect(d_ui->helpAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->helpAction, SIGNAL(triggered(bool)),
         SLOT(help()));
-    connect(d_ui->nextAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->nextAction, SIGNAL(triggered(bool)),
         d_ui->dependencyTreeWidget, SLOT(nextEntry(bool)));
-    connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->pdfExportAction, SIGNAL(triggered(bool)),
         SLOT(exportPDF()));
-    connect(d_ui->xmlExportAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->xmlExportAction, SIGNAL(triggered(bool)),
         SLOT(exportXML()));
-    connect(d_ui->preferencesAction, SIGNAL(triggered(bool)),
-        SLOT(preferencesWindow()));
-    connect(d_ui->previousAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->previousAction, SIGNAL(triggered(bool)),
         d_ui->dependencyTreeWidget, SLOT(previousEntry(bool)));
-    connect(d_ui->printAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->printAction, SIGNAL(triggered(bool)),
         SLOT(print()));
-    connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->zoomInAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(zoomIn()));
-    connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->zoomOutAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(zoomOut()));
-    connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusNextTreeNode()));
-    connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusPreviousTreeNode()));
-    connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->focusFilterAction, SIGNAL(triggered(bool)),
         SLOT(focusFilter()));
-    connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+    connect(menu->ui()->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusHighlight()));
-    connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
+    connect(menu->ui()->filterOnAttributeAction, SIGNAL(triggered()),
         SLOT(filterOnInspectorSelection()));
     connect(d_macrosModel.data(), SIGNAL(readError(QString)),
         SLOT(macrosReadError(QString)));
-    connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
+    connect(menu->ui()->loadMacrosAction, SIGNAL(triggered()),
         SLOT(openMacrosFile()));
-    connect(d_ui->toolbarAction, SIGNAL(toggled(bool)),
+    connect(menu->ui()->inspectorAction, SIGNAL(toggled(bool)),
+        SLOT(setInspectorVisible(bool)));
+    connect(menu->ui()->toolbarAction, SIGNAL(toggled(bool)),
         SLOT(setToolbarVisible(bool)));
     connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
         SLOT(setToolbarVisible(bool)));
+    connect(menu->ui()->clearHistoryAction, SIGNAL(triggered()),
+        SLOT(clearQueryHistory()));
+    connect(menu->ui()->minimizeAction, SIGNAL(triggered()),
+        SLOT(showMinimized()));
+    connect(menu->ui()->toggleFullScreenAction, SIGNAL(triggered()),
+        SLOT(toggleFullScreen()));
+
+    // XXX: Move to DactMenuBar
+    connect(menu->ui()->checkForUpdatesAction, SIGNAL(triggered()),
+        SLOT(checkForUpdates()));
+
     #ifdef USE_WEBSERVICE
-    connect(d_ui->webserviceAction, SIGNAL(triggered()),
+    // XXX: Move to DactMenuBar
+    connect(menu->ui()->webserviceAction, SIGNAL(triggered()),
         SLOT(showWebserviceWindow()));
     #endif // USE_WEBSERVICE
-    connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
+
+    // XXX: Move to DactMenuBar
+    connect(menu->ui()->convertCompactCorpusAction, SIGNAL(triggered()),
         SLOT(convertCompactCorpus()));
-    connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
+
+    // XXX: Move to DactMenuBar
+    connect(menu->ui()->convertDirectoryCorpusAction, SIGNAL(triggered()),
         SLOT(convertDirectoryCorpus()));
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
@@ -527,12 +536,6 @@ void MainWindow::help()
 {
     static QUrl const usage("http://rug-compling.github.com/dact/manual/");
     QDesktopServices::openUrl(usage);
-}
-
-void MainWindow::openCookbook()
-{
-    static QUrl const cookbook("http://rug-compling.github.com/dact/manual/cookbook.xhtml");
-    QDesktopServices::openUrl(cookbook);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -636,23 +639,6 @@ void MainWindow::exportPDF()
     d_ui->dependencyTreeWidget->renderTree(&painter);
 
     painter.end();
-}
-
-void MainWindow::preferencesWindow()
-{
-    if (d_preferencesWindow == 0)
-    {
-        d_preferencesWindow = new PreferencesWindow(this);
-
-        // Propagate preference changes...
-        connect(d_preferencesWindow, SIGNAL(colorChanged()),
-                d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
-        connect(d_preferencesWindow, SIGNAL(colorChanged()),
-                d_ui->sentencesWidget, SLOT(colorChanged()));
-    }
-
-    d_preferencesWindow->show();
-    d_preferencesWindow->raise();
 }
 
 void MainWindow::print()
@@ -783,7 +769,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
         if (QFileInfo(path).exists() || path.startsWith("http://") || path.startsWith("https://"))
             // Add file to the recent files menu
-            d_ui->menuRecentFiles->addFile(path);
+            reinterpret_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
     }
     else
     {

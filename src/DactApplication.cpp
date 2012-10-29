@@ -1,18 +1,21 @@
 #include <QDebug>
+#include <QDesktopServices>
 #include <QFileOpenEvent>
 #include <QScopedPointer>
 #include <QTimer>
 
-#include "DactApplication.hh"
-#include "DactApplicationEvent.hh"
-#include "GlobalMenuBar.hh"
+#include <AboutWindow.hh>
+#include <DactApplication.hh>
+#include <DactApplicationEvent.hh>
+#include <DactMenuBar.hh>
+#include <PreferencesWindow.hh>
 
-DactApplication::DactApplication(int &argc, char** argv)
-:
+DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
     d_mainWindow(0),
-    d_menu(new GlobalMenuBar)
-
+    d_menu(new DactMenuBar),
+    d_aboutWindow(new AboutWindow(0, Qt::Window)),
+    d_preferencesWindow(new PreferencesWindow)
 {
 #if defined(Q_WS_MAC)
     setQuitOnLastWindowClosed(false);
@@ -85,6 +88,13 @@ bool DactApplication::event(QEvent *event)
     return QApplication::event(event);
 }
 
+void DactApplication::openCookbook()
+{
+    static QUrl const cookbook("http://rug-compling.github.com/dact/manual/cookbook.xhtml");
+    QDesktopServices::openUrl(cookbook);
+}
+
+
 void DactApplication::openCorpora(QStringList const &fileNames)
 {
     postEvent(this, new DactApplicationEvent(DactApplicationEvent::CorpusOpen, fileNames));
@@ -141,8 +151,29 @@ void DactApplication::_openUrl(QUrl const &url)
     #endif
 }
 
+void DactApplication::showAboutWindow()
+{
+    d_aboutWindow->show();
+    d_aboutWindow->raise();
+}
+
 void DactApplication::showOpenCorpus()
 {
     if (!d_dactStartedWithCorpus)
         d_mainWindow->openCorpus();
+}
+
+void DactApplication::showPreferencesWindow()
+{
+
+    // Propagate preference changes...
+    /* XXX(OSX): make some DactApplication signal.
+    connect(d_preferencesWindow, SIGNAL(colorChanged()),
+            d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
+    connect(d_preferencesWindow, SIGNAL(colorChanged()),
+            d_ui->sentencesWidget, SLOT(colorChanged()));
+    */
+
+    d_preferencesWindow->show();
+    d_preferencesWindow->raise();
 }

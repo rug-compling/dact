@@ -1,115 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GlobalMenuBar</class>
-  <widget class="QMenuBar" name="GlobalMenuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>789</width>
-     <height>22</height>
-    </rect>
+ <class>DactMenuBar</class>
+ <widget class="QMenuBar" name="DactMenuBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>789</width>
+    <height>22</height>
+   </rect>
+  </property>
+  <widget class="QMenu" name="menuFile">
+   <property name="title">
+    <string>&amp;File</string>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="RecentFilesMenu" name="menuRecentFiles">
     <property name="title">
-     <string>&amp;File</string>
+     <string>Open Recent</string>
     </property>
-    <widget class="RecentFilesMenu" name="menuRecentFiles">
-     <property name="title">
-      <string>Open Recent</string>
-     </property>
-    </widget>
-    <addaction name="openAction"/>
-    <addaction name="remoteAction"/>
-    <addaction name="menuRecentFiles"/>
-    <addaction name="separator"/>
-    <addaction name="saveAsAction"/>
-    <addaction name="separator"/>
-    <addaction name="saveCorpus"/>
-    <addaction name="xmlExportAction"/>
-    <addaction name="pdfExportAction"/>
-    <addaction name="printAction"/>
-    <addaction name="separator"/>
-    <addaction name="quitAction"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <addaction name="openAction"/>
+   <addaction name="remoteAction"/>
+   <addaction name="menuRecentFiles"/>
+   <addaction name="separator"/>
+   <addaction name="saveAsAction"/>
+   <addaction name="separator"/>
+   <addaction name="saveCorpus"/>
+   <addaction name="xmlExportAction"/>
+   <addaction name="pdfExportAction"/>
+   <addaction name="printAction"/>
+   <addaction name="separator"/>
+   <addaction name="quitAction"/>
+  </widget>
+  <widget class="QMenu" name="menuEdit">
+   <property name="title">
+    <string>&amp;Edit</string>
+   </property>
+   <addaction name="focusFilterAction"/>
+   <addaction name="focusHighlightAction"/>
+   <addaction name="separator"/>
+   <addaction name="globalCopyAction"/>
+   <addaction name="globalCutAction"/>
+   <addaction name="globalPasteAction"/>
+   <addaction name="separator"/>
+   <addaction name="preferencesAction"/>
+  </widget>
+  <widget class="QMenu" name="menuView">
+   <property name="title">
+    <string>&amp;View</string>
+   </property>
+   <addaction name="previousAction"/>
+   <addaction name="nextAction"/>
+   <addaction name="separator"/>
+   <addaction name="fitAction"/>
+   <addaction name="zoomInAction"/>
+   <addaction name="zoomOutAction"/>
+   <addaction name="separator"/>
+   <addaction name="previousTreeNodeAction"/>
+   <addaction name="nextTreeNodeAction"/>
+   <addaction name="separator"/>
+   <addaction name="inspectorAction"/>
+   <addaction name="toolbarAction"/>
+   <addaction name="separator"/>
+   <addaction name="toggleFullScreenAction"/>
+  </widget>
+  <widget class="QMenu" name="menuTools">
+   <property name="title">
+    <string>&amp;Tools</string>
+   </property>
+   <widget class="QMenu" name="menuConvertCorpus">
     <property name="title">
-     <string>&amp;Edit</string>
+     <string>Convert corpus</string>
     </property>
-    <addaction name="focusFilterAction"/>
-    <addaction name="focusHighlightAction"/>
-    <addaction name="separator"/>
-    <addaction name="globalCopyAction"/>
-    <addaction name="globalCutAction"/>
-    <addaction name="globalPasteAction"/>
-    <addaction name="separator"/>
-    <addaction name="preferencesAction"/>
+    <addaction name="convertDirectoryCorpusAction"/>
+    <addaction name="convertCompactCorpusAction"/>
    </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>&amp;View</string>
-    </property>
-    <addaction name="previousAction"/>
-    <addaction name="nextAction"/>
-    <addaction name="separator"/>
-    <addaction name="fitAction"/>
-    <addaction name="zoomInAction"/>
-    <addaction name="zoomOutAction"/>
-    <addaction name="separator"/>
-    <addaction name="previousTreeNodeAction"/>
-    <addaction name="nextTreeNodeAction"/>
-    <addaction name="separator"/>
-    <addaction name="inspectorAction"/>
-    <addaction name="toolbarAction"/>
-    <addaction name="separator"/>
-    <addaction name="toggleFullScreenAction"/>
-   </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-    <widget class="QMenu" name="menuConvertCorpus">
-     <property name="title">
-      <string>Convert corpus</string>
-     </property>
-     <addaction name="convertDirectoryCorpusAction"/>
-     <addaction name="convertCompactCorpusAction"/>
-    </widget>
-    <addaction name="webserviceAction"/>
-    <addaction name="menuConvertCorpus"/>
-    <addaction name="separator"/>
-    <addaction name="clearHistoryAction"/>
-    <addaction name="separator"/>
-    <addaction name="checkForUpdatesAction"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="helpAction"/>
-    <addaction name="cookbookAction"/>
-    <addaction name="aboutAction"/>
-   </widget>
-   <widget class="DactMacrosMenu" name="menuMacros">
-    <property name="title">
-     <string>Macros</string>
-    </property>
-    <addaction name="separator"/>
-    <addaction name="loadMacrosAction"/>
-   </widget>
-   <widget class="QMenu" name="menuWindow">
-    <property name="title">
-     <string>Window</string>
-    </property>
-    <addaction name="minimizeAction"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuView"/>
-   <addaction name="menuTools"/>
-   <addaction name="menuMacros"/>
-   <addaction name="menuWindow"/>
-   <addaction name="menuHelp"/>
+   <addaction name="webserviceAction"/>
+   <addaction name="menuConvertCorpus"/>
+   <addaction name="separator"/>
+   <addaction name="clearHistoryAction"/>
+   <addaction name="separator"/>
+   <addaction name="checkForUpdatesAction"/>
+  </widget>
+  <widget class="QMenu" name="menuHelp">
+   <property name="title">
+    <string>Help</string>
+   </property>
+   <addaction name="helpAction"/>
+   <addaction name="cookbookAction"/>
+   <addaction name="aboutAction"/>
+  </widget>
+  <widget class="DactMacrosMenu" name="menuMacros">
+   <property name="title">
+    <string>Macros</string>
+   </property>
+   <addaction name="separator"/>
+   <addaction name="loadMacrosAction"/>
+  </widget>
+  <widget class="QMenu" name="menuWindow">
+   <property name="title">
+    <string>Window</string>
+   </property>
+   <addaction name="minimizeAction"/>
+   <addaction name="closeAction"/>
+  </widget>
   <action name="quitAction">
    <property name="text">
     <string>&amp;Quit</string>
@@ -466,12 +460,24 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="closeAction">
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <addaction name="menuFile"/>
+  <addaction name="menuEdit"/>
+  <addaction name="menuView"/>
+  <addaction name="menuTools"/>
+  <addaction name="menuMacros"/>
+  <addaction name="menuWindow"/>
+  <addaction name="menuHelp"/>
  </widget>
- <resources>
-  <include location="../resources/dact.qrc"/>
- </resources>
  <customwidgets>
-   <customwidget>
+  <customwidget>
    <class>RecentFilesMenu</class>
    <extends>QMenu</extends>
    <header>RecentFilesMenu.hh</header>
@@ -482,108 +488,8 @@
    <header>DactMacrosMenu.hh</header>
   </customwidget>
  </customwidgets>
- <connections>
-  <connection>
-   <sender>quitAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>inspectorAction</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setInspectorVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>749</x>
-     <y>360</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clearHistoryAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>clearQueryHistory()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>minimizeAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showMinimized()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cookbookAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>openCookbook()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toggleFullScreenAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>toggleFullScreen()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkForUpdatesAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>checkForUpdates()</slot>
-  </connection>
- </connections>
+ <resources>
+  <include location="../resources/dact.qrc"/>
+ </resources>
+ <connections/>
 </ui>

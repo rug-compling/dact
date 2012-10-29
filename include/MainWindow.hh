@@ -22,7 +22,6 @@ namespace Ui {
     class MainWindow;
 }
 
-class AboutWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -31,7 +30,6 @@ class WebserviceWindow;
 #endif // USE_WEBSERVICE
 class DactMacrosModel;
 class DactQueryHistory;
-class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -121,16 +119,9 @@ public slots:
 
     void statusMessage(QString message);
 
-    void openCookbook();
-
     void checkForUpdates();
 
 private slots:
-    /*!
-     Raise the about window
-    */
-    void aboutDialog();
-
     /*!
      Attached to the highlight and filter query fields. Called every keypress to
      validate the entered query. Uses this->sender() to determine which line edit
@@ -229,11 +220,6 @@ private slots:
     void macrosReadError(QString error);
 
     void openMacrosFile();
-
-    /*!
-     Instantiates (if not already done so) and raises the PreferencesWindow
-     */
-    void preferencesWindow();
 
     /*!
      Renders the current tree scene to the printer.
@@ -376,7 +362,6 @@ private:
     void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
-    AboutWindow *d_aboutWindow;
 #ifdef USE_WEBSERVICE
     WebserviceWindow *d_webserviceWindow;
 #endif // USE_WEBSERVICE
@@ -385,7 +370,6 @@ private:
 #endif // USE_REMOTE_CORPUS
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
-    PreferencesWindow *d_preferencesWindow;
 
     /*!
      The XPath query currently used for filtering files. This is after
