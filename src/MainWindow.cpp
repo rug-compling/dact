@@ -428,10 +428,6 @@ void MainWindow::createActions()
 #endif // USE_REMOTE_CORPUS
 
     // XXX: Move to DactMenuBar.
-    connect(d_ui->openAction, SIGNAL(triggered(bool)),
-        SLOT(openCorpus()));
-
-    // XXX: Move to DactMenuBar.
     connect(menu->ui()->menuRecentFiles, SIGNAL(fileSelected(QString)),
         SLOT(readCorpus(QString)));
 

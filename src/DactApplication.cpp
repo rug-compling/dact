@@ -8,11 +8,12 @@
 #include <DactApplication.hh>
 #include <DactApplicationEvent.hh>
 #include <DactMenuBar.hh>
+#include <MainWindow.hh>
+#include <OpenCorpusDialog.hh>
 #include <PreferencesWindow.hh>
 
 DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
-    d_mainWindow(0),
     d_menu(new DactMenuBar),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
     d_preferencesWindow(new PreferencesWindow)
@@ -25,8 +26,6 @@ DactApplication::DactApplication(int &argc, char** argv) :
 
 void DactApplication::init()
 {
-    d_mainWindow.reset(new MainWindow());
-    d_mainWindow->show();
 }
 
 int DactApplication::exec()
@@ -34,7 +33,8 @@ int DactApplication::exec()
     // If there is not a corpus opened in the first 50 miliseconds after
     // starting Dact, show the Open Corpus dialog. This because OS X sends
     // signals instead of commandline arguments.
-    QTimer::singleShot(50, this, SLOT(showOpenCorpus()));
+    if (!d_dactStartedWithCorpus)
+        QTimer::singleShot(50, this, SLOT(showOpenCorpus()));
 
     return QCoreApplication::exec();
 }
@@ -103,7 +103,10 @@ void DactApplication::openCorpora(QStringList const &fileNames)
 void DactApplication::_openCorpora(QStringList const &fileNames)
 {
     d_dactStartedWithCorpus = true;
-    d_mainWindow->readCorpora(fileNames, true);
+    MainWindow *window = new MainWindow();
+    window->setAttribute(Qt::WA_DeleteOnClose, true);
+    window->show();
+    window->readCorpora(fileNames, true);
 }
 
 void DactApplication::openMacros(QStringList const &fileNames)
@@ -113,7 +116,7 @@ void DactApplication::openMacros(QStringList const &fileNames)
 
 void DactApplication::_openMacros(QStringList const &fileNames)
 {
-    d_mainWindow->readMacros(fileNames);
+/*    d_mainWindow->readMacros(fileNames);*/
 }
 
 void DactApplication::openUrl(QUrl const &url)
@@ -129,7 +132,8 @@ void DactApplication::_openUrl(QUrl const &url)
     if (url.hasQueryItem("filter"))
     {
         QByteArray encodedFilter(url.queryItemValue("filter").toUtf8());
-        d_mainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+        // XXX: Reimplement
+        //d_mainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
     }
 
     // Disabled because I don't trust this functionality. I think it can
@@ -159,8 +163,23 @@ void DactApplication::showAboutWindow()
 
 void DactApplication::showOpenCorpus()
 {
-    if (!d_dactStartedWithCorpus)
-        d_mainWindow->openCorpus();
+//    if (!d_dactStartedWithCorpus)
+//        d_mainWindow->openCorpus();
+    QString corpusPath = OpenCorpusDialog::getCorpusFileName(0);
+    
+    if (corpusPath.isNull())
+        return;
+
+    QFileInfo fi(corpusPath);
+
+    MainWindow *window = new MainWindow();
+    window->setAttribute(Qt::WA_DeleteOnClose, true);
+    window->show();
+
+    if (fi.isDir())
+        window->readCorpus(corpusPath, true);
+    else
+        window->readCorpus(corpusPath);
 }
 
 void DactApplication::showPreferencesWindow()

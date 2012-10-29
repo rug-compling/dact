@@ -40,7 +40,6 @@ private:
     void _openMacros(QStringList const &fileNames);
     void _openUrl(QUrl const &url);
 
-    QScopedPointer<MainWindow> d_mainWindow;
     bool d_dactStartedWithCorpus;
     QScopedPointer<QMenuBar> d_menu;
     QScopedPointer<AboutWindow> d_aboutWindow;
