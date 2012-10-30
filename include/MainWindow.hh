@@ -25,9 +25,6 @@ namespace Ui {
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
-#ifdef USE_WEBSERVICE
-class WebserviceWindow;
-#endif // USE_WEBSERVICE
 class DactMacrosModel;
 class DactQueryHistory;
 class DactQueryWindow;
@@ -98,13 +95,6 @@ public slots:
      Toggle toolbar visibility.
     */
     void setToolbarVisible(bool visible);
-
-#ifdef USE_WEBSERVICE
-    /*!
-     Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
-     */
-    void showWebserviceWindow();
-#endif // USE_WEBSERVICE
 
 #ifdef USE_REMOTE_CORPUS
     /*!
@@ -345,9 +335,6 @@ private:
     void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
-#ifdef USE_WEBSERVICE
-    WebserviceWindow *d_webserviceWindow;
-#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     RemoteWindow *d_remoteWindow;
 #endif // USE_REMOTE_CORPUS

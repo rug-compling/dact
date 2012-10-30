@@ -2,6 +2,7 @@
 #include <QSharedPointer>
 #include <QWidget>
 
+#include <config.hh>
 #include <DactMenuBar.hh>
 
 #include <ui_DactMenuBar.h>
@@ -41,6 +42,10 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertDirectoryCorpus()));
+#ifdef USE_WEBSERVICE
+    connect(d_ui->webserviceAction, SIGNAL(triggered()),
+        qApp, SLOT(showWebserviceWindow()));
+#endif // USE_WEBSERVICE
 
 }
 

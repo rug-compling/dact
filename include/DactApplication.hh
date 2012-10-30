@@ -6,9 +6,13 @@
 #include <QScopedPointer>
 #include <QUrl>
 
+#include "config.hh"
 #include "AboutWindow.hh"
 #include "MainWindow.hh"
 #include "PreferencesWindow.hh"
+#ifdef USE_WEBSERVICE
+#include "WebserviceWindow.hh"
+#endif // USE_WEBSERVICE
 
 class DactApplication: public QApplication
 {
@@ -48,6 +52,12 @@ public slots:
      */
     void showPreferencesWindow();
 
+#ifdef USE_WEBSERVICE
+    /*!
+     Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
+     */
+    void showWebserviceWindow();
+#endif // USE_WEBSERVICE
 
 protected:
     bool event(QEvent *event);
@@ -61,6 +71,9 @@ private:
     bool d_dactStartedWithCorpus;
     QScopedPointer<QMenuBar> d_menu;
     QScopedPointer<AboutWindow> d_aboutWindow;
+#ifdef USE_WEBSERVICE
+    QScopedPointer<WebserviceWindow> d_webserviceWindow;
+#endif // USE_WEBSERVICE
     QScopedPointer<PreferencesWindow> d_preferencesWindow;
 };
 

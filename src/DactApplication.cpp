@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QUrl>
 
+#include <config.hh>
 #include <AboutWindow.hh>
 #include <DactApplication.hh>
 #include <DactApplicationEvent.hh>
@@ -14,17 +15,30 @@
 #include <MainWindow.hh>
 #include <OpenCorpusDialog.hh>
 #include <PreferencesWindow.hh>
+#ifdef USE_WEBSERVICE
+#include <WebserviceWindow.hh>
+#endif // USE_WEBSERVICE
 
 DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
     d_menu(new DactMenuBar(0, true)),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
+#ifdef USE_WEBSERVICE
+    d_webserviceWindow(new WebserviceWindow),
+#endif // USE_WEBSERVICE
     d_preferencesWindow(new PreferencesWindow)
 {
 #if defined(Q_WS_MAC)
     setQuitOnLastWindowClosed(false);
 #endif
     //
+
+#ifdef USE_WEBSERVICE
+    // Open a corpus if we have parsed some sentences.
+    connect(d_webserviceWindow.data(),
+        SIGNAL(parseSentencesFinished(QString)),
+        SLOT(openCorpus(QString)));
+#endif // USE_WEBSERVICE
 }
 
 void DactApplication::convertCorpus(QString const &path)
@@ -245,3 +259,13 @@ void DactApplication::showPreferencesWindow()
     d_preferencesWindow->show();
     d_preferencesWindow->raise();
 }
+
+#ifdef USE_WEBSERVICE
+void DactApplication::showWebserviceWindow()
+{
+    d_webserviceWindow->setWindowModality(Qt::WindowModal);
+
+    d_webserviceWindow->show();
+    d_webserviceWindow->raise();
+}
+#endif // USE_WEBSERVICE

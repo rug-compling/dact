@@ -45,9 +45,6 @@
 
 #include <AppleUtils.hh>
 #include <DactMenuBar.hh>
-#ifdef USE_WEBSERVICE
-#include <WebserviceWindow.hh>
-#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
@@ -86,9 +83,6 @@ typedef std::list<std::string> ExtList;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
-#ifdef USE_WEBSERVICE
-    d_webserviceWindow(0),
-#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     d_remoteWindow(0),
 #endif // USE_REMOTE_CORPUS
@@ -135,9 +129,6 @@ MainWindow::~MainWindow()
 {
     d_ui->filterComboBox->writeHistory("filterHistory");
 
-#ifdef USE_WEBSERVICE
-    delete d_webserviceWindow;
-#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     delete d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
@@ -230,26 +221,6 @@ void MainWindow::macrosReadError(QString error)
 {
     QMessageBox::critical(this, "Error reading macros", error);
 }
-
-#ifdef USE_WEBSERVICE
-void MainWindow::showWebserviceWindow()
-{
-    if (d_webserviceWindow == 0)
-    {
-        d_webserviceWindow = new WebserviceWindow(this, Qt::Window);
-        d_webserviceWindow->setWindowModality(Qt::WindowModal);
-
-        // When parsing is finished and the trees are received, load the freshly
-        // created corpus.
-        connect(d_webserviceWindow,
-            SIGNAL(parseSentencesFinished(QString)),
-            SLOT(readCorpus(QString)));
-    }
-
-    d_webserviceWindow->show();
-    d_webserviceWindow->raise();
-}
-#endif // USE_WEBSERVICE
 
 void MainWindow::saveAs()
 {
@@ -458,12 +429,6 @@ void MainWindow::createActions()
     // XXX: Move to DactMenuBar
     connect(menu->ui()->checkForUpdatesAction, SIGNAL(triggered()),
         SLOT(checkForUpdates()));
-
-    #ifdef USE_WEBSERVICE
-    // XXX: Move to DactMenuBar
-    connect(menu->ui()->webserviceAction, SIGNAL(triggered()),
-        SLOT(showWebserviceWindow()));
-    #endif // USE_WEBSERVICE
     
     new GlobalCopyCommand(d_ui->globalCopyAction);
     new GlobalCutCommand(d_ui->globalCutAction);
