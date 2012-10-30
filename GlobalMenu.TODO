@@ -2,7 +2,7 @@
   active windows.
 * Come up with a better manner to handle the history, now that there
   is more than one window.
-* Close a window if the opening of a corpus fails.
 * Fix loading of macros provided on the command-line.
+* Make the toolbar functional again.
 
 There is more...
