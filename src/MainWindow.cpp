@@ -428,6 +428,22 @@ void MainWindow::createActions()
     connect(menu->ui()->toggleFullScreenAction, SIGNAL(triggered()),
         SLOT(toggleFullScreen()));
 
+    // Toolbar variants
+    connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(fitTree()));
+    connect(d_ui->nextAction, SIGNAL(triggered(bool)),
+        d_ui->dependencyTreeWidget, SLOT(nextEntry(bool)));
+    connect(d_ui->previousAction, SIGNAL(triggered(bool)),
+        d_ui->dependencyTreeWidget, SLOT(previousEntry(bool)));
+    connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(zoomIn()));
+    connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(zoomOut()));
+    connect(d_ui->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(focusNextTreeNode()));
+    connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(focusPreviousTreeNode()));
+
     // XXX: Move to DactMenuBar
     connect(menu->ui()->checkForUpdatesAction, SIGNAL(triggered()),
         SLOT(checkForUpdates()));
