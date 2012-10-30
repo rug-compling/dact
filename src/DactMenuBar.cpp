@@ -29,6 +29,8 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showAboutWindow()));
     connect(d_ui->preferencesAction, SIGNAL(triggered(bool)),
         qApp, SLOT(showPreferencesWindow()));
+    connect(d_ui->helpAction, SIGNAL(triggered(bool)),
+        qApp, SLOT(openHelp()));
     connect(d_ui->cookbookAction, SIGNAL(triggered(bool)),
         qApp, SLOT(openCookbook()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),

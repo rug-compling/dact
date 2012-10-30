@@ -4,6 +4,7 @@
 #include <QScopedPointer>
 #include <QString>
 #include <QTimer>
+#include <QUrl>
 
 #include <AboutWindow.hh>
 #include <DactApplication.hh>
@@ -121,6 +122,12 @@ void DactApplication::_openCorpora(QStringList const &fileNames)
     window->setAttribute(Qt::WA_DeleteOnClose, true);
     window->show();
     window->readCorpora(fileNames, true);
+}
+
+void DactApplication::openHelp()
+{
+    static QUrl const usage("http://rug-compling.github.com/dact/manual/");
+    QDesktopServices::openUrl(usage);
 }
 
 void DactApplication::openMacros(QStringList const &fileNames)

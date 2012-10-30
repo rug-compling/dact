@@ -435,8 +435,6 @@ void MainWindow::createActions()
       d_ui->saveCorpus->setDisabled(true);
     connect(menu->ui()->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
-    connect(menu->ui()->helpAction, SIGNAL(triggered(bool)),
-        SLOT(help()));
     connect(menu->ui()->nextAction, SIGNAL(triggered(bool)),
         d_ui->dependencyTreeWidget, SLOT(nextEntry(bool)));
     connect(menu->ui()->pdfExportAction, SIGNAL(triggered(bool)),
@@ -521,12 +519,6 @@ void MainWindow::initTaintedWidgets()
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, false));
-}
-
-void MainWindow::help()
-{
-    static QUrl const usage("http://rug-compling.github.com/dact/manual/");
-    QDesktopServices::openUrl(usage);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

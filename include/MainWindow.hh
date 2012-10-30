@@ -204,11 +204,6 @@ private slots:
     void focusFilter();
 
     /*!
-     Opens the wiki in the default webbrowser.
-     */
-    void help();
-
-    /*!
      Report an error in reading macros.
      */
     void macrosReadError(QString error);

@@ -24,6 +24,12 @@ public:
 public slots:
     void openCookbook();
     void openCorpus(QString const &filename);
+
+    /*!
+     Opens manual in the default webbrowser.
+     */
+    void openHelp();
+
     void showAboutWindow();
 	void showOpenCorpus();
 
