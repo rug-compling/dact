@@ -1,8 +1,5 @@
-* When color preferences are changed, they should be applied in all
-  active windows.
 * Come up with a better manner to handle the history, now that there
   is more than one window.
 * Fix loading of macros provided on the command-line.
-* Make the toolbar functional again.
 
 There is more...
