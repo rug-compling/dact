@@ -64,12 +64,6 @@ public slots:
     void close();
 
     /*!
-     Calls the open file dialog and filters on the .data.dz extension
-     \sa readCorpus
-     */
-    void openCorpus();
-
-    /*!
      Start loading a corpus
      \param corpusPath path to a .dz or directory with the XML files
     */

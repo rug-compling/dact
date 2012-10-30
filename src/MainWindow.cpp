@@ -51,7 +51,6 @@
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
-#include <OpenCorpusDialog.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -581,23 +580,6 @@ void MainWindow::initSentenceTransformer()
     QTextStream xslStream(&xslFile);
     QString xsl(xslStream.readAll());
     d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
-}
-
-/* Open corpus dialogs */
-
-void MainWindow::openCorpus()
-{
-    QString corpusPath = OpenCorpusDialog::getCorpusFileName(this);
-    
-    if (corpusPath.isNull())
-        return;
-
-    QFileInfo fi(corpusPath);
-
-    if (fi.isDir())
-        readCorpus(corpusPath, true);
-    else
-        readCorpus(corpusPath);
 }
 
 void MainWindow::openMacrosFile()
