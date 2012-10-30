@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QMenuBar>
 #include <QScopedPointer>
+#include <QStringList>
 #include <QUrl>
 
 #include "config.hh"
@@ -76,6 +77,7 @@ private:
     void _openUrl(QUrl const &url);
 
     bool d_dactStartedWithCorpus;
+    QStringList d_argMacros;
     QScopedPointer<QMenuBar> d_menu;
     QScopedPointer<AboutWindow> d_aboutWindow;
 #ifdef USE_WEBSERVICE

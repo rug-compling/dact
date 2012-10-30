@@ -167,6 +167,8 @@ void DactApplication::openCorpus(QString const &filename)
         window->readCorpus(filename, true);
     else
         window->readCorpus(filename);
+
+    window->readMacros(d_argMacros);
 }
 
 void DactApplication::openCorpora(QStringList const &fileNames)
@@ -181,6 +183,7 @@ void DactApplication::_openCorpora(QStringList const &fileNames)
     window->setAttribute(Qt::WA_DeleteOnClose, true);
     window->show();
     window->readCorpora(fileNames, true);
+    window->readMacros(d_argMacros);
 }
 
 void DactApplication::openHelp()
@@ -196,7 +199,7 @@ void DactApplication::openMacros(QStringList const &fileNames)
 
 void DactApplication::_openMacros(QStringList const &fileNames)
 {
-/*    d_mainWindow->readMacros(fileNames);*/
+    d_argMacros = fileNames;
 }
 
 void DactApplication::openUrl(QUrl const &url)
