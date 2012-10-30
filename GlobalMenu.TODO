@@ -1,0 +1,11 @@
+* When color preferences are changed, they should be applied in all
+  active windows.
+* Come up with a better manner to handle the history, now that there
+  is more than one window.
+* Handle conversion actions in DactMenuBar/DactApplication. The procedure
+  should be: open a new window, call the corpus conversion of that window,
+  open the converted corpus.
+* Close a window if the opening of a corpus fails.
+* Fix loading of macros provided on the command-line.
+
+There is more...
