@@ -1,5 +1,6 @@
 #include <list>
 
+#include <QApplication>
 #include <QPainter>
 #include <QTextEdit>
 #include <QSettings>
@@ -18,6 +19,9 @@ BracketedSentenceWidget::BracketedSentenceWidget(QWidget *parent)
     setReadOnly(true);
 
     loadSettings();
+
+    connect(qApp, SIGNAL(colorPreferencesChanged()),
+            SLOT(colorChanged()));
 }
 
 void BracketedSentenceWidget::colorChanged()

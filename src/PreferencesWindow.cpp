@@ -218,6 +218,8 @@ void PreferencesWindow::restoreDefaultColors()
     settings.endGroup();
 
     loadColorsTab();
+
+    emit colorChanged();
 }
 
 void PreferencesWindow::restoreDefaultNetwork()

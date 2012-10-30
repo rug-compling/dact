@@ -136,6 +136,7 @@ SET(dact_SRCS
   src/DactToolsMenu.cpp
   src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
+  src/DactMenuBar.cpp
   src/QueryModel.cpp
   src/QueryScope.cpp
   src/QtIOCompressor.cpp
@@ -251,6 +252,7 @@ SET(dact_MOC_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
+  include/DactMenuBar.hh
   include/HistoryComboBox.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
@@ -274,6 +276,7 @@ SET(dact_UI
   ui/ArchiveListItemWidget.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
+  ui/DactMenuBar.ui
   ui/MainWindow.ui
   ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui

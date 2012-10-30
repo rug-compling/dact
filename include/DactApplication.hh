@@ -2,9 +2,18 @@
 #define DACTAPPLICATION_H
 
 #include <QApplication>
+#include <QMenuBar>
 #include <QScopedPointer>
+#include <QStringList>
 #include <QUrl>
+
+#include "config.hh"
+#include "AboutWindow.hh"
 #include "MainWindow.hh"
+#include "PreferencesWindow.hh"
+#ifdef USE_WEBSERVICE
+#include "WebserviceWindow.hh"
+#endif // USE_WEBSERVICE
 
 class DactApplication: public QApplication
 {
@@ -16,19 +25,71 @@ public:
     void openMacros(QStringList const &fileNames);
     void openUrl(QUrl const &url);
     int exec();
-   
+
+signals:
+    void colorPreferencesChanged();
+
 public slots:
+    /*!
+      Convert a compact corpus to a Dact corpus.
+     */
+    void convertCompactCorpus();
+
+    /*!
+      Convert a directory corpus to a Dact corpus.
+     */
+    void convertDirectoryCorpus();
+
+    void openCookbook();
+    void openCorpus(QString const &filename);
+
+    /*!
+     Opens manual in the default webbrowser.
+     */
+    void openHelp();
+
+    void showAboutWindow();
 	void showOpenCorpus();
+
+    /*!
+     Raises the PreferencesWindow.
+     */
+    void showPreferencesWindow();
+
+#ifdef USE_WEBSERVICE
+    /*!
+     Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
+     */
+    void showWebserviceWindow();
+#endif // USE_WEBSERVICE
 
 protected:
     bool event(QEvent *event);
 
+private slots:
+    void emitColorPreferencesChanged();
+    void prepareQuit();
+
+    /*!
+     Used when starting Dact, does not show the dialog if a corpus was provided
+     as a command-line argument.
+     */
+    void showOpenCorpusLaunch();
+
 private:
+    void convertCorpus(QString const &path);
     void _openCorpora(QStringList const &fileNames);
     void _openMacros(QStringList const &fileNames);
     void _openUrl(QUrl const &url);
-    QScopedPointer<MainWindow> d_mainWindow;
+
     bool d_dactStartedWithCorpus;
+    QStringList d_argMacros;
+    QScopedPointer<QMenuBar> d_menu;
+    QScopedPointer<AboutWindow> d_aboutWindow;
+#ifdef USE_WEBSERVICE
+    QScopedPointer<WebserviceWindow> d_webserviceWindow;
+#endif // USE_WEBSERVICE
+    QScopedPointer<PreferencesWindow> d_preferencesWindow;
 };
 
 #endif

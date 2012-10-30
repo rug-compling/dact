@@ -22,16 +22,11 @@ namespace Ui {
     class MainWindow;
 }
 
-class AboutWindow;
 #ifdef USE_REMOTE_CORPUS
 class RemoteWindow;
 #endif // USE_REMOTE_CORPUS
-#ifdef USE_WEBSERVICE
-class WebserviceWindow;
-#endif // USE_WEBSERVICE
 class DactMacrosModel;
 class DactQueryHistory;
-class PreferencesWindow;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
@@ -48,6 +43,7 @@ public:
 
 signals:
     void corpusReaderCreated();
+    void corpusWriterFinished(QString const &filename);
     void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
@@ -66,10 +62,9 @@ public slots:
     void close();
 
     /*!
-     Calls the open file dialog and filters on the .data.dz extension
-     \sa readCorpus
+     Convert the given corpus to a Dact corpus.
      */
-    void openCorpus();
+    void convertCorpus(QString const &path, QString const &writePath);
 
     /*!
      Start loading a corpus
@@ -101,13 +96,6 @@ public slots:
     */
     void setToolbarVisible(bool visible);
 
-#ifdef USE_WEBSERVICE
-    /*!
-     Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
-     */
-    void showWebserviceWindow();
-#endif // USE_WEBSERVICE
-
 #ifdef USE_REMOTE_CORPUS
     /*!
      Instantiate (if not already instantiated) and raise the remote window.
@@ -121,16 +109,9 @@ public slots:
 
     void statusMessage(QString message);
 
-    void openCookbook();
-
     void checkForUpdates();
 
 private slots:
-    /*!
-     Raise the about window
-    */
-    void aboutDialog();
-
     /*!
      Attached to the highlight and filter query fields. Called every keypress to
      validate the entered query. Uses this->sender() to determine which line edit
@@ -162,16 +143,6 @@ private slots:
     void clearQueryHistory();
 
     /*!
-      Convert a compact corpus to a Dact corpus.
-     */
-    void convertCompactCorpus();
-
-    /*!
-      Convert a directory corpus to a Dact corpus.
-     */
-    void convertDirectoryCorpus();
-
-    /*!
      Listens for the finished signal from the corpus readers. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.
@@ -184,7 +155,7 @@ private slots:
      */
     void corpusRead();
 
-    void corpusWritten(int idx);
+    void corpusWritten(QString const &filename);
 
     /*!
      * Save currently selected sentences to DBXML file (filename obtained from
@@ -219,21 +190,11 @@ private slots:
     void focusFilter();
 
     /*!
-     Opens the wiki in the default webbrowser.
-     */
-    void help();
-
-    /*!
      Report an error in reading macros.
      */
     void macrosReadError(QString error);
 
     void openMacrosFile();
-
-    /*!
-     Instantiates (if not already done so) and raises the PreferencesWindow
-     */
-    void preferencesWindow();
 
     /*!
      Renders the current tree scene to the printer.
@@ -293,8 +254,6 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    void convertCorpus(QString const &path);
-
     /*!
      Attaches all the signals from the ui and mapper to the various functions.
      */
@@ -376,16 +335,11 @@ private:
     void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
-    AboutWindow *d_aboutWindow;
-#ifdef USE_WEBSERVICE
-    WebserviceWindow *d_webserviceWindow;
-#endif // USE_WEBSERVICE
 #ifdef USE_REMOTE_CORPUS
     RemoteWindow *d_remoteWindow;
 #endif // USE_REMOTE_CORPUS
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
-    PreferencesWindow *d_preferencesWindow;
 
     /*!
      The XPath query currently used for filtering files. This is after
