@@ -70,6 +70,12 @@ private slots:
     void emitColorPreferencesChanged();
     void prepareQuit();
 
+    /*!
+     Used when starting Dact, does not show the dialog if a corpus was provided
+     as a command-line argument.
+     */
+    void showOpenCorpusLaunch();
+
 private:
     void convertCorpus(QString const &path);
     void _openCorpora(QStringList const &fileNames);

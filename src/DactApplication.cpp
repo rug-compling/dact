@@ -90,8 +90,7 @@ int DactApplication::exec()
     // If there is not a corpus opened in the first 50 miliseconds after
     // starting Dact, show the Open Corpus dialog. This because OS X sends
     // signals instead of commandline arguments.
-    if (!d_dactStartedWithCorpus)
-        QTimer::singleShot(50, this, SLOT(showOpenCorpus()));
+    QTimer::singleShot(50, this, SLOT(showOpenCorpusLaunch()));
 
     return QCoreApplication::exec();
 }
@@ -252,10 +251,15 @@ void DactApplication::showAboutWindow()
     d_aboutWindow->raise();
 }
 
+void DactApplication::showOpenCorpusLaunch()
+{
+    qDebug() << d_dactStartedWithCorpus;
+    if (!d_dactStartedWithCorpus)
+        showOpenCorpus();
+}
+
 void DactApplication::showOpenCorpus()
 {
-//    if (!d_dactStartedWithCorpus)
-//        d_mainWindow->openCorpus();
     QString corpusPath = OpenCorpusDialog::getCorpusFileName(0);
     
     if (corpusPath.isNull())
