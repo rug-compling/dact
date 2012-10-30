@@ -6,7 +6,7 @@
 
 #include <ui_DactMenuBar.h>
 
-DactMenuBar::DactMenuBar(QWidget *parent) :
+DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     QMenuBar(parent),
     d_ui(QSharedPointer<Ui::DactMenuBar>(new Ui::DactMenuBar))
 {
@@ -19,6 +19,9 @@ DactMenuBar::DactMenuBar(QWidget *parent) :
 #ifndef USE_REMOTE_CORPUS
     d_ui->menuFile->removeAction(d_ui->remoteAction);
 #endif
+
+    if (global)
+        disableLocalActions();
 
     connect(d_ui->quitAction, SIGNAL(triggered(bool)),
         qApp, SLOT(quit()));
@@ -43,6 +46,35 @@ void DactMenuBar::addRecentFile(QString const &filename)
 {
     d_ui->menuRecentFiles->addFile(filename);
 }
+
+void DactMenuBar::disableLocalActions()
+{
+    d_ui->saveAsAction->setEnabled(false);
+    d_ui->saveCorpus->setEnabled(false);
+    d_ui->xmlExportAction->setEnabled(false);
+    d_ui->pdfExportAction->setEnabled(false);
+    d_ui->printAction->setEnabled(false);
+    d_ui->focusFilterAction->setEnabled(false);
+    d_ui->focusHighlightAction->setEnabled(false);
+    d_ui->globalCopyAction->setEnabled(false);
+    d_ui->globalCutAction->setEnabled(false);
+    d_ui->globalPasteAction->setEnabled(false);
+    d_ui->previousAction->setEnabled(false);
+    d_ui->nextAction->setEnabled(false);
+    d_ui->fitAction->setEnabled(false);
+    d_ui->zoomInAction->setEnabled(false);
+    d_ui->zoomOutAction->setEnabled(false);
+    d_ui->previousTreeNodeAction->setEnabled(false);
+    d_ui->nextTreeNodeAction->setEnabled(false);
+    d_ui->inspectorAction->setEnabled(false);
+    d_ui->toolbarAction->setEnabled(false);
+    d_ui->toggleFullScreenAction->setEnabled(false);
+    d_ui->clearHistoryAction->setEnabled(false);
+    d_ui->loadMacrosAction->setEnabled(false);
+    d_ui->minimizeAction->setEnabled(false);
+    d_ui->closeAction->setEnabled(false);
+}
+
 
 void DactMenuBar::setMacrosModel(QSharedPointer<DactMacrosModel> model)
 {

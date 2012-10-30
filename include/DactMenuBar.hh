@@ -13,7 +13,7 @@ class DactMenuBar : public QMenuBar
 {
 	Q_OBJECT
 public:
-	DactMenuBar(QWidget *parent = 0);
+	DactMenuBar(QWidget *parent = 0, bool global = false);
 	virtual ~DactMenuBar();
 
 	void addRecentFile(QString const &filename);
@@ -21,6 +21,8 @@ public:
 	void setMacrosModel(QSharedPointer<DactMacrosModel> model);
 
 private:
+	void disableLocalActions();
+
 	QSharedPointer<Ui::DactMenuBar> d_ui;
 };
 

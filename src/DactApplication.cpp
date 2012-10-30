@@ -15,7 +15,7 @@
 
 DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
-    d_menu(new DactMenuBar),
+    d_menu(new DactMenuBar(0, true)),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
     d_preferencesWindow(new PreferencesWindow)
 {
