@@ -30,6 +30,9 @@ DactMenuBar::DactMenuBar(QWidget *parent) :
         qApp, SLOT(openCookbook()));
     connect(d_ui->openAction, SIGNAL(triggered(bool)),
         qApp, SLOT(showOpenCorpus()));
+    connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
+        qApp, SLOT(openCorpus(QString)));
+
 }
 
 DactMenuBar::~DactMenuBar()

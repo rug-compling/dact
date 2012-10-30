@@ -2,6 +2,7 @@
 #include <QDesktopServices>
 #include <QFileOpenEvent>
 #include <QScopedPointer>
+#include <QString>
 #include <QTimer>
 
 #include <AboutWindow.hh>
@@ -94,6 +95,19 @@ void DactApplication::openCookbook()
     QDesktopServices::openUrl(cookbook);
 }
 
+void DactApplication::openCorpus(QString const &filename)
+{    
+    QFileInfo fi(filename);
+
+    MainWindow *window = new MainWindow();
+    window->setAttribute(Qt::WA_DeleteOnClose, true);
+    window->show();
+
+    if (fi.isDir())
+        window->readCorpus(filename, true);
+    else
+        window->readCorpus(filename);
+}
 
 void DactApplication::openCorpora(QStringList const &fileNames)
 {
@@ -170,16 +184,7 @@ void DactApplication::showOpenCorpus()
     if (corpusPath.isNull())
         return;
 
-    QFileInfo fi(corpusPath);
-
-    MainWindow *window = new MainWindow();
-    window->setAttribute(Qt::WA_DeleteOnClose, true);
-    window->show();
-
-    if (fi.isDir())
-        window->readCorpus(corpusPath, true);
-    else
-        window->readCorpus(corpusPath);
+    openCorpus(corpusPath);
 }
 
 void DactApplication::showPreferencesWindow()

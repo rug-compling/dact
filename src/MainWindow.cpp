@@ -426,10 +426,6 @@ void MainWindow::createActions()
         SLOT(showRemoteWindow()));
 #endif // USE_REMOTE_CORPUS
 
-    // XXX: Move to DactMenuBar.
-    connect(menu->ui()->menuRecentFiles, SIGNAL(fileSelected(QString)),
-        SLOT(readCorpus(QString)));
-
     connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))

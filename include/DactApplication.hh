@@ -23,6 +23,7 @@ public:
    
 public slots:
     void openCookbook();
+    void openCorpus(QString const &filename);
     void showAboutWindow();
 	void showOpenCorpus();
 
