@@ -24,7 +24,10 @@ public:
     void openMacros(QStringList const &fileNames);
     void openUrl(QUrl const &url);
     int exec();
-   
+
+signals:
+    void colorPreferencesChanged();
+
 public slots:
     /*!
       Convert a compact corpus to a Dact corpus.
@@ -63,6 +66,7 @@ protected:
     bool event(QEvent *event);
 
 private slots:
+    void emitColorPreferencesChanged();
     void prepareQuit();
 
 private:

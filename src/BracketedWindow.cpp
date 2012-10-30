@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
@@ -187,6 +188,9 @@ void BracketedWindow::createActions()
 
     connect(d_ui->filenamesCheckBox, SIGNAL(toggled(bool)),
         SLOT(showFilenamesChanged()));
+
+    connect(qApp, SIGNAL(colorPreferencesChanged()),
+            SLOT(colorChanged()));
 }
 
 void BracketedWindow::showFilenames(bool show)

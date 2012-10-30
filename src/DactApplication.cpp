@@ -80,8 +80,9 @@ void DactApplication::convertDirectoryCorpus()
     convertCorpus(corpusPath);
 }
 
-void DactApplication::init()
+void DactApplication::emitColorPreferencesChanged()
 {
+    emit colorPreferencesChanged();
 }
 
 int DactApplication::exec()
@@ -142,6 +143,10 @@ bool DactApplication::event(QEvent *event)
         
     
     return QApplication::event(event);
+}
+
+void DactApplication::init()
+{
 }
 
 void DactApplication::openCookbook()
@@ -258,14 +263,8 @@ void DactApplication::showOpenCorpus()
 
 void DactApplication::showPreferencesWindow()
 {
-
-    // Propagate preference changes...
-    /* XXX(OSX): make some DactApplication signal.
-    connect(d_preferencesWindow, SIGNAL(colorChanged()),
-            d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
-    connect(d_preferencesWindow, SIGNAL(colorChanged()),
-            d_ui->sentencesWidget, SLOT(colorChanged()));
-    */
+    connect(d_preferencesWindow.data(), SIGNAL(colorChanged()),
+        SLOT(emitColorPreferencesChanged()));
 
     d_preferencesWindow->show();
     d_preferencesWindow->raise();
