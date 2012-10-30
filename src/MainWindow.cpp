@@ -301,6 +301,7 @@ void MainWindow::openRemoteCorpus(QString const &url)
 void MainWindow::showOpenCorpusError(QString const &error)
 {
     QMessageBox::critical(this, "Open error", error);
+    close();
 }
 
 void MainWindow::showWriteCorpusError(QString const &error)
