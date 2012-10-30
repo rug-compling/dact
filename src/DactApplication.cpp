@@ -253,7 +253,6 @@ void DactApplication::showAboutWindow()
 
 void DactApplication::showOpenCorpusLaunch()
 {
-    qDebug() << d_dactStartedWithCorpus;
     if (!d_dactStartedWithCorpus)
         showOpenCorpus();
 }
