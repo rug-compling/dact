@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDesktopServices>
+#include <QFileDialog>
 #include <QFileOpenEvent>
 #include <QScopedPointer>
 #include <QString>
@@ -24,6 +25,42 @@ DactApplication::DactApplication(int &argc, char** argv) :
     setQuitOnLastWindowClosed(false);
 #endif
     //
+}
+
+void DactApplication::convertCorpus(QString const &path)
+{
+    QString newPath = QFileDialog::getSaveFileName(0,
+        "New Dact corpus", QString(), "*.dact");
+    if (newPath.isNull())
+        return;
+
+    MainWindow *window = new MainWindow();
+    window->setAttribute(Qt::WA_DeleteOnClose, true);
+    window->show();
+    window->convertCorpus(path, newPath);
+
+}
+
+
+void DactApplication::convertCompactCorpus()
+{
+    QString corpusPath = QFileDialog::getOpenFileName(0,
+        "Open compact corpus", QString(),
+        QString("Compact corpora (*.data.dz)"));
+    if (corpusPath.isNull())
+        return;
+
+    convertCorpus(corpusPath);
+}
+
+void DactApplication::convertDirectoryCorpus()
+{
+    QString corpusPath = QFileDialog::getExistingDirectory(0,
+        "Open directory corpus");
+    if (corpusPath.isNull())
+        return;
+
+    convertCorpus(corpusPath);
 }
 
 void DactApplication::init()

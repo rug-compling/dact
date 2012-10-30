@@ -46,6 +46,7 @@ public:
 
 signals:
     void corpusReaderCreated();
+    void corpusWriterFinished(QString const &filename);
     void queryCancelRequest();
     void exportProgressMaximum(int max);
     void exportProgress(int progress);
@@ -62,6 +63,11 @@ public slots:
      Hide the main window
     */
     void close();
+
+    /*!
+     Convert the given corpus to a Dact corpus.
+     */
+    void convertCorpus(QString const &path, QString const &writePath);
 
     /*!
      Start loading a corpus
@@ -147,16 +153,6 @@ private slots:
     void clearQueryHistory();
 
     /*!
-      Convert a compact corpus to a Dact corpus.
-     */
-    void convertCompactCorpus();
-
-    /*!
-      Convert a directory corpus to a Dact corpus.
-     */
-    void convertDirectoryCorpus();
-
-    /*!
      Listens for the finished signal from the corpus readers. When heard, it hides
      the OpenProgressDialog, calls addFiles to start loading the file list and changes
      the current corpus used by the bracketed window and statics window.
@@ -169,7 +165,7 @@ private slots:
      */
     void corpusRead();
 
-    void corpusWritten(int idx);
+    void corpusWritten(QString const &filename);
 
     /*!
      * Save currently selected sentences to DBXML file (filename obtained from
@@ -268,8 +264,6 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    void convertCorpus(QString const &path);
-
     /*!
      Attaches all the signals from the ui and mapper to the various functions.
      */

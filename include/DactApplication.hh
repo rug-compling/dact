@@ -22,6 +22,16 @@ public:
     int exec();
    
 public slots:
+    /*!
+      Convert a compact corpus to a Dact corpus.
+     */
+    void convertCompactCorpus();
+
+    /*!
+      Convert a directory corpus to a Dact corpus.
+     */
+    void convertDirectoryCorpus();
+
     void openCookbook();
     void openCorpus(QString const &filename);
 
@@ -43,6 +53,7 @@ protected:
     bool event(QEvent *event);
 
 private:
+    void convertCorpus(QString const &path);
     void _openCorpora(QStringList const &fileNames);
     void _openMacros(QStringList const &fileNames);
     void _openUrl(QUrl const &url);

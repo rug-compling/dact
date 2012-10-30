@@ -37,6 +37,10 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showOpenCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         qApp, SLOT(openCorpus(QString)));
+    connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
+        qApp, SLOT(convertCompactCorpus()));
+    connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
+        qApp, SLOT(convertDirectoryCorpus()));
 
 }
 
