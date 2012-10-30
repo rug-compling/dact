@@ -305,7 +305,9 @@ void MainWindow::showOpenCorpusError(QString const &error)
 
 void MainWindow::showWriteCorpusError(QString const &error)
 {
+    d_exportProgressDialog->accept();
     QMessageBox::critical(this, "Export error", error);
+    close();
 }
 
 void MainWindow::statisticsEntryActivated(QString const &value, QString const &query)
