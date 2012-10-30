@@ -127,6 +127,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    cancelQuery();
+
     d_ui->filterComboBox->writeHistory("filterHistory");
 
 #ifdef USE_REMOTE_CORPUS

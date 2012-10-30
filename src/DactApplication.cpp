@@ -33,6 +33,9 @@ DactApplication::DactApplication(int &argc, char** argv) :
 #endif
     //
 
+    connect(this, SIGNAL(aboutToQuit()),
+        SLOT(prepareQuit()));
+
 #ifdef USE_WEBSERVICE
     // Open a corpus if we have parsed some sentences.
     connect(d_webserviceWindow.data(),
@@ -225,6 +228,14 @@ void DactApplication::_openUrl(QUrl const &url)
         d_mainWindow->readCorpora(fileNames);
     }
     #endif
+}
+
+void DactApplication::prepareQuit()
+{
+    // Explicitly close all windows before quitting. This will cancel
+    // any running queries. If we do not do this, ~QCoreApplication
+    // will wait until every thread in the thread pool is finished.
+    closeAllWindows();
 }
 
 void DactApplication::showAboutWindow()

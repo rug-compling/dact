@@ -62,6 +62,9 @@ public slots:
 protected:
     bool event(QEvent *event);
 
+private slots:
+    void prepareQuit();
+
 private:
     void convertCorpus(QString const &path);
     void _openCorpora(QStringList const &fileNames);
