@@ -255,12 +255,6 @@ private:
     void focusTreeNode(int direction);
 
     /*!
-     Initialize and load stylesheet for the the sentence xsl transformer
-     \sa sentenceForFile
-     */
-    void initSentenceTransformer();
-
-    /*!
      Initialize the tainted widget list.
      */
     void initTaintedWidgets();
@@ -339,22 +333,7 @@ private:
      The macros model. Used to store and apply macros to XPath queries.
      */
     QSharedPointer<DactMacrosModel> d_macrosModel;
-
-    /*!
-     Query history. Used to store the last x queries entered. It should come
-     with an autocomplete function for the query fields, but it doesn't.. yet.
-     */
-#if 0
-    QSharedPointer<DactQueryHistory> d_queryHistory;
-#endif
-
-    /*!
-     XSLTransformer with a stylesheet loaded to transform a corpus xml
-     into a plain text sentence.
-     \sa showSentence
-     */
-    QSharedPointer<XSLTransformer> d_sentenceTransformer;
-
+    
     QMutex d_addFilesMutex;
     QMutex d_filterChangedMutex;
 
@@ -381,18 +360,6 @@ private:
      something from the corpus.
      */
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-
-    /*!
-     Current tree scene, used to display tree xml as a interactive visual tree.
-     */
-    DactTreeScene *d_treeScene;
-
-    /*!
-     Used in the for-loop in addFiles, the openProgressDialog's cancel button
-     can set this to false to stop the loop.
-     \sa addFiles
-     */
-    bool d_addFilesCancelled;
 
     /*!
      Used in the for-loop in writeCorpus, the exportProgressDialog's cancel

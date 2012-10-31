@@ -44,7 +44,6 @@
 #include <DactTreeScene.hh>
 #include <TreeNode.hh>
 #include <XPathValidator.hh>
-#include <XSLTransformer.hh>
 #include <ValidityColor.hh>
 #include <ui_MainWindow.h>
 #include <Query.hh>
@@ -92,8 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     d_ui->dependencyTreeWidget->setMacrosModel(d_macrosModel);
 
     readSettings();
-
-    initSentenceTransformer();
 
     createActions();
 
@@ -448,16 +445,6 @@ void MainWindow::filterChanged()
 void MainWindow::focusFilter()
 {
     d_ui->filterComboBox->setFocus();
-}
-
-void MainWindow::initSentenceTransformer()
-{
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&xslFile);
-    QString xsl(xslStream.readAll());
-    d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
 }
 
 void MainWindow::openMacrosFile()
