@@ -397,21 +397,6 @@
     <string>Load file…</string>
    </property>
   </action>
-  <action name="globalCopyAction">
-   <property name="text">
-    <string>Copy</string>
-   </property>
-  </action>
-  <action name="globalCutAction">
-   <property name="text">
-    <string>Cut</string>
-   </property>
-  </action>
-  <action name="globalPasteAction">
-   <property name="text">
-    <string>Paste</string>
-   </property>
-  </action>
   <action name="clearHistoryAction">
    <property name="text">
     <string>Clear query history</string>
