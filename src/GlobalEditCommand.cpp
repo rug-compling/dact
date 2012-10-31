@@ -1,7 +1,9 @@
 #include "GlobalEditCommand.hh"
 #include <QAction>
 #include <QApplication>
+#include <QComboBox>
 #include <QDebug>
+#include <QLineEdit>
 #include <QMetaMethod>
 #include <QWidget>
 
@@ -22,51 +24,50 @@ GlobalEditCommand::GlobalEditCommand(QAction *action, char const *method)
 
 void GlobalEditCommand::focusHasChanged(QWidget *prev, QWidget *current)
 {
-	if (prev != 0 && supportsSignal(prev, "selectionChanged()"))
-		disconnect(prev, SIGNAL(selectionChanged()),
+	if (prev != 0 && supportsSignal(supportedWidget(prev), "selectionChanged()"))
+		disconnect(supportedWidget(prev), SIGNAL(selectionChanged()),
 			this, SLOT(update()));
 
-	if (current != 0 && supportsSignal(current, "selectionChanged()"))
-		connect(current, SIGNAL(selectionChanged()),
+	if (current != 0 && supportsSignal(supportedWidget(current), "selectionChanged()"))
+		connect(supportedWidget(current), SIGNAL(selectionChanged()),
 			this, SLOT(update()));
-	
+
 	update();
 }
 
 void GlobalEditCommand::update()
 {
-	QWidget *current = QApplication::focusWidget();
-
-	// Walk the tree, sometimes it is not the list-widget that
-	// supports the copy operation, but the window that hosts it.
-	while (current != 0)
-	{
-		if (supports(current))
-		{
-			d_action->setEnabled(true);
-			return;
-		}
-
-		current = current->parentWidget();
-	}
-
-	d_action->setEnabled(false);
+	d_action->setEnabled(supportedFocusWidget() != 0);
 }
 
 void GlobalEditCommand::trigger()
 {
-	QWidget *current = QApplication::focusWidget();
+	QWidget *current = supportedFocusWidget();
 
-	while (current != 0)
-	{
-		if (supports(current))
-		{
-			apply(current);
-			return;
-		}
+	if (current != 0)
+		apply(current);
+}
 
+QWidget *GlobalEditCommand::supportedWidget(QWidget *widget)
+{
+	// If it is QComboBox, grab the QLineEdit inside
+	QComboBox *comboBox = qobject_cast<QComboBox *>(widget);
+	if (comboBox != 0)
+		widget = comboBox->lineEdit();
+
+	return widget;
+}
+
+QWidget *GlobalEditCommand::supportedFocusWidget()
+{
+	QWidget *current = supportedWidget(QApplication::focusWidget());
+
+	// Walk the tree, sometimes it is not the list-widget that
+	// supports the copy operation, but the window that hosts it.
+	while (current != 0 && !supports(current))
 		current = current->parentWidget();
-	}
+
+	return current;
 }
 
 bool GlobalEditCommand::supportsSignal(QObject *object, char const *signal)

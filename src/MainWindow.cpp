@@ -384,9 +384,9 @@ void MainWindow::createActions()
     connect(menu->ui()->checkForUpdatesAction, SIGNAL(triggered()),
         SLOT(checkForUpdates()));
     
-    new GlobalCopyCommand(d_ui->globalCopyAction);
-    new GlobalCutCommand(d_ui->globalCutAction);
-    new GlobalPasteCommand(d_ui->globalPasteAction);
+    new GlobalCopyCommand(menu->ui()->globalCopyAction);
+    new GlobalCutCommand(menu->ui()->globalCutAction);
+    new GlobalPasteCommand(menu->ui()->globalPasteAction);
 }
 
 void MainWindow::filterOnInspectorSelection()
