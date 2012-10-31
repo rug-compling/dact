@@ -13,7 +13,6 @@ const QChar DactMacrosModel::d_symbol('%');
 
 DactMacrosModel::DactMacrosModel(QObject *parent)
 :
-    d_file(0),
     QAbstractItemModel(parent)
 {
     connect(&d_watcher, SIGNAL(fileChanged(QString const &)),
@@ -22,8 +21,7 @@ DactMacrosModel::DactMacrosModel(QObject *parent)
 
 DactMacrosModel::~DactMacrosModel()
 {
-    if (d_file)
-        delete d_file;
+    //
 }
     
 int DactMacrosModel::columnCount(const QModelIndex &parent) const
@@ -114,7 +112,8 @@ QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 void DactMacrosModel::loadFile(QString const &path)
 {
     // Clear all previous telephone taps
-    d_watcher.removePaths(d_watcher.files());
+    if (d_watcher.files().size() > 0)
+        d_watcher.removePaths(d_watcher.files());
 
     try {
         readFile(path);
@@ -143,12 +142,9 @@ void DactMacrosModel::readFile(QString const &fileName)
     int prevCount = 0;
 
     if (d_file)
-    {
         prevCount = d_file->macros().size();
-        delete d_file;
-    }
 
-    d_file = new DactMacrosFile(fileName);
+    d_file = QSharedPointer<DactMacrosFile>(new DactMacrosFile(fileName));
     
     dataChanged(index(0, 0), index(prevCount, 0));
 }

@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QFileSystemWatcher>
 #include <QMutex>
+#include <QSharedPointer>
 #include <QString>
 
 #include "DactMacro.hh"
@@ -44,7 +45,7 @@ private:
     void readFile(QString const &path);
 
 private:
-    DactMacrosFile *d_file;
+    QSharedPointer<DactMacrosFile> d_file;
     QFileSystemWatcher d_watcher;
     QMutex d_reloadMutex;
 
