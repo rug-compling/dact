@@ -38,7 +38,7 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 :
     QDialog(parent, f),
-    d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
+    d_ui(new Ui::OpenCorpusDialog),
     d_archiveModel(new ArchiveModel()),
     d_corpusAccessManager(new QNetworkAccessManager()),
     d_downloadProgressDialog(new QProgressDialog(this)),
