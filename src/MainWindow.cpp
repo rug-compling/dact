@@ -44,6 +44,7 @@
 #include <config.hh>
 
 #include <AppleUtils.hh>
+#include <DactApplication.hh>
 #include <DactMenuBar.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
@@ -83,7 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setMenuBar(new DactMenuBar(this));
 
-    d_ui->filterComboBox->readHistory("filterHistory");
+    d_ui->filterComboBox->setModel(
+        reinterpret_cast<DactApplication *>(qApp)->historyModel());
 
     initTaintedWidgets();
 
@@ -118,8 +120,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     cancelQuery();
-
-    d_ui->filterComboBox->writeHistory("filterHistory");
 
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
@@ -160,11 +160,6 @@ void MainWindow::checkForUpdates()
 {
     if (d_autoUpdater)
         d_autoUpdater->checkForUpdates();
-}
-
-void MainWindow::clearQueryHistory()
-{
-    d_ui->filterComboBox->clearHistory();
 }
 
 void MainWindow::close()
@@ -376,8 +371,6 @@ void MainWindow::createActions()
         SLOT(setToolbarVisible(bool)));
     connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
         SLOT(setToolbarVisible(bool)));
-    connect(menu->ui()->clearHistoryAction, SIGNAL(triggered()),
-        SLOT(clearQueryHistory()));
     connect(menu->ui()->minimizeAction, SIGNAL(triggered()),
         SLOT(showMinimized()));
     connect(menu->ui()->toggleFullScreenAction, SIGNAL(triggered()),

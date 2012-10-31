@@ -13,10 +13,6 @@ class HistoryComboBox : public QComboBox
 public:
     HistoryComboBox(QWidget *parent = 0, QString settingsKey = QString());
     virtual ~HistoryComboBox();
-    
-    void readHistory(QString const &settingsKey);
-    void writeHistory(QString const &settingsKey);
-    void clearHistory();
 
     void revalidate();
     QString text() const;

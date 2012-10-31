@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QFileOpenEvent>
 #include <QScopedPointer>
+#include <QSettings>
+#include <QStandardItemModel>
 #include <QString>
 #include <QTimer>
 #include <QUrl>
@@ -24,6 +26,7 @@
 
 DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
+    d_historyModel(new QStandardItemModel),
     d_menu(new DactMenuBar(0, true)),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
 #ifdef USE_REMOTE_CORPUS
@@ -37,7 +40,8 @@ DactApplication::DactApplication(int &argc, char** argv) :
 #if defined(Q_WS_MAC)
     setQuitOnLastWindowClosed(false);
 #endif
-    //
+
+    readHistory("filterHistory");
 
     connect(this, SIGNAL(aboutToQuit()),
         SLOT(prepareQuit()));
@@ -53,6 +57,11 @@ DactApplication::DactApplication(int &argc, char** argv) :
         SIGNAL(parseSentencesFinished(QString)),
         SLOT(openCorpus(QString)));
 #endif // USE_WEBSERVICE
+}
+
+void DactApplication::clearHistory()
+{
+  d_historyModel->clear();
 }
 
 void DactApplication::convertCorpus(QString const &path)
@@ -155,6 +164,12 @@ bool DactApplication::event(QEvent *event)
     return QApplication::event(event);
 }
 
+QStandardItemModel *DactApplication::historyModel()
+{
+    return d_historyModel.data();
+}
+
+
 void DactApplication::init()
 {
 }
@@ -254,7 +269,28 @@ void DactApplication::prepareQuit()
     // any running queries. If we do not do this, ~QCoreApplication
     // will wait until every thread in the thread pool is finished.
     closeAllWindows();
+
+    writeHistory("filterHistory");
 }
+
+void DactApplication::readHistory(QString const &settingsKey)
+{
+  if (!settingsKey.isEmpty()) {
+    QSettings settings;
+    QVariant value = settings.value(settingsKey, QStringList());
+
+    if (value.type() == QVariant::StringList) {
+      QStringList history(value.toStringList());
+
+      QStringListIterator iter(history);
+      while (iter.hasNext())
+        d_historyModel->appendRow(new QStandardItem(iter.next()));
+    }
+    else
+      qWarning() << "Read history, but it is not a QStringList.";
+  }
+}
+
 
 void DactApplication::showAboutWindow()
 {
@@ -303,4 +339,18 @@ void DactApplication::showWebserviceWindow()
     d_webserviceWindow->show();
     d_webserviceWindow->raise();
 }
+
+void DactApplication::writeHistory(QString const &settingsKey)
+{
+  if (!settingsKey.isEmpty()) {
+    QStringList history;
+
+    for (int i = 0; i < d_historyModel->rowCount(); ++i)
+      history << d_historyModel->item(i)->text();
+
+    QSettings settings;
+    settings.setValue(settingsKey, history);
+  }
+}
+
 #endif // USE_WEBSERVICE

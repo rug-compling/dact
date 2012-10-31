@@ -66,6 +66,10 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showWebserviceWindow()));
 #endif // USE_WEBSERVICE
 
+    connect(d_ui->clearHistoryAction, SIGNAL(triggered()),
+        qApp, SLOT(clearHistory()));
+
+
 }
 
 DactMenuBar::~DactMenuBar()

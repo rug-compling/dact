@@ -35,29 +35,9 @@ HistoryComboBox::~HistoryComboBox()
 {
 }
 
-void HistoryComboBox::clearHistory()
-{
-  clear();
-}
-
 void HistoryComboBox::itemClicked()
 {
   emit returnOrClick();
-}
-
-void HistoryComboBox::readHistory(QString const &settingsKey)
-{
-  if (!settingsKey.isEmpty()) {
-    QSettings settings;
-    QVariant value = settings.value(settingsKey, QStringList());
-
-    if (value.type() == QVariant::StringList) {
-      QStringList history(value.toStringList());
-      insertItems(count(), history);
-    }
-    else
-      qWarning() << "Read history, but it is not a QStringList.";
-  }
 }
 
 void HistoryComboBox::returnPressed()
@@ -86,19 +66,6 @@ void HistoryComboBox::setText(QString const &newText)
 {
   lineEdit()->setText(newText);
   insertItem(0, newText);
-}
-
-void HistoryComboBox::writeHistory(QString const &settingsKey)
-{
-  if (!settingsKey.isEmpty()) {
-    QStringList history;
-
-    for (int i = 0; i < count(); ++i)
-      history << itemText(i);
-
-    QSettings settings;
-    settings.setValue(settingsKey, history);
-  }
 }
 
 void HistoryComboBox::comboBoxActivated(QString const &text)
