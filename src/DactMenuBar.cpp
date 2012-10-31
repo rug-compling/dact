@@ -1,9 +1,13 @@
+#include <QAction>
+#include <QApplication>
+#include <QDebug>
 #include <QMenuBar>
 #include <QSharedPointer>
 #include <QWidget>
 
 #include <config.hh>
 #include <DactMenuBar.hh>
+#include <MainWindow.hh>
 
 #include <ui_DactMenuBar.h>
 
@@ -69,7 +73,8 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     connect(d_ui->clearHistoryAction, SIGNAL(triggered()),
         qApp, SLOT(clearHistory()));
 
-
+    connect(d_ui->menuWindow, SIGNAL(aboutToShow()),
+        SLOT(updateWindowMenu()));
 }
 
 DactMenuBar::~DactMenuBar()
@@ -118,4 +123,37 @@ void DactMenuBar::setMacrosModel(QSharedPointer<DactMacrosModel> model)
 QSharedPointer<Ui::DactMenuBar const> DactMenuBar::ui()
 {
 	return d_ui;
+}
+
+void DactMenuBar::updateWindowMenu()
+{
+    // Remove old menu items
+    foreach (QAction *action, d_windowActions)
+    {
+        d_ui->menuWindow->removeAction(action);
+        delete action;
+    }
+
+    d_windowActions.clear();
+
+    // Separator
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
+    d_windowActions.prepend(separator);
+
+    // Create a new window entry for each MainWindow
+    foreach (QWidget *widget, QApplication::topLevelWidgets())
+    {
+        if (qobject_cast<MainWindow *>(widget) == 0)
+            continue;
+
+        QAction *action = new QAction(widget->windowTitle(), this);
+        d_windowActions.append(action);
+
+        // When clicked, signal the window to move to the foreground
+        connect(action, SIGNAL(triggered()), widget, SLOT(makeActiveWindow()));
+    }
+
+    // Add them to the menu
+    d_ui->menuWindow->addActions(d_windowActions);
 }

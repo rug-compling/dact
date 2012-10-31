@@ -20,10 +20,14 @@ public:
 	QSharedPointer<Ui::DactMenuBar const> ui();
 	void setMacrosModel(QSharedPointer<DactMacrosModel> model);
 
+private slots:
+	void updateWindowMenu();
+
 private:
 	void disableLocalActions();
 
 	QSharedPointer<Ui::DactMenuBar> d_ui;
+	QList<QAction*> d_windowActions;
 };
 
 #endif // GLOBAL_MENU_BAR

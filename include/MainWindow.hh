@@ -98,6 +98,8 @@ public slots:
 
     void checkForUpdates();
 
+    void makeActiveWindow();
+
 private slots:
     /*!
      Attached to the highlight and filter query fields. Called every keypress to

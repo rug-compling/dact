@@ -928,3 +928,10 @@ void MainWindow::toggleFullScreen()
         showFullScreen();
 #endif
 }
+
+void MainWindow::makeActiveWindow()
+{
+    activateWindow();
+    raise();
+}
+
