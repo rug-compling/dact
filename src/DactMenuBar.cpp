@@ -148,10 +148,15 @@ void DactMenuBar::updateWindowMenu()
             continue;
 
         QAction *action = new QAction(widget->windowTitle(), this);
-        d_windowActions.append(action);
 
         // When clicked, signal the window to move to the foreground
         connect(action, SIGNAL(triggered()), widget, SLOT(makeActiveWindow()));
+
+        // Mark active window with a check mark
+        action->setCheckable(true);
+        action->setChecked(widget->isActiveWindow());
+        
+        d_windowActions.append(action);
     }
 
     // Add them to the menu
