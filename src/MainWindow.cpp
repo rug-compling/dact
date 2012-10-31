@@ -126,12 +126,15 @@ void MainWindow::cancelQuery()
 void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        d_ui->retranslateUi(this);
-        break;
-    default:
-        break;
+
+    switch (e->type())
+    {
+        case QEvent::LanguageChange:
+            d_ui->retranslateUi(this);
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -187,23 +190,23 @@ void MainWindow::macrosReadError(QString error)
 
 void MainWindow::saveAs()
 {
-    switch (d_ui->mainTabWidget->currentIndex()) {
-    case 0:
-        d_ui->dependencyTreeWidget->saveAs();
-        break;
-    case 1:
-        d_ui->statisticsWindow->saveAs();
-        break;
-    case 2:
-        d_ui->sentencesWidget->saveAs();
-        break;
+    switch (d_ui->mainTabWidget->currentIndex())
+    {
+        case 0:
+            d_ui->dependencyTreeWidget->saveAs();
+            break;
+        case 1:
+            d_ui->statisticsWindow->saveAs();
+            break;
+        case 2:
+            d_ui->sentencesWidget->saveAs();
+            break;
     }
 }
 
 void MainWindow::saveStateChanged()
 {
-    CorpusWidget *widget = dynamic_cast<CorpusWidget *>(
-       QObject::sender());
+    CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
     d_ui->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
@@ -254,8 +257,6 @@ void MainWindow::createActions()
         SLOT(corporaRead()));
     connect(this, SIGNAL(corpusReaderCreated()),
         SLOT(corpusRead()));
-//    connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
-//        SLOT(corpusWritten(int)));
     connect(this, SIGNAL(corpusWriterFinished(QString const &)),
         SLOT(corpusWritten(QString const &)));
 
@@ -292,12 +293,8 @@ void MainWindow::createActions()
 
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-//    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
-//        SLOT(filterChanged()));
     connect(d_ui->filterComboBox, SIGNAL(returnOrClick()),
         SLOT(filterChanged()));
-    //connect(d_ui->filterComboBox->lineEdit(), SIGNAL(returnPressed()),
-    //    SLOT(filterChanged()));
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
@@ -425,12 +422,6 @@ void MainWindow::filterChanged()
     QMutexLocker locker(&d_filterChangedMutex);
 
     d_filter = d_ui->filterComboBox->text().trimmed();
-
-#if 0
-    if (d_queryHistory)
-        d_queryHistory->addToHistory(d_filter);
-#endif
-
 
     taintAllWidgets();
     tabChanged(d_ui->mainTabWidget->currentIndex());
