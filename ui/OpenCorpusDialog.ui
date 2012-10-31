@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>851</width>
-    <height>435</height>
+    <width>600</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,6 @@
      </property>
      <addaction name="revealLocalFilesAction"/>
      <addaction name="deleteLocalFilesAction"/>
-     <addaction name="separatorAction"/>
      <addaction name="reloadAction"/>
     </widget>
    </item>
@@ -99,11 +98,6 @@
   <action name="reloadAction">
    <property name="text">
     <string>Reload</string>
-   </property>
-  </action>
-  <action name="separatorAction">
-   <property name="separator" stdset="0">
-    <bool>true</bool>
    </property>
   </action>
  </widget>
