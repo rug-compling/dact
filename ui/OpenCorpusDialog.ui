@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
+    <width>851</width>
     <height>435</height>
    </rect>
   </property>
@@ -77,22 +77,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cancelButton">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="openButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Open</string>
-       </property>
-       <property name="default">
-        <bool>true</bool>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Open</set>
        </property>
       </widget>
      </item>
@@ -127,22 +114,6 @@
    <signal>clicked()</signal>
    <receiver>OpenCorpusDialog</receiver>
    <slot>openLocalFile()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>openButton</sender>
-   <signal>clicked()</signal>
-   <receiver>OpenCorpusDialog</receiver>
-   <slot>openSelectedCorpus()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>20</x>
@@ -199,22 +170,6 @@
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cancelButton</sender>
-   <signal>clicked()</signal>
-   <receiver>OpenCorpusDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>495</x>
-     <y>406</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>312</x>
-     <y>217</y>
     </hint>
    </hints>
   </connection>

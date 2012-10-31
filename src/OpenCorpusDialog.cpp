@@ -53,7 +53,7 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
     
     // We only enable the download button when a corpus is selected.
-    d_ui->openButton->setEnabled(false);
+    d_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
@@ -62,6 +62,11 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
     d_inflateProgressDialog->setRange(0, 100);
     
+    connect(d_ui->buttonBox, SIGNAL(accepted()),
+        SLOT(openSelectedCorpus()));
+    connect(d_ui->buttonBox, SIGNAL(rejected()),
+        SLOT(reject()));
+
     connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
         SLOT(archiveNetworkError(QString)));
     connect(d_archiveModel.data(), SIGNAL(processingError(QString)),
@@ -338,7 +343,7 @@ void OpenCorpusDialog::openSelectedCorpus()
 void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
 {
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
-    
+
     if (entry.existsLocally())
     {
         d_filename = entry.filePath();
@@ -405,7 +410,7 @@ void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const 
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(current.row());
 
     // Disable/enable Open button
-    d_ui->openButton->setEnabled(current.isValid());
+    d_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(current.isValid());
 
     // Disable/enable Reveal & Remove local files context menu items
     bool corpusExistsLocally(entry.existsLocally());
