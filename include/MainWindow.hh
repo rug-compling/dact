@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QFutureWatcher>
-#include <QHash>
 #include <QMainWindow>
 #include <QMutex>
 #include <QPair>

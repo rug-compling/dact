@@ -1,15 +1,9 @@
-#include <iostream>
-
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFuture>
-#include <QFutureSynchronizer>
-#include <QHash>
 #include <QItemSelection>
-#include <QLineEdit>
 #include <QList>
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -25,15 +19,11 @@
 #include <QStatusBar>
 #include <QTextStream>
 #include <QVector>
-#include <QUrl>
 #include <QtConcurrentRun>
 
-#include <algorithm>
-#include <iterator>
 #include <list>
 #include <stdexcept>
 #include <string>
-#include <typeinfo>
 
 #include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
@@ -50,8 +40,6 @@
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
-//#include <DactQueryHistory.hh>
-#include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
 #include <TreeNode.hh>
