@@ -312,7 +312,7 @@ private:
 
     void enableFullScreen();
 
-    QSharedPointer<Ui::MainWindow> d_ui;
+    QScopedPointer<Ui::MainWindow> d_ui;
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
 
@@ -341,7 +341,7 @@ private:
      XPath validator used by the filter and highlight query fields.
      \sa applyValidityColor
      */
-    QSharedPointer<XPathValidator> d_xpathValidator;
+    QScopedPointer<XPathValidator> d_xpathValidator;
 
     /*!
      \sa d_corpusOpenFuture

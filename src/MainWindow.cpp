@@ -63,9 +63,11 @@ typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
+    d_ui(new Ui::MainWindow),
     d_openProgressDialog(new QProgressDialog(this)),
-    d_exportProgressDialog(new QProgressDialog(this))
+    d_exportProgressDialog(new QProgressDialog(this)),
+    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel())),
+    d_xpathValidator(new XPathValidator(d_macrosModel))
 {
     setupUi();
 
@@ -79,15 +81,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // Ensure that we have a status bar.
     statusBar();
 
-    d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
-
     reinterpret_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
 
-    d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
 
-    // the dependency tree widget needs to know about our macros model
-    // for the highlight queries and query validation for that same field.
     d_ui->dependencyTreeWidget->setMacrosModel(d_macrosModel);
 
     readSettings();
@@ -105,9 +102,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     cancelQuery();
-
-    delete d_openProgressDialog;
-    delete d_exportProgressDialog;
 }
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
