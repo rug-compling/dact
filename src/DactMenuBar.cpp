@@ -7,6 +7,10 @@
 
 #include <ui_DactMenuBar.h>
 
+#ifdef Q_WS_MAC
+extern void qt_mac_set_dock_menu(QMenu *);
+#endif
+
 DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     QMenuBar(parent),
     d_ui(QSharedPointer<Ui::DactMenuBar>(new Ui::DactMenuBar))
@@ -21,8 +25,18 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     d_ui->menuFile->removeAction(d_ui->remoteAction);
 #endif
 
-    if (global)
+    if (global) {
         disableLocalActions();
+
+#ifdef Q_WS_MAC
+        QMenu *appleDockMenu = new QMenu(this);
+        appleDockMenu->addAction(d_ui->openAction);
+#ifdef USE_REMOTE_CORPUS
+        appleDockMenu->addAction(d_ui->remoteAction);
+#endif
+        qt_mac_set_dock_menu(appleDockMenu);
+#endif
+    }
 
     connect(d_ui->quitAction, SIGNAL(triggered(bool)),
         qApp, SLOT(quit()));
