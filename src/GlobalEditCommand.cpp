@@ -52,7 +52,7 @@ QWidget *GlobalEditCommand::supportedWidget(QWidget *widget)
 {
 	// If it is QComboBox, grab the QLineEdit inside
 	QComboBox *comboBox = qobject_cast<QComboBox *>(widget);
-	if (comboBox != 0)
+	if (comboBox != 0 && comboBox->lineEdit())
 		widget = comboBox->lineEdit();
 
 	return widget;
