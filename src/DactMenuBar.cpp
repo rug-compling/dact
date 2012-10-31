@@ -38,6 +38,11 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showOpenCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         qApp, SLOT(openCorpus(QString)));
+#ifdef USE_REMOTE_CORPUS
+    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
+        qApp, SLOT(showRemoteWindow()));
+#endif // USE_REMOTE_CORPUS
+
     connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),

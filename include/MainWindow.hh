@@ -22,9 +22,6 @@ namespace Ui {
     class MainWindow;
 }
 
-#ifdef USE_REMOTE_CORPUS
-class RemoteWindow;
-#endif // USE_REMOTE_CORPUS
 class DactMacrosModel;
 class DactQueryHistory;
 class DactQueryWindow;
@@ -95,15 +92,6 @@ public slots:
      Toggle toolbar visibility.
     */
     void setToolbarVisible(bool visible);
-
-#ifdef USE_REMOTE_CORPUS
-    /*!
-     Instantiate (if not already instantiated) and raise the remote window.
-     */
-    void showRemoteWindow();
-
-    void openRemoteCorpus(QString const &url);
-#endif // USE_REMOTE_CORPUS
 
     void saveAs();
 
@@ -335,9 +323,6 @@ private:
     void enableFullScreen();
 
     QSharedPointer<Ui::MainWindow> d_ui;
-#ifdef USE_REMOTE_CORPUS
-    RemoteWindow *d_remoteWindow;
-#endif // USE_REMOTE_CORPUS
     QProgressDialog *d_openProgressDialog;
     QProgressDialog *d_exportProgressDialog;
 

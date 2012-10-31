@@ -45,9 +45,6 @@
 
 #include <AppleUtils.hh>
 #include <DactMenuBar.hh>
-#ifdef USE_REMOTE_CORPUS
-#include <RemoteWindow.hh>
-#endif // USE_REMOTE_CORPUS
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
@@ -83,9 +80,6 @@ typedef std::list<std::string> ExtList;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
-#ifdef USE_REMOTE_CORPUS
-    d_remoteWindow(0),
-#endif // USE_REMOTE_CORPUS
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this))
 {
@@ -131,9 +125,6 @@ MainWindow::~MainWindow()
 
     d_ui->filterComboBox->writeHistory("filterHistory");
 
-#ifdef USE_REMOTE_CORPUS
-    delete d_remoteWindow;
-#endif // USE_REMOTE_CORPUS
     delete d_openProgressDialog;
     delete d_exportProgressDialog;
 }
@@ -252,25 +243,6 @@ void MainWindow::setToolbarVisible(bool visible)
     d_ui->toolbarAction->setChecked(visible);
 }
 
-#ifdef USE_REMOTE_CORPUS
-void MainWindow::showRemoteWindow()
-{
-    if (d_remoteWindow == 0) {
-        d_remoteWindow = new RemoteWindow(this, Qt::Window);
-        connect(d_remoteWindow, SIGNAL(openRemote(QString const &)),
-                this, SLOT(openRemoteCorpus(QString const &)));
-    }
-
-    d_remoteWindow->show();
-    d_remoteWindow->raise();
-}
-
-void MainWindow::openRemoteCorpus(QString const &url)
-{
-    readCorpus(url);
-}
-#endif // USE_REMOTE_CORPUS
-
 void MainWindow::showOpenCorpusError(QString const &error)
 {
     QMessageBox::critical(this, "Open error", error);
@@ -371,12 +343,6 @@ void MainWindow::createActions()
     // Actions
     connect(menu->ui()->closeAction, SIGNAL(triggered(bool)),
         SLOT(close()));
-
-#ifdef USE_REMOTE_CORPUS
-    // XXX: Move to DactMenuBar.
-    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
-        SLOT(showRemoteWindow()));
-#endif // USE_REMOTE_CORPUS
 
     connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
