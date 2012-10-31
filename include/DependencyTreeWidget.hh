@@ -194,7 +194,7 @@ private:
      */
     void setHighlight(QString const &filter);
     
-    void setModel(FilterModel *model);
+    void setModel(QSharedPointer<FilterModel> model);
     
     /*!
      * Shows last successfully shown xml file. Used to reload the tree
@@ -220,7 +220,7 @@ private:
      */
     void showTree(QString const &xml);
     
-    QSharedPointer<Ui::DependencyTreeWidget> d_ui;
+    QScopedPointer<Ui::DependencyTreeWidget> d_ui;
     QSharedPointer<FilterModel> d_model;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     

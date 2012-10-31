@@ -33,7 +33,7 @@
 
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     CorpusWidget(parent),
-    d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
+    d_ui(new Ui::DependencyTreeWidget),
     d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel()))
 {
     d_ui->setupUi(this);
@@ -309,22 +309,22 @@ void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_f
     d_filter = filter;
 }
 
-void DependencyTreeWidget::setModel(FilterModel *model)
+void DependencyTreeWidget::setModel(QSharedPointer<FilterModel> model)
 {
-    d_model = QSharedPointer<FilterModel>(model);
+    d_model = model;
     d_ui->fileListWidget->setModel(d_model.data());
     
-    connect(model, SIGNAL(queryFailed(QString)),
+    connect(d_model.data(), SIGNAL(queryFailed(QString)),
             SLOT(mapperFailed(QString)));
-    connect(model, SIGNAL(queryStarted(int)),
+    connect(d_model.data(), SIGNAL(queryStarted(int)),
             SLOT(mapperStarted(int)));
-    connect(model, SIGNAL(queryStopped(int, int)),
+    connect(d_model.data(), SIGNAL(queryStopped(int, int)),
             SLOT(mapperStopped(int, int)));
-    connect(model, SIGNAL(queryFinished(int, int, bool)),
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
             SLOT(mapperFinished(int, int, bool)));
-    connect(model, SIGNAL(nEntriesFound(int, int)),
+    connect(d_model.data(), SIGNAL(nEntriesFound(int, int)),
             SLOT(nEntriesFound(int, int)));
-    connect(model, SIGNAL(progressChanged(int)),
+    connect(d_model.data(), SIGNAL(progressChanged(int)),
             SLOT(progressChanged(int)));
     
     connect(d_ui->fileListWidget->selectionModel(),
@@ -431,7 +431,7 @@ void DependencyTreeWidget::switchCorpus(QSharedPointer<alpinocorpus::CorpusReade
     
     d_xpathValidator->setCorpusReader(d_corpusReader);  
     
-    setModel(new FilterModel(d_corpusReader));
+    setModel(QSharedPointer<FilterModel>(new FilterModel(d_corpusReader)));
     
     QString query = d_ui->highlightLineEdit->text();
     d_ui->highlightLineEdit->clear();
