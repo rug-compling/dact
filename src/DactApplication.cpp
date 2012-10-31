@@ -339,6 +339,7 @@ void DactApplication::showWebserviceWindow()
     d_webserviceWindow->show();
     d_webserviceWindow->raise();
 }
+#endif // USE_WEBSERVICE
 
 void DactApplication::writeHistory(QString const &settingsKey)
 {
@@ -352,5 +353,3 @@ void DactApplication::writeHistory(QString const &settingsKey)
     settings.setValue(settingsKey, history);
   }
 }
-
-#endif // USE_WEBSERVICE
