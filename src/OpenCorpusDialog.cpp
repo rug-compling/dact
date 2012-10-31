@@ -116,11 +116,11 @@ OpenCorpusDialog::~OpenCorpusDialog()
 
 void OpenCorpusDialog::archiveNetworkError(QString error)
 {
-    QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
-        QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
-        QMessageBox::Ok);
+    // QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
+    //     QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
+    //     QMessageBox::Ok);
     
-    box.exec();
+    // box.exec();
 }
 
 void OpenCorpusDialog::archiveProcessingError(QString error)
