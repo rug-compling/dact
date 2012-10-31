@@ -48,6 +48,11 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 {
     d_ui->setupUi(this);
 
+    // Add separator to context menu
+    QAction *separator = new QAction(d_ui->corpusListView);
+    separator->setSeparator(true);
+    d_ui->corpusListView->insertAction(d_ui->corpusListView->actions().last(), separator);
+
     d_ui->corpusListView->setModel(d_archiveModel.data());
 
     d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
