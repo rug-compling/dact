@@ -617,7 +617,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
     if (!reader.isNull() && !path.isNull())
     {
-        setWindowTitle(QString::fromUtf8("%1%2 -- Dact").arg((path.startsWith("http://") || path.startsWith("https://")) ? "remote: " : "",
+        setWindowTitle(QString::fromUtf8("%1%2 \u2014 Dact").arg((path.startsWith("http://") || path.startsWith("https://")) ? "remote: " : "",
                                                              QFileInfo(path).fileName()));
 
         // On OS X, add the file icon to the window (and try alt-clicking it!)
