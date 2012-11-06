@@ -26,6 +26,7 @@
 
 DactApplication::DactApplication(int &argc, char** argv) :
     QApplication(argc, argv),
+    d_dactStartedWithCorpus(false),
     d_historyModel(new QStandardItemModel),
     d_menu(new DactMenuBar(0, true)),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
