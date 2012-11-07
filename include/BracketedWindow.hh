@@ -14,6 +14,7 @@
 #include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
+#include "NonCopyable.hh"
 #include "XPathValidator.hh"
 #include "ui_BracketedWindow.h"
 
@@ -31,7 +32,7 @@ class QTextStream;
  into html using xslt)
  \sa BracketedDelegate
  */
-class BracketedWindow : public CorpusWidget {
+class BracketedWindow : public CorpusWidget, private NonCopyable {
     Q_OBJECT
 
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
@@ -138,9 +139,6 @@ protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
-    BracketedWindow(BracketedWindow const &);
-    BracketedWindow &operator=(BracketedWindow const &);
-
     enum OutputFormat {FormatText, FormatHTML};
 
     void addOutputType(QString const &outputType, QString const &description,
