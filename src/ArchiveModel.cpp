@@ -211,6 +211,13 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
     }
     
     xmlNodePtr root = xmlDocGetRootElement(xmlDoc);
+    if (!root) {
+        xmlFreeDoc(xmlDoc);
+        emit processingError("could not get the root node of the corpus archive index.");
+        return false;
+    }
+
+
     if (QString::fromUtf8(reinterpret_cast<char const *>(root->name)) !=
         QString("corpusarchive")) {
         xmlFreeDoc(xmlDoc);
@@ -277,6 +284,8 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
     }
 
     emit layoutChanged();
+
+    xmlFreeDoc(xmlDoc);
 
     return true;
 }

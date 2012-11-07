@@ -91,6 +91,9 @@ SimpleDTD::SimpleDTD(std::string const &data)
     xmlParserInputBufferPtr input = xmlParserInputBufferCreateMem(data.c_str(),
         data.size(), XML_CHAR_ENCODING_8859_1);
 
+    if (input == 0)
+        throw std::runtime_error("Could not read DTD input.");
+
     xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_8859_1);
 
     if (dtd == 0)
@@ -102,6 +105,8 @@ SimpleDTD::SimpleDTD(std::string const &data)
     xmlHashScan(reinterpret_cast<xmlHashTablePtr>(dtd->elements), scanElement, &d_elements);
 
     xmlHashScan(reinterpret_cast<xmlHashTablePtr>(dtd->attributes), scanAttribute, &d_attributes);
+
+    xmlFreeDtd(dtd);
 }
 
 SimpleDTD::~SimpleDTD()

@@ -27,7 +27,8 @@
 
 StatisticsWindow::StatisticsWindow(QWidget *parent) :
     CorpusWidget(parent),
-    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow))
+    d_ui(QSharedPointer<Ui::StatisticsWindow>(new Ui::StatisticsWindow)),
+    d_percentageCellDelegate(new PercentageCellDelegate)
 {
     d_ui->setupUi(this);
 
@@ -246,7 +247,7 @@ void StatisticsWindow::createActions()
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     d_ui->resultsTable->verticalHeader()->hide();
     d_ui->resultsTable->sortByColumn(1, Qt::DescendingOrder);
-    d_ui->resultsTable->setItemDelegateForColumn(2, new PercentageCellDelegate());
+    d_ui->resultsTable->setItemDelegateForColumn(2, d_percentageCellDelegate.data());
 
     // Only allow valid xpath queries to be submitted
     //d_ui->filterLineEdit->setValidator(d_xpathValidator.data());

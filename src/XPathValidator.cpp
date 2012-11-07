@@ -39,7 +39,10 @@ std::string getLiteral(VectorOfASTNodes const &nodes)
         if ((*it)->getType() == ASTNode::LITERAL)
         {
             XQLiteral *literal = reinterpret_cast<XQLiteral*>(*it);
-            return xercesc_3_0::XMLString::transcode(literal->getValue());
+            char *lit = xercesc::XMLString::transcode(literal->getValue());
+            std::string strLit(lit);
+            xercesc::XMLString::release(&lit);
+            return strLit;
         }
 
     return std::string();
@@ -77,9 +80,11 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
         XQStep *step = reinterpret_cast<XQStep*>(expression);
         NodeTest *test = step->getNodeTest();
 
-        char *nodeType = xercesc_3_0::XMLString::transcode(test->getNodeType());
-        if (strcmp(nodeType, "attribute") == 0)
-            return xercesc_3_0::XMLString::transcode(test->getNodeName());
+        char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
+        if (strcmp(nodeType, "attribute") == 0) {
+            xercesc::XMLString::release(&nodeType);
+            return xercesc::XMLString::transcode(test->getNodeName());
+        }
     }
 
     // we failed.
@@ -143,8 +148,8 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                 return true;
             }
 
-            char *nodeType = xercesc_3_0::XMLString::transcode(test->getNodeType());
-            char *nodeName = xercesc_3_0::XMLString::transcode(test->getNodeName());
+            char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
+            char *nodeName = xercesc::XMLString::transcode(test->getNodeName());
 
             if (strcmp(nodeType, "element") == 0)
             {
@@ -161,8 +166,8 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                     return false;
             }
 
-            delete[] nodeType;
-            delete[] nodeName;
+            xercesc::XMLString::release(&nodeType);
+            xercesc::XMLString::release(&nodeName);
 
             break;
         }
@@ -185,7 +190,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
         case ASTNode::OPERATOR:
         {
             XQOperator *op = reinterpret_cast<XQOperator *>(node);
-            char *operatorName = xercesc_3_0::XMLString::transcode(op->getOperatorName());
+            char *operatorName = xercesc::XMLString::transcode(op->getOperatorName());
             VectorOfASTNodes const &args(op->getArguments());
 
             for (VectorOfASTNodes::const_iterator it = args.begin();
@@ -204,6 +209,8 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                     if (!dtd.allowValueForAttribute(literal, attribute))
                         return false;
             }
+
+            xercesc::XMLString::release(&operatorName);
             
             break;
         }

@@ -73,11 +73,14 @@ void DactTreeScene::parseXML(QString const &xml)
 
     xmlNode *treeRoot = xmlDocGetRootElement(doc);
     if (treeRoot == NULL) {
+      xmlFreeDoc(doc);
       qWarning() << "Tree does not have a root?";
       return;
     }
 
     TreeNode *root = processNode(treeRoot);
+
+    xmlFreeDoc(doc);
 }
 
 TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
