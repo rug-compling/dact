@@ -1,8 +1,10 @@
 #ifndef DACTBRACKETEDWINDOW_H
 #define DACTBRACKETEDWINDOW_H
 
+#include <QAbstractItemDelegate>
 #include <QCloseEvent>
 #include <QHash>
+#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QString>
 #include <QWidget>
@@ -136,6 +138,9 @@ protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
 private:
+    BracketedWindow(BracketedWindow const &);
+    BracketedWindow &operator=(BracketedWindow const &);
+
     enum OutputFormat {FormatText, FormatHTML};
 
     void addOutputType(QString const &outputType, QString const &description,
@@ -156,10 +161,11 @@ private:
     QString d_filter;
     QList<DelegateFactory> d_listDelegateFactories;
     QList<QString> d_outputTypes;
-    QSharedPointer<Ui::BracketedWindow> d_ui;
+    QScopedPointer<QAbstractItemDelegate> d_delegate;
+    QScopedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-    QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<FilterModel> d_model;
+    QScopedPointer<DactMacrosModel> d_macrosModel;
+    QScopedPointer<FilterModel> d_model;
     QString d_lastfilterchoice;
 };
 
