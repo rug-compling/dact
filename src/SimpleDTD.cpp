@@ -143,3 +143,8 @@ bool SimpleDTD::allowValueForAttribute(std::string const &value, std::string con
 
     return pos->second->test(value);
 }
+
+ElementMap const &SimpleDTD::elementMap()
+{
+    return d_elements;
+}

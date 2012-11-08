@@ -16,6 +16,7 @@
 #include <typeinfo>
 
 #include "CorpusWidget.hh"
+#include "SimpleDTD.hh"
 #include "StatisticsWindow.hh"
 #include "Query.hh"
 #include "QueryModel.hh"
@@ -370,45 +371,26 @@ void StatisticsWindow::readNodeAttributes()
     }
     QByteArray dtdData(dtdFile.readAll());
 
-    xmlParserInputBufferPtr input = xmlParserInputBufferCreateMem(dtdData.constData(),
-        dtdData.size(), XML_CHAR_ENCODING_8859_1);
-    // Note: xmlFreeParserInputBuffer() seems to segfault in input. It's probably because
-    // xmlIOParseDTD takes (some?) ownership.
-
-    xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_8859_1);
-    if (dtd == NULL) {
-        qWarning() << "StatisticsWindow::readNodeAttributes(): Could not parse DTD.";
-        return;
-    }
-
-    if (dtd->elements == NULL) {
-        qWarning() << "StatisticsWindow::readNodeAttributes(): DTD hashtable contains no elements.";
-        xmlFreeDtd(dtd);
-        return;
-    }
-
-    xmlNode *elem = reinterpret_cast<xmlNode *>(xmlHashLookup(
-        reinterpret_cast<xmlHashTablePtr>(dtd->elements),
-        reinterpret_cast<xmlChar const *>("node")));
-    if (elem == NULL) {
-        qWarning() << "StatisticsWindow::readNodeAttributes(): could not finde 'node' element.";
-        xmlFreeDtd(dtd);
-        return;
-    }
+    SimpleDTD sDTD(dtdData.constData());
 
     // Should be safe to clear items now...
     d_ui->attributeComboBox->clear();
 
-    QStringList attrs;
-    for (xmlAttr *attr = elem->properties; attr != NULL; attr = attr->next)
-          if (attr->type == XML_ATTRIBUTE_DECL)
-              attrs.push_back(reinterpret_cast<char const *>(attr->name));
+    // Do we have a node element?
+    ElementMap::const_iterator iter = sDTD.elementMap().find("node");
+    if (iter == sDTD.elementMap().end())
+        return;
 
-    std::sort(attrs.begin(), attrs.end());
+    std::set<std::string> attrs = iter->second;
 
-    d_ui->attributeComboBox->addItems(attrs);
+    QStringList attrList;
+    for (std::set<std::string>::const_iterator attrIter = attrs.begin();
+            attrIter != attrs.end(); ++ attrIter)
+        attrList.push_back(QString::fromUtf8(attrIter->c_str()));
 
-    xmlFreeDtd(dtd);
+    std::sort(attrList.begin(), attrList.end());
+
+    d_ui->attributeComboBox->addItems(attrList);
 }
 
 bool StatisticsWindow::saveEnabled() const
