@@ -5,9 +5,11 @@
 #include <map>
 #include "SimpleDTDAttribute.hh"
 
+#include <QSharedPointer>
+
 typedef std::map<std::string, std::set<std::string> > ElementMap;
 
-typedef std::map<std::string, SimpleDTDAttribute*> AttributeMap;
+typedef std::map<std::string, QSharedPointer<SimpleDTDAttribute> > AttributeMap;
 
 class SimpleDTD
 {

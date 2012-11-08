@@ -5,12 +5,13 @@
 #include <stdexcept>
 #include <string>
 
-//for debugging only
-#include <iostream>
+#include <QScopedPointer>
+#include <QtDebug>
 
 #include <libxml/tree.h>
 
-#include "SimpleDTD.hh"
+#include <SimpleDTD.hh>
+#include <XMLDeleters.hh>
 
 namespace {
 
@@ -43,9 +44,10 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
         case XML_ATTRIBUTE_CDATA:
         {
             if (attributeMapPos == attributeMap.end())
-                attributeMap[attributeName] = new SimpleDTDCDATAAttribute();
+                attributeMap[attributeName] =
+                    QSharedPointer<SimpleDTDAttribute>(new SimpleDTDCDATAAttribute());
             else
-                std::cerr << "Warning: are we redefining " << attributeName << "?" << std::endl;
+                qWarning() << "Warning: are we redefining " << attributeName << "?";
 
             break;
         }
@@ -53,22 +55,25 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
         case XML_ATTRIBUTE_NMTOKEN:
         {
             if (attributeMapPos == attributeMap.end())
-                attributeMap[attributeName] = new SimpleDTDNameTokenAttribute();
+                attributeMap[attributeName] =
+                    QSharedPointer<SimpleDTDAttribute>(new SimpleDTDNameTokenAttribute());
             else
-                std::cerr << "Warning: are we redefining " << attributeName << "?" << std::endl;
+                qWarning() << "Warning: are we redefining " << attributeName << "?";
 
             break;
         }
 
         case XML_ATTRIBUTE_ENUMERATION:
         {
-            SimpleDTDEnumerationAttribute *simpleAttr = 0;
+            QSharedPointer<SimpleDTDEnumerationAttribute> simpleAttr;
 
             if (attributeMapPos != attributeMap.end())
-                simpleAttr = reinterpret_cast<SimpleDTDEnumerationAttribute*>(attributeMapPos->second);
+                simpleAttr = qSharedPointerCast<SimpleDTDEnumerationAttribute>(
+                    attributeMapPos->second);
             else
             {
-                simpleAttr = new SimpleDTDEnumerationAttribute();
+                simpleAttr = QSharedPointer<SimpleDTDEnumerationAttribute>(
+                    new SimpleDTDEnumerationAttribute());
                 attributeMap[attributeName] = simpleAttr;
             }
 
@@ -79,7 +84,7 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
         }
 
         default:
-            std::cout << "Attribute of type " << attr->atype << std::endl;
+            qWarning() << "Attribute of type " << attr->atype;
             break;
     }
 }
@@ -94,7 +99,8 @@ SimpleDTD::SimpleDTD(std::string const &data)
     if (input == 0)
         throw std::runtime_error("Could not read DTD input.");
 
-    xmlDtdPtr dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_8859_1);
+    QScopedPointer<xmlDtd, XmlDtdDeleter> dtd(
+        xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_UTF8));
 
     if (dtd == 0)
         throw std::runtime_error("Could not parse DTD");
@@ -105,15 +111,10 @@ SimpleDTD::SimpleDTD(std::string const &data)
     xmlHashScan(reinterpret_cast<xmlHashTablePtr>(dtd->elements), scanElement, &d_elements);
 
     xmlHashScan(reinterpret_cast<xmlHashTablePtr>(dtd->attributes), scanAttribute, &d_attributes);
-
-    xmlFreeDtd(dtd);
 }
 
 SimpleDTD::~SimpleDTD()
 {
-    // Free the SimpleDTDAttribute objects in the attribute map.
-    for (AttributeMap::iterator it = d_attributes.begin(); it != d_attributes.end(); ++it)
-        delete it->second;
 }
 
 bool SimpleDTD::allowElement(std::string const &element, std::string const &parent) const

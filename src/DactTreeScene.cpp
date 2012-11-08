@@ -14,6 +14,7 @@ extern "C" {
 #include "DactTreeScene.hh"
 #include "TreeNode.hh"
 #include "PopupItem.hh"
+#include "XMLDeleters.hh"
 
 DactTreeScene::DactTreeScene(QObject *parent) :
     QGraphicsScene(parent),
@@ -64,23 +65,20 @@ void DactTreeScene::parseXML(QString const &xml)
 {
     QByteArray xmlData(xml.toUtf8());
 
-    xmlDocPtr doc;
-    doc = xmlReadMemory(xmlData.constData(), xmlData.size(), NULL, NULL, 0);
-    if (doc == NULL) {
+    QScopedPointer<xmlDoc, XmlDocDeleter> doc(
+        xmlReadMemory(xmlData.constData(), xmlData.size(), NULL, NULL, 0));
+    if (doc == 0) {
       qWarning() << "Could not parse tree!";
       return;
     }
 
-    xmlNode *treeRoot = xmlDocGetRootElement(doc);
+    xmlNode *treeRoot = xmlDocGetRootElement(doc.data());
     if (treeRoot == NULL) {
-      xmlFreeDoc(doc);
       qWarning() << "Tree does not have a root?";
       return;
     }
 
-    TreeNode *root = processNode(treeRoot);
-
-    xmlFreeDoc(doc);
+    processNode(treeRoot);
 }
 
 TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
@@ -98,15 +96,15 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
       if (child->type == XML_ELEMENT_NODE &&
           (nodeNameIs(child, "label") || nodeNameIs(child, "tooltip")))
       {
-        xmlBufferPtr buf = xmlBufferCreate();
+        QScopedPointer<xmlBuffer, XmlBufferDeleter> buf(xmlBufferCreate());
 
         for (xmlNodePtr contentNode = child->children; contentNode;
                 contentNode = contentNode->next) {
             scrubNamespace(contentNode);
-            xmlNodeDump(buf, 0, contentNode, 0, 0);
+            xmlNodeDump(buf.data(), 0, contentNode, 0, 0);
         }
 
-        xmlChar const *value = xmlBufferContent(buf);
+        xmlChar const *value = xmlBufferContent(buf.data());
 
         if (nodeNameIs(child, "label"))
             node->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(value)).trimmed());
@@ -120,27 +118,24 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
             node->setPopupItem(popupItem);
             addItem(popupItem);
         }
-
-        xmlBufferFree(buf);
       }
     }
 
     for (xmlAttrPtr attr = xmlNode->properties; attr; attr = attr->next)
     {
-      xmlChar *value = xmlNodeGetContent(attr->children);
+      QScopedPointer<xmlChar, XmlDeleter> value(
+        xmlNodeGetContent(attr->children));
       if (value == 0)
         continue;
 
       // Do we have an active node marker?
       if (xmlStrEqual(attr->name, reinterpret_cast<xmlChar const *>("active")) &&
-          xmlStrEqual(value, reinterpret_cast<xmlChar const *>("1")))
+          xmlStrEqual(value.data(), reinterpret_cast<xmlChar const *>("1")))
         node->setActive(true);
       else
         node->setAttribute(
             QString::fromUtf8(reinterpret_cast<char const *>(attr->name)),
-            QString::fromUtf8(reinterpret_cast<char const *>(value)));
-
-      xmlFree(value);
+            QString::fromUtf8(reinterpret_cast<char const *>(value.data())));
     }
 
     return node;

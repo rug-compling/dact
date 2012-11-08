@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QScopedPointer>
 #include <QTextStream>
 
 #include <stdexcept>
@@ -12,7 +13,8 @@ extern "C" {
 #include <libxslt/xsltutils.h>
 }
 
-#include "XSLTransformer.hh"
+#include <XMLDeleters.hh>
+#include <XSLTransformer.hh>
 #include <QtDebug>
 
 XSLTransformer::XSLTransformer(QFile &file)
@@ -29,7 +31,6 @@ XSLTransformer::XSLTransformer(QString const &xsl)
 
 XSLTransformer::~XSLTransformer()
 {
-    xsltFreeStylesheet(d_xslPtr);
 }
 
 void XSLTransformer::initWithStylesheet(QString const &xsl)
@@ -37,14 +38,19 @@ void XSLTransformer::initWithStylesheet(QString const &xsl)
     QByteArray xslData(xsl.toUtf8());
     xmlDocPtr xslDoc = xmlReadMemory(xslData.constData(), xslData.size(), 0, 0,
         XSLT_PARSE_OPTIONS);
-    d_xslPtr = xsltParseStylesheetDoc(xslDoc);
+
+    if (xslDoc == 0)
+        throw std::runtime_error("XSLTransformer::initWithStylesheet: Could note parse stylesheet");
+
+    d_xslPtr.reset(xsltParseStylesheetDoc(xslDoc));
 }
 
 QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> const &params) const
 {
     // Read XML data intro an xmlDoc.
     QByteArray xmlData(xml.toUtf8());
-    xmlDocPtr doc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
+    QScopedPointer<xmlDoc, XmlDocDeleter> doc(
+        xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0));
 
     if (!doc)
         throw std::runtime_error("XSLTransformer::transform: Could not open XML data");
@@ -69,51 +75,33 @@ QString XSLTransformer::transform(const QString &xml, QHash<QString, QString> co
 
     cParams[params.size() * 2] = 0; // Terminator
 
-    xsltTransformContextPtr ctx = xsltNewTransformContext(d_xslPtr, doc);
-    xsltSetCtxtParseOptions(ctx, XSLT_PARSE_OPTIONS);
+    QScopedPointer<xsltTransformContext, XsltTransformContextDeleter> ctx(
+        xsltNewTransformContext(d_xslPtr.data(), doc.data()));
+    xsltSetCtxtParseOptions(ctx.data(), XSLT_PARSE_OPTIONS);
 
     // Transform...
-    xmlDocPtr res = xsltApplyStylesheetUser(d_xslPtr, doc, cParams, NULL,
-        NULL, ctx);
+    QScopedPointer<xmlDoc, XmlDocDeleter> res(
+        xsltApplyStylesheetUser(d_xslPtr.data(), doc.data(), cParams, NULL, NULL, ctx.data()));
 
     if (!res)
-    {
-        xsltFreeTransformContext(ctx);
-        xmlFreeDoc(doc);
         throw std::runtime_error("XSLTransformer::transform: Could not apply transformation!");
-    }
     else if (ctx->state != XSLT_STATE_OK)
-    {
-        xsltFreeTransformContext(ctx);
-        xmlFreeDoc(res);
-        xmlFreeDoc(doc);
         throw std::runtime_error("XSLTransformer::transform: Transformation error, check your query!");
-    }
 
-    xsltFreeTransformContext(ctx);
-
-    xmlChar *output = 0;
+    xmlChar *outputBare = 0;
     int outputLen = -1;
-    xsltSaveResultToString(&output, &outputLen, res, d_xslPtr);
+    xsltSaveResultToString(&outputBare, &outputLen, res.data(), d_xslPtr.data());
+    QScopedPointer<xmlChar, XmlDeleter> output(outputBare);
 
     if (!output)
-    {
-        xmlFreeDoc(res);
-        xmlFreeDoc(doc);
         throw std::runtime_error("Could not apply stylesheet!");
-    }
 
-    QString result(QString::fromUtf8(reinterpret_cast<char const *>(output)));
+    QString result(QString::fromUtf8(reinterpret_cast<char const *>(output.data())));
 
     // Deallocate parameter memory
     for (int i = 0; i < params.size() * 2; ++i)
         free(const_cast<char *>(cParams[i]));
     delete[] cParams;
-
-    // Deallocate memory used for libxml2/libxslt.
-    xmlFree(output);
-    xmlFreeDoc(res);
-    xmlFreeDoc(doc);
 
     return result;
 }
