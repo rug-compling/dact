@@ -1,0 +1,35 @@
+.TH DACT 1 "Nov 1, 2012" 
+.SH NAME
+.PP
+dact -- Alpino treebank viewer
+.SH SYNOPSIS
+.PP
+dact [\f[I]options\f[]] [\f[I]treebank ...\f[]]
+.SH DESCRIPTION
+.PP
+Dact is a tool for viewing and analyzing Alpino corpora.
+With Dact you can open and query Dact corpora, compact corpora and
+directories with XML files.
+Dact can show trees and count occurrences for almost anything you can
+query using XPath2 expressions.
+.PP
+If \f[B]dact\f[] is invoked without without any arguments, it will show
+a dialog allowing you to select a treebank.
+If a treebank is provided as an argument, Dact will immediately open
+that treebank.
+.PP
+The following option is available:
+.TP
+.B \f[C]-m\f[] \f[I]MACROFILE\f[]
+Load macros from the provided macro file.
+.RS
+.RE
+.SH SEE ALSO
+.PP
+For more information, please refer to these online resources:
+.IP \[bu] 2
+Manual: http://rug-compling.github.com/dact/manual/
+.IP \[bu] 2
+Cookbook: http://rug-compling.github.com/dact/cookbook/
+.SH AUTHORS
+Daniel de Kok and Jelmer van der Linde.

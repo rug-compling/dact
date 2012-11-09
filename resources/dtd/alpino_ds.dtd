@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Alpino Dependency Structures DTD -->
 
@@ -82,13 +82,19 @@
     Het is ook mogelijk een opsomming van de mogelijke waarden te
     geven.  Voor sommige attributen is dat misschien wenselijk.
 -->
+
+<!-- value "part" for cat is not really allowed, but sometimes is produced 
+     for modified particles in conjunction, "hij ademde in en hard uit" -->
+
 <!ATTLIST node
           rel   (hdf|hd|cmp|sup|su|obj1|pobj1|obj2|se|pc|vc|svp|predc|ld|me|predm|
                  obcomp|mod|body|det|app|whd|rhd|cnj| crd|nucl|sat|tag|
                  dp|top|mwp|dlink|--) 
                 #REQUIRED
+
+
           cat   (smain|np|ppart|ppres|pp|ssub|inf|cp|du|ap|advp|ti|rel|whrel|whsub|conj|
-                 whq|oti|ahi|detp|sv1|svan|mwu|top)
+                 whq|oti|ahi|detp|sv1|svan|mwu|top|cat|part)
                 #IMPLIED
           pos             CDATA       #IMPLIED
           postag          CDATA       #IMPLIED
@@ -127,6 +133,14 @@
 	  #IMPLIED
 	  
           mwu_root        CDATA       #IMPLIED
+          mwu_sense       CDATA       #IMPLIED
+
+          sense           CDATA       #IMPLIED
+          lcat            CDATA       #IMPLIED
+          tense           CDATA       #IMPLIED
+          aform           CDATA       #IMPLIED
+          vform           CDATA       #IMPLIED
+	  wk              (yes)       #IMPLIED
 
           case            CDATA       #IMPLIED
           comparative     CDATA       #IMPLIED
@@ -141,8 +155,15 @@
           sc              CDATA       #IMPLIED
           special         CDATA       #IMPLIED
           wh              CDATA       #IMPLIED
+
+
+	  pb
+	  (Arg0|Arg1|Arg2|Arg3|Arg4|Arg5|ArgM-ADV|ArgM-CAU|ArgM-DIR|ArgM-DIS|ArgM-EXT|ArgM-LOC|ArgM-MNR|ArgM-MOD|ArgM-NEG|ArgM-PNC|ArgM-PRD|ArgM-REC|ArgM-STR|ArgM-TMP|rel|SYNT)
+	  #IMPLIED
+
 >
 
+<!-- pb - propbank role op verzoek van Universiteit Utrecht -->
 
 
 <!--                    Sentence                                   -->

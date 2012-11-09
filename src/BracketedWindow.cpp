@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QClipboard>
 #include <QDebug>
 #include <QFile>
@@ -35,7 +36,7 @@ namespace ac = alpinocorpus;
 
 BracketedWindow::BracketedWindow(QWidget *parent) :
     CorpusWidget(parent),
-    d_ui(QSharedPointer<Ui::BracketedWindow>(new Ui::BracketedWindow))
+    d_ui(new Ui::BracketedWindow)
 {
     d_ui->setupUi(this);
 
@@ -85,7 +86,7 @@ void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter
 
 void BracketedWindow::setModel(FilterModel *model)
 {
-    d_model = QSharedPointer<FilterModel>(model);
+    d_model.reset(model);
     d_ui->resultsTable->setModel(d_model.data());
 
     emit saveStateChanged();
@@ -187,6 +188,9 @@ void BracketedWindow::createActions()
 
     connect(d_ui->filenamesCheckBox, SIGNAL(toggled(bool)),
         SLOT(showFilenamesChanged()));
+
+    connect(qApp, SIGNAL(colorPreferencesChanged()),
+            SLOT(colorChanged()));
 }
 
 void BracketedWindow::showFilenames(bool show)
@@ -242,9 +246,8 @@ void BracketedWindow::listDelegateChanged(int index)
         return;
     }
 
-    QAbstractItemDelegate* prevItemDelegate = d_ui->resultsTable->itemDelegateForColumn(2);
-    d_ui->resultsTable->setItemDelegateForColumn(2, d_listDelegateFactories[delegateIndex](d_corpusReader));
-    delete prevItemDelegate;
+    d_delegate.reset(d_listDelegateFactories[delegateIndex](d_corpusReader));
+    d_ui->resultsTable->setItemDelegateForColumn(2, d_delegate.data());
     d_ui->resultsTable->resizeRowsToContents();
 }
 

@@ -56,6 +56,17 @@ private:
 	bool supportsSignal(QObject *, char const *);
 	
 	/**
+	 * If the widget is a QComboBox, grabs the QLineEdit inside.
+	 */
+	QWidget *supportedWidget(QWidget *widget);
+
+	/**
+	 * Returns the widget in the tree that supports the command.
+	 * (The tree starts at the focused widget)
+	 */
+	QWidget *supportedFocusWidget();
+
+	/**
 	 * The QAction widget which it tries to keep in sync with
 	 * the capabilities of the currently focussed widget.
 	 */
@@ -70,7 +81,3 @@ private:
 };
 
 #endif
-
-
-
-

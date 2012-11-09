@@ -22,15 +22,28 @@
 
 #include "ui_DependencyTreeWidget.h"
 
+// Note that there is a race in this class, when a new filter is set.
+// d_model->runQuery may cancel an existing query, delivering a queryStopped()
+// signal. However, at that point d_filter is already reset. Since queries
+// run in a separate thread, we cannot connect signals directly.
+//
+// Consequence: don't rely on d_filter if the code path is treating stopping
+// of an older query.
+
+
 DependencyTreeWidget::DependencyTreeWidget(QWidget *parent) :
     CorpusWidget(parent),
-    d_ui(QSharedPointer<Ui::DependencyTreeWidget>(new Ui::DependencyTreeWidget)),
+    d_ui(new Ui::DependencyTreeWidget),
     d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel()))
 {
     d_ui->setupUi(this);
     
     addConnections();
-    
+
+    // Statistics are only shown after we have all entries, or when a
+    // query is executed...
+    d_ui->statisticsGroupBox->hide();
+
     d_ui->hitsDescLabel->hide();
     d_ui->hitsLabel->hide();
     d_ui->statisticsLayout->setVerticalSpacing(0);
@@ -177,10 +190,12 @@ void DependencyTreeWidget::mapperStarted(int totalEntries)
     d_ui->entriesLabel->setText(QString::number(0));
     d_ui->hitsLabel->setText(QString::number(0));
     
-    d_ui->filterProgressBar->setMinimum(0);
-    d_ui->filterProgressBar->setMaximum(totalEntries);
-    d_ui->filterProgressBar->setValue(0);
-    d_ui->filterProgressBar->setVisible(true);
+    if (!d_filter.isEmpty()) {
+        d_ui->filterProgressBar->setMinimum(0);
+        d_ui->filterProgressBar->setMaximum(totalEntries);
+        d_ui->filterProgressBar->setValue(0);
+        d_ui->filterProgressBar->setVisible(true);
+    }
 }
 
 void DependencyTreeWidget::mapperFailed(QString error)
@@ -271,15 +286,16 @@ QItemSelectionModel *DependencyTreeWidget::selectionModel()
 
 void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_filter)
 {
-    d_filter = filter;
     d_treeShown = false;
     d_file = QString();
     
-    if (d_filter.isEmpty()) {
+    if (filter.isEmpty()) {
+        d_ui->statisticsGroupBox->hide();
         d_ui->hitsDescLabel->hide();
         d_ui->hitsLabel->hide();
         d_ui->statisticsLayout->setVerticalSpacing(0);
     } else {
+        d_ui->statisticsGroupBox->show();
         d_ui->statisticsLayout->setVerticalSpacing(-1);
         d_ui->hitsDescLabel->show();
         d_ui->hitsLabel->show();
@@ -288,25 +304,27 @@ void DependencyTreeWidget::setFilter(QString const &filter, QString const &raw_f
     setHighlight(raw_filter);
 
     if (d_model)
-        d_model->runQuery(d_filter);
+        d_model->runQuery(filter);
+
+    d_filter = filter;
 }
 
-void DependencyTreeWidget::setModel(FilterModel *model)
+void DependencyTreeWidget::setModel(QSharedPointer<FilterModel> model)
 {
-    d_model = QSharedPointer<FilterModel>(model);
+    d_model = model;
     d_ui->fileListWidget->setModel(d_model.data());
     
-    connect(model, SIGNAL(queryFailed(QString)),
+    connect(d_model.data(), SIGNAL(queryFailed(QString)),
             SLOT(mapperFailed(QString)));
-    connect(model, SIGNAL(queryStarted(int)),
+    connect(d_model.data(), SIGNAL(queryStarted(int)),
             SLOT(mapperStarted(int)));
-    connect(model, SIGNAL(queryStopped(int, int)),
+    connect(d_model.data(), SIGNAL(queryStopped(int, int)),
             SLOT(mapperStopped(int, int)));
-    connect(model, SIGNAL(queryFinished(int, int, bool)),
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
             SLOT(mapperFinished(int, int, bool)));
-    connect(model, SIGNAL(nEntriesFound(int, int)),
+    connect(d_model.data(), SIGNAL(nEntriesFound(int, int)),
             SLOT(nEntriesFound(int, int)));
-    connect(model, SIGNAL(progressChanged(int)),
+    connect(d_model.data(), SIGNAL(progressChanged(int)),
             SLOT(progressChanged(int)));
     
     connect(d_ui->fileListWidget->selectionModel(),
@@ -413,7 +431,7 @@ void DependencyTreeWidget::switchCorpus(QSharedPointer<alpinocorpus::CorpusReade
     
     d_xpathValidator->setCorpusReader(d_corpusReader);  
     
-    setModel(new FilterModel(d_corpusReader));
+    setModel(QSharedPointer<FilterModel>(new FilterModel(d_corpusReader)));
     
     QString query = d_ui->highlightLineEdit->text();
     d_ui->highlightLineEdit->clear();

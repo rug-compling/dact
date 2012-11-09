@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "ValidityColor.hh"
+#include "XPathValidator.hh"
 
 void applyValidityColor(QObject *sendero)
 {
@@ -10,7 +11,18 @@ void applyValidityColor(QObject *sendero)
     if (!sender)
         throw std::logic_error("applyValidityColor called on non-QLineEdit");
 
-    sender->setStyleSheet(sender->hasAcceptableInput()
-                          ? ""
-                          : "background-color: salmon");
+    QString style;
+
+    if (!sender->hasAcceptableInput())
+    	style = "background-color: salmon";
+    else
+    {
+    	XPathValidator const *validator = qobject_cast<XPathValidator const *>(sender->validator());
+    	if (validator && sender->text() != "" && !validator->validateAgainstDTD(sender->text()))
+    		style = "background-color: yellow";
+    	else
+    		style = "";
+    }
+    
+	sender->setStyleSheet(style);
 }

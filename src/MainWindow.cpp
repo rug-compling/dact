@@ -1,15 +1,9 @@
-#include <iostream>
-
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFuture>
-#include <QFutureSynchronizer>
-#include <QHash>
 #include <QItemSelection>
-#include <QLineEdit>
 #include <QList>
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -25,15 +19,11 @@
 #include <QStatusBar>
 #include <QTextStream>
 #include <QVector>
-#include <QUrl>
 #include <QtConcurrentRun>
 
-#include <algorithm>
-#include <iterator>
 #include <list>
 #include <stdexcept>
 #include <string>
-#include <typeinfo>
 
 #include <AlpinoCorpus/CorpusReaderFactory.hh>
 #include <AlpinoCorpus/CorpusWriter.hh>
@@ -43,26 +33,17 @@
 
 #include <config.hh>
 
-#include <AboutWindow.hh>
 #include <AppleUtils.hh>
-#ifdef USE_WEBSERVICE
-#include <WebserviceWindow.hh>
-#endif // USE_WEBSERVICE
-#ifdef USE_REMOTE_CORPUS
-#include <RemoteWindow.hh>
-#endif // USE_REMOTE_CORPUS
-#include <OpenCorpusDialog.hh>
+#include <DactApplication.hh>
+#include <DactMenuBar.hh>
 #include <MainWindow.hh>
 #include <BracketedWindow.hh>
 #include <CorpusWidget.hh>
 #include <DactMacrosModel.hh>
-//#include <DactQueryHistory.hh>
-#include <PreferencesWindow.hh>
 #include <StatisticsWindow.hh>
 #include <DactTreeScene.hh>
 #include <TreeNode.hh>
 #include <XPathValidator.hh>
-#include <XSLTransformer.hh>
 #include <ValidityColor.hh>
 #include <ui_MainWindow.h>
 #include <Query.hh>
@@ -75,10 +56,6 @@
 #include <SparkleAutoUpdater.hh>
 #endif
 
-#ifdef Q_WS_MAC
-extern void qt_mac_set_dock_menu(QMenu *);
-#endif
-
 namespace ac = alpinocorpus;
 
 typedef std::list<ac::CorpusReaderFactory::ReaderInfo> ReaderList;
@@ -86,49 +63,31 @@ typedef std::list<std::string> ExtList;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    d_ui(QSharedPointer<Ui::MainWindow>(new Ui::MainWindow)),
-    d_aboutWindow(new AboutWindow(this, Qt::Window)),
-#ifdef USE_WEBSERVICE
-    d_webserviceWindow(0),
-#endif // USE_WEBSERVICE
-#ifdef USE_REMOTE_CORPUS
-    d_remoteWindow(0),
-#endif // USE_REMOTE_CORPUS
+    d_ui(new Ui::MainWindow),
     d_openProgressDialog(new QProgressDialog(this)),
     d_exportProgressDialog(new QProgressDialog(this)),
-    d_preferencesWindow(0)
+    d_macrosModel(QSharedPointer<DactMacrosModel>(new DactMacrosModel())),
+    d_xpathValidator(new XPathValidator(d_macrosModel))
 {
     setupUi();
 
-#ifndef USE_WEBSERVICE
-    d_ui->menuTools->removeAction(d_ui->webserviceAction);
-#endif
+    setMenuBar(new DactMenuBar(this));
 
-#ifndef USE_REMOTE_CORPUS
-    d_ui->menuFile->removeAction(d_ui->remoteAction);
-#endif
-
-    d_ui->filterComboBox->readHistory("filterHistory");
+    d_ui->filterComboBox->setModel(
+        reinterpret_cast<DactApplication *>(qApp)->historyModel());
 
     initTaintedWidgets();
 
     // Ensure that we have a status bar.
     statusBar();
 
-    d_macrosModel = QSharedPointer<DactMacrosModel>(new DactMacrosModel());
+    reinterpret_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
 
-    d_ui->menuMacros->setModel(d_macrosModel);
-
-    d_xpathValidator = QSharedPointer<XPathValidator>(new XPathValidator(d_macrosModel));
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
 
-    // the dependency tree widget needs to know about our macros model
-    // for the highlight queries and query validation for that same field.
     d_ui->dependencyTreeWidget->setMacrosModel(d_macrosModel);
 
     readSettings();
-
-    initSentenceTransformer();
 
     createActions();
 
@@ -142,24 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    d_ui->filterComboBox->writeHistory("filterHistory");
-
-    delete d_aboutWindow;
-#ifdef USE_WEBSERVICE
-    delete d_webserviceWindow;
-#endif // USE_WEBSERVICE
-#ifdef USE_REMOTE_CORPUS
-    delete d_remoteWindow;
-#endif // USE_REMOTE_CORPUS
-    delete d_openProgressDialog;
-    delete d_exportProgressDialog;
-    delete d_preferencesWindow;
-}
-
-void MainWindow::aboutDialog()
-{
-    d_aboutWindow->show();
-    d_aboutWindow->raise();
+    cancelQuery();
 }
 
 void MainWindow::bracketedEntryActivated(const QString &entry)
@@ -184,12 +126,15 @@ void MainWindow::cancelQuery()
 void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        d_ui->retranslateUi(this);
-        break;
-    default:
-        break;
+
+    switch (e->type())
+    {
+        case QEvent::LanguageChange:
+            d_ui->retranslateUi(this);
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -199,36 +144,15 @@ void MainWindow::checkForUpdates()
         d_autoUpdater->checkForUpdates();
 }
 
-void MainWindow::clearQueryHistory()
-{
-    d_ui->filterComboBox->clearHistory();
-}
-
 void MainWindow::close()
 {
     writeSettings();
     QMainWindow::close();
 }
 
-void MainWindow::convertCompactCorpus()
+void MainWindow::convertCorpus(QString const &convertPath,
+    QString const &writePath)
 {
-
-    QString corpusPath = QFileDialog::getOpenFileName(this, "Open compact corpus", QString(),
-        QString("Compact corpora (*.data.dz)"));
-    if (corpusPath.isNull())
-        return;
-
-    convertCorpus(corpusPath);
-}
-
-void MainWindow::convertCorpus(QString const &convertPath)
-{
-    QString newPath(QFileDialog::getSaveFileName(this,
-        "New Dact corpus", QString(), "*.dact"));
-
-    if (newPath.isNull())
-        return;
-
     QSharedPointer<ac::CorpusReader> corpusReader;
     try {
         corpusReader = QSharedPointer<ac::CorpusReader>(
@@ -242,7 +166,7 @@ void MainWindow::convertCorpus(QString const &convertPath)
 
     d_exportProgressDialog->setWindowTitle("Converting corpus");
     d_exportProgressDialog->setLabelText(QString("Writing corpus to:\n%1")
-        .arg(newPath));
+        .arg(writePath));
     d_exportProgressDialog->open();
 
     QList<QString> files;
@@ -254,19 +178,9 @@ void MainWindow::convertCorpus(QString const &convertPath)
     d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
 
     QFuture<bool> corpusWriterFuture =
-        QtConcurrent::run(this, &MainWindow::writeCorpus, newPath, corpusReader, files);
+        QtConcurrent::run(this, &MainWindow::writeCorpus, writePath, corpusReader, files);
     d_corpusWriteWatcher.setFuture(corpusWriterFuture);
 
-}
-
-void MainWindow::convertDirectoryCorpus()
-{
-    QString corpusPath = QFileDialog::getExistingDirectory(this,
-        "Open directory corpus");
-    if (corpusPath.isNull())
-        return;
-
-    convertCorpus(corpusPath);
 }
 
 void MainWindow::macrosReadError(QString error)
@@ -274,45 +188,25 @@ void MainWindow::macrosReadError(QString error)
     QMessageBox::critical(this, "Error reading macros", error);
 }
 
-#ifdef USE_WEBSERVICE
-void MainWindow::showWebserviceWindow()
-{
-    if (d_webserviceWindow == 0)
-    {
-        d_webserviceWindow = new WebserviceWindow(this, Qt::Window);
-        d_webserviceWindow->setWindowModality(Qt::WindowModal);
-
-        // When parsing is finished and the trees are received, load the freshly
-        // created corpus.
-        connect(d_webserviceWindow,
-            SIGNAL(parseSentencesFinished(QString)),
-            SLOT(readCorpus(QString)));
-    }
-
-    d_webserviceWindow->show();
-    d_webserviceWindow->raise();
-}
-#endif // USE_WEBSERVICE
-
 void MainWindow::saveAs()
 {
-    switch (d_ui->mainTabWidget->currentIndex()) {
-    case 0:
-        d_ui->dependencyTreeWidget->saveAs();
-        break;
-    case 1:
-        d_ui->statisticsWindow->saveAs();
-        break;
-    case 2:
-        d_ui->sentencesWidget->saveAs();
-        break;
+    switch (d_ui->mainTabWidget->currentIndex())
+    {
+        case 0:
+            d_ui->dependencyTreeWidget->saveAs();
+            break;
+        case 1:
+            d_ui->statisticsWindow->saveAs();
+            break;
+        case 2:
+            d_ui->sentencesWidget->saveAs();
+            break;
     }
 }
 
 void MainWindow::saveStateChanged()
 {
-    CorpusWidget *widget = dynamic_cast<CorpusWidget *>(
-       QObject::sender());
+    CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
     d_ui->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
@@ -322,33 +216,17 @@ void MainWindow::setToolbarVisible(bool visible)
     d_ui->toolbarAction->setChecked(visible);
 }
 
-#ifdef USE_REMOTE_CORPUS
-void MainWindow::showRemoteWindow()
-{
-    if (d_remoteWindow == 0) {
-        d_remoteWindow = new RemoteWindow(this, Qt::Window);
-        connect(d_remoteWindow, SIGNAL(openRemote(QString const &)),
-                this, SLOT(openRemoteCorpus(QString const &)));
-    }
-
-    d_remoteWindow->show();
-    d_remoteWindow->raise();
-}
-
-void MainWindow::openRemoteCorpus(QString const &url)
-{
-    readCorpus(url);
-}
-#endif // USE_REMOTE_CORPUS
-
 void MainWindow::showOpenCorpusError(QString const &error)
 {
     QMessageBox::critical(this, "Open error", error);
+    close();
 }
 
 void MainWindow::showWriteCorpusError(QString const &error)
 {
+    d_exportProgressDialog->accept();
     QMessageBox::critical(this, "Export error", error);
+    close();
 }
 
 void MainWindow::statisticsEntryActivated(QString const &value, QString const &query)
@@ -371,13 +249,6 @@ void MainWindow::setupUi()
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d_ui->mainToolBar->addWidget(spacer);
     d_ui->mainToolBar->addAction(d_ui->inspectorAction);
-
-    #ifdef Q_WS_MAC
-        QMenu *appleDockMenu = new QMenu(this);
-        appleDockMenu->addAction(d_ui->openAction);
-        appleDockMenu->addAction(d_ui->remoteAction);
-        qt_mac_set_dock_menu(appleDockMenu);
-    #endif
 }
 
 void MainWindow::createActions()
@@ -386,8 +257,8 @@ void MainWindow::createActions()
         SLOT(corporaRead()));
     connect(this, SIGNAL(corpusReaderCreated()),
         SLOT(corpusRead()));
-    connect(&d_corpusWriteWatcher, SIGNAL(resultReadyAt(int)),
-        SLOT(corpusWritten(int)));
+    connect(this, SIGNAL(corpusWriterFinished(QString const &)),
+        SLOT(corpusWritten(QString const &)));
 
     connect(this, SIGNAL(exportError(QString const &)),
         SLOT(showWriteCorpusError(QString const &)));
@@ -422,49 +293,72 @@ void MainWindow::createActions()
 
     connect(d_ui->filterComboBox->lineEdit(), SIGNAL(textChanged(QString const &)),
         SLOT(applyValidityColor(QString const &)));
-//    connect(d_ui->filterComboBox, SIGNAL(activated(QString const &)),
-//        SLOT(filterChanged()));
     connect(d_ui->filterComboBox, SIGNAL(returnOrClick()),
         SLOT(filterChanged()));
-    //connect(d_ui->filterComboBox->lineEdit(), SIGNAL(returnPressed()),
-    //    SLOT(filterChanged()));
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+
     // Actions
-    connect(d_ui->aboutAction, SIGNAL(triggered(bool)),
-        SLOT(aboutDialog()));
-#ifdef USE_REMOTE_CORPUS
-    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
-        SLOT(showRemoteWindow()));
-#endif // USE_REMOTE_CORPUS
-    connect(d_ui->openAction, SIGNAL(triggered(bool)),
-        SLOT(openCorpus()));
-    connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
-        SLOT(readCorpus(QString)));
-    connect(d_ui->saveAsAction, SIGNAL(triggered(bool)),
+    connect(menu->ui()->closeAction, SIGNAL(triggered(bool)),
+        SLOT(close()));
+
+    connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
       connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
           SLOT(exportCorpus()));
     else
       d_ui->saveCorpus->setDisabled(true);
+    connect(menu->ui()->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(fitTree()));
+    connect(menu->ui()->nextAction, SIGNAL(triggered(bool)),
+        d_ui->dependencyTreeWidget, SLOT(nextEntry(bool)));
+    connect(menu->ui()->pdfExportAction, SIGNAL(triggered(bool)),
+        SLOT(exportPDF()));
+    connect(menu->ui()->xmlExportAction, SIGNAL(triggered(bool)),
+        SLOT(exportXML()));
+    connect(menu->ui()->previousAction, SIGNAL(triggered(bool)),
+        d_ui->dependencyTreeWidget, SLOT(previousEntry(bool)));
+    connect(menu->ui()->printAction, SIGNAL(triggered(bool)),
+        SLOT(print()));
+    connect(menu->ui()->zoomInAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(zoomIn()));
+    connect(menu->ui()->zoomOutAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(zoomOut()));
+    connect(menu->ui()->nextTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(focusNextTreeNode()));
+    connect(menu->ui()->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(focusPreviousTreeNode()));
+    connect(menu->ui()->focusFilterAction, SIGNAL(triggered(bool)),
+        SLOT(focusFilter()));
+    connect(menu->ui()->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
+        SLOT(focusHighlight()));
+    connect(menu->ui()->filterOnAttributeAction, SIGNAL(triggered()),
+        SLOT(filterOnInspectorSelection()));
+    connect(d_macrosModel.data(), SIGNAL(readError(QString)),
+        SLOT(macrosReadError(QString)));
+    connect(menu->ui()->loadMacrosAction, SIGNAL(triggered()),
+        SLOT(openMacrosFile()));
+    connect(menu->ui()->inspectorAction, SIGNAL(toggled(bool)),
+        SLOT(setInspectorVisible(bool)));
+    connect(menu->ui()->toolbarAction, SIGNAL(toggled(bool)),
+        SLOT(setToolbarVisible(bool)));
+    connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
+        SLOT(setToolbarVisible(bool)));
+    connect(menu->ui()->minimizeAction, SIGNAL(triggered()),
+        SLOT(showMinimized()));
+    connect(menu->ui()->toggleFullScreenAction, SIGNAL(triggered()),
+        SLOT(toggleFullScreen()));
+
+    // Toolbar variants
     connect(d_ui->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
-    connect(d_ui->helpAction, SIGNAL(triggered(bool)),
-        SLOT(help()));
     connect(d_ui->nextAction, SIGNAL(triggered(bool)),
         d_ui->dependencyTreeWidget, SLOT(nextEntry(bool)));
-    connect(d_ui->pdfExportAction, SIGNAL(triggered(bool)),
-        SLOT(exportPDF()));
-    connect(d_ui->xmlExportAction, SIGNAL(triggered(bool)),
-        SLOT(exportXML()));
-    connect(d_ui->preferencesAction, SIGNAL(triggered(bool)),
-        SLOT(preferencesWindow()));
     connect(d_ui->previousAction, SIGNAL(triggered(bool)),
         d_ui->dependencyTreeWidget, SLOT(previousEntry(bool)));
-    connect(d_ui->printAction, SIGNAL(triggered(bool)),
-        SLOT(print()));
     connect(d_ui->zoomInAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(zoomIn()));
     connect(d_ui->zoomOutAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
@@ -473,32 +367,14 @@ void MainWindow::createActions()
         SLOT(focusNextTreeNode()));
     connect(d_ui->previousTreeNodeAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(focusPreviousTreeNode()));
-    connect(d_ui->focusFilterAction, SIGNAL(triggered(bool)),
-        SLOT(focusFilter()));
-    connect(d_ui->focusHighlightAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
-        SLOT(focusHighlight()));
-    connect(d_ui->filterOnAttributeAction, SIGNAL(triggered()),
-        SLOT(filterOnInspectorSelection()));
-    connect(d_macrosModel.data(), SIGNAL(readError(QString)),
-        SLOT(macrosReadError(QString)));
-    connect(d_ui->loadMacrosAction, SIGNAL(triggered()),
-        SLOT(openMacrosFile()));
-    connect(d_ui->toolbarAction, SIGNAL(toggled(bool)),
-        SLOT(setToolbarVisible(bool)));
-    connect(d_ui->mainToolBar, SIGNAL(visibilityChanged(bool)),
-        SLOT(setToolbarVisible(bool)));
-    #ifdef USE_WEBSERVICE
-    connect(d_ui->webserviceAction, SIGNAL(triggered()),
-        SLOT(showWebserviceWindow()));
-    #endif // USE_WEBSERVICE
-    connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
-        SLOT(convertCompactCorpus()));
-    connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
-        SLOT(convertDirectoryCorpus()));
+
+    // XXX: Move to DactMenuBar
+    connect(menu->ui()->checkForUpdatesAction, SIGNAL(triggered()),
+        SLOT(checkForUpdates()));
     
-    new GlobalCopyCommand(d_ui->globalCopyAction);
-    new GlobalCutCommand(d_ui->globalCutAction);
-    new GlobalPasteCommand(d_ui->globalPasteAction);
+    new GlobalCopyCommand(menu->ui()->globalCopyAction);
+    new GlobalCutCommand(menu->ui()->globalCutAction);
+    new GlobalPasteCommand(menu->ui()->globalPasteAction);
 }
 
 void MainWindow::filterOnInspectorSelection()
@@ -521,18 +397,6 @@ void MainWindow::initTaintedWidgets()
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->dependencyTreeWidget, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->statisticsWindow, false));
     d_taintedWidgets.push_back(QPair<CorpusWidget *, bool>(d_ui->sentencesWidget, false));
-}
-
-void MainWindow::help()
-{
-    static QUrl const usage("http://rug-compling.github.com/dact/manual/");
-    QDesktopServices::openUrl(usage);
-}
-
-void MainWindow::openCookbook()
-{
-    static QUrl const cookbook("http://rug-compling.github.com/dact/manual/cookbook.xhtml");
-    QDesktopServices::openUrl(cookbook);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -559,12 +423,6 @@ void MainWindow::filterChanged()
 
     d_filter = d_ui->filterComboBox->text().trimmed();
 
-#if 0
-    if (d_queryHistory)
-        d_queryHistory->addToHistory(d_filter);
-#endif
-
-
     taintAllWidgets();
     tabChanged(d_ui->mainTabWidget->currentIndex());
 }
@@ -572,33 +430,6 @@ void MainWindow::filterChanged()
 void MainWindow::focusFilter()
 {
     d_ui->filterComboBox->setFocus();
-}
-
-void MainWindow::initSentenceTransformer()
-{
-    // Read stylesheet.
-    QFile xslFile(":/stylesheets/bracketed-sentence.xsl");
-    xslFile.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&xslFile);
-    QString xsl(xslStream.readAll());
-    d_sentenceTransformer = QSharedPointer<XSLTransformer>(new XSLTransformer(xsl));
-}
-
-/* Open corpus dialogs */
-
-void MainWindow::openCorpus()
-{
-    QString corpusPath = OpenCorpusDialog::getCorpusFileName(this);
-    
-    if (corpusPath.isNull())
-        return;
-
-    QFileInfo fi(corpusPath);
-
-    if (fi.isDir())
-        readCorpus(corpusPath, true);
-    else
-        readCorpus(corpusPath);
 }
 
 void MainWindow::openMacrosFile()
@@ -636,23 +467,6 @@ void MainWindow::exportPDF()
     d_ui->dependencyTreeWidget->renderTree(&painter);
 
     painter.end();
-}
-
-void MainWindow::preferencesWindow()
-{
-    if (d_preferencesWindow == 0)
-    {
-        d_preferencesWindow = new PreferencesWindow(this);
-
-        // Propagate preference changes...
-        connect(d_preferencesWindow, SIGNAL(colorChanged()),
-                d_ui->dependencyTreeWidget->sentenceWidget(), SLOT(colorChanged()));
-        connect(d_preferencesWindow, SIGNAL(colorChanged()),
-                d_ui->sentencesWidget, SLOT(colorChanged()));
-    }
-
-    d_preferencesWindow->show();
-    d_preferencesWindow->raise();
 }
 
 void MainWindow::print()
@@ -775,7 +589,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
     if (!reader.isNull() && !path.isNull())
     {
-        setWindowTitle(QString::fromUtf8("%1%2 -- Dact").arg((path.startsWith("http://") || path.startsWith("https://")) ? "remote: " : "",
+        setWindowTitle(QString::fromUtf8("%1%2 \u2014 Dact").arg((path.startsWith("http://") || path.startsWith("https://")) ? "remote: " : "",
                                                              QFileInfo(path).fileName()));
 
         // On OS X, add the file icon to the window (and try alt-clicking it!)
@@ -783,7 +597,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
         if (QFileInfo(path).exists() || path.startsWith("http://") || path.startsWith("https://"))
             // Add file to the recent files menu
-            d_ui->menuRecentFiles->addFile(path);
+            reinterpret_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
     }
     else
     {
@@ -815,9 +629,10 @@ void MainWindow::corpusRead()
     d_openProgressDialog->setValue(v + 1);    
 }
 
-void MainWindow::corpusWritten(int idx)
+void MainWindow::corpusWritten(QString const &filename)
 {
     d_exportProgressDialog->accept();
+    readCorpus(filename);
 }
 
 void MainWindow::readSettings()
@@ -929,6 +744,8 @@ bool MainWindow::writeCorpus(QString const &filename,
         emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
         return false;
     }
+
+    emit corpusWriterFinished(filename);
 
     return true;
 }
@@ -1083,3 +900,10 @@ void MainWindow::toggleFullScreen()
         showFullScreen();
 #endif
 }
+
+void MainWindow::makeActiveWindow()
+{
+    activateWindow();
+    raise();
+}
+

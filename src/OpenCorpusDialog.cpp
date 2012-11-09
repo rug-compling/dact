@@ -38,7 +38,7 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 :
     QDialog(parent, f),
-    d_ui(QSharedPointer<Ui::OpenCorpusDialog>(new Ui::OpenCorpusDialog)),
+    d_ui(new Ui::OpenCorpusDialog),
     d_archiveModel(new ArchiveModel()),
     d_corpusAccessManager(new QNetworkAccessManager()),
     d_downloadProgressDialog(new QProgressDialog(this)),
@@ -48,12 +48,17 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
 {
     d_ui->setupUi(this);
 
+    // Add separator to context menu
+    QAction *separator = new QAction(d_ui->corpusListView);
+    separator->setSeparator(true);
+    d_ui->corpusListView->insertAction(d_ui->corpusListView->actions().last(), separator);
+
     d_ui->corpusListView->setModel(d_archiveModel.data());
 
     d_ui->corpusListView->setItemDelegate(new ArchiveListItemDelegate(this));
     
     // We only enable the download button when a corpus is selected.
-    d_ui->openButton->setEnabled(false);
+    d_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
     d_downloadProgressDialog->setRange(0, 100);
@@ -62,6 +67,11 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
     d_inflateProgressDialog->setRange(0, 100);
     
+    connect(d_ui->buttonBox, SIGNAL(accepted()),
+        SLOT(openSelectedCorpus()));
+    connect(d_ui->buttonBox, SIGNAL(rejected()),
+        SLOT(reject()));
+
     connect(d_archiveModel.data(), SIGNAL(networkError(QString)),
         SLOT(archiveNetworkError(QString)));
     connect(d_archiveModel.data(), SIGNAL(processingError(QString)),
@@ -111,11 +121,11 @@ OpenCorpusDialog::~OpenCorpusDialog()
 
 void OpenCorpusDialog::archiveNetworkError(QString error)
 {
-    QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
-        QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
-        QMessageBox::Ok);
+    // QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
+    //     QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
+    //     QMessageBox::Ok);
     
-    box.exec();
+    // box.exec();
 }
 
 void OpenCorpusDialog::archiveProcessingError(QString error)
@@ -338,7 +348,7 @@ void OpenCorpusDialog::openSelectedCorpus()
 void OpenCorpusDialog::openSelectedCorpus(QModelIndex const &index)
 {
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(index.row());
-    
+
     if (entry.existsLocally())
     {
         d_filename = entry.filePath();
@@ -374,12 +384,12 @@ void OpenCorpusDialog::revealSelectedCorpus()
     ArchiveEntry const &entry(selectedCorpus());
     // source: http://lynxline.com/show-in-finder-show-in-explorer/
 
-    #ifdef Q_WS_MAC
+    #if defined(Q_WS_MAC)
         QStringList args;
         args << "-R" << entry.filePath();
         QProcess::startDetached("open", args);
 
-    #elif Q_WS_WIN
+    #elif defined(Q_WS_WIN)
         QStringList args;
         args << "/select," << QDir::toNativeSeparators(entry.filePath());
         QProcess::startDetached("explorer", args);
@@ -405,7 +415,7 @@ void OpenCorpusDialog::rowChanged(QModelIndex const &current, QModelIndex const 
     ArchiveEntry const &entry = d_archiveModel->entryAtRow(current.row());
 
     // Disable/enable Open button
-    d_ui->openButton->setEnabled(current.isValid());
+    d_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(current.isValid());
 
     // Disable/enable Reveal & Remove local files context menu items
     bool corpusExistsLocally(entry.existsLocally());

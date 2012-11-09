@@ -69,6 +69,10 @@ RemoteWindow::~RemoteWindow()
 
 void RemoteWindow::archiveNetworkError(QString error)
 {
+    // Don't show errors about not being able to refresh if the window is not active yet.
+    if (!isVisible())
+        return;
+
     QMessageBox box(QMessageBox::Warning, "Failed to fetch corpus index",
         QString("Could not fetch the list of corpora, failed with error: %1").arg(error),
         QMessageBox::Ok);

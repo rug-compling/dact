@@ -7,7 +7,8 @@
 
 #include <AlpinoCorpus/CorpusReader.hh>
 
-#include "DactMacrosModel.hh"
+#include <DactMacrosModel.hh>
+#include <SimpleDTD.hh>
 
 namespace ac = alpinocorpus;
 
@@ -23,12 +24,19 @@ public:
         QSharedPointer<ac::CorpusReader> corpusReader = QSharedPointer<ac::CorpusReader>());
     XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObject *parent = 0, bool variables = false,
         QSharedPointer<ac::CorpusReader> corpusReader = QSharedPointer<ac::CorpusReader>());
+
+    void parseDTD();
     void setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader);
     State validate(QString &exprStr, int &pos) const;
+    bool validateAgainstDTD(QString const &exprStr) const;
+
 private:
+    bool checkAgainstDTD(QString const &query) const;
+
     bool d_variables;
     QSharedPointer<DactMacrosModel> d_macrosModel;
     QSharedPointer<ac::CorpusReader> d_corpusReader;
+    QSharedPointer<SimpleDTD> d_dtd;
 };
 
 inline void XPathValidator::setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader)

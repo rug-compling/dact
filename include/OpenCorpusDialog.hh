@@ -51,7 +51,6 @@ private slots:
     void downloadCanceled();
     void inflate(QIODevice *dev);
     void inflateHandleError(QString error);
-    void download(ArchiveEntry const &entry);
     void downloadProgress(qint64 progress, qint64 maximum);
     void refreshCorpusList();
     void rowChanged(QModelIndex const &current, QModelIndex const &previous);
@@ -65,16 +64,17 @@ private slots:
     void revealSelectedCorpus();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
+    void download(ArchiveEntry const &entry);
+	void keyPressEvent(QKeyEvent *event);
         
 private:
     QString networkErrorToString(QNetworkReply::NetworkError error);
     QModelIndex selectedCorpusIndex() const;
     ArchiveEntry const &selectedCorpus() const;
     
-    QSharedPointer<Ui::OpenCorpusDialog> d_ui;
-    QSharedPointer<ArchiveModel> d_archiveModel;
-    QSharedPointer<QNetworkAccessManager> d_corpusAccessManager;
+    QScopedPointer<Ui::OpenCorpusDialog> d_ui;
+    QScopedPointer<ArchiveModel> d_archiveModel;
+    QScopedPointer<QNetworkAccessManager> d_corpusAccessManager;
     QProgressDialog *d_downloadProgressDialog;
     QProgressDialog *d_inflateProgressDialog;
     QString d_baseUrl;

@@ -29,6 +29,8 @@ endif(APPLE)
 
 if(ENABLE_BUNDLE)
   set(PROGNAME Dact)
+elseif(WIN32)
+  set(PROGNAME Dact)
 else()
   set(PROGNAME alpino-dact)
 endif()
@@ -54,6 +56,11 @@ list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 
 include_directories(${DACT_SOURCE_DIR}/include)
 include_directories(${DACT_BINARY_DIR})
+
+find_package(Boost 1.46.1)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
 
 find_package(AlpinoCorpus REQUIRED)
 if(ALPINOCORPUS_FOUND)
@@ -83,6 +90,16 @@ endif()
 find_package(LibExslt REQUIRED)
 if(LIBEXSLT_FOUND)
   include_directories(${LIBEXSLT_INCLUDE_DIR})
+endif()
+
+find_package(XercesC REQUIRED)
+if (XERCESC_FOUND)
+  include_directories(${XERCESC_INCLUDE_DIR})
+endif()
+
+find_package(XQilla REQUIRED)
+if (XQILLA_FOUND)
+  include_directories(${XQILLA_INCLUDE_DIR})
 endif()
 
 find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
@@ -119,8 +136,12 @@ SET(dact_SRCS
   src/DactToolsMenu.cpp
   src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
+  src/DactMenuBar.cpp
   src/QueryModel.cpp
+  src/QueryScope.cpp
   src/QtIOCompressor.cpp
+  src/SimpleDTD.cpp
+  src/SimpleDTDAttribute.cpp
   src/DactTreeScene.cpp
   src/DactTreeView.cpp
   src/FilterModel.cpp
@@ -193,7 +214,10 @@ SET(dact_HDRS
   include/QtIOCompressor.hh
   include/Query.hh
   include/QueryModel.hh
+  include/QueryScope.hh
   include/RecentFilesMenu.hh
+  include/SimpleDTD.hh
+  include/SimpleDTDAttribute.hh
   include/StatisticsWindow.hh
   include/TreeNode.hh
   include/TreeNodeInspector.hh
@@ -228,6 +252,7 @@ SET(dact_MOC_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
+  include/DactMenuBar.hh
   include/HistoryComboBox.hh
   include/QtIOCompressor.hh
   include/QueryModel.hh
@@ -251,6 +276,7 @@ SET(dact_UI
   ui/ArchiveListItemWidget.ui
   ui/BracketedWindow.ui
   ui/DependencyTreeWidget.ui
+  ui/DactMenuBar.ui
   ui/MainWindow.ui
   ui/OpenCorpusDialog.ui
   ui/PreferencesWindow.ui
@@ -318,11 +344,11 @@ if(APPLE)
       PROPERTIES COMPILE_FLAGS "-x objective-c++")
     set(CMAKE_EXE_LINKER_FLAGS "-framework AppKit -framework Sparkle")
   endif(USE_SPARKLE)
-endif(APPLE)
 
-set(dact_MACOSX_RESOURCE_FILES
-  ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
-  ${DACT_SOURCE_DIR}/resources/dact-corpus.icns)
+  set(dact_MACOSX_RESOURCE_FILES
+    ${DACT_SOURCE_DIR}/resources/dact-espresso.icns
+    ${DACT_SOURCE_DIR}/resources/dact-corpus.icns)
+endif(APPLE)
 
 set_source_files_properties(
   ${dact_MACOSX_RESOURCE_FILES}
@@ -360,7 +386,8 @@ target_link_libraries(${PROGNAME} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXML2_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBXSLT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})
-
+target_link_libraries(${PROGNAME} ${XERCESC_LIBRARY})
+target_link_libraries(${PROGNAME} ${XQILLA_LIBRARY})
 
 install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime

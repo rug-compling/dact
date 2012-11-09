@@ -10,6 +10,7 @@
 #include <AlpinoCorpus/CorpusReader.hh>
 
 #include "CorpusWidget.hh"
+#include "PercentageCellDelegate.hh"
 #include "XPathValidator.hh"
 
 namespace Ui {
@@ -76,6 +77,7 @@ private:
     QSharedPointer<XPathValidator> d_xpathValidator;
     QSharedPointer<QueryModel> d_model;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
+    QSharedPointer<PercentageCellDelegate> d_percentageCellDelegate;
     QString d_lastFilterChoice;
 };
 

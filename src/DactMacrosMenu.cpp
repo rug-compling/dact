@@ -24,73 +24,39 @@ void DactMacrosMenu::setModel(QSharedPointer<DactMacrosModel> model)
 
 void DactMacrosMenu::reload()
 {
-	foreach (QMenu *menu, d_menus)
-	{
-		// remove the action from the menu so it doesn't show up in staticActions.
-		removeAction(menu->menuAction());
+	// Remove all our dynamically added menu items.
+	foreach (QAction *action, d_macroActions)
+		removeAction(action);
+	
+	// All menus have been removed, now forget them.
+	d_macroActions.clear();
 
-		// release our hand-added actions.
-		foreach (QAction *action, menu->actions())
-		{
-			menu->removeAction(action);
-			delete action;
-		}
-
-		// release our home-built menu.
-		delete menu;
-	}
-
-	// all menus have been removed, their pointers have been released. Now forget them.
-	d_menus.clear();
-
-	QList<QAction *> menuActions;
-
-	// For each macro file:
+	// For each macro:
 	for (int m_row = 0, m_end = d_model->rowCount(QModelIndex()); m_row < m_end; ++m_row)
 	{
-		QModelIndex macroIndex(d_model->index(m_row, 0));
+		QModelIndex patternIndex(d_model->index(m_row, 0));
+		QModelIndex replacementIndex(d_model->index(m_row, 1));
 
-		// Use the pattern as label
-		QMenu *menu = new QMenu(macroIndex.data(Qt::DisplayRole).toString());
+		// Label the menu item.
+		QAction *action = addAction(patternIndex.data(Qt::DisplayRole).toString());
+		d_macroActions.append(action);
+	
+		// And show the replacement in the tooltip.
+		action->setToolTip(replacementIndex.data(Qt::DisplayRole).toString());
+	
+		// And remember the pattern in the data section, for easy use later on.
+		action->setData(patternIndex.data(Qt::UserRole).toString());
 
-		menuActions.append(menu->menuAction());
-		d_menus.append(menu);
-		
-		for (int row = 0, end = d_model->rowCount(macroIndex); row < end; ++row)
-		{
-			QModelIndex patternIndex(macroIndex.child(row, 0)),
-				replacementIndex(macroIndex.child(row, 1));
-			
-			// Label the menu item, yeah!
-			QAction *action = menu->addAction(patternIndex.data(Qt::DisplayRole).toString());
-		
-			// And show the replacement in the tooltip
-			action->setToolTip(replacementIndex.data(Qt::DisplayRole).toString());
-		
-			// And remember the pattern in the data section, for easy use later on.
-			action->setData(patternIndex.data(Qt::UserRole).toString());
-
-			// and connect the action to the method that inserts the pattern in the focussed widget.
-			connect(action, SIGNAL(triggered()), SLOT(macroActionTriggered()));
-		}
-
-		menu->addSeparator();
-
-		// A force-reload menu action, which reloads the macro file.
-		QAction *reloadAction = menu->addAction("Reload file");
-		reloadAction->setData(macroIndex.data(Qt::UserRole).toString());
-		connect(reloadAction, SIGNAL(triggered()), SLOT(reloadActionTriggered()));
-
-		// An unload menu action, which removes the macro file from the model.
-		QAction *unloadAction = menu->addAction("Close file");
-		unloadAction->setData(macroIndex.data(Qt::UserRole).toString());
-		connect(unloadAction, SIGNAL(triggered()), SLOT(unloadActionTriggered()));
+		// And connect the action to the method that inserts the pattern in the focussed widget.
+		connect(action, SIGNAL(triggered()), SLOT(macroActionTriggered()));
 	}
 
-	// Insert all the menus we collected at the top of this menu.
-	insertActions(
-		actions().size() ? actions()[0] : 0,
-		menuActions);
+	addSeparator();
+
+	// A force-reload menu action, which reloads the macro file.
+	QAction *reloadAction = addAction("Reload file");
+	d_macroActions.append(reloadAction);
+	connect(reloadAction, SIGNAL(triggered()), SLOT(reloadActionTriggered()));
 }
 
 void DactMacrosMenu::macroActionTriggered()
@@ -112,26 +78,5 @@ void DactMacrosMenu::macroActionTriggered()
 
 void DactMacrosMenu::reloadActionTriggered()
 {
-	QAction *action = qobject_cast<QAction *>(sender());
-
-	if (!action)
-	{
-		qDebug() << "Could not cast the sender of the reloadActionTriggered event to a QAction pointer";
-		return;	
-	}
-
-	d_model->loadFile(action->data().toString());
-}
-
-void DactMacrosMenu::unloadActionTriggered()
-{
-	QAction *action = qobject_cast<QAction *>(sender());
-
-	if (!action)
-	{
-		qDebug() << "Could not cast the sender of the unloadActionTriggered event to a QAction pointer";
-		return;
-	}
-
-	d_model->unloadFile(action->data().toString());
+	d_model->reloadFile();
 }

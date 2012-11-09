@@ -1,120 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>DactMenuBar</class>
+ <widget class="QMenuBar" name="DactMenuBar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>789</width>
-    <height>660</height>
+    <height>22</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Dact</string>
-  </property>
-  <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_7">
-    <property name="spacing">
-     <number>12</number>
+  <widget class="QMenu" name="menuFile">
+   <property name="title">
+    <string>&amp;File</string>
+   </property>
+   <widget class="RecentFilesMenu" name="menuRecentFiles">
+    <property name="title">
+     <string>Open Recent</string>
     </property>
-    <item>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Filter:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="HistoryComboBox" name="filterComboBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="mainTabWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="treeTab">
-       <attribute name="title">
-        <string>Tree</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <widget class="DependencyTreeWidget" name="dependencyTreeWidget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="statisticsTab">
-       <attribute name="title">
-        <string>Statistics</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_8">
-        <item>
-         <widget class="StatisticsWindow" name="statisticsWindow" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Sentences</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="BracketedWindow" name="sentencesWidget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-   </layout>
+   </widget>
+   <addaction name="openAction"/>
+   <addaction name="remoteAction"/>
+   <addaction name="menuRecentFiles"/>
+   <addaction name="separator"/>
+   <addaction name="saveAsAction"/>
+   <addaction name="separator"/>
+   <addaction name="saveCorpus"/>
+   <addaction name="xmlExportAction"/>
+   <addaction name="pdfExportAction"/>
+   <addaction name="printAction"/>
+   <addaction name="separator"/>
+   <addaction name="quitAction"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <property name="windowTitle">
-    <string>Toolbar</string>
+  <widget class="QMenu" name="menuEdit">
+   <property name="title">
+    <string>&amp;Edit</string>
    </property>
-   <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   <addaction name="focusFilterAction"/>
+   <addaction name="focusHighlightAction"/>
+   <addaction name="separator"/>
+   <addaction name="globalCopyAction"/>
+   <addaction name="globalCutAction"/>
+   <addaction name="globalPasteAction"/>
+   <addaction name="separator"/>
+   <addaction name="preferencesAction"/>
+  </widget>
+  <widget class="QMenu" name="menuView">
+   <property name="title">
+    <string>&amp;View</string>
    </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
    <addaction name="previousAction"/>
    <addaction name="nextAction"/>
    <addaction name="separator"/>
+   <addaction name="fitAction"/>
    <addaction name="zoomInAction"/>
    <addaction name="zoomOutAction"/>
-   <addaction name="fitAction"/>
+   <addaction name="separator"/>
    <addaction name="previousTreeNodeAction"/>
    <addaction name="nextTreeNodeAction"/>
+   <addaction name="separator"/>
    <addaction name="inspectorAction"/>
+   <addaction name="toolbarAction"/>
+   <addaction name="separator"/>
+   <addaction name="toggleFullScreenAction"/>
   </widget>
-  <widget class="TreeNodeInspector" name="inspector">
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
+  <widget class="QMenu" name="menuTools">
+   <property name="title">
+    <string>&amp;Tools</string>
    </property>
-   <property name="windowTitle">
-    <string>Inspector</string>
+   <widget class="QMenu" name="menuConvertCorpus">
+    <property name="title">
+     <string>Convert corpus</string>
+    </property>
+    <addaction name="convertDirectoryCorpusAction"/>
+    <addaction name="convertCompactCorpusAction"/>
+   </widget>
+   <addaction name="webserviceAction"/>
+   <addaction name="menuConvertCorpus"/>
+   <addaction name="separator"/>
+   <addaction name="clearHistoryAction"/>
+   <addaction name="separator"/>
+   <addaction name="checkForUpdatesAction"/>
+  </widget>
+  <widget class="QMenu" name="menuHelp">
+   <property name="title">
+    <string>Help</string>
    </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <addaction name="filterOnAttributeAction"/>
+   <addaction name="helpAction"/>
+   <addaction name="cookbookAction"/>
+   <addaction name="aboutAction"/>
+  </widget>
+  <widget class="DactMacrosMenu" name="menuMacros">
+   <property name="title">
+    <string>Macros</string>
+   </property>
+   <addaction name="separator"/>
+   <addaction name="loadMacrosAction"/>
+  </widget>
+  <widget class="QMenu" name="menuWindow">
+   <property name="title">
+    <string>Window</string>
+   </property>
+   <addaction name="minimizeAction"/>
+   <addaction name="closeAction"/>
   </widget>
   <action name="quitAction">
    <property name="text">
@@ -397,6 +385,21 @@
     <string>Load file…</string>
    </property>
   </action>
+  <action name="globalCopyAction">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="globalCutAction">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="globalPasteAction">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
   <action name="clearHistoryAction">
    <property name="text">
     <string>Clear query history</string>
@@ -457,120 +460,36 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="closeAction">
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <addaction name="menuFile"/>
+  <addaction name="menuEdit"/>
+  <addaction name="menuView"/>
+  <addaction name="menuTools"/>
+  <addaction name="menuMacros"/>
+  <addaction name="menuWindow"/>
+  <addaction name="menuHelp"/>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>StatisticsWindow</class>
-   <extends>QWidget</extends>
-   <header>StatisticsWindow.hh</header>
+   <class>RecentFilesMenu</class>
+   <extends>QMenu</extends>
+   <header>RecentFilesMenu.hh</header>
   </customwidget>
   <customwidget>
-   <class>BracketedWindow</class>
-   <extends>QWidget</extends>
-   <header>BracketedWindow.hh</header>
-  </customwidget>
-  <customwidget>
-   <class>DependencyTreeWidget</class>
-   <extends>QWidget</extends>
-   <header>DependencyTreeWidget.hh</header>
-  </customwidget>
-  <customwidget>
-   <class>HistoryComboBox</class>
-   <extends>QComboBox</extends>
-   <header>HistoryComboBox.hh</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TreeNodeInspector</class>
-   <extends>QDockWidget</extends>
-   <header>TreeNodeInspector.hh</header>
-   <container>1</container>
+   <class>DactMacrosMenu</class>
+   <extends>QMenu</extends>
+   <header>DactMacrosMenu.hh</header>
   </customwidget>
  </customwidgets>
  <resources>
   <include location="../resources/dact.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>quitAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>inspectorAction</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setInspectorVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>749</x>
-     <y>360</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>minimizeAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showMinimized()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toggleFullScreenAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>toggleFullScreen()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkForUpdatesAction</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>checkForUpdates()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
