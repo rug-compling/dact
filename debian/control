@@ -2,8 +2,8 @@ Source: alpino-dact
 Section: science
 Priority: extra
 Maintainer: Daniël de Kok <me@danieldk.eu>
-Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.8.0), cdbs (>= 0.4.62), libboost-dev (>= 1.46.1.1), libalpino-corpus-dev (>= 1.4.0), libxml2-dev (>= 2.7.8), libxslt1-dev (>= 1.1.26-7), libqt4-dev (>= 4.8.0)
-Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.8.0), cdbs (>= 0.4.62), libboost-dev (>= 1.46.1.1), libalpino-corpus-dev (>= 2.0.0), libxml2-dev (>= 2.7.8), libxqilla2.2-dev, libxerces-c-dev, libxslt1-dev (>= 1.1.26-7), libqt4-dev (>= 4.8.0)
+Standards-Version: 3.9.3
 Homepage: http://github.com/rug-compling/dact
 Vcs-Git: git://github.com/rug-compling/dact.git
 Vcs-Browser: https://github.com/rug-compling/dact

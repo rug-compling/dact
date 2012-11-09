@@ -1,3 +1,9 @@
+alpino-dact (2.0.0-1quantal1) quantal; urgency=low
+
+  * New upstream release.
+
+ -- Daniël de Kok <me@danieldk.eu>  Fri, 09 Nov 2012 02:37:14 -0800
+
 alpino-dact (1.6.0-1quantal2) quantal; urgency=low
 
   * The Boost development headers became an implicit dependency via
