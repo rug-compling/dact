@@ -1,25 +1,25 @@
-alpino-dact (2.0.0-1quantal1) quantal; urgency=low
+alpino-dact (2.0.0-1precise1) precise; urgency=low
 
   * New upstream release.
 
  -- Daniël de Kok <me@danieldk.eu>  Fri, 09 Nov 2012 02:37:14 -0800
 
-alpino-dact (1.6.0-1quantal2) quantal; urgency=low
+alpino-dact (1.6.0-1precise2) precise; urgency=low
 
   * The Boost development headers became an implicit dependency via
     alpinocorpus. Add them as a dependency.
 
  -- Daniël de Kok <me@danieldk.eu>  Fri, 21 Sep 2012 20:30:56 +0200
 
-alpino-dact (1.6.0-1quantal1) quantal; urgency=low
+alpino-dact (1.6.0-1precise1) precise; urgency=low
 
   * New upstream release.
 
  -- Daniël de Kok <me@danieldk.eu>  Fri, 21 Sep 2012 18:18:50 +0200
 
-alpino-dact (1.4.0-1quantal1) quantal; urgency=low
+alpino-dact (1.4.0-1precise1) precise; urgency=low
 
-  * Build for Quantal Quetzal.
+  * Build for Precise Pangolin.
 
  -- Daniël de Kok <me@danieldk.eu>  Sun, 09 Sep 2012 18:48:12 +0200
 
