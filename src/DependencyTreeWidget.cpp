@@ -341,8 +341,10 @@ void DependencyTreeWidget::setMacrosModel(QSharedPointer<DactMacrosModel> macros
 
 void DependencyTreeWidget::setHighlight(QString const &query)
 {
-    d_highlight = query;
-    d_ui->highlightLineEdit->setText(query);
+    // Get the last component of the query pipeline
+    QStringList queryParts = query.split("+|+");
+    d_highlight = queryParts[queryParts.size() - 1].trimmed();
+    d_ui->highlightLineEdit->setText(d_highlight);
     showFile(); // to force-reload the tree and bracketed sentence
 }
 
