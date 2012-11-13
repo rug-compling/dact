@@ -1,3 +1,9 @@
+alpino-dact (2.0.1-1quantal1) quantal; urgency=low
+
+  * New upstream release.
+
+ -- Daniël de Kok <me@danieldk.eu>  Tue, 13 Nov 2012 10:25:03 -0800
+
 alpino-dact (2.0.0-1quantal1) quantal; urgency=low
 
   * New upstream release.
