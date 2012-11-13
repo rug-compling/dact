@@ -1,6 +1,8 @@
 #include <QByteArray>
 #include <QFile>
 #include <QSharedPointer>
+#include <QString>
+#include <QStringList>
 #include <QtDebug>
 
 #include <xqilla/xqilla-simple.hpp>
@@ -412,21 +414,32 @@ void XPathValidator::parseDTD()
 
 bool XPathValidator::checkAgainstDTD(QString const &query) const
 {
-    DynamicContext *ctx(s_xqilla.createContext(XQilla::XPATH2));
-    ctx->setXPath1CompatibilityMode(true);
 
     // If we cannot parse the query and traverse its AST without an exception, something
     // must be wrong with the query...
     try {
-        AutoDelete<XQQuery> xqQuery(s_xqilla.parse(X(query.toUtf8().constData()), ctx));
 
-        ASTNode *root = xqQuery->getQueryBody();
-        // std::cout << xqQuery->getQueryPlan() << std::endl;
+        QStringList subQueries = query.split("+|+");
 
-        QSharedPointer<QueryScope> rootScope(new QueryScope());
-        rootScope->setNodeName("[document root]");
+        foreach(QString subQuery, subQueries)
+        {
+            DynamicContext *ctx(s_xqilla.createContext(XQilla::XPATH2));
+            ctx->setXPath1CompatibilityMode(true);
 
-        return inspect(root, rootScope, *d_dtd);
+            AutoDelete<XQQuery> xqQuery(s_xqilla.parse(X(subQuery.toUtf8().constData()), ctx));
+
+            ASTNode *root = xqQuery->getQueryBody();
+            // std::cout << xqQuery->getQueryPlan() << std::endl;
+
+            QSharedPointer<QueryScope> rootScope(new QueryScope());
+            rootScope->setNodeName("[document root]");
+
+
+            if (!inspect(root, rootScope, *d_dtd))
+                return false;
+        }
+
+        return true;
     } catch (XQException &e) {
         return false;
     }
