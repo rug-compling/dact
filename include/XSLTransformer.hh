@@ -1,9 +1,12 @@
 #ifndef XSLTTRANSFORMER_HH
 #define XSLTTRANSFORMER_HH
 
+#include <QScopedPointer>
 #include <QString>
 #include <QHash>
 #include <QFile>
+
+#include "XMLDeleters.hh"
 
 extern "C" {
 #include <libxslt/xsltInternals.h>
@@ -24,7 +27,7 @@ private:
     XSLTransformer &operator=(XSLTransformer const &other);
     void initWithStylesheet(QString const &xslt);
 
-    xsltStylesheetPtr d_xslPtr;
+    QScopedPointer<xsltStylesheet, XsltStylesheetDeleter> d_xslPtr;
 };
 
 #endif // XSLTTRANSFORMER_HH

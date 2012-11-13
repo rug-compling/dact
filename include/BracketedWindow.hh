@@ -1,8 +1,10 @@
 #ifndef DACTBRACKETEDWINDOW_H
 #define DACTBRACKETEDWINDOW_H
 
+#include <QAbstractItemDelegate>
 #include <QCloseEvent>
 #include <QHash>
+#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QString>
 #include <QWidget>
@@ -12,6 +14,7 @@
 #include "CorpusWidget.hh"
 #include "DactMacrosModel.hh"
 #include "FilterModel.hh"
+#include "NonCopyable.hh"
 #include "XPathValidator.hh"
 #include "ui_BracketedWindow.h"
 
@@ -29,7 +32,7 @@ class QTextStream;
  into html using xslt)
  \sa BracketedDelegate
  */
-class BracketedWindow : public CorpusWidget {
+class BracketedWindow : public CorpusWidget, private NonCopyable {
     Q_OBJECT
 
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusReaderPtr;
@@ -156,10 +159,11 @@ private:
     QString d_filter;
     QList<DelegateFactory> d_listDelegateFactories;
     QList<QString> d_outputTypes;
-    QSharedPointer<Ui::BracketedWindow> d_ui;
+    QScopedPointer<QAbstractItemDelegate> d_delegate;
+    QScopedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
-    QSharedPointer<DactMacrosModel> d_macrosModel;
-    QSharedPointer<FilterModel> d_model;
+    QScopedPointer<DactMacrosModel> d_macrosModel;
+    QScopedPointer<FilterModel> d_model;
     QString d_lastfilterchoice;
 };
 

@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QScopedPointer>
 #include <QString>
 #include <QStringList>
 #include <QUrl>
@@ -18,6 +19,7 @@
 #include <QtDebug>
 
 #include <RemoteArchiveModel.hh>
+#include <XMLDeleters.hh>
 
 QString const DOWNLOAD_EXTENSION(".dact.gz");
 
@@ -132,9 +134,9 @@ QString childValue(xmlDocPtr doc, xmlNodePtr children, xmlChar const *name) {
     for (xmlNodePtr child = children; child != 0; child = child->next) {
         if (xmlStrcmp(child->name, name) == 0) {
             // Retrieve value as a QString.
-            xmlChar *str = xmlNodeListGetString(doc, child->children, 1);
-            QString value = QString::fromUtf8(reinterpret_cast<char const *>(str));
-            xmlFree(str);
+            QScopedPointer<xmlChar, XmlDeleter> str(
+                xmlNodeListGetString(doc, child->children, 1));
+            QString value = QString::fromUtf8(reinterpret_cast<char const *>(str.data()));
 
             return value;
         }
@@ -164,16 +166,16 @@ void RemoteArchiveModel::replyFinished(QNetworkReply *reply)
     }
     
     QByteArray xmlData(reply->readAll());
-    xmlDocPtr xmlDoc = xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0);
+    QScopedPointer<xmlDoc, XmlDocDeleter> xmlDoc(
+        xmlReadMemory(xmlData.constData(), xmlData.size(), 0, 0, 0));
     if (xmlDoc == 0) {
         emit processingError("could not parse the corpus archive index.");
         return;
     }
     
-    xmlNodePtr root = xmlDocGetRootElement(xmlDoc);
+    xmlNodePtr root = xmlDocGetRootElement(xmlDoc.data());
     if (QString::fromUtf8(reinterpret_cast<char const *>(root->name)) !=
         QString("corpusarchive")) {
-        xmlFreeDoc(xmlDoc);
         emit processingError("the corpus archive index has an incorrect root node.");
         return;
     }
@@ -184,7 +186,7 @@ void RemoteArchiveModel::replyFinished(QNetworkReply *reply)
             QString("corpus"))
             continue;
         
-        QString name(childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filename")));
+        QString name(childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("filename")));
 
         if (name.isNull())
             continue;
@@ -194,7 +196,7 @@ void RemoteArchiveModel::replyFinished(QNetworkReply *reply)
             name.chop(DOWNLOAD_EXTENSION.length());
         
         // Retrieve and verify file size.
-        QString fileSizeStr = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("filesize"));
+        QString fileSizeStr = childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("filesize"));
         if (fileSizeStr.isNull())
             continue;
 
@@ -208,11 +210,11 @@ void RemoteArchiveModel::replyFinished(QNetworkReply *reply)
         
         RemoteArchiveEntry corpus;
         corpus.name = name;
-        corpus.sentences = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
+        corpus.sentences = childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("sentences")).toULong();
         corpus.size = fileSizeMB;
-        corpus.description = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
-        corpus.longDescription = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
-        corpus.checksum = childValue(xmlDoc, child->children, reinterpret_cast<xmlChar const *>("sha1"));
+        corpus.description = childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("shortdesc"));
+        corpus.longDescription = childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("desc")).trimmed();
+        corpus.checksum = childValue(xmlDoc.data(), child->children, reinterpret_cast<xmlChar const *>("sha1"));
         
         d_corpora.push_back(corpus);        
     }
