@@ -61,10 +61,15 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showRemoteWindow()));
 #endif // USE_REMOTE_CORPUS
 
+#ifdef ENABLE_SANDBOXING
+    d_ui->menuTools->removeAction(d_ui->convertCorpusMenu->menuAction());
+#else
     connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertDirectoryCorpus()));
+#endif // ENABLE_SANDBOXING
+
 #ifdef USE_WEBSERVICE
     connect(d_ui->webserviceAction, SIGNAL(triggered()),
         qApp, SLOT(showWebserviceWindow()));

@@ -272,7 +272,8 @@ private:
      \sa exportProgress
      \sa exportError
      */
-    bool writeCorpus(QString const &filename, QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
+    bool writeCorpus(QString const &filename,
+        QSharedPointer<alpinocorpus::CorpusReader> corpusReader,
         QList<QString> const &files);
 
     /*!

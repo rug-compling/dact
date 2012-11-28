@@ -340,7 +340,7 @@ void BracketedWindow::exportSelection()
 {
     QString filename(QFileDialog::getSaveFileName(this,
         "Export selection",
-        QString(), "*.txt"));
+        QString("untitled"), "*.txt"));
 
     if (filename.isNull())
         return;

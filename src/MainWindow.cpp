@@ -33,6 +33,10 @@
 
 #include <config.hh>
 
+#if defined(ENABLE_SANDBOXING) 
+#include <QTemporaryFile>
+#endif
+
 #include <AppleUtils.hh>
 #include <DactApplication.hh>
 #include <DactMenuBar.hh>
@@ -452,7 +456,10 @@ void MainWindow::readMacros(QStringList const &fileNames)
 
 void MainWindow::exportPDF()
 {
-    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
+    QItemSelectionModel *selectionModel = d_ui->dependencyTreeWidget->selectionModel();
+    QString entryName = selectionModel->currentIndex().data(Qt::UserRole).toString();
+    QFileInfo entryFI(entryName);
+    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", entryFI.baseName(), "*.pdf");
     if (pdfFilename.isNull())
         return;
 
@@ -661,7 +668,6 @@ void MainWindow::readSettings()
 
 void MainWindow::exportCorpus()
 {
-
     if (d_corpusWriteWatcher.isRunning()) {
         d_corpusWriteWatcher.cancel();
         d_corpusWriteWatcher.waitForFinished();
@@ -675,7 +681,7 @@ void MainWindow::exportCorpus()
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
-        QString(), "*.dact"));
+        QString("untitled"), "*.dact"));
 
     if (!filename.isNull())
     {
@@ -707,8 +713,8 @@ void MainWindow::exportCorpus()
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
 
-        QFuture<bool> corpusWriterFuture =
-            QtConcurrent::run(this, &MainWindow::writeCorpus, filename, d_corpusReader, files);
+        QFuture<bool> corpusWriterFuture = QtConcurrent::run(
+          this, &MainWindow::writeCorpus, filename, d_corpusReader, files);
         d_corpusWriteWatcher.setFuture(corpusWriterFuture);
     }
 }
@@ -717,9 +723,21 @@ bool MainWindow::writeCorpus(QString const &filename,
     QSharedPointer<ac::CorpusReader> corpusReader,
     QList<QString> const &files)
 {
+#if defined(ENABLE_SANDBOXING) 
+    QTemporaryFile tmpFile;
+    // Ensure the temp file name is created.
+    tmpFile.open();
+    tmpFile.close();
+
+    QString const writeTarget = tmpFile.fileName();
+#else
+    QString const writeTarget = filename;
+#endif // defined(ENABLE_SANDBOXING)
+
+
     try {
         QSharedPointer<ac::CorpusWriter> corpus(
-          ac::CorpusWriter::open(filename.toUtf8().constData(), true,
+          ac::CorpusWriter::open(writeTarget.toUtf8().constData(), true,
           ac::CorpusWriter::DBXML_CORPUS_WRITER));
 
         emit exportProgressMaximum(files.size());
@@ -736,6 +754,7 @@ bool MainWindow::writeCorpus(QString const &filename,
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);
         }
+
     } catch (ac::OpenError const &e) {
         emit exportError(e.what());
         return false;
@@ -743,6 +762,21 @@ bool MainWindow::writeCorpus(QString const &filename,
         emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
         return false;
     }
+
+#if defined(ENABLE_SANDBOXING)
+    bool failed = false;
+    QFile::remove(filename);
+    if (!QFile::rename(writeTarget, filename))
+      if (!QFile::copy(writeTarget, filename))
+        failed = true;
+    
+    QFile::remove(writeTarget);
+
+    if (failed)
+      emit exportError(QString("Could not move temporary file %1 to %2")
+          .arg(writeTarget).arg(filename));
+      return false;
+#endif
 
     emit corpusWriterFinished(filename);
 

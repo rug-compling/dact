@@ -68,7 +68,7 @@ void DactApplication::clearHistory()
 void DactApplication::convertCorpus(QString const &path)
 {
     QString newPath = QFileDialog::getSaveFileName(0,
-        "New Dact corpus", QString(), "*.dact");
+        "New Dact corpus", QString("untitled"), "*.dact");
     if (newPath.isNull())
         return;
 

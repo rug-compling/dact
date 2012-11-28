@@ -67,7 +67,7 @@ void WebserviceWindow::parseSentences()
 {
     // Ask the user where he wants to save the parsed sentences
     d_corpusFilename = QFileDialog::getSaveFileName(this, tr("Save parsed sentences"),
-        QString(), tr("Dact corpus (*.dact)"));
+        QString("untitled"), tr("Dact corpus (*.dact)"));
 
     // User cancelled choosing a save destination
     if (d_corpusFilename.isNull())
