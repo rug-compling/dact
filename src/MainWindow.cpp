@@ -307,10 +307,9 @@ void MainWindow::createActions()
     connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
-      connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
-          SLOT(exportCorpus()));
+      connect(menu->ui()->saveCorpus, SIGNAL(triggered(bool)), SLOT(exportCorpus()));
     else
-      d_ui->saveCorpus->setDisabled(true);
+      menu->ui()->saveCorpus->setDisabled(true);
     connect(menu->ui()->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
     connect(menu->ui()->nextAction, SIGNAL(triggered(bool)),
