@@ -91,7 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createActions();
 
-    d_ui->saveAsAction->setEnabled(false);
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->saveAsAction->setEnabled(false);
 
 #if defined(Q_WS_MAC) && defined(USE_SPARKLE)
     d_autoUpdater = QSharedPointer<SparkleAutoUpdater>(new SparkleAutoUpdater("http://localhost/appcast.xml"));
@@ -207,7 +208,8 @@ void MainWindow::saveAs()
 void MainWindow::saveStateChanged()
 {
     CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
-    d_ui->saveAsAction->setEnabled(widget->saveEnabled());
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
 void MainWindow::setToolbarVisible(bool visible)
@@ -823,7 +825,8 @@ void MainWindow::tabChanged(int index)
         d_taintedWidgets[index].second = false;
     }
 
-    d_ui->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
 }
 
 void MainWindow::taintAllWidgets()
