@@ -801,6 +801,22 @@ void MainWindow::tabChanged(int index)
 {
     bool treeWidgetsEnabled = index == 0 ? true : false;
 
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->previousAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->nextAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->zoomInAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->zoomOutAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->fitAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->xmlExportAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->pdfExportAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->printAction->setEnabled(treeWidgetsEnabled);
+    if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
+      menu->ui()->saveCorpus->setEnabled(treeWidgetsEnabled);
+    menu->ui()->focusHighlightAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->inspectorAction->setEnabled(treeWidgetsEnabled);
+
     d_ui->previousAction->setEnabled(treeWidgetsEnabled);
     d_ui->nextAction->setEnabled(treeWidgetsEnabled);
     d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
@@ -808,10 +824,6 @@ void MainWindow::tabChanged(int index)
     d_ui->fitAction->setEnabled(treeWidgetsEnabled);
     d_ui->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
     d_ui->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
-    d_ui->xmlExportAction->setEnabled(treeWidgetsEnabled);
-    d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
-    d_ui->printAction->setEnabled(treeWidgetsEnabled);
-    d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
 
     // Hide inspector on other tabs
     d_ui->inspectorAction->setEnabled(treeWidgetsEnabled);
@@ -825,7 +837,6 @@ void MainWindow::tabChanged(int index)
         d_taintedWidgets[index].second = false;
     }
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
     menu->ui()->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
 }
 
