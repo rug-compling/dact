@@ -515,6 +515,8 @@ Counting the frequency of the value of the "lemma" attribute gives:
 ## Using quantifiers in XPATH2
 
 In XPATH2, quantified queries have been introduced which provide for additional possibilities. 
+
+### Example 1
 As an example of the potential use of quantified expressions, consider
 the query in which we want to identify a NP which contains a VC complement
 (infinite VP complement), in such a way that there is a noun which is preceded by
@@ -540,6 +542,29 @@ follows:
 As it turns out, such cases occur regularly, as in:
 
 > Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
+
+### Example 2
+Another example is illustrated by the following problem: find the leftmost word inside a te-infinitive phrase,
+i.e., a node with @cat="ti". Note that the begin position of the leftmost word is not identical to
+the begin position of the ti, as the begin position of the ti (often) equals that of the subject or
+object NP that controls the subject of the ti.
+
+Solution: find a word for which it is true that it is inside a ti, and inside that ti it is the leftmost 
+word (ie there is no other word further to the left).
+
+    //node[@word and 
+           (some $vp in ancestor::node[@cat="ti"]
+            satisfies not(  %b% > $vp//node[@word]/%b% )
+           )]
+
+An alternative solution uses the XPath function 'min':
+
+    //node[@word and 
+           (some $vp in ancestor::node[@cat="ti"]  
+            satisfies %b% = min($vp//node[@word]/%b%)
+           )]
+    
+
 
 ## Extraposition, the "nachfeld"
 
