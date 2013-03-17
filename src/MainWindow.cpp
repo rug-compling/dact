@@ -91,7 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createActions();
 
-    d_ui->saveAsAction->setEnabled(false);
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->saveAsAction->setEnabled(false);
 
 #if defined(Q_WS_MAC) && defined(USE_SPARKLE)
     d_autoUpdater = QSharedPointer<SparkleAutoUpdater>(new SparkleAutoUpdater("http://localhost/appcast.xml"));
@@ -207,7 +208,8 @@ void MainWindow::saveAs()
 void MainWindow::saveStateChanged()
 {
     CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
-    d_ui->saveAsAction->setEnabled(widget->saveEnabled());
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
 void MainWindow::setToolbarVisible(bool visible)
@@ -307,10 +309,9 @@ void MainWindow::createActions()
     connect(menu->ui()->saveAsAction, SIGNAL(triggered(bool)),
         SLOT(saveAs()));
     if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
-      connect(d_ui->saveCorpus, SIGNAL(triggered(bool)),
-          SLOT(exportCorpus()));
+      connect(menu->ui()->saveCorpus, SIGNAL(triggered(bool)), SLOT(exportCorpus()));
     else
-      d_ui->saveCorpus->setDisabled(true);
+      menu->ui()->saveCorpus->setDisabled(true);
     connect(menu->ui()->fitAction, SIGNAL(triggered(bool)), d_ui->dependencyTreeWidget,
         SLOT(fitTree()));
     connect(menu->ui()->nextAction, SIGNAL(triggered(bool)),
@@ -800,6 +801,22 @@ void MainWindow::tabChanged(int index)
 {
     bool treeWidgetsEnabled = index == 0 ? true : false;
 
+    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    menu->ui()->previousAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->nextAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->zoomInAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->zoomOutAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->fitAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->xmlExportAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->pdfExportAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->printAction->setEnabled(treeWidgetsEnabled);
+    if (ac::CorpusWriter::writerAvailable(ac::CorpusWriter::DBXML_CORPUS_WRITER))
+      menu->ui()->saveCorpus->setEnabled(treeWidgetsEnabled);
+    menu->ui()->focusHighlightAction->setEnabled(treeWidgetsEnabled);
+    menu->ui()->inspectorAction->setEnabled(treeWidgetsEnabled);
+
     d_ui->previousAction->setEnabled(treeWidgetsEnabled);
     d_ui->nextAction->setEnabled(treeWidgetsEnabled);
     d_ui->zoomInAction->setEnabled(treeWidgetsEnabled);
@@ -807,10 +824,6 @@ void MainWindow::tabChanged(int index)
     d_ui->fitAction->setEnabled(treeWidgetsEnabled);
     d_ui->nextTreeNodeAction->setEnabled(treeWidgetsEnabled);
     d_ui->previousTreeNodeAction->setEnabled(treeWidgetsEnabled);
-    d_ui->xmlExportAction->setEnabled(treeWidgetsEnabled);
-    d_ui->pdfExportAction->setEnabled(treeWidgetsEnabled);
-    d_ui->printAction->setEnabled(treeWidgetsEnabled);
-    d_ui->focusHighlightAction->setEnabled(treeWidgetsEnabled);
 
     // Hide inspector on other tabs
     d_ui->inspectorAction->setEnabled(treeWidgetsEnabled);
@@ -824,7 +837,7 @@ void MainWindow::tabChanged(int index)
         d_taintedWidgets[index].second = false;
     }
 
-    d_ui->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
+    menu->ui()->saveAsAction->setEnabled(d_taintedWidgets[index].first->saveEnabled());
 }
 
 void MainWindow::taintAllWidgets()
