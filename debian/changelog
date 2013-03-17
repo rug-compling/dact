@@ -1,3 +1,9 @@
+alpino-dact (2.0.2-1precise1) precise; urgency=low
+
+  * New upstream release.
+
+ -- Daniël de Kok <me@danieldk.eu>  Tue, 17 Mar 2013 12:24:23 -0800
+
 alpino-dact (2.0.1-1precise1) precise; urgency=low
 
   * New upstream release.
