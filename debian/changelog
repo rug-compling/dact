@@ -1,3 +1,9 @@
+alpino-dact (2.0.2-1raring1) raring; urgency=low
+
+  * Build for Ubuntu 13.04 (Raring Ringtail).
+
+ -- Daniël de Kok <me@danieldk.eu>  Sat, 06 Apr 2013 10:10:12 -0700
+
 alpino-dact (2.0.2-1quantal1) quantal; urgency=low
 
   * New upstream release.
