@@ -267,7 +267,7 @@ Then we can use the query:
 ### Comparison of attributes with numeric values
 
 In the implementation of XPATH2 that is used in Dact, the comparison of numeric values may be
-somewhat counter-intuitive. For instance, in order to find a prenominal modifiers in a noun-phrase,
+somewhat counter-intuitive. For instance, in order to find prenominal modifiers in a noun-phrase,
 the following query might be attemped:
 
     //node[../@cat="np" and @rel="mod" and @begin < ../node[@rel="hd"]/@begin]
@@ -281,7 +281,7 @@ Typical attributes with numeric values are "begin", "end" and "index". The opera
 the conversion include "<", ">" and "=".
 
 Since the numeric conversion of the value of the attributes "begin", "end" and "index" is so common, we
-have the following two macros:
+have the following macros:
 
     b = """number(@begin)"""
     e = """number(@end)"""
