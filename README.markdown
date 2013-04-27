@@ -27,14 +27,9 @@ If you are using Homebrew on Mac OS X, you can simply compile Dact with:
 
 This will fetch, compile, and install Dact and its dependencies.
 
-# Limitations
-
-When a corpus reader with XPath 1.0 is used, the statistics tab does not
-provide a count of matching nodes that do not have the given attribute.
-
 # License
 
-Copyright 2010-2012 Daniël de Kok<br/>
+Copyright 2010-2013 Daniël de Kok<br/>
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or
