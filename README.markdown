@@ -20,6 +20,13 @@ If you want to build the current stable/release version of Dact, check out the
     make
     make install
 
+If you are using Homebrew on Mac OS X, you can simply compile Dact with:
+
+    brew tap rug-compling/dact
+    brew install dact
+
+This will fetch, compile, and install Dact and its dependencies.
+
 # Limitations
 
 When a corpus reader with XPath 1.0 is used, the statistics tab does not
