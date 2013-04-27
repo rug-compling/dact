@@ -16,7 +16,6 @@ endif()
 
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
   set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
   if(ENABLE_BUNDLE AND ENABLE_CODESIGN)
     set(ENABLE_SANDBOXING OFF CACHE BOOL "Build a sandboxed application")
