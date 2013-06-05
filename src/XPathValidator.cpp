@@ -83,6 +83,9 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
         NodeTest *test = step->getNodeTest();
 
         char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
+        if (nodeType == 0)
+            return std::string();
+
         if (strcmp(nodeType, "attribute") == 0) {
             xercesc::XMLString::release(&nodeType);
             return xercesc::XMLString::transcode(test->getNodeName());
