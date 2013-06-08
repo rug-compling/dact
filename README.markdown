@@ -1,11 +1,13 @@
-# Introduction
+# Decaffeinated Alpino Corpus Tool
+
+## Introduction
 
 Dact is a tool for viewing and analyzing treebanks generated and used by
 the [Alpino parser](http://www.let.rug.nl/~vannoord/alp/Alpino/).
 
 See the [Dact homepage](http://rug-compling.github.com/dact/) for more information.
 
-# Building
+## Building
 
 Make sure that you have the following dependencies installed before building Dact:
 
@@ -27,9 +29,10 @@ If you are using Homebrew on Mac OS X, you can simply compile Dact with:
 
 This will fetch, compile, and install Dact and its dependencies.
 
-# License
+## License
 
-Copyright 2010-2013 Daniël de Kok<br/>
+~~~
+Copyright 2010-2013 Daniël de Kok
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or
@@ -46,3 +49,4 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the 
 Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor,
 Boston, MA  02110-1301  USA
+~~~
