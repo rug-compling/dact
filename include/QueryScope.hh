@@ -2,12 +2,13 @@
 #define QUERY_SCOPE_HH
 
 #include <string>
-#include <tr1/memory>
+
+#include <QSharedPointer>
 
 class QueryScope
 {
 public:
-    QueryScope(std::tr1::shared_ptr<QueryScope const> parent);
+    QueryScope(QSharedPointer<QueryScope const> parent);
     QueryScope();
 
     void setNodeName(std::string const &name);
@@ -15,7 +16,7 @@ public:
     std::string path() const;
 private:
     std::string d_nodeName;
-    std::tr1::shared_ptr<QueryScope const> d_parent;
+    QSharedPointer<QueryScope const> d_parent;
 };
 
 #endif // QUERY_SCOPE_HH
