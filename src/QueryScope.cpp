@@ -1,10 +1,11 @@
 #include <sstream>
 #include <string>
-#include <tr1/memory>
+
+#include <QSharedPointer>
 
 #include "QueryScope.hh"
 
-QueryScope::QueryScope(std::tr1::shared_ptr<QueryScope const> parent)
+QueryScope::QueryScope(QSharedPointer<QueryScope const> parent)
 :
     d_parent(parent)
 {}
@@ -30,7 +31,7 @@ std::string QueryScope::path() const
     while (scope)
     {
         ss << ">" << scope->nodeName();
-        scope = scope->d_parent.get();
+        scope = scope->d_parent.data();
     }
 
     return ss.str();
