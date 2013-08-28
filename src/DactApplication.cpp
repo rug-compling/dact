@@ -181,7 +181,7 @@ void DactApplication::openCookbook()
     QDesktopServices::openUrl(cookbook);
 }
 
-void DactApplication::openCorpus(QString const &filename)
+MainWindow *DactApplication::openCorpus(QString const &filename)
 {    
     QFileInfo fi(filename);
 
@@ -195,6 +195,8 @@ void DactApplication::openCorpus(QString const &filename)
         window->readCorpus(filename);
 
     window->readMacros(d_argMacros);
+
+    return window;
 }
 
 void DactApplication::openCorpora(QStringList const &fileNames)
@@ -241,8 +243,25 @@ void DactApplication::_openUrl(QUrl const &url)
     if (url.hasQueryItem("filter"))
     {
         QByteArray encodedFilter(url.queryItemValue("filter").toUtf8());
-        // XXX: Reimplement
-        //d_mainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+
+        // If we don't have an active window, ask the user to open a corpus
+        // and execute the query. Execute the query on the active window
+        // otherwise.
+        if (activeWindow() == 0)
+        {
+          MainWindow *w = showOpenCorpus();
+          if (w)
+            w->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+        }
+        else
+          // The active window can be some other window, such as the corpus
+          // opening window, so we have to check the cast.
+          try
+          {
+            MainWindow &activeMainWindow =
+              dynamic_cast<MainWindow &>(*activeWindow());
+            activeMainWindow.setFilter(QUrl::fromPercentEncoding(encodedFilter));
+          } catch (std::bad_cast &) {}
     }
 
     // Disabled because I don't trust this functionality. I think it can
@@ -305,14 +324,14 @@ void DactApplication::showOpenCorpusLaunch()
         showOpenCorpus();
 }
 
-void DactApplication::showOpenCorpus()
+MainWindow *DactApplication::showOpenCorpus()
 {
     QString corpusPath = OpenCorpusDialog::getCorpusFileName(0);
     
     if (corpusPath.isNull())
-        return;
+        return 0;
 
-    openCorpus(corpusPath);
+    return openCorpus(corpusPath);
 }
 
 void DactApplication::showPreferencesWindow()

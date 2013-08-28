@@ -51,7 +51,7 @@ public slots:
     void convertDirectoryCorpus();
 
     void openCookbook();
-    void openCorpus(QString const &filename);
+    MainWindow *openCorpus(QString const &filename);
 
     /*!
      Opens manual in the default webbrowser.
@@ -59,7 +59,7 @@ public slots:
     void openHelp();
 
     void showAboutWindow();
-	void showOpenCorpus();
+    MainWindow *showOpenCorpus();
 
     /*!
      Raises the PreferencesWindow.
