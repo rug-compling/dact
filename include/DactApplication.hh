@@ -86,7 +86,9 @@ protected:
 
 private slots:
     void emitColorPreferencesChanged();
+    void handleMessage(QString const &msg);
     void prepareQuit();
+    void updateLastMainWindow(QWidget *old, QWidget *now);
 
     /*!
      Used when starting Dact, does not show the dialog if a corpus was provided
@@ -114,6 +116,7 @@ private:
     QScopedPointer<WebserviceWindow> d_webserviceWindow;
 #endif // USE_WEBSERVICE
     QScopedPointer<PreferencesWindow> d_preferencesWindow;
+    MainWindow *d_lastMainWindow;
 };
 
 #endif

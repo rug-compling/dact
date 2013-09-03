@@ -54,9 +54,9 @@ int main(int argc, char *argv[])
 
 
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
-
-        if (a->isRunning())
-          return 0;
+        bool dactIsRunning = a->isRunning();
+        if (dactIsRunning)
+          a->activateWindow();
     
         QVariant fontValue = settings.value("appFont", qApp->font().toString());
         
@@ -84,11 +84,19 @@ int main(int argc, char *argv[])
             else
             {
                 if (args[i].startsWith("dact:"))
-                    a->openUrl(QUrl::fromUserInput(args[i]));
+                {
+                    if (dactIsRunning)
+                      a->sendMessage(args[i]);
+                    else
+                      a->openUrl(QUrl::fromUserInput(args[i]));
+                }
                 else
                     corpusPaths.append(args[i]);
             }
         }
+
+        if (dactIsRunning)
+          return 0;
 
         a->openMacros(macroPaths);
 
