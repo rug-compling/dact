@@ -157,6 +157,8 @@ SET(dact_SRCS
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
+  src/QtLocalPeer.cpp
+  src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
@@ -214,6 +216,9 @@ SET(dact_HDRS
   include/PopupItem.hh
   include/PreferencesWindow.hh
   include/QtIOCompressor.hh
+  include/QtLocalPeer.hh
+  include/QtLockedFile.hh
+  include/QtSingleApplication.hh
   include/Query.hh
   include/QueryModel.hh
   include/QueryScope.hh
@@ -267,6 +272,8 @@ SET(dact_MOC_HDRS
   include/OpenCorpusDialog.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
+  include/QtLocalPeer.hh
+  include/QtSingleApplication.hh
   include/RecentFilesMenu.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
