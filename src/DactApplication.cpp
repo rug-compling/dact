@@ -25,7 +25,7 @@
 #endif // USE_WEBSERVICE
 
 DactApplication::DactApplication(int &argc, char** argv) :
-    QApplication(argc, argv),
+    QtSingleApplication(argc, argv),
     d_dactStartedWithCorpus(false),
     d_historyModel(new QStandardItemModel),
     d_menu(new DactMenuBar(0, true)),

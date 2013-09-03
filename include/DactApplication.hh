@@ -1,7 +1,6 @@
 #ifndef DACTAPPLICATION_H
 #define DACTAPPLICATION_H
 
-#include <QApplication>
 #include <QMenuBar>
 #include <QScopedPointer>
 #include <QStandardItemModel>
@@ -12,6 +11,7 @@
 #include "AboutWindow.hh"
 #include "MainWindow.hh"
 #include "PreferencesWindow.hh"
+#include "QtSingleApplication.hh"
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
@@ -19,7 +19,7 @@
 #include "WebserviceWindow.hh"
 #endif // USE_WEBSERVICE
 
-class DactApplication: public QApplication
+class DactApplication: public QtSingleApplication
 {
     Q_OBJECT
 public:
