@@ -431,22 +431,3 @@ void StatisticsWindow::writeSettings()
     settings.setValue("query_size", size());
 }
 
-QString StatisticsWindow::XMLescape(QString s)
-{
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-}
-
-QString StatisticsWindow::XMLescape(std::string s)
-{
-    return XMLescape(QString(s.c_str()));
-}
-
-QString StatisticsWindow::HTMLescape(QString s)
-{
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-}
-
-QString StatisticsWindow::HTMLescape(std::string s)
-{
-    return HTMLescape(QString(s.c_str()));
-}

@@ -67,10 +67,6 @@ private:
     void readSettings();
     void writeSettings();
     void setModel(QueryModel *model);
-    static QString HTMLescape(QString);
-    static QString HTMLescape(std::string);
-    static QString XMLescape(QString);
-    static QString XMLescape(std::string);
     
     QString d_filter;
     QSharedPointer<Ui::StatisticsWindow> d_ui;
