@@ -188,6 +188,12 @@ void DactApplication::handleMessage(QString const &msg)
 {
     if (msg.startsWith("dact:"))
       openUrl(QUrl::fromUserInput(msg));
+    else if (msg.startsWith(CORPUS_OPEN_MESSAGE))
+    {
+      QStringList corpora = msg.mid(CORPUS_OPEN_MESSAGE.length())
+          .split(CORPUS_SEPARATOR, QString::SkipEmptyParts);
+      openCorpora(corpora);
+    }
 }
 
 QStandardItemModel *DactApplication::historyModel()
@@ -237,6 +243,7 @@ void DactApplication::_openCorpora(QStringList const &fileNames)
     window->show();
     window->readCorpora(fileNames, true);
     window->readMacros(d_argMacros);
+    d_lastMainWindow = window;
 }
 
 void DactApplication::openHelp()
@@ -287,6 +294,7 @@ void DactApplication::_openUrl(QUrl const &url)
         // otherwise.
         else
         {
+          d_dactStartedWithCorpus = true;
           MainWindow *w = showOpenCorpus();
           if (w)
             w->setFilter(QUrl::fromPercentEncoding(encodedFilter));

@@ -88,26 +88,27 @@ int main(int argc, char *argv[])
             corpusPaths.push_back(QString::fromStdString(*iter));
 
         // URI
-        if (options.option('u'))
-        {
-            QString uri = QString::fromStdString(options.optionValue('u'));
+        QString uri = options.option('u') ?
+            QString::fromStdString(options.optionValue('u')) : QString();
 
-            if (uri.startsWith("dact:"))
-            {
-                if (dactIsRunning)
-                    a->sendMessage(uri);
-                else
-                    a->openUrl(QUrl::fromUserInput(uri));
-            }
-        }
+        if (dactIsRunning) {
+            if (corpusPaths.size() != 0)
+                a->sendMessage(QString("%1%2").arg(CORPUS_OPEN_MESSAGE,
+                      corpusPaths.join(CORPUS_SEPARATOR)));
 
-        if (dactIsRunning)
+            if (!uri.isNull())
+                a->sendMessage(uri);
+
           return 0;
+        }
 
         a->openMacros(macroPaths);
 
         if (corpusPaths.size() != 0)
           a->openCorpora(corpusPaths);
+
+        if (!uri.isNull())
+            a->openUrl(QUrl::fromUserInput(uri));
         
         r = a->exec();
     } catch (std::runtime_error &e) {

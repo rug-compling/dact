@@ -19,6 +19,9 @@
 #include "WebserviceWindow.hh"
 #endif // USE_WEBSERVICE
 
+QString const CORPUS_OPEN_MESSAGE = "openCorpus:";
+QString const CORPUS_SEPARATOR = "+:+";
+
 class DactApplication: public QtSingleApplication
 {
     Q_OBJECT
