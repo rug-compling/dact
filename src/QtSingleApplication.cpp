@@ -322,7 +322,7 @@ QWidget* QtSingleApplication::activationWindow() const
 */
 void QtSingleApplication::activateWindow()
 {
-    if (actWin) {
+    if (actWin && topLevelWidgets().contains(actWin)) {
         actWin->setWindowState(actWin->windowState() & ~Qt::WindowMinimized);
         actWin->raise();
         actWin->activateWindow();
