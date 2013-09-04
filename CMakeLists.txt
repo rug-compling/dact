@@ -157,6 +157,7 @@ SET(dact_SRCS
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
+  src/ProgramOptions.cpp
   src/QtLocalPeer.cpp
   src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
@@ -215,6 +216,7 @@ SET(dact_HDRS
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
   include/PreferencesWindow.hh
+  include/ProgramOptions.hh
   include/QtIOCompressor.hh
   include/QtLocalPeer.hh
   include/QtLockedFile.hh
