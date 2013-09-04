@@ -69,11 +69,14 @@ DactApplication::DactApplication(int &argc, char** argv) :
 
 void DactApplication::updateLastMainWindow(QWidget *old, QWidget *now)
 {
-  QWidget *w = now == 0 ? 0 : now->window();
-  MainWindow *mw = dynamic_cast<MainWindow *>(w);
+    QWidget *w = now == 0 ? 0 : now->window();
+    MainWindow *mw = dynamic_cast<MainWindow *>(w);
 
-  if (mw != 0)
-    d_lastMainWindow = mw;
+    if (mw != 0)
+    {
+        d_lastMainWindow = mw;
+        setActivationWindow(mw);
+    }
 }
 
 void DactApplication::clearHistory()

@@ -55,8 +55,6 @@ int main(int argc, char *argv[])
 
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
         bool dactIsRunning = a->isRunning();
-        if (dactIsRunning)
-          a->activateWindow();
     
         QVariant fontValue = settings.value("appFont", qApp->font().toString());
         
