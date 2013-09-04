@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -14,12 +15,16 @@ extern "C" {
 #include <libexslt/exslt.h>
 }
 
-#include "DactApplication.hh"
+#include <DactApplication.hh>
+#include <ProgramOptions.hh>
 
 namespace {
     void usage(char const *progname)
     {
-        std::cerr << "Usage: " << progname << " [file]" << std::endl;
+        std::cerr << "Usage: " << progname << " [OPTION] corpus ..." <<
+          std::endl << std::endl <<
+          "  -m filename\tMacro file, multiple files are separated by a colon (:)" << std::endl <<
+          "  -u URI\tURI, for instance a query URI" << std::endl << std::endl;
         std::exit(1);
     }
 }
@@ -67,29 +72,32 @@ int main(int argc, char *argv[])
         a->init();
     
         QStringList corpusPaths, macroPaths;
-        
-        QStringList args = a->arguments();
-        for (int i = 1; i < args.size(); ++i)
+
+        ProgramOptions options(argc, const_cast<char const **>(argv), "m:u:");
+
+        // Process macros
+        if (options.option('m'))
         {
-            if (args[i] == "-m")
+            QString macros = QString::fromStdString(options.optionValue('m'));
+            macroPaths = macros.split(':', QString::SkipEmptyParts);
+        }
+
+        // Corpus paths
+        for (std::vector<std::string>::const_iterator iter = options.arguments().begin();
+                iter != options.arguments().end(); ++iter)
+            corpusPaths.push_back(QString::fromStdString(*iter));
+
+        // URI
+        if (options.option('u'))
+        {
+            QString uri = QString::fromStdString(options.optionValue('u'));
+
+            if (uri.startsWith("dact:"))
             {
-                // please do follow with a path after -m switch.
-                if (i + 1 >= args.size()) 
-                    usage(argv[0]);
-                
-                macroPaths.append(args[++i]);
-            }
-            else
-            {
-                if (args[i].startsWith("dact:"))
-                {
-                    if (dactIsRunning)
-                      a->sendMessage(args[i]);
-                    else
-                      a->openUrl(QUrl::fromUserInput(args[i]));
-                }
+                if (dactIsRunning)
+                    a->sendMessage(uri);
                 else
-                    corpusPaths.append(args[i]);
+                    a->openUrl(QUrl::fromUserInput(uri));
             }
         }
 
@@ -102,6 +110,9 @@ int main(int argc, char *argv[])
           a->openCorpora(corpusPaths);
         
         r = a->exec();
+    } catch (std::runtime_error &e) {
+        std::cerr << e.what() << std::endl << std::endl;
+        usage(argv[0]);
     } catch (std::logic_error const &e) {
         std::cerr << "dact: internal logic error: please report at\n"
                      "      https://github.com/rug-compling/dact/issues, citing"
