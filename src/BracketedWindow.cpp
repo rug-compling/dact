@@ -361,8 +361,6 @@ void BracketedWindow::exportSelection()
 
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream);
-
-    file.close();
 }
 
 void BracketedWindow::selectionAsCSV(QTextStream &output)
@@ -389,8 +387,6 @@ void BracketedWindow::selectionAsCSV(QTextStream &output)
         output << delegate->sentenceForClipboard(row)
                << '\n';
     }
-
-    output.flush();
 }
 
 QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)
@@ -476,9 +472,6 @@ void BracketedWindow::saveAs()
 
     XSLTransformer trans(*stylesheet);
     out << trans.transform(xmlEntries, params);
-
-    out.flush();
-    data.close();
 
     emit statusMessage(tr("File saved as %1").arg(filename));
 

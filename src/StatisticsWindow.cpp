@@ -193,9 +193,6 @@ void StatisticsWindow::saveAs()
     XSLTransformer trans(*stylesheet);
     out << trans.transform(xmlStats);
 
-    out.flush();
-    data.close();
-
     emit statusMessage(tr("File saved as %1").arg(filename));
 }
 
@@ -236,8 +233,6 @@ void StatisticsWindow::exportSelection()
 
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream, ";", true);
-
-    file.close();
 }
 
 void StatisticsWindow::createActions()
@@ -308,8 +303,6 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
             << d_model->data(row.sibling(row.row(), 1)).toString() // count
             << '\n';
     }
-
-    output.flush();
 }
 
 void StatisticsWindow::showPercentage(bool show)
