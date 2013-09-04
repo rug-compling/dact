@@ -327,6 +327,7 @@ void StatisticsWindow::startQuery()
     d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
+    d_ui->distinctValuesLabel->clear();
 
     d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText());
 
