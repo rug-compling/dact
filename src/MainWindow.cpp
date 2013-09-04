@@ -563,10 +563,18 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
-        if (QFileInfo(path).isDir())
+        QFileInfo pathInfo(path);
+
+        if (pathInfo.isDir())
           readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
-        else
+        else if (pathInfo.isFile())
           readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), false);
+        else
+        {
+          qWarning() << "Corpus is not a file or directory: " << path;
+          continue;
+        }
+
         nLoadedCorpora++;
         emit corpusReaderCreated();
     }
