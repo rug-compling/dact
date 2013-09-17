@@ -31,7 +31,6 @@ public:
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text, QString const &raw_text);
     void setAggregateAttribute(QString const &text);
-    void showPercentage(bool show);
     bool saveEnabled() const;
     void selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes = false) const;
 

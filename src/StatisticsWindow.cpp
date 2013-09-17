@@ -72,6 +72,9 @@ void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
     //d_xpathValidator->setCorpusReader(d_corpusReader);
 
     setModel(new QueryModel(corpusReader));
+
+    // Ensure that percentage column is hidden when necessary.
+    showPercentageChanged();
 }
 
 void StatisticsWindow::setFilter(QString const &filter, QString const &raw_filter)
@@ -305,12 +308,6 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
     }
 }
 
-void StatisticsWindow::showPercentage(bool show)
-{
-   d_ui->resultsTable->setColumnHidden(2, !show);
-   d_ui->percentageCheckBox->setChecked(show);
-}
-
 void StatisticsWindow::startQuery()
 {
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
@@ -329,7 +326,7 @@ void StatisticsWindow::startQuery()
 
 void StatisticsWindow::showPercentageChanged()
 {
-    showPercentage(d_ui->percentageCheckBox->isChecked());
+    d_ui->resultsTable->setColumnHidden(2, !d_ui->percentageCheckBox->isChecked());
 }
 
 void StatisticsWindow::progressStarted(int total)
@@ -402,7 +399,7 @@ void StatisticsWindow::readSettings()
     QSettings settings;
 
     bool show = settings.value("query_show_percentage", true).toBool();
-    showPercentage(show);
+    d_ui->percentageCheckBox->setChecked(show);
 
     // Window geometry.
     QPoint pos = settings.value("query_pos", QPoint(200, 200)).toPoint();
