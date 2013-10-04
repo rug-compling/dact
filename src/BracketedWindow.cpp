@@ -136,12 +136,6 @@ void BracketedWindow::startQuery()
     d_ui->hitsLabel->clear();
     d_ui->entriesLabel->clear();
 
-    // XXX - only once
-    QFile file(":/stylesheets/bracketed-sentence-xml.xsl");
-    file.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&file);
-    QString stylesheet = xslStream.readAll();
-
     if (d_filter.trimmed().isEmpty())
         setModel(new FilterModel(QSharedPointer<ac::CorpusReader>()));
     else
