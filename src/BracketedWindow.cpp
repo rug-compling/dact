@@ -89,6 +89,9 @@ void BracketedWindow::setModel(FilterModel *model)
     d_model.reset(model);
     d_ui->resultsTable->setModel(d_model.data());
 
+    d_ui->hitsLabel->clear();
+    d_ui->entriesLabel->clear();
+
     emit saveStateChanged();
 
     //d_ui->resultsTable->setColumnHidden(1, true);
@@ -109,6 +112,9 @@ void BracketedWindow::setModel(FilterModel *model)
         this, SLOT(updateResultsTotalCount()));
     */
 
+    connect(d_model.data(), SIGNAL(nEntriesFound(int, int)),
+        SLOT(updateCounts(int, int)));
+
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
 
@@ -127,6 +133,9 @@ void BracketedWindow::setModel(FilterModel *model)
 
 void BracketedWindow::startQuery()
 {
+    d_ui->hitsLabel->clear();
+    d_ui->entriesLabel->clear();
+
     // XXX - only once
     QFile file(":/stylesheets/bracketed-sentence-xml.xsl");
     file.open(QIODevice::ReadOnly);
@@ -514,4 +523,10 @@ void BracketedWindow::showToolsMenu(QPoint const &position)
         selectedFiles,
         mapToGlobal(position),
         d_ui->resultsTable->actions());
+}
+
+void BracketedWindow::updateCounts(int entries, int hits)
+{
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
 }

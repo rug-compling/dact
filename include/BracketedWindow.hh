@@ -135,6 +135,12 @@ private slots:
 
     void showToolsMenu(QPoint const &position);
 
+    /*!
+     * Update the number of entries that match and the total number of
+     * hits.
+     */
+    void updateCounts(int entries, int hits);
+
 protected:
     void closeEvent(QCloseEvent *event); // save window dimensions on close.
 
