@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFileInfo>
 #include <QFont>
 #include <QSettings>
 #include <QVariant>
@@ -85,7 +86,13 @@ int main(int argc, char *argv[])
         // Corpus paths
         for (std::vector<std::string>::const_iterator iter = options.arguments().begin();
                 iter != options.arguments().end(); ++iter)
-            corpusPaths.push_back(QString::fromStdString(*iter));
+        {
+            QString corpus = QString::fromStdString(*iter);
+
+            // Dact may have been started in a different directory.
+            QFileInfo corpusFileInfo(corpus);
+            corpusPaths.push_back(corpusFileInfo.absoluteFilePath());
+        }
 
         // URI
         QString uri = options.option('u') ?
