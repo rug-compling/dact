@@ -104,6 +104,11 @@ QModelIndex DactMacrosModel::index(int row, int column, QModelIndex const &paren
     return QModelIndex();
 }
 
+bool DactMacrosModel::isFileBacked()
+{
+  return d_file;
+}
+
 QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 {
     return QModelIndex();

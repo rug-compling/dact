@@ -445,7 +445,7 @@ void MainWindow::openMacrosFile()
     if (filePath.isNull())
         return;
 
-    d_macrosModel->loadFile(filePath);
+    readMacros(QStringList(filePath));
 
     d_ui->filterComboBox->revalidate();
 }

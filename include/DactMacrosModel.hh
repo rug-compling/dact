@@ -33,6 +33,8 @@ public:
 
     QString expand(QString const &query);
 
+    bool isFileBacked();
+
 public slots:
     void loadFile(QString const &path);
     void loadFileDelayed(QString const &path);

@@ -31,6 +31,11 @@ void DactMacrosMenu::reload()
     // All menus have been removed, now forget them.
     d_macroActions.clear();
 
+    // If the model is not backed by a file, it's not useful to provide
+    // the reload action, etc.
+    if (!d_model->isFileBacked())
+      return;
+
     // For each macro:
     for (int m_row = 0, m_end = d_model->rowCount(QModelIndex()); m_row < m_end; ++m_row)
     {
