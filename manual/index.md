@@ -507,6 +507,9 @@ macros that were defined before in the same file.
     )
     """
 
+All lines which start with # are treated as comments.
+
+
 ## Tools
 
 ### Using tools
