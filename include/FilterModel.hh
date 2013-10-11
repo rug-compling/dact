@@ -10,6 +10,7 @@
 #include <QList>
 #include <QMutex>
 #include <QPair>
+#include <QReadWriteLock>
 #include <QSharedPointer>
 #include <QTimer>
 
@@ -31,7 +32,7 @@ class FilterModel : public QAbstractTableModel
 
     typedef QSharedPointer<alpinocorpus::CorpusReader> CorpusPtr;
     typedef alpinocorpus::CorpusReader::EntryIterator EntryIterator;
-        
+
 public:
     FilterModel(CorpusPtr corpus, QObject *parent = 0);
     ~FilterModel();
@@ -81,7 +82,9 @@ private:
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
     EntryList d_results;
-    mutable QMutex d_resultsMutex;
+    EntryList d_updatedResults;
+    mutable QReadWriteLock d_resultsMutex;
+    mutable QMutex d_updatedResultsMutex;
     QString d_query;
     QFuture<void> d_entriesFuture;
     int d_hits;

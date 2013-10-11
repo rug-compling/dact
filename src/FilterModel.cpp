@@ -46,7 +46,7 @@ int FilterModel::columnCount(QModelIndex const &index) const
 
 int FilterModel::rowCount(QModelIndex const &index) const
 {
-    QMutexLocker locker(&d_resultsMutex);
+    QReadLocker locker(&d_resultsMutex);
     return d_results.size();
 }
 
@@ -63,7 +63,7 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
 
     size_t nResults;
     {
-        QMutexLocker locker(&d_resultsMutex);
+        QReadLocker locker(&d_resultsMutex);
         nResults = d_results.size();
     }
 
@@ -73,7 +73,7 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
         || !(role == Qt::DisplayRole || role == Qt::UserRole))
         return QVariant();
 
-    QMutexLocker locker(&d_resultsMutex);
+    QReadLocker locker(&d_resultsMutex);
     switch (index.column())
     {
         case 0:
@@ -152,6 +152,7 @@ void FilterModel::finalizeQuery(int n, int totalEntries, bool cached)
 {
     if (!cached) {
         // Cache the query
+        QReadLocker locker(&d_resultsMutex);
         d_entryCache->insert(d_query, new CacheItem(d_hits, d_results));
     }
 }
@@ -178,7 +179,7 @@ QVariant FilterModel::headerData(int column, Qt::Orientation orientation, int ro
 
 QModelIndex FilterModel::indexOfFile(QString const &filename) const
 {
-    QMutexLocker locker(&d_resultsMutex);
+    QReadLocker locker(&d_resultsMutex);
     int index = -1;
     for (int i = 0, size = d_results.size(); i < size; ++i)
     {
@@ -195,10 +196,17 @@ QModelIndex FilterModel::indexOfFile(QString const &filename) const
 void FilterModel::fireDataChanged()
 {
     // @TODO make this more robust so no assumption is required.
+    
+    {
+      QMutexLocker updatedResultsLocker(&d_updatedResultsMutex);
+      QWriteLocker resultsLocker(&d_resultsMutex);
+
+      d_results = d_updatedResults;
+    }
 
     int rows;
     {
-      QMutexLocker locker(&d_resultsMutex);
+      QReadLocker locker(&d_resultsMutex);
       rows = d_results.size();
     }
 
@@ -238,12 +246,17 @@ void FilterModel::runQuery(QString const &query, bool bracketedSentences)
 
     int size;
     {
-      QMutexLocker locker(&d_resultsMutex);
+      QWriteLocker locker(&d_resultsMutex);
       size = d_results.size();
       d_results.clear();
     }
 
     emit dataChanged(index(0, 0), index(size, 0));
+
+    {
+      QMutexLocker locker(&d_updatedResultsMutex);
+      d_updatedResults.clear();
+    }
 
     d_query = query;
 
@@ -284,12 +297,13 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 {
     if (d_entryCache->contains(query)) {
         {
-          QMutexLocker locker(&d_resultsMutex);
+          QWriteLocker locker(&d_resultsMutex);
           d_results = d_entryCache->object(query)->entries;
         }
 
         d_hits = d_entryCache->object(query)->hits;
 
+        QReadLocker locker(&d_resultsMutex);
         emit queryFinished(d_results.size(), d_results.size(), true);
         return;
     }
@@ -336,18 +350,18 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
              * each other, never shuffled. Otherwise we might want to change to QHash
              * or QMap for fast lookup.
              */
-            int row = d_results.size() - 1;
-            if (row >= 0 && d_results[row].name == name) {
-                QMutexLocker locker(&d_resultsMutex);
-                ++d_results[row].hits;
+            int row = d_updatedResults.size() - 1;
+            if (row >= 0 && d_updatedResults[row].name == name) {
+                QMutexLocker locker(&d_updatedResultsMutex);
+                ++d_updatedResults[row].hits;
             }
             // Add found file to the list
             else
             {
                 ++row;
 
-                QMutexLocker locker(&d_resultsMutex);
-                d_results.append(Entry(name, 1, QString::null));
+                QMutexLocker locker(&d_updatedResultsMutex);
+                d_updatedResults.append(Entry(name, 1, QString::null));
 
                 if (bracketedSentences)
                 {
