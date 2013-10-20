@@ -77,7 +77,10 @@ QVariant FilterModel::data(QModelIndex const &index, int role) const
     switch (index.column())
     {
         case 0:
-            return d_results.at(index.row()).name;
+            if (role == Qt::UserRole)
+                return d_results.at(index.row()).name;
+            else
+                return d_results.at(index.row()).shortName;
         case 1:
             return d_results.at(index.row()).hits;
         case 2:
@@ -329,7 +332,8 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
 
-            QString name(QString::fromUtf8(e.name.c_str()));
+            QString name(QString::fromUtf8(e.name().c_str()));
+            QString shortName(QString::fromUtf8(e.shortName().c_str()));
 
             /*
              * WARNING: This assumes all the hits per result only occur right after
@@ -347,12 +351,12 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 ++row;
 
                 QMutexLocker locker(&d_resultsMutex);
-                d_results.append(Entry(name, 1, QString::null));
+                d_results.append(Entry(name, shortName, 1, QString::null));
 
                 if (bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
-                        d_corpus->sentence(e.name, d_query.toUtf8().constData());
+                        d_corpus->sentence(e.name(), d_query.toUtf8().constData());
                     d_bracketedSentences[name] = lexItems;
                 }
             }

@@ -359,7 +359,7 @@ void QueryModel::getEntries(EntryIterator const &i)
         while (!d_cancelled && d_entryIterator.hasNext())
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
-            emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
+            emit queryEntryFound(QString::fromUtf8(e.contents().c_str()));
         }
             
         if (d_cancelled)

@@ -21,10 +21,11 @@ class FilterModel : public QAbstractTableModel
     Q_OBJECT
     
     struct Entry {
-        Entry(QString nName, int nHits, QString nData) :
-            name(nName), hits(nHits), data(nData) {}
+        Entry(QString nName, QString nShortName, int nHits, QString nData) :
+            name(nName), shortName(nShortName), hits(nHits), data(nData) {}
         
         QString name;
+        QString shortName;
         int hits;
         QString data;  
     };

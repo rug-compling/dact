@@ -177,7 +177,7 @@ void MainWindow::convertCorpus(QString const &convertPath,
     QList<QString> files;
     ac::CorpusReader::EntryIterator iter = corpusReader->entries();
     while (iter.hasNext())
-        files.push_back(QString::fromUtf8(iter.next(*corpusReader).name.c_str()));
+        files.push_back(QString::fromUtf8(iter.next(*corpusReader).name().c_str()));
 
     d_writeCorpusCancelled = false;
     d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
@@ -566,9 +566,9 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
         QFileInfo pathInfo(path);
 
         if (pathInfo.isDir())
-          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
+          readers->push_back(path.toUtf8().constData(), recursive);
         else if (pathInfo.isFile())
-          readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), false);
+          readers->push_back(path.toUtf8().constData(), false);
         else
         {
           qWarning() << "Corpus is not a file or directory: " << path;
@@ -716,7 +716,7 @@ void MainWindow::exportCorpus()
         {
             ac::CorpusReader::EntryIterator iter = d_corpusReader->entries();
             while (iter.hasNext())
-                files.push_back(QString::fromUtf8(iter.next(*d_corpusReader).name.c_str()));
+                files.push_back(QString::fromUtf8(iter.next(*d_corpusReader).name().c_str()));
             
         }
 
