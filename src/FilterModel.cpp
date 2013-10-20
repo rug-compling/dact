@@ -1,11 +1,12 @@
+#include <algorithm>
+
+#include <QtConcurrentRun>
 #include <QCache>
 #include <QDebug>
 #include <QDateTime>
 #include <QString>
 #include <QStringList>
-#include <QtConcurrentRun>
-
-#include <algorithm>
+#include <QTextDocument>
 
 #include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
@@ -125,7 +126,7 @@ QString FilterModel::asXML() const
               prevDepth = depth;
             }
 
-            sent.append(QString::fromUtf8(lexItem.word.c_str()).replace("&", "&amp;"));
+            sent.append(Qt::escape(QString::fromUtf8(lexItem.word.c_str())));
         }
 
         if (prevDepth > 0)

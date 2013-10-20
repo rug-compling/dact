@@ -1,8 +1,11 @@
 #include <assert.h>
+
+#include <QtConcurrentRun>
 #include <QDateTime>
 #include <QDebug>
+#include <QString>
 #include <QStringList>
-#include <QtConcurrentRun>
+#include <QTextDocument>
 #include <QTimer>
 
 #include <algorithm>
@@ -84,7 +87,7 @@ QString QueryModel::asXML() const
     for (int i = 0; i < rows; ++i) {
         outList.append("<statistic>");
         outList.append(QString("<value>%1</value>")
-            .arg(data(index(i, 0)).toString()));
+            .arg(Qt::escape(data(index(i, 0)).toString())));
         outList.append(QString("<frequency>%1</frequency>")
             .arg(data(index(i, 1)).toString()));
         outList.append(QString("<percentage>%1</percentage>")
