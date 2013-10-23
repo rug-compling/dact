@@ -56,6 +56,10 @@ int main(int argc, char *argv[])
         // mouse scrolling.
         if (!settings.value("useNativeGraphicsSystem", false).toBool())
             QApplication::setGraphicsSystem("raster");
+
+        // QTBUG-32789: GUI widgets use the wrong font on OS X Mavericks.
+        if ( QSysInfo::MacintoshVersion > QSysInfo::MV_10_8 )
+            QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
 #endif
 
 
