@@ -62,6 +62,10 @@ void BracketedSentenceWidget::updateText()
 
         clear();
 
+        // Reset colors.
+        setTextColor(Qt::black);
+        setTextBackgroundColor(Qt::white);
+
         bool adoptSpace = false;
         size_t prevDepth = 0;
         for (std::vector<alpinocorpus::LexItem>::const_iterator iter = items.begin();
