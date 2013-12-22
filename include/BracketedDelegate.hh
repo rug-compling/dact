@@ -19,6 +19,7 @@ protected:
     
 public:
     BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent = 0);
+    virtual ~BracketedDelegate() {}
 
     virtual QString sentenceForClipboard(QModelIndex const &index) const;
 

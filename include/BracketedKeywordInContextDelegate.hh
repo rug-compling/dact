@@ -13,6 +13,7 @@ class BracketedKeywordInContextDelegate : public BracketedDelegate
 
 public:
     BracketedKeywordInContextDelegate(CorpusReaderPtr);
+    virtual ~BracketedKeywordInContextDelegate() {}
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 

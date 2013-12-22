@@ -9,6 +9,7 @@ class BracketedVisibilityDelegate : public BracketedDelegate
 
 public:
     BracketedVisibilityDelegate(CorpusReaderPtr);
+    virtual ~BracketedVisibilityDelegate() {}
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QString sentenceForClipboard(QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;

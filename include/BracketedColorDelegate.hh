@@ -12,6 +12,7 @@ class BracketedColorDelegate : public BracketedDelegate
 
 public:
     BracketedColorDelegate(CorpusReaderPtr);
+    virtual ~BracketedColorDelegate() {}
     void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
     QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
 
