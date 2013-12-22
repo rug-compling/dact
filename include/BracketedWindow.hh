@@ -169,7 +169,7 @@ private:
     QScopedPointer<Ui::BracketedWindow> d_ui;
     QSharedPointer<alpinocorpus::CorpusReader> d_corpusReader;
     QScopedPointer<DactMacrosModel> d_macrosModel;
-    QScopedPointer<FilterModel> d_model;
+    QSharedPointer<FilterModel> d_model;
     QString d_lastfilterchoice;
 };
 

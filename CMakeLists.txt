@@ -162,6 +162,7 @@ SET(dact_SRCS
   src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
   src/StatisticsWindow.cpp
+  src/SubSetModel.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
   src/XPathValidator.cpp
@@ -278,6 +279,7 @@ SET(dact_MOC_HDRS
   include/QtSingleApplication.hh
   include/RecentFilesMenu.hh
   include/StatisticsWindow.hh
+  include/SubSetModel.hh
   include/TreeNodeInspector.hh
   include/XPathValidator.hh
 )

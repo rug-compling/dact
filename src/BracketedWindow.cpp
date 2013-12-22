@@ -29,6 +29,7 @@
 #include "DactToolsModel.hh"
 #include "FilterModel.hh"
 #include "Query.hh"
+#include <SubSetModel.hh>
 #include "ValidityColor.hh"
 #include "ui_BracketedWindow.h"
 
@@ -86,8 +87,8 @@ void BracketedWindow::setFilter(QString const &filter, QString const &raw_filter
 
 void BracketedWindow::setModel(FilterModel *model)
 {
-    d_model.reset(model);
-    d_ui->resultsTable->setModel(d_model.data());
+    d_model = QSharedPointer<FilterModel>(model);
+    d_ui->resultsTable->setModel(new SubSetModel(d_model));
 
     d_ui->hitsLabel->clear();
     d_ui->entriesLabel->clear();
