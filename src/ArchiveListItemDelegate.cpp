@@ -19,7 +19,7 @@ ArchiveListItemDelegate::~ArchiveListItemDelegate()
 
 void ArchiveListItemDelegate::setEntry(QModelIndex const &index) const
 {
-    d_view->setArchiveEntry(reinterpret_cast<ArchiveModel const *>(index.model())->entryAtRow(index.row()));
+    d_view->setArchiveEntry(dynamic_cast<ArchiveModel const *>(index.model())->entryAtRow(index.row()));
 }
 
 QSize ArchiveListItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

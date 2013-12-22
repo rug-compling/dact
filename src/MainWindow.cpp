@@ -78,14 +78,14 @@ MainWindow::MainWindow(QWidget *parent) :
     setMenuBar(new DactMenuBar(this));
 
     d_ui->filterComboBox->setModel(
-        reinterpret_cast<DactApplication *>(qApp)->historyModel());
+        dynamic_cast<DactApplication *>(qApp)->historyModel());
 
     initTaintedWidgets();
 
     // Ensure that we have a status bar.
     statusBar();
 
-    reinterpret_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
+    dynamic_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
 
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
 
@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createActions();
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->saveAsAction->setEnabled(false);
 
 #if defined(Q_WS_MAC) && defined(USE_SPARKLE)
@@ -212,7 +212,7 @@ void MainWindow::saveAs()
 void MainWindow::saveStateChanged()
 {
     CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
@@ -304,7 +304,7 @@ void MainWindow::createActions()
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
 
     // Actions
     connect(menu->ui()->closeAction, SIGNAL(triggered(bool)),
@@ -613,7 +613,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
         if (QFileInfo(path).exists() || path.startsWith("http://") || path.startsWith("https://"))
             // Add file to the recent files menu
-            reinterpret_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
+            dynamic_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
     }
     else
     {
@@ -843,7 +843,7 @@ void MainWindow::tabChanged(int index)
 {
     bool treeWidgetsEnabled = index == 0 ? true : false;
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->previousAction->setEnabled(treeWidgetsEnabled);
     menu->ui()->nextAction->setEnabled(treeWidgetsEnabled);
     menu->ui()->zoomInAction->setEnabled(treeWidgetsEnabled);

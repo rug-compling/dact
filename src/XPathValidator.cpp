@@ -40,7 +40,7 @@ std::string getLiteral(VectorOfASTNodes const &nodes)
     for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         if ((*it)->getType() == ASTNode::LITERAL)
         {
-            XQLiteral *literal = reinterpret_cast<XQLiteral*>(*it);
+            XQLiteral *literal = dynamic_cast<XQLiteral*>(*it);
             char *lit = xercesc::XMLString::transcode(literal->getValue());
             std::string strLit(lit);
             xercesc::XMLString::release(&lit);
@@ -59,7 +59,7 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         if ((*it)->getType() == ASTNode::ATOMIZE)
         {
-            XQAtomize *atomize = reinterpret_cast<XQAtomize*>(*it);
+            XQAtomize *atomize = dynamic_cast<XQAtomize*>(*it);
             expression = atomize->getExpression();
             break;
         }
@@ -70,7 +70,7 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     // Then, if there is a Navigation node, go to the last Step
     if (expression->getType() == ASTNode::NAVIGATION)
     {
-        XQNav *nav = reinterpret_cast<XQNav*>(expression);
+        XQNav *nav = dynamic_cast<XQNav*>(expression);
         XQNav::Steps steps(nav->getSteps());
 
         expression = steps.back().step;
@@ -79,7 +79,7 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     // Then, traverse the Step node and get the attribute name
     if (expression->getType() == ASTNode::STEP)
     {
-        XQStep *step = reinterpret_cast<XQStep*>(expression);
+        XQStep *step = dynamic_cast<XQStep*>(expression);
         NodeTest *test = step->getNodeTest();
 
         char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
@@ -102,7 +102,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
     {
         case ASTNode::NAVIGATION:
         {
-            XQNav *nav = reinterpret_cast<XQNav*>(node);
+            XQNav *nav = dynamic_cast<XQNav*>(node);
             XQNav::Steps steps(nav->getSteps());
 
             for (XQNav::Steps::const_iterator it = steps.begin(); it != steps.end(); ++it)
@@ -126,7 +126,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::FUNCTION:
         {
-            XQFunction *fun = reinterpret_cast<XQFunction *>(node);
+            XQFunction *fun = dynamic_cast<XQFunction *>(node);
 
             VectorOfASTNodes const &args(fun->getArguments());
 
@@ -143,7 +143,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::STEP:
         {
-            XQStep *step = reinterpret_cast<XQStep*>(node);
+            XQStep *step = dynamic_cast<XQStep*>(node);
             NodeTest *test = step->getNodeTest();
 
             // Wild cards have no element name.
@@ -194,7 +194,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::OPERATOR:
         {
-            XQOperator *op = reinterpret_cast<XQOperator *>(node);
+            XQOperator *op = dynamic_cast<XQOperator *>(node);
             char *operatorName = xercesc::XMLString::transcode(op->getOperatorName());
             VectorOfASTNodes const &args(op->getArguments());
 
@@ -247,7 +247,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
         case ASTNode::XPATH1_CONVERT:
         {
             XPath1CompatConvertFunctionArg *conv =
-                reinterpret_cast<XPath1CompatConvertFunctionArg *>(node);
+                dynamic_cast<XPath1CompatConvertFunctionArg *>(node);
 
             if (!inspect(conv->getExpression(), scope, dtd))
                 return false;
@@ -266,7 +266,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::DOCUMENT_ORDER:
         {
-            XQDocumentOrder *docOrder = reinterpret_cast<XQDocumentOrder*>(node);
+            XQDocumentOrder *docOrder = dynamic_cast<XQDocumentOrder*>(node);
             if (!inspect(docOrder->getExpression(), scope, dtd))
                 return false;
 
@@ -275,7 +275,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::PREDICATE:
         {
-            XQPredicate *predicate = reinterpret_cast<XQPredicate*>(node);
+            XQPredicate *predicate = dynamic_cast<XQPredicate*>(node);
             QSharedPointer<QueryScope> stepScope(new QueryScope(*scope));
             if (!inspect(predicate->getExpression(), stepScope, dtd))
                 return false;
@@ -288,7 +288,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::ATOMIZE:
         {
-            XQAtomize *atomize = reinterpret_cast<XQAtomize*>(node);
+            XQAtomize *atomize = dynamic_cast<XQAtomize*>(node);
             if (!inspect(atomize->getExpression(), scope, dtd))
                 return false;
 

@@ -34,7 +34,7 @@ DactTreeScene::~DactTreeScene()
 
 void DactTreeScene::emitSelectionChange()
 {
-    emit selectionChanged(reinterpret_cast<TreeNode*>(focusItem()));
+    emit selectionChanged(dynamic_cast<TreeNode*>(focusItem()));
 }
 
 void DactTreeScene::parseTree(QString const &xml)
