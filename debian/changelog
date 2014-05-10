@@ -1,3 +1,9 @@
+alpino-dact (2.0.5-1trusty1) trusty; urgency=low
+
+  * Build for Ubuntu 14.04 (Trusty Tahr)
+
+ -- Daniël de Kok <me@danieldk.eu>  Sat, 10 May 2014 14:46:48 +0200
+
 alpino-dact (2.0.5-1saucy1) saucy; urgency=low
 
   * New upstream release.
