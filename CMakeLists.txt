@@ -35,7 +35,7 @@ else()
 endif()
 
 
-set(VERSION "2.0.5")
+set(VERSION "2.0.7")
 
 set(GIT_REVISION ${VERSION})
 #exec_program(git
