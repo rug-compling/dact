@@ -54,7 +54,7 @@ signals:
     void progressChanged(int progress);
     
 private:
-    void getEntries(EntryIterator const &i);
+    void getEntries(EntryIterator const &i, std::string const &query);
     void getEntriesWithQuery(QString const &query);
     
 private slots:
@@ -92,6 +92,7 @@ private:
 
     mutable QMutex d_resultsMutex;
     QSharedPointer<EntryCache> d_entryCache;
+    bool d_yield;
 };
 
 #endif

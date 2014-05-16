@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <sstream>
+#include <unordered_set>
 
 #include <QtConcurrentRun>
 #include <QDateTime>
@@ -37,7 +39,8 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
     QAbstractTableModel(parent),
     d_corpus(corpus),
     d_entryCache(new EntryCache()),
-    d_timer(new QTimer)
+    d_timer(new QTimer),
+    d_yield(false)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
         SLOT(mapperEntryFound(QString)));
@@ -282,8 +285,12 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
         d_timer->setSingleShot(false);
         d_timer->start();
 
-        d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
-            expandQuery(query, attribute));
+        if (d_yield)
+          d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
+              query);
+        else
+          d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
+              expandQuery(query, attribute));
     }
     // If the query is empty, QueryModel is not supposed to do anything.
 }
@@ -337,7 +344,8 @@ void QueryModel::getEntriesWithQuery(QString const &query)
         }
 
         QueryModel::getEntries(
-            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()));
+            d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
+            query.toUtf8().constData());
     } catch (std::exception const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -345,12 +353,12 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 }
 
 // run async
-void QueryModel::getEntries(EntryIterator const &i)
+void QueryModel::getEntries(EntryIterator const &i, std::string const &query)
 {
-        if (i.hasProgress())
-          emit queryStarted(100);
-        else
-          emit queryStarted(0);
+    if (i.hasProgress())
+      emit queryStarted(100);
+    else
+      emit queryStarted(0);
         
     try {
         d_cancelled = false;
@@ -359,7 +367,38 @@ void QueryModel::getEntries(EntryIterator const &i)
         while (!d_cancelled && d_entryIterator.hasNext())
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
-            emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
+
+            if (d_yield) {
+                std::vector<alpinocorpus::LexItem> sent =
+                  d_corpus->sentence(e.name, query);
+
+                // Find all match ids.
+                std::unordered_set<size_t> ids;
+                foreach (alpinocorpus::LexItem const &lexItem, sent)
+                  ids.insert(lexItem.matches.begin(), lexItem.matches.end());
+
+                foreach (size_t id, ids) {
+                    std::ostringstream oss;
+                    bool firstToken = true;
+
+                    foreach (alpinocorpus::LexItem const &lexItem, sent) {
+                        if (lexItem.matches.find(id) != lexItem.matches.end()) {
+                            if (firstToken)
+                              firstToken = false;
+                            else
+                              oss << " ";
+
+                            oss << lexItem.word;
+                        }
+                    }
+
+                    std::string result = oss.str();
+                    emit queryEntryFound(QString::fromUtf8(result.c_str()));
+                }
+                size_t prevDepth = 0;
+            }
+            else
+              emit queryEntryFound(QString::fromUtf8(e.contents.c_str()));
         }
             
         if (d_cancelled)
