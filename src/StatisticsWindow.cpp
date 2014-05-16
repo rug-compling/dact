@@ -261,6 +261,9 @@ void StatisticsWindow::createActions()
     connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
         SLOT(showPercentageChanged()));
 
+    connect(d_ui->yieldCheckBox, SIGNAL(toggled(bool)),
+        SLOT(showYieldChanged()));
+
     connect(d_ui->attributeComboBox, SIGNAL(currentIndexChanged(int)),
         SLOT(attributeChanged(int)));
 }
@@ -319,7 +322,9 @@ void StatisticsWindow::startQuery()
     d_ui->totalHitsLabel->clear();
     d_ui->distinctValuesLabel->clear();
 
-    d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText());
+    bool yield = d_ui->yieldCheckBox->isChecked();
+
+    d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText(), yield);
 
     emit saveStateChanged();
 }
@@ -327,6 +332,12 @@ void StatisticsWindow::startQuery()
 void StatisticsWindow::showPercentageChanged()
 {
     d_ui->resultsTable->setColumnHidden(2, !d_ui->percentageCheckBox->isChecked());
+}
+
+void StatisticsWindow::showYieldChanged()
+{
+    if (!d_model.isNull())
+        startQuery();
 }
 
 void StatisticsWindow::progressStarted(int total)

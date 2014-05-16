@@ -54,6 +54,7 @@ private slots:
     void progressStopped(int n, int total);
     void queryFailed(QString error);
     void showPercentageChanged();
+    void showYieldChanged();
     void updateResultsTotalCount();
 
 protected:

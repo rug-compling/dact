@@ -39,8 +39,7 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
     QAbstractTableModel(parent),
     d_corpus(corpus),
     d_entryCache(new EntryCache()),
-    d_timer(new QTimer),
-    d_yield(false)
+    d_timer(new QTimer)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
         SLOT(mapperEntryFound(QString)));
@@ -258,7 +257,8 @@ void QueryModel::mapperEntryFound(QString entry)
     emit dataChanged(index(idx, 0), index(idx + 1, 2));
 }
 
-void QueryModel::runQuery(QString const &query, QString const &attribute)
+void QueryModel::runQuery(QString const &query, QString const &attribute,
+    bool yield)
 {
     cancelQuery(); // just in case
     
@@ -285,12 +285,12 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
         d_timer->setSingleShot(false);
         d_timer->start();
 
-        if (d_yield)
+        if (yield)
           d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
-              query, attribute);
+              query, attribute, yield);
         else
           d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
-              expandQuery(query, attribute), attribute);
+              expandQuery(query, attribute), attribute, yield);
     }
     // If the query is empty, QueryModel is not supposed to do anything.
 }
@@ -327,7 +327,7 @@ void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
 
 // run async, because query() starts searching immediately
 void QueryModel::getEntriesWithQuery(QString const &query,
-    QString const &attribute)
+    QString const &attribute, bool yield)
 {
     try {
         if (d_entryCache->contains(query))
@@ -346,7 +346,7 @@ void QueryModel::getEntriesWithQuery(QString const &query,
 
         QueryModel::getEntries(
             d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            query.toUtf8().constData(), attribute.toUtf8().constData());
+            query.toUtf8().constData(), attribute.toUtf8().constData(), yield);
     } catch (std::exception const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -355,7 +355,7 @@ void QueryModel::getEntriesWithQuery(QString const &query,
 
 // run async
 void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
-    std::string const &attribute)
+    std::string const &attribute, bool yield)
 {
     if (i.hasProgress())
       emit queryStarted(100);
@@ -370,7 +370,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
 
-            if (d_yield) {
+            if (yield) {
                 std::vector<alpinocorpus::LexItem> sent =
                   d_corpus->sentence(e.name, query, attribute);
 

@@ -41,7 +41,7 @@ public:
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     inline int totalHits() const { return d_totalHits; }
     
-    void runQuery(QString const &query, QString const &attribute);
+    void runQuery(QString const &query, QString const &attribute, bool yield);
     void cancelQuery();
     bool validQuery(QString const &query) const;
     
@@ -55,8 +55,9 @@ signals:
     
 private:
     void getEntries(EntryIterator const &i, std::string const &query,
-        std::string const &attribute);
-    void getEntriesWithQuery(QString const &query, QString const &attribute);
+        std::string const &attribute, bool yield);
+    void getEntriesWithQuery(QString const &query, QString const &attribute,
+        bool yield);
     
 private slots:
     void updateProgress();
@@ -93,7 +94,6 @@ private:
 
     mutable QMutex d_resultsMutex;
     QSharedPointer<EntryCache> d_entryCache;
-    bool d_yield;
 };
 
 #endif
