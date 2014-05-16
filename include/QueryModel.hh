@@ -54,8 +54,9 @@ signals:
     void progressChanged(int progress);
     
 private:
-    void getEntries(EntryIterator const &i, std::string const &query);
-    void getEntriesWithQuery(QString const &query);
+    void getEntries(EntryIterator const &i, std::string const &query,
+        std::string const &attribute);
+    void getEntriesWithQuery(QString const &query, QString const &attribute);
     
 private slots:
     void updateProgress();

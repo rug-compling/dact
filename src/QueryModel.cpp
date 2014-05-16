@@ -287,10 +287,10 @@ void QueryModel::runQuery(QString const &query, QString const &attribute)
 
         if (d_yield)
           d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
-              query);
+              query, attribute);
         else
           d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
-              expandQuery(query, attribute));
+              expandQuery(query, attribute), attribute);
     }
     // If the query is empty, QueryModel is not supposed to do anything.
 }
@@ -326,7 +326,8 @@ void QueryModel::finalizeQuery(int n, int totalEntries, bool cached)
 }
 
 // run async, because query() starts searching immediately
-void QueryModel::getEntriesWithQuery(QString const &query)
+void QueryModel::getEntriesWithQuery(QString const &query,
+    QString const &attribute)
 {
     try {
         if (d_entryCache->contains(query))
@@ -345,7 +346,7 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 
         QueryModel::getEntries(
             d_corpus->query(alpinocorpus::CorpusReader::XPATH, query.toUtf8().constData()),
-            query.toUtf8().constData());
+            query.toUtf8().constData(), attribute.toUtf8().constData());
     } catch (std::exception const &e) {
         qDebug() << "Error in QueryModel::getEntries: " << e.what();
         emit queryFailed(e.what());
@@ -353,7 +354,8 @@ void QueryModel::getEntriesWithQuery(QString const &query)
 }
 
 // run async
-void QueryModel::getEntries(EntryIterator const &i, std::string const &query)
+void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
+    std::string const &attribute)
 {
     if (i.hasProgress())
       emit queryStarted(100);
@@ -370,7 +372,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query)
 
             if (d_yield) {
                 std::vector<alpinocorpus::LexItem> sent =
-                  d_corpus->sentence(e.name, query);
+                  d_corpus->sentence(e.name, query, attribute);
 
                 // Find all match ids.
                 std::unordered_set<size_t> ids;
