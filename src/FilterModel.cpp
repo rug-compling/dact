@@ -352,7 +352,7 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 if (bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
-                        d_corpus->sentence(e.name, d_query.toUtf8().constData());
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData(), "word");
                     d_bracketedSentences[name] = lexItems;
                 }
             }

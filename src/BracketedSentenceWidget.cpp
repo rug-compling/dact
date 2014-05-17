@@ -58,7 +58,7 @@ void BracketedSentenceWidget::updateText()
     if (!d_entry.isEmpty() && d_corpusReader)
     {
         std::vector<alpinocorpus::LexItem> items = d_corpusReader->sentence(
-            d_entry.toUtf8().constData(), d_query.toUtf8().constData());
+            d_entry.toUtf8().constData(), d_query.toUtf8().constData(), "word");
 
         clear();
 
