@@ -82,6 +82,9 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
         XQStep *step = reinterpret_cast<XQStep*>(expression);
         NodeTest *test = step->getNodeTest();
 
+        if (test->getNodeType() == 0)
+            return std::string();
+
         char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
         if (strcmp(nodeType, "attribute") == 0) {
             xercesc::XMLString::release(&nodeType);
@@ -149,6 +152,9 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                 scope->setNodeName("*");
                 return true;
             }
+
+            if (test->getNodeType() == 0 || test->getNodeName() == 0)
+                return false;
 
             char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
             char *nodeName = xercesc::XMLString::transcode(test->getNodeName());
