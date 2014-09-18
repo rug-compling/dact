@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <sstream>
-#include <unordered_set>
 
 #include <QtConcurrentRun>
 #include <QDateTime>
@@ -375,7 +374,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
                   d_corpus->sentence(e.name, query, attribute);
 
                 // Find all match ids.
-                std::unordered_set<size_t> ids;
+                std::set<size_t> ids;
                 foreach (alpinocorpus::LexItem const &lexItem, sent)
                   ids.insert(lexItem.matches.begin(), lexItem.matches.end());
 
