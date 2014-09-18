@@ -49,7 +49,7 @@ signals:
     void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
-    void queryFinished(int n, int totalEntries, bool cached);
+    void queryFinished(int n, int totalEntries, QString query, bool cached, bool yield);
     void queryEntryFound(QString entry);
     void progressChanged(int progress);
     
@@ -63,7 +63,7 @@ private slots:
     void updateProgress();
     void stopProgress();
     void mapperEntryFound(QString entry);
-    void finalizeQuery(int n, int totalEntries, bool cached);
+    void finalizeQuery(int n, int totalEntries, QString query, bool cached, bool yield);
     
 private:
     typedef QList<int> EntryIndex;
@@ -77,7 +77,8 @@ private:
         EntryList entries;
     };
 
-    typedef QCache<QString, CacheItem> EntryCache;
+    typedef QPair<QString, bool> QueryYieldPair;
+    typedef QCache<QueryYieldPair, CacheItem> EntryCache;
 
     bool volatile d_cancelled;
     CorpusPtr d_corpus;
