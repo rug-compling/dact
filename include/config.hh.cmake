@@ -17,4 +17,6 @@ QString const DEFAULT_REMOTE_BASEURL("http://localhost:8000");
 QString const WEBSERVICE_BASEURL_KEY("webserviceBaseUrl");
 QString const DEFAULT_WEBSERVICE_BASEURL("http://145.100.57.148/bin/alpino");
 
+#define MISSING_ATTRIBUTE "[missing attribute]"
+
 #endif // DACT_CONFIG_HH

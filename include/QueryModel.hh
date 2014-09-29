@@ -29,8 +29,6 @@ private:
     };
     
 public:
-    static QString const MISSING_ATTRIBUTE;
-
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
     ~QueryModel();
     QString asXML() const;

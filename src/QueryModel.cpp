@@ -14,9 +14,9 @@
 #include <set>
 
 #include <AlpinoCorpus/Error.hh>
-#include "QueryModel.hh"
 
-QString const QueryModel::MISSING_ATTRIBUTE("[missing attribute]");
+#include "config.hh"
+#include "QueryModel.hh"
 
 QueryModel::HitsCompare::HitsCompare(QueryModel const &parent)
 :
@@ -380,7 +380,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
                 seen.insert(e.name);
 
                 std::vector<alpinocorpus::LexItem> sent =
-                  d_corpus->sentence(e.name, query, attribute);
+                  d_corpus->sentence(e.name, query, attribute, MISSING_ATTRIBUTE);
 
                 // Find all match ids.
                 std::set<size_t> ids;

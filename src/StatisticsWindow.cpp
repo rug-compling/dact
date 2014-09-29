@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <typeinfo>
 
+#include "config.hh"
 #include "CorpusWidget.hh"
 #include "SimpleDTD.hh"
 #include "StatisticsWindow.hh"
@@ -278,7 +279,7 @@ void StatisticsWindow::generateQuery(QModelIndex const &index)
     // Get the text from the first column, that is the found value
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
 
-    if (data == QueryModel::MISSING_ATTRIBUTE)
+    if (data == MISSING_ATTRIBUTE)
       return;
 
     QString query = ::generateQuery(
