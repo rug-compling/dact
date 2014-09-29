@@ -11,6 +11,7 @@
 #include <QTimer>
 
 #include <algorithm>
+#include <set>
 
 #include <AlpinoCorpus/Error.hh>
 #include "QueryModel.hh"
@@ -365,12 +366,19 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
     try {
         d_cancelled = false;
         d_entryIterator = i;
+
+        std::set<std::string> seen;
        
         while (!d_cancelled && d_entryIterator.hasNext())
         {
             alpinocorpus::Entry e = d_entryIterator.next(*d_corpus);
 
             if (yield) {
+                // Check whether we have already processed this tree before.
+                if (seen.find(e.name) != seen.end())
+                  continue;
+                seen.insert(e.name);
+
                 std::vector<alpinocorpus::LexItem> sent =
                   d_corpus->sentence(e.name, query, attribute);
 
