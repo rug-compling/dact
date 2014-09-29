@@ -354,6 +354,7 @@ void StatisticsWindow::progressChanged(int percentage)
 
 void StatisticsWindow::progressStopped(int n, int total)
 {
+    updateResultsTotalCount();
     d_ui->filterProgress->setVisible(false);
     emit saveStateChanged();
 }
