@@ -270,6 +270,11 @@ void StatisticsWindow::createActions()
 
 void StatisticsWindow::generateQuery(QModelIndex const &index)
 {
+    // We are not able to generate a query (yet) for yield items.
+    // I guess such queries become really long and tedious.
+    if (d_ui->yieldCheckBox->isChecked())
+      return;
+
     // Get the text from the first column, that is the found value
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
 
