@@ -17,7 +17,10 @@
 #include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/axis/NodeTest.hpp>
+
+#include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLString.hpp>
+
 
 #include <libxml/xpath.h>
 
@@ -448,10 +451,21 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
 
         QStringList subQueries = query.split("+|+");
 
+        // Create an emptry document and associate namespace resolvers with it.
+        AutoDelete<xercesc::DOMDocument> document(
+            xercesc::DOMImplementation::getImplementation()->createDocument());
+        AutoDelete<xercesc::DOMXPathNSResolver> resolver(
+            document->createNSResolver(document->getDocumentElement()));
+        resolver->addNamespaceBinding(X("fn"),
+            X("http://www.w3.org/2005/xpath-functions"));
+        resolver->addNamespaceBinding(X("xs"),
+            X("http://www.w3.org/2001/XMLSchema"));
+
         foreach(QString subQuery, subQueries)
         {
             DynamicContext *ctx(s_xqilla.createContext(XQilla::XPATH2));
             ctx->setXPath1CompatibilityMode(true);
+            ctx->setNSResolver(resolver);
 
             AutoDelete<XQQuery> xqQuery(s_xqilla.parse(X(subQuery.toUtf8().constData()), ctx));
 
