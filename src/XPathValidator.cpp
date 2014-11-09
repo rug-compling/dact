@@ -7,14 +7,13 @@
 
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQFunction.hpp>
-#include <xqilla/ast/XQFunctionCoercion.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -138,7 +137,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
             VectorOfASTNodes const &args(fun->getArguments());
 
             for (VectorOfASTNodes::const_iterator it = args.begin();
-                    it != args.end(); ++it)
+                it != args.end(); ++it)
                 if (!inspect(*it, scope, dtd))
                     return false;
 
@@ -188,6 +187,9 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
         }
 
         case ASTNode::IF:
+            break;
+
+        case ASTNode::INSTANCE_OF:
             break;
 
         case ASTNode::CASTABLE_AS:
@@ -251,11 +253,15 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
         case ASTNode::ORDERING_CHANGE:
             break;
 
-        case ASTNode::FUNCTION_COERCION:
+        case ASTNode::XPATH1_CONVERT:
         {
-            XQFunctionCoercion *coercion =
-                reinterpret_cast<XQFunctionCoercion *>(node);
-            return inspect(coercion->getExpression(), scope, dtd);
+            XPath1CompatConvertFunctionArg *conv =
+                dynamic_cast<XPath1CompatConvertFunctionArg *>(node);
+
+            if (!inspect(conv->getExpression(), scope, dtd))
+                return false;
+
+            break;
         }
 
         case ASTNode::PROMOTE_UNTYPED:
@@ -375,23 +381,6 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::FUNCTION_DEREF:
             break;
-
-        case ASTNode::PARTIAL_APPLY:
-        {
-            XQPartialApply *partial =
-                reinterpret_cast<XQPartialApply *>(node);
-
-            if (!inspect(partial->getExpression(), scope, dtd))
-                return false;
-
-            VectorOfASTNodes const *args(partial->getArguments());
-
-            for (VectorOfASTNodes::const_iterator it = args->begin();
-                it != args->end(); ++it)
-                if (!inspect(*it, scope, dtd))
-                    return false;
-            break;
-        }
 
         case ASTNode::COPY_OF:
             break;
