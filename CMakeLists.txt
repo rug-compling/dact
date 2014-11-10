@@ -41,7 +41,7 @@ set(VERSION "0.0.1")
 
 set(GIT_REVISION "unknown")
 exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -2"
+  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -1"
   OUTPUT_VARIABLE GIT_REVISION 
 )
 
