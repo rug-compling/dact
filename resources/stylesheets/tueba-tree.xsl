@@ -23,7 +23,7 @@
         <xsl:value-of select="@cat|@pt"/>
         </xhtml:p>
       </label>
-      <xsl:apply-templates select="node|ne|relation"/>
+      <xsl:apply-templates select="node|ne|relation|word"/>
     </node>
   </xsl:template>
 
@@ -36,12 +36,12 @@
           <xsl:value-of select="@type"/>
         </xhtml:p>
       </label>
-      <xsl:apply-templates select="node|ne|relation"/>
+      <xsl:apply-templates select="node|ne|relation|word"/>
     </node>
   </xsl:template>
 
   <!-- Leaf nodes -->
-  <xsl:template match="node">
+  <xsl:template match="word">
     <node>
       <xsl:copy-of select="@*"/>
       <label>
