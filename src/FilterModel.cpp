@@ -313,6 +313,8 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 // run async
 void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 {
+    std::string wordAttr = d_corpus->type() == "tueba_tree" ? "form" : "word";
+
     if (i.hasProgress())
         emit queryStarted(100);
     else
@@ -353,8 +355,8 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 if (bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
-                        d_corpus->sentence(e.name, d_query.toUtf8().constData(), "word",
-                            MISSING_ATTRIBUTE);
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData(),
+                            wordAttr, MISSING_ATTRIBUTE, wordAttr);
                     d_bracketedSentences[name] = lexItems;
                 }
             }

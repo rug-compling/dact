@@ -56,11 +56,13 @@ void BracketedSentenceWidget::setEntry(QString const &entry, QString const &quer
 
 void BracketedSentenceWidget::updateText()
 {
+    std::string wordAttr = d_corpusReader->type() == "tueba_tree" ? "form" : "word";
+
     if (!d_entry.isEmpty() && d_corpusReader)
     {
         std::vector<alpinocorpus::LexItem> items = d_corpusReader->sentence(
-            d_entry.toUtf8().constData(), d_query.toUtf8().constData(), "word",
-            MISSING_ATTRIBUTE);
+            d_entry.toUtf8().constData(), d_query.toUtf8().constData(), wordAttr,
+            MISSING_ATTRIBUTE, wordAttr);
 
         clear();
 

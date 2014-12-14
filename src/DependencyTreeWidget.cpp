@@ -430,6 +430,10 @@ void DependencyTreeWidget::showTree(QString const &xml)
 void DependencyTreeWidget::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+
+    QFile stylesheet(d_corpusReader->type() == "tueba_tree" ?
+        ":/stylesheets/tueba-tree.xsl" : ":/stylesheets/tree.xsl");
+    d_ui->treeGraphicsView->setStylesheet(&stylesheet);
     
     d_xpathValidator->setCorpusReader(d_corpusReader);  
     

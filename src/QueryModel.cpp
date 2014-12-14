@@ -358,6 +358,8 @@ void QueryModel::getEntriesWithQuery(QString const &query,
 void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
     std::string const &attribute, bool yield)
 {
+    std::string wordAttr = d_corpus->type() == "tueba_tree" ? "form" : "word";
+
     if (i.hasProgress())
       emit queryStarted(100);
     else
@@ -380,7 +382,8 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
                 seen.insert(e.name);
 
                 std::vector<alpinocorpus::LexItem> sent =
-                  d_corpus->sentence(e.name, query, attribute, MISSING_ATTRIBUTE);
+                  d_corpus->sentence(e.name, query, attribute,
+                      MISSING_ATTRIBUTE, wordAttr);
 
                 // Find all match ids.
                 std::set<size_t> ids;

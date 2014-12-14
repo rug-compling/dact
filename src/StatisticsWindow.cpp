@@ -194,7 +194,7 @@ void StatisticsWindow::saveAs()
 
     QString xmlStats = d_model->asXML();
 
-    XSLTransformer trans(*stylesheet);
+    XSLTransformer trans(stylesheet.data());
     out << trans.transform(xmlStats);
 
     emit statusMessage(tr("File saved as %1").arg(filename));

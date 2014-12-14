@@ -473,7 +473,7 @@ void BracketedWindow::saveAs()
     if (d_ui->filenamesCheckBox->isChecked())
         params["showFilenames"] = "1";
 
-    XSLTransformer trans(*stylesheet);
+    XSLTransformer trans(stylesheet.data());
     out << trans.transform(xmlEntries, params);
 
     emit statusMessage(tr("File saved as %1").arg(filename));
