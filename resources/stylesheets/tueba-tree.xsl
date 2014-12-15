@@ -13,7 +13,7 @@
   </xsl:template>
 
   <!-- Interior nodes -->
-  <xsl:template match="node[node|ne]">
+  <xsl:template match="node">
     <node>
       <xsl:copy-of select="@*"/>
       <label>
