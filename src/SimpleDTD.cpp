@@ -67,9 +67,16 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
         {
             QSharedPointer<SimpleDTDEnumerationAttribute> simpleAttr;
 
-            if (attributeMapPos != attributeMap.end())
-                simpleAttr = qSharedPointerCast<SimpleDTDEnumerationAttribute>(
+            if (attributeMapPos != attributeMap.end()) {
+                simpleAttr = qSharedPointerDynamicCast<SimpleDTDEnumerationAttribute>(
                     attributeMapPos->second);
+
+                if (simpleAttr.isNull()) {
+                    qWarning() << "Attribute '" << attributeName <<
+                        "' used twice and incompatibly, skipping!";
+                    break;
+                }
+            }
             else
             {
                 simpleAttr = QSharedPointer<SimpleDTDEnumerationAttribute>(
