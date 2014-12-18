@@ -374,7 +374,10 @@ void StatisticsWindow::closeEvent(QCloseEvent *event)
 
 void StatisticsWindow::readNodeAttributes()
 {
-    QFile dtdFile(":/dtd/alpino_ds.dtd"); // XXX - hardcode?
+    QString dtdPath = (d_corpusReader && d_corpusReader->type() == "tueba_tree") ?
+      ":/dtd/tueba_tree.dtd" : ":/dtd/alpino_ds.dtd"; // XXX - hardcode?
+    QFile dtdFile(dtdPath);
+
     if (!dtdFile.open(QFile::ReadOnly)) {
         qWarning() << "StatisticsWindow::readNodeAttributes(): Could not read DTD.";
         return;
