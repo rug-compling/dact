@@ -68,6 +68,7 @@ void StatisticsWindow::queryFailed(QString error)
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+    readNodeAttributes();
     emit saveStateChanged();
 
     //d_xpathValidator->setCorpusReader(d_corpusReader);
