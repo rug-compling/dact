@@ -1,0 +1,40 @@
+<!ELEMENT tueba_tree ( node ) >
+
+<!ELEMENT connective EMPTY >
+<!ATTLIST connective konn ( aber | als | bevor | nachdem | seitdem | sobald | und | während ) #REQUIRED >
+<!ATTLIST connective rel1 NMTOKEN #REQUIRED >
+<!ATTLIST connective rel2 ( Result | Temporal | cause | contrast | enable | parallel ) #IMPLIED >
+
+<!ELEMENT ne ( ne | node | word )* >
+<!ATTLIST ne span CDATA #IMPLIED >
+<!ATTLIST ne type ( GPE | LOC | ORG | OTH | PER ) #REQUIRED >
+<!ATTLIST ne xml:id ID #REQUIRED >
+
+<!ELEMENT node ( ne | node | relation | secEdge | splitRelation | word )* >
+<!ATTLIST node cat NMTOKEN #IMPLIED >
+<!ATTLIST node func NMTOKEN #IMPLIED >
+<!ATTLIST node parent IDREF #IMPLIED >
+<!ATTLIST node xml:id ID #IMPLIED >
+
+<!ELEMENT relation EMPTY >
+<!ATTLIST relation target CDATA #IMPLIED >
+<!ATTLIST relation type ( anaphoric | bound | cataphoric | coreferential | expletive | inherent_reflexive | instance ) #REQUIRED >
+
+<!ELEMENT secEdge EMPTY >
+<!ATTLIST secEdge cat ( refcontr | refint | refmod | refvc ) #REQUIRED >
+<!ATTLIST secEdge parent NMTOKEN #REQUIRED >
+
+<!ELEMENT splitRelation EMPTY >
+<!ATTLIST splitRelation target CDATA #REQUIRED >
+<!ATTLIST splitRelation type NMTOKEN #FIXED "split_antecedent" >
+
+<!ELEMENT word ( connective | relation | splitRelation )* >
+<!ATTLIST word comment CDATA #IMPLIED >
+<!ATTLIST word form CDATA #REQUIRED >
+<!ATTLIST word func ( - | -- | HD | KONJ | VPT ) #REQUIRED >
+<!ATTLIST word lemma CDATA #IMPLIED >
+<!ATTLIST word morph CDATA #IMPLIED >
+<!ATTLIST word parent NMTOKEN #IMPLIED >
+<!ATTLIST word pos CDATA #REQUIRED >
+<!ATTLIST word xml:id ID #REQUIRED >
+
