@@ -9,7 +9,12 @@
        http://www.xml.com/pub/a/2004/09/08/tree.html -->
 
   <xsl:template match="/">
-    <xsl:apply-templates select="/tueba_tree/node"/>
+    <tree>
+      <xsl:apply-templates select="/tueba_tree/node"/>
+      <secedges>
+        <xsl:apply-templates select="/tueba_tree//secEdge"/>
+      </secedges>
+    </tree>
   </xsl:template>
 
   <!-- Interior nodes -->
@@ -75,6 +80,20 @@
         </tooltip>
       </xsl:if>
     </node>
+  </xsl:template>
+
+  <xsl:template match="secEdge">
+    <secedge>
+      <xsl:attribute name="from">
+        <xsl:value-of select="../self::*/@xml:id" />
+      </xsl:attribute>
+      <xsl:attribute name="to">
+        <xsl:value-of select="@parent" />
+      </xsl:attribute>
+      <xsl:attribute name="cat">
+        <xsl:value-of select="@cat" />
+      </xsl:attribute>
+    </secedge>
   </xsl:template>
 </xsl:stylesheet>
 

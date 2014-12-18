@@ -12,6 +12,7 @@ extern "C" {
 }
 
 #include "DactTreeScene.hh"
+#include "SecEdge.hh"
 #include "TreeNode.hh"
 #include "PopupItem.hh"
 #include "XMLDeleters.hh"
@@ -32,6 +33,20 @@ DactTreeScene::~DactTreeScene()
         freeNodes();
 }
 
+void DactTreeScene::checkElementAndAssign(xmlNodePtr node,
+    char const *nodeName, xmlNodePtr *variable)
+{
+    if (node->type == XML_ELEMENT_NODE && nodeNameIs(node, nodeName))
+    {
+        {
+            if (*variable == 0)
+                *variable = node;
+            else
+                qWarning() << "More than one '" << nodeName << "', only using first!";
+        }
+    }
+}
+
 void DactTreeScene::emitSelectionChange()
 {
     emit selectionChanged(dynamic_cast<TreeNode*>(focusItem()));
@@ -43,6 +58,11 @@ void DactTreeScene::parseTree(QString const &xml)
     if (rootNode())
     {
         removeItem(rootNode());
+        foreach (SecEdge *secEdge, d_secEdges)
+        {
+            removeItem(secEdge);
+        }
+
         freeNodes();
     }
     
@@ -52,8 +72,15 @@ void DactTreeScene::parseTree(QString const &xml)
     // add it to the scene
     if (rootNode())
     {
-        addItem(rootNode());
         rootNode()->layout();
+
+        foreach (SecEdge *secEdge, d_secEdges)
+        {
+            addItem(secEdge);
+            secEdge->layout();
+        }
+
+        addItem(rootNode());
     }
     else
     {
@@ -78,7 +105,23 @@ void DactTreeScene::parseXML(QString const &xml)
       return;
     }
 
-    processNode(treeRoot);
+    xmlNodePtr treeRootNode = 0;
+    xmlNodePtr secEdges = 0;
+
+    for (xmlNodePtr child = treeRoot->children; child; child = child->next)
+    {
+      checkElementAndAssign(child, "node", &treeRootNode);
+      checkElementAndAssign(child, "secedges", &secEdges);
+    }
+
+    if (treeRootNode == 0) {
+      qWarning() << "Tree does not have a root?";
+      return;
+    }
+    processNode(treeRootNode);
+
+    if (secEdges)
+      processSecondaryEdges(secEdges);
 }
 
 TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
@@ -136,9 +179,52 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
         node->setAttribute(
             QString::fromUtf8(reinterpret_cast<char const *>(attr->name)),
             QString::fromUtf8(reinterpret_cast<char const *>(value.data())));
+
+      if (xmlStrEqual(attr->name, reinterpret_cast<xmlChar const *>("id")))
+      {
+        QString nodeID = QString::fromUtf8(reinterpret_cast<char const *>(value.data()));
+        d_idNodes[nodeID] = node;
+      }
     }
 
     return node;
+}
+
+void DactTreeScene::processSecondaryEdges(xmlNodePtr node)
+{
+    for (xmlNodePtr edge = node->children; edge; edge = edge->next)
+    {
+        if (!nodeNameIs(edge, "secedge"))
+            continue;
+
+        QScopedPointer<xmlChar, XmlDeleter> cat(xmlGetProp(edge,
+              reinterpret_cast<xmlChar const *>("cat")));
+        QScopedPointer<xmlChar, XmlDeleter> from(xmlGetProp(edge,
+              reinterpret_cast<xmlChar const *>("from")));
+        QScopedPointer<xmlChar, XmlDeleter> to(xmlGetProp(edge,
+              reinterpret_cast<xmlChar const *>("to")));
+
+        QString qFrom = QString::fromUtf8(reinterpret_cast<char const *>(from.data()));
+        QMap<QString, TreeNode *>::const_iterator fromIter = d_idNodes.find(qFrom);
+        if (fromIter == d_idNodes.end())
+        {
+          qWarning() << "Could not find from-node for secondary edge, skipping";
+          continue;
+        }
+
+        QString qTo = QString::fromUtf8(reinterpret_cast<char const *>(to.data()));
+        QMap<QString, TreeNode *>::const_iterator toIter = d_idNodes.find(qTo);
+        if (toIter == d_idNodes.end())
+        {
+          qWarning() << "Could not find to-node for secondary edge, skipping";
+          continue;
+        }
+
+        SecEdge *secEdge = new SecEdge;
+        secEdge->setFrom(fromIter.value());
+        secEdge->setTo(toIter.value());
+        d_secEdges.push_back(secEdge);
+    }
 }
 
 bool DactTreeScene::nodeNameIs(xmlNodePtr xmlNode, char const *name)
@@ -160,6 +246,12 @@ void DactTreeScene::freeNodes()
     d_nodes.clear();
     // because all have rootNode as parent/ancestor
     // they will have been deleted automatically.
+    
+    foreach (SecEdge *secEdge, d_secEdges)
+    {
+        delete secEdge;
+    }
+    d_secEdges.clear();
 }
 
 QList<TreeNode*> const &DactTreeScene::nodes() const

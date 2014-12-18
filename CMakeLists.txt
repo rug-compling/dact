@@ -161,6 +161,7 @@ SET(dact_SRCS
   src/QtLocalPeer.cpp
   src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
+  src/SecEdge.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
@@ -225,6 +226,7 @@ SET(dact_HDRS
   include/QueryModel.hh
   include/QueryScope.hh
   include/RecentFilesMenu.hh
+  include/SecEdge.hh
   include/SimpleDTD.hh
   include/SimpleDTDAttribute.hh
   include/StatisticsWindow.hh
