@@ -475,6 +475,13 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
     }
 }
 
+
+void XPathValidator::setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader)
+{
+    d_corpusReader = corpusReader;
+    parseDTD();
+}
+
 bool XPathValidator::validateAgainstDTD(QString const &exprStr) const
 {
     QString expandedExpr = d_macrosModel.isNull()
