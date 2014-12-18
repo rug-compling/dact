@@ -220,7 +220,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                 std::string attribute = getAttribute(args); 
                 
                 if (!literal.empty() && !attribute.empty())
-                    if (!dtd.allowValueForAttribute(literal, attribute))
+                    if (!dtd.allowValueForAttribute(literal, attribute, scope->nodeName()))
                         return false;
             }
 

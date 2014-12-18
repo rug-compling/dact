@@ -11,6 +11,8 @@ typedef std::map<std::string, std::set<std::string> > ElementMap;
 
 typedef std::map<std::string, QSharedPointer<SimpleDTDAttribute> > AttributeMap;
 
+typedef std::map<std::string, AttributeMap> ElementAttributeMap;
+
 class SimpleDTD
 {
 public:
@@ -19,11 +21,12 @@ public:
 
 	bool allowElement(std::string const &element, std::string const &parent) const;
 	bool allowAttribute(std::string const &attribute, std::string const &element) const;
-	bool allowValueForAttribute(std::string const &value, std::string const &attribute) const;
+	bool allowValueForAttribute(std::string const &value, std::string const &attribute,
+      std::string const &element) const;
 	ElementMap const &elementMap();
 private:
     ElementMap d_elements;
-    AttributeMap d_attributes;
+    ElementAttributeMap d_attributes;
 };
 
 #endif // SIMPLE_DTD_HH
