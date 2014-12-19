@@ -36,23 +36,21 @@ void SecEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     QPointF to(d_to->scenePos() + QPointF(d_to->boundingRect().width() / 2, 0));
 
     qreal width = std::max(from.x(), to.x()) - std::min(from.x(), to.x());
-    qreal controlXDist = width / 5.;
+    qreal controlXDist = width / 2.;
 
     int xOp = 1;
     if (from.x() > to.x())
         xOp = -1;
 
-    QPointF c1(from + QPointF(xOp * controlXDist, -30));
-    QPointF c2(to + QPointF(-xOp * controlXDist, -30));
+    QPointF control(from.x() + xOp * controlXDist, std::min(from.y(), to.y()) - 30);
 
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPainterPath path;
     path.moveTo(from);
-    path.cubicTo(c1, c2, to);
+    path.quadTo(control, to);
     painter->drawPath(path);
 
-    // Useful for debugging, to get control points.
+    // Useful for debugging, to get control points
     //
-    // painter->drawText(c1, "q");
-    // painter->drawText(c2, "p");
+    // painter->drawText(control, "c");
 }
