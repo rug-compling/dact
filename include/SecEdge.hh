@@ -31,6 +31,11 @@ private:
         QStyleOptionGraphicsItem const *option,
         QWidget *widget, QPainterPath edgePath);
 
+    bool collidesWithTreeNode(QRectF rect);
+
+    bool tryLabelOffset(QPainterPath path, qreal offset, QRectF *labelRect,
+        QRectF *boxRect);
+
     TreeNode const *d_from;
     TreeNode const *d_to;
     QString d_label;

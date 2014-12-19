@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include <QtDebug>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
@@ -20,6 +21,25 @@ QRectF SecEdge::boundingRect() const
 
 
     return QRectF(topLeft, bottomRight);
+}
+
+bool SecEdge::collidesWithTreeNode(QRectF rect)
+{
+    QList<QGraphicsItem *> collidingItems = scene()->items(rect);
+    foreach (QGraphicsItem *item, collidingItems)
+    {
+        TreeNode *node = dynamic_cast<TreeNode *>(item);
+        if (node == 0)
+            continue;
+
+        QRectF leaf = node->leafRect();
+        leaf.translate(node->scenePos());
+
+        if (rect.intersects(leaf))
+            return true;
+    }
+
+    return false;
 }
 
 void SecEdge::layout()
@@ -82,8 +102,27 @@ void SecEdge::paintLabel(QPainter *painter, QStyleOptionGraphicsItem const *opti
     boxRect.setWidth(boxRect.width() + 6);
     boxRect.setHeight(boxRect.height() + 6);
 
-    labelRect.moveCenter(edgePath.pointAtPercent(0.5));
-    boxRect.moveCenter(edgePath.pointAtPercent(0.5));
+    // Search left and right on the path until the label does not collide
+    // with a tree node.
+    bool success = false;
+    for (qreal offset = 0.; offset < 0.5; offset += 0.1)
+    {
+        if (tryLabelOffset(edgePath, -offset, &labelRect, &boxRect)) {
+            success = true;
+            break;
+        }
+
+        if (tryLabelOffset(edgePath, offset, &labelRect, &boxRect)) {
+            success = true;
+            break;
+        }
+    }
+
+    // If not successful, prefer the middle.
+    if (!success) {
+      qWarning() << "Cannot draw the label without collisions";
+      tryLabelOffset(edgePath, 0., &labelRect, &boxRect);
+    }
 
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->fillRect(boxRect, Qt::white);
@@ -91,4 +130,16 @@ void SecEdge::paintLabel(QPainter *painter, QStyleOptionGraphicsItem const *opti
     painter->drawText(labelRect, d_label);
 
     painter->restore();
+}
+
+
+bool SecEdge::tryLabelOffset(QPainterPath path, qreal offset,
+    QRectF *labelRect, QRectF *boxRect)
+{
+    qreal percent = 0.5 + offset;
+
+    labelRect->moveCenter(path.pointAtPercent(percent));
+    boxRect->moveCenter(path.pointAtPercent(percent));
+
+    return !collidesWithTreeNode(*boxRect);
 }
