@@ -12,7 +12,7 @@ public:
       QGraphicsItem(parent), d_from(0), d_to(0) {}
     QRectF boundingRect() const;
     void layout();
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget);
     void setFrom(TreeNode const *from);
     void setLabel(QString label);
     void setTo(TreeNode const *to);
