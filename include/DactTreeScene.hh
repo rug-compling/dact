@@ -55,7 +55,7 @@ private:
     void scrubNamespace(xmlNodePtr xmlNode);
     QList<TreeNode*> d_nodes;
     QMap<QString, TreeNode *> d_idNodes;
-    QList<SecEdge*> d_secEdges;
+    QList<QGraphicsItem *> d_edges;
 };
 
 #endif

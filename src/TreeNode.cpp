@@ -6,8 +6,9 @@
 #include <QSettings>
 #include <QTextDocument>
 
-#include "TreeNode.hh"
-#include "PopupItem.hh"
+#include <Edge.hh>
+#include <TreeNode.hh>
+#include <PopupItem.hh>
 
 static const QPointF popupCursorOffset(0, -16);
 
@@ -231,8 +232,6 @@ void TreeNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     
     painter->setRenderHint(QPainter::Antialiasing, true);
 
-    paintEdges(painter, leaf);
-    
     painter->setRenderHint(QPainter::Antialiasing, true);
     
     QColor background(Qt::white);
@@ -265,22 +264,6 @@ void TreeNode::paintLabel(QPainter *painter, QRectF const &leaf)
     painter->translate(leaf.topLeft());
     d_label.drawContents(painter, QRectF(QPointF(0,0), leaf.size()));
     painter->restore();
-}
-
-void TreeNode::paintEdges(QPainter *painter, QRectF const &leaf)
-{
-    QPen edgePen(Qt::black, 1);
-    painter->setPen(edgePen);
-
-    QPointF origin(leaf.x() + leaf.width() / 2, leaf.y() + leaf.height());
-    
-    foreach (TreeNode const *child, d_childNodes)
-    {
-        // child's top center position, where the leaf should be found
-        QPointF target(child->pos() + QPointF(child->branchBoundingRect().width() / 2, 0));
-        
-        painter->drawLine(origin, target);
-    }
 }
 
 qreal TreeNode::viewScale() const

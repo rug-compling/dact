@@ -12,6 +12,7 @@ extern "C" {
 }
 
 #include "DactTreeScene.hh"
+#include "Edge.hh"
 #include "SecEdge.hh"
 #include "TreeNode.hh"
 #include "PopupItem.hh"
@@ -58,9 +59,9 @@ void DactTreeScene::parseTree(QString const &xml)
     if (rootNode())
     {
         removeItem(rootNode());
-        foreach (SecEdge *secEdge, d_secEdges)
+        foreach (QGraphicsItem *edge, d_edges)
         {
-            removeItem(secEdge);
+            removeItem(edge);
         }
 
         freeNodes();
@@ -74,10 +75,9 @@ void DactTreeScene::parseTree(QString const &xml)
     {
         rootNode()->layout();
 
-        foreach (SecEdge *secEdge, d_secEdges)
+        foreach (QGraphicsItem *edge, d_edges)
         {
-            addItem(secEdge);
-            secEdge->layout();
+            addItem(edge);
         }
 
         addItem(rootNode());
@@ -127,6 +127,7 @@ void DactTreeScene::parseXML(QString const &xml)
 TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
 {
     TreeNode *node = new TreeNode;
+    node->setZValue(100.);
     d_nodes.append(node);
 
     for (xmlNodePtr child = xmlNode->children; child; child = child->next)
@@ -135,6 +136,10 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
       {
         TreeNode *childNode = processNode(child);
         node->appendChild(childNode);
+        Edge *edge = new Edge();
+        edge->setParent(node);
+        edge->setChild(childNode);
+        d_edges.push_back(edge);
       }
       if (child->type == XML_ELEMENT_NODE &&
           (nodeNameIs(child, "label") || nodeNameIs(child, "tooltip")))
@@ -221,10 +226,11 @@ void DactTreeScene::processSecondaryEdges(xmlNodePtr node)
         }
 
         SecEdge *secEdge = new SecEdge;
+        secEdge->setZValue(50);
         secEdge->setFrom(fromIter.value());
         secEdge->setTo(toIter.value());
         secEdge->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(cat.data())));
-        d_secEdges.push_back(secEdge);
+        d_edges.push_back(secEdge);
     }
 }
 
@@ -248,11 +254,11 @@ void DactTreeScene::freeNodes()
     // because all have rootNode as parent/ancestor
     // they will have been deleted automatically.
     
-    foreach (SecEdge *secEdge, d_secEdges)
+    foreach (QGraphicsItem *edge, d_edges)
     {
-        delete secEdge;
+        delete edge;
     }
-    d_secEdges.clear();
+    d_edges.clear();
 }
 
 QList<TreeNode*> const &DactTreeScene::nodes() const

@@ -139,6 +139,7 @@ SET(dact_SRCS
   src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/DactMenuBar.cpp
+  src/Edge.cpp
   src/QueryModel.cpp
   src/QueryScope.cpp
   src/QtIOCompressor.cpp
@@ -205,6 +206,7 @@ SET(dact_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
+  include/Edge.hh
   include/FilterModel.hh
   include/GlobalCopyCommand.hh
   include/GlobalCutCommand.hh
