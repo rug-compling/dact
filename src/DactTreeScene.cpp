@@ -162,7 +162,7 @@ TreeNode *DactTreeScene::processNode(xmlNodePtr xmlNode)
 
             PopupItem *popupItem = new PopupItem(0, node->tooltip());
             popupItem->setVisible(false);
-            popupItem->setZValue(1.0);
+            popupItem->setZValue(150.);
             node->setPopupItem(popupItem);
             addItem(popupItem);
         }
@@ -226,7 +226,7 @@ void DactTreeScene::processSecondaryEdges(xmlNodePtr node)
         }
 
         SecEdge *secEdge = new SecEdge;
-        secEdge->setZValue(50);
+        secEdge->setZValue(50.);
         secEdge->setFrom(fromIter.value());
         secEdge->setTo(toIter.value());
         secEdge->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(cat.data())));
