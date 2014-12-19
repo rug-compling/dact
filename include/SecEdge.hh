@@ -17,6 +17,20 @@ public:
     void setLabel(QString label);
     void setTo(TreeNode const *to);
 private:
+    /**
+     * Paint the secondary edge.
+     */
+    QPainterPath paintEdge(QPainter *painter,
+        QStyleOptionGraphicsItem const *option,
+        QWidget *widget);
+
+    /**
+     * Paint the label.
+     */
+    void paintLabel(QPainter *painter,
+        QStyleOptionGraphicsItem const *option,
+        QWidget *widget, QPainterPath edgePath);
+
     TreeNode const *d_from;
     TreeNode const *d_to;
     QString d_label;
@@ -25,6 +39,11 @@ private:
 inline void SecEdge::setFrom(TreeNode const *from)
 {
     d_from = from;
+}
+
+inline void SecEdge::setLabel(QString label)
+{
+    d_label = label;
 }
 
 inline void SecEdge::setTo(TreeNode const *to)

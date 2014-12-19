@@ -223,6 +223,7 @@ void DactTreeScene::processSecondaryEdges(xmlNodePtr node)
         SecEdge *secEdge = new SecEdge;
         secEdge->setFrom(fromIter.value());
         secEdge->setTo(toIter.value());
+        secEdge->setLabel(QString::fromUtf8(reinterpret_cast<char const *>(cat.data())));
         d_secEdges.push_back(secEdge);
     }
 }
