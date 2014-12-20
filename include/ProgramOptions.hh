@@ -6,7 +6,13 @@
 #include <string>
 #include <vector>
 
+#include <QtGlobal>
+
+#if defined(Q_WS_WIN)
+#include "win_getopt.h"
+#else
 #include <unistd.h>
+#endif
 
 class ProgramOptions
 {
@@ -39,3 +45,4 @@ inline bool ProgramOptions::option(char option) const
 }
 
 #endif // PROGRAMOPTIONS_HH
+
