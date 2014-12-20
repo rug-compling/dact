@@ -332,6 +332,12 @@ if(WIN32)
   set(dact_SRCS
     ${dact_SRCS}
     resources/dact.rc
+    src/win_getopt.c
+  )
+
+  set(dact_HDRS
+    ${DACT_HDRS}
+    include/win_getopt.h
   )
 endif(WIN32)
 
