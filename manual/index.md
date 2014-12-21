@@ -408,6 +408,20 @@ using the *File - Open…* menu item.
 >
 > Note that *your original corpus won't be affected* in this process.
 
+### Converting TüBa-D/Z
+
+TüBa-D/Z is (also) delivered in XML format (ExportXML). In contrast to
+Dact, this uses one XML document for the whole treebank. You can convert
+the ExportXML to a format usable by Dact using a [Python script](https://raw.githubusercontent.com/rug-compling/dact/master/util/tdz-explode.py):
+
+    iconv -f latin1 -t utf8 tuebadz-9.0-exportXML-v2.xml > tuebadz-9.0-exportXML-v2-utf8.xml
+    mkdir tuebadz
+    cd tuebadz
+    python ../tdz-explode.py tuebadz-9.0-exportXML-v2-utf8.xml
+
+You can then convert the *tuebadz* directory corpus as described above.
+
+
 ## Configuring Dact
 
 Dact has some preferences that you can change, such
