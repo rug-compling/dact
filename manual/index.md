@@ -43,10 +43,8 @@ Spotlight search popup, type *dact*, and press *Return*.
 
 Dact can also be installed with [Homebrew](http://brew.sh/):
 
-~~~{.bash}
-brew tap rug-compling/dact
-brew install dact
-~~~
+    brew tap rug-compling/dact
+    brew install dact
 
 ### Ubuntu
 
