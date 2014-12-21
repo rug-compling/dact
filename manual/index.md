@@ -41,6 +41,13 @@ You can start Dact by double clicking on Dact in Finder. It's usually
 faster to start Dact from Spotlight. Press *Cmd + Space* to open the
 Spotlight search popup, type *dact*, and press *Return*.
 
+Dact can also be installed with [Homebrew](http://brew.sh/):
+
+~~~{.bash}
+brew tap rug-compling/dact
+brew install dact
+~~~
+
 ### Ubuntu
 
 Dact can be installed through Ubuntu's package manager. Open a Terminal
