@@ -9,7 +9,9 @@
        http://www.xml.com/pub/a/2004/09/08/tree.html -->
 
   <xsl:template match="/">
-    <xsl:apply-templates select="/alpino_ds/node"/>
+    <tree>
+      <xsl:apply-templates select="/alpino_ds/node"/>
+    </tree>
   </xsl:template>
 
   <!-- Interior nodes -->
