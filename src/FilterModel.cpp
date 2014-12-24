@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QTextDocument>
 
+#include <AlpinoCorpus/CorpusInfo.hh>
 #include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 #include <AlpinoCorpus/LexItem.hh>
@@ -313,7 +314,8 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 // run async
 void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 {
-    std::string wordAttr = d_corpus->type() == "tueba_tree" ? "form" : "word";
+    alpinocorpus::CorpusInfo corpusInfo =
+        alpinocorpus::predefinedCorpusOrFallback(d_corpus->type());
 
     if (i.hasProgress())
         emit queryStarted(100);
@@ -356,7 +358,8 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
                         d_corpus->sentence(e.name, d_query.toUtf8().constData(),
-                            wordAttr, MISSING_ATTRIBUTE, wordAttr);
+                            corpusInfo.tokenAttribute(), MISSING_ATTRIBUTE,
+                            corpusInfo);
                     d_bracketedSentences[name] = lexItems;
                 }
             }

@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include <QSettings>
 
+#include <AlpinoCorpus/CorpusInfo.hh>
 #include <AlpinoCorpus/LexItem.hh>
 
 #include "config.hh"
@@ -56,13 +57,14 @@ void BracketedSentenceWidget::setEntry(QString const &entry, QString const &quer
 
 void BracketedSentenceWidget::updateText()
 {
-    std::string wordAttr = d_corpusReader->type() == "tueba_tree" ? "form" : "word";
+  alpinocorpus::CorpusInfo corpusInfo =
+    alpinocorpus::predefinedCorpusOrFallback(d_corpusReader->type());
 
     if (!d_entry.isEmpty() && d_corpusReader)
     {
         std::vector<alpinocorpus::LexItem> items = d_corpusReader->sentence(
-            d_entry.toUtf8().constData(), d_query.toUtf8().constData(), wordAttr,
-            MISSING_ATTRIBUTE, wordAttr);
+            d_entry.toUtf8().constData(), d_query.toUtf8().constData(),
+            corpusInfo.tokenAttribute(), MISSING_ATTRIBUTE, corpusInfo);
 
         clear();
 

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <set>
 
+#include <AlpinoCorpus/CorpusInfo.hh>
 #include <AlpinoCorpus/Error.hh>
 
 #include "config.hh"
@@ -358,7 +359,8 @@ void QueryModel::getEntriesWithQuery(QString const &query,
 void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
     std::string const &attribute, bool yield)
 {
-    std::string wordAttr = d_corpus->type() == "tueba_tree" ? "form" : "word";
+    alpinocorpus::CorpusInfo corpusInfo =
+        alpinocorpus::predefinedCorpusOrFallback(d_corpus->type());
 
     if (i.hasProgress())
       emit queryStarted(100);
@@ -383,7 +385,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
 
                 std::vector<alpinocorpus::LexItem> sent =
                   d_corpus->sentence(e.name, query, attribute,
-                      MISSING_ATTRIBUTE, wordAttr);
+                      MISSING_ATTRIBUTE, corpusInfo);
 
                 // Find all match ids.
                 std::set<size_t> ids;
