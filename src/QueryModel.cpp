@@ -389,7 +389,7 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
 
                 std::vector<alpinocorpus::LexItem> sent =
                   d_corpus->sentence(e.name, query, attribute,
-                      MISSING_ATTRIBUTE, corpusInfo);
+                      MISSING_ATTRIBUTE_SHORT, corpusInfo);
 
                 // Find all match ids.
                 std::set<size_t> ids;
