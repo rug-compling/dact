@@ -157,6 +157,24 @@ bool SimpleDTD::allowAttribute(std::string const &attribute, std::string const &
 bool SimpleDTD::allowValueForAttribute(std::string const &value, std::string const &attribute,
     std::string const &element) const
 {
+    if (element == "*") {
+        // Loop over all elements, check if any of the elements:
+        //
+        // - Has the given attribute.
+        // - Allows the given value for that attribute.
+        for (ElementAttributeMap::const_iterator iter = d_attributes.begin();
+            iter != d_attributes.end(); ++iter)
+        {
+            AttributeMap::const_iterator attrIter = iter->second.find(attribute);
+            if (attrIter != iter->second.end()) {
+                if (attrIter->second->test(value))
+                  return true;
+            }
+        }
+
+        return false;
+    }
+
     ElementAttributeMap::const_iterator iter = d_attributes.find(element);
     if (iter == d_attributes.end())
         return false;
