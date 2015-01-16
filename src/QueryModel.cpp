@@ -45,15 +45,15 @@ QueryModel::QueryModel(CorpusPtr corpus, QObject *parent)
 {
     connect(this, SIGNAL(queryEntryFound(QString)),
         SLOT(mapperEntryFound(QString)));
-    connect(this, SIGNAL(queryFinished(int, int, QString, bool, bool)),
-        SLOT(finalizeQuery(int, int, QString, bool, bool)));
+    connect(this, SIGNAL(queryFinished(int, int, QString, QString, bool, bool)),
+        SLOT(finalizeQuery(int, int, QString, QString, bool, bool)));
 
     // Timer for progress updates.
     connect(d_timer.data(), SIGNAL(timeout()),
         SLOT(updateProgress()));
     connect(this, SIGNAL(queryStopped(int, int)),
         SLOT(stopProgress()));
-    connect(this, SIGNAL(queryFinished(int, int, QString, bool, bool)),
+    connect(this, SIGNAL(queryFinished(int, int, QString, QString, bool, bool)),
         SLOT(stopProgress()));
     connect(this, SIGNAL(queryFailed(QString)),
         SLOT(stopProgress()));
@@ -311,7 +311,8 @@ void QueryModel::cancelQuery()
     d_timer->stop();
 }
 
-void QueryModel::finalizeQuery(int n, int totalEntries, QString query, bool cached, bool yield)
+void QueryModel::finalizeQuery(int n, int totalEntries, QString query,
+    QString attribute, bool cached, bool yield)
 {
     // Just to make sure, otherwise data() will go completely crazy
     Q_ASSERT(d_hitsIndex.size() == d_results.size());
@@ -320,7 +321,8 @@ void QueryModel::finalizeQuery(int n, int totalEntries, QString query, bool cach
 
     if (!cached)
     {
-        d_entryCache->insert(QueryYieldPair(query, yield), new CacheItem(d_totalHits, d_hitsIndex, d_results));
+        d_entryCache->insert(CacheKey(query, attribute, yield),
+            new CacheItem(d_totalHits, d_hitsIndex, d_results));
 
         // this index is no longer needed, as it is only used for constructing d_hitsIndex
         d_valueIndex.clear();
@@ -332,17 +334,19 @@ void QueryModel::getEntriesWithQuery(QString const &query,
     QString const &attribute, bool yield)
 {
     try {
-        if (d_entryCache->contains(QueryYieldPair(query, yield)))
+        if (d_entryCache->contains(CacheKey(query, attribute, yield)))
         {
             {
               QMutexLocker locker(&d_resultsMutex);
-              CacheItem *cachedResult = d_entryCache->object(QueryYieldPair(query, yield));
+              CacheItem *cachedResult = d_entryCache->object(
+                  CacheKey(query, attribute, yield));
               d_totalHits = cachedResult->hits;
               d_hitsIndex = cachedResult->index;
               d_results   = cachedResult->entries;
             }
 
-            emit queryFinished(d_results.size(), d_results.size(), query, true, yield);
+            emit queryFinished(d_results.size(), d_results.size(), query,
+                attribute, true, yield);
             return;
         }
 
@@ -419,7 +423,9 @@ void QueryModel::getEntries(EntryIterator const &i, std::string const &query,
         if (d_cancelled)
             emit queryStopped(d_results.size(), d_results.size());
         else
-            emit queryFinished(d_results.size(), d_results.size(), QString::fromUtf8(query.c_str()), false, yield);
+            emit queryFinished(d_results.size(), d_results.size(),
+                QString::fromUtf8(query.c_str()),
+                QString::fromUtf8(attribute.c_str()), false, yield);
     }
     // Catch d_entryIterator.interrupt()'s shockwaves of terror
     catch (alpinocorpus::IterationInterrupted const &e) {
