@@ -37,7 +37,7 @@ void DactTreeView::setScene(DactTreeScene *scene)
 
 DactTreeScene* DactTreeView::scene() const
 {
-    return reinterpret_cast<DactTreeScene*>(QGraphicsView::scene());
+    return dynamic_cast<DactTreeScene*>(QGraphicsView::scene());
 }
 
 void DactTreeView::fitTree()

@@ -16,7 +16,10 @@
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/axis/NodeTest.hpp>
+
+#include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/XMLString.hpp>
+
 
 #include <libxml/xpath.h>
 
@@ -40,7 +43,7 @@ std::string getLiteral(VectorOfASTNodes const &nodes)
     for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         if ((*it)->getType() == ASTNode::LITERAL)
         {
-            XQLiteral *literal = reinterpret_cast<XQLiteral*>(*it);
+            XQLiteral *literal = dynamic_cast<XQLiteral*>(*it);
             char *lit = xercesc::XMLString::transcode(literal->getValue());
             std::string strLit(lit);
             xercesc::XMLString::release(&lit);
@@ -59,7 +62,7 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     for (VectorOfASTNodes::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         if ((*it)->getType() == ASTNode::ATOMIZE)
         {
-            XQAtomize *atomize = reinterpret_cast<XQAtomize*>(*it);
+            XQAtomize *atomize = dynamic_cast<XQAtomize*>(*it);
             expression = atomize->getExpression();
             break;
         }
@@ -70,7 +73,7 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     // Then, if there is a Navigation node, go to the last Step
     if (expression->getType() == ASTNode::NAVIGATION)
     {
-        XQNav *nav = reinterpret_cast<XQNav*>(expression);
+        XQNav *nav = dynamic_cast<XQNav*>(expression);
         XQNav::Steps steps(nav->getSteps());
 
         expression = steps.back().step;
@@ -79,13 +82,16 @@ std::string getAttribute(VectorOfASTNodes const &nodes)
     // Then, traverse the Step node and get the attribute name
     if (expression->getType() == ASTNode::STEP)
     {
-        XQStep *step = reinterpret_cast<XQStep*>(expression);
+        XQStep *step = dynamic_cast<XQStep*>(expression);
         NodeTest *test = step->getNodeTest();
 
         if (test->getNodeType() == 0)
             return std::string();
 
         char *nodeType = xercesc::XMLString::transcode(test->getNodeType());
+        if (nodeType == 0)
+            return std::string();
+
         if (strcmp(nodeType, "attribute") == 0) {
             xercesc::XMLString::release(&nodeType);
             return xercesc::XMLString::transcode(test->getNodeName());
@@ -102,7 +108,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
     {
         case ASTNode::NAVIGATION:
         {
-            XQNav *nav = reinterpret_cast<XQNav*>(node);
+            XQNav *nav = dynamic_cast<XQNav*>(node);
             XQNav::Steps steps(nav->getSteps());
 
             for (XQNav::Steps::const_iterator it = steps.begin(); it != steps.end(); ++it)
@@ -126,7 +132,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::FUNCTION:
         {
-            XQFunction *fun = reinterpret_cast<XQFunction *>(node);
+            XQFunction *fun = dynamic_cast<XQFunction *>(node);
 
             VectorOfASTNodes const &args(fun->getArguments());
 
@@ -143,7 +149,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::STEP:
         {
-            XQStep *step = reinterpret_cast<XQStep*>(node);
+            XQStep *step = dynamic_cast<XQStep*>(node);
             NodeTest *test = step->getNodeTest();
 
             // Wild cards have no element name.
@@ -197,7 +203,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::OPERATOR:
         {
-            XQOperator *op = reinterpret_cast<XQOperator *>(node);
+            XQOperator *op = dynamic_cast<XQOperator *>(node);
             char *operatorName = xercesc::XMLString::transcode(op->getOperatorName());
             VectorOfASTNodes const &args(op->getArguments());
 
@@ -250,7 +256,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
         case ASTNode::XPATH1_CONVERT:
         {
             XPath1CompatConvertFunctionArg *conv =
-                reinterpret_cast<XPath1CompatConvertFunctionArg *>(node);
+                dynamic_cast<XPath1CompatConvertFunctionArg *>(node);
 
             if (!inspect(conv->getExpression(), scope, dtd))
                 return false;
@@ -269,7 +275,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::DOCUMENT_ORDER:
         {
-            XQDocumentOrder *docOrder = reinterpret_cast<XQDocumentOrder*>(node);
+            XQDocumentOrder *docOrder = dynamic_cast<XQDocumentOrder*>(node);
             if (!inspect(docOrder->getExpression(), scope, dtd))
                 return false;
 
@@ -278,7 +284,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::PREDICATE:
         {
-            XQPredicate *predicate = reinterpret_cast<XQPredicate*>(node);
+            XQPredicate *predicate = dynamic_cast<XQPredicate*>(node);
             QSharedPointer<QueryScope> stepScope(new QueryScope(*scope));
             if (!inspect(predicate->getExpression(), stepScope, dtd))
                 return false;
@@ -291,7 +297,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
 
         case ASTNode::ATOMIZE:
         {
-            XQAtomize *atomize = reinterpret_cast<XQAtomize*>(node);
+            XQAtomize *atomize = dynamic_cast<XQAtomize*>(node);
             if (!inspect(atomize->getExpression(), scope, dtd))
                 return false;
 
@@ -434,10 +440,21 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
 
         QStringList subQueries = query.split("+|+");
 
+        // Create an emptry document and associate namespace resolvers with it.
+        AutoDelete<xercesc::DOMDocument> document(
+            xercesc::DOMImplementation::getImplementation()->createDocument());
+        AutoDelete<xercesc::DOMXPathNSResolver> resolver(
+            document->createNSResolver(document->getDocumentElement()));
+        resolver->addNamespaceBinding(X("fn"),
+            X("http://www.w3.org/2005/xpath-functions"));
+        resolver->addNamespaceBinding(X("xs"),
+            X("http://www.w3.org/2001/XMLSchema"));
+
         foreach(QString subQuery, subQueries)
         {
             DynamicContext *ctx(s_xqilla.createContext(XQilla::XPATH2));
             ctx->setXPath1CompatibilityMode(true);
+            ctx->setNSResolver(resolver);
 
             AutoDelete<XQQuery> xqQuery(s_xqilla.parse(X(subQuery.toUtf8().constData()), ctx));
 

@@ -31,7 +31,6 @@ public:
     void switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader);
     void setFilter(QString const &text, QString const &raw_text);
     void setAggregateAttribute(QString const &text);
-    void showPercentage(bool show);
     bool saveEnabled() const;
     void selectionAsCSV(QTextStream &output, QString const &separator, bool escape_quotes = false) const;
 
@@ -55,6 +54,7 @@ private slots:
     void progressStopped(int n, int total);
     void queryFailed(QString error);
     void showPercentageChanged();
+    void showYieldChanged();
     void updateResultsTotalCount();
 
 protected:
@@ -67,10 +67,6 @@ private:
     void readSettings();
     void writeSettings();
     void setModel(QueryModel *model);
-    static QString HTMLescape(QString);
-    static QString HTMLescape(std::string);
-    static QString XMLescape(QString);
-    static QString XMLescape(std::string);
     
     QString d_filter;
     QSharedPointer<Ui::StatisticsWindow> d_ui;

@@ -1,11 +1,13 @@
-# Introduction
+# Decaffeinated Alpino Corpus Tool
+
+## Introduction
 
 Dact is a tool for viewing and analyzing treebanks generated and used by
 the [Alpino parser](http://www.let.rug.nl/~vannoord/alp/Alpino/).
 
 See the [Dact homepage](http://rug-compling.github.com/dact/) for more information.
 
-# Building
+## Building
 
 Make sure that you have the following dependencies installed before building Dact:
 
@@ -20,14 +22,17 @@ If you want to build the current stable/release version of Dact, check out the
     make
     make install
 
-# Limitations
+If you are using Homebrew on Mac OS X, you can simply compile Dact with:
 
-When a corpus reader with XPath 1.0 is used, the statistics tab does not
-provide a count of matching nodes that do not have the given attribute.
+    brew tap rug-compling/dact
+    brew install dact
 
-# License
+This will fetch, compile, and install Dact and its dependencies.
 
-Copyright 2010-2012 Daniël de Kok<br/>
+## License
+
+~~~
+Copyright 2010-2013 Daniël de Kok
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or
@@ -44,3 +49,4 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the 
 Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor,
 Boston, MA  02110-1301  USA
+~~~

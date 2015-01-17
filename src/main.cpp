@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFileInfo>
 #include <QFont>
 #include <QSettings>
 #include <QVariant>
@@ -6,6 +7,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 extern "C" {
 #include <libxslt/xslt.h>
@@ -14,12 +16,16 @@ extern "C" {
 #include <libexslt/exslt.h>
 }
 
-#include "DactApplication.hh"
+#include <DactApplication.hh>
+#include <ProgramOptions.hh>
 
 namespace {
     void usage(char const *progname)
     {
-        std::cerr << "Usage: " << progname << " [file]" << std::endl;
+        std::cerr << "Usage: " << progname << " [OPTION] corpus ..." <<
+          std::endl << std::endl <<
+          "  -m filename\tMacro file, multiple files are separated by a colon (:)" << std::endl <<
+          "  -u URI\tURI, for instance a query URI" << std::endl << std::endl;
         std::exit(1);
     }
 }
@@ -58,6 +64,7 @@ int main(int argc, char *argv[])
 
 
         QScopedPointer<DactApplication> a(new DactApplication(argc, argv));
+        bool dactIsRunning = a->isRunning();
     
         QVariant fontValue = settings.value("appFont", qApp->font().toString());
         
@@ -70,33 +77,54 @@ int main(int argc, char *argv[])
         a->init();
     
         QStringList corpusPaths, macroPaths;
-        
-        QStringList args = a->arguments();
-        for (int i = 1; i < args.size(); ++i)
+
+        ProgramOptions options(argc, const_cast<char const **>(argv), "m:u:");
+
+        // Process macros
+        if (options.option('m'))
         {
-            if (args[i] == "-m")
-            {
-                // please do follow with a path after -m switch.
-                if (i + 1 >= args.size()) 
-                    usage(argv[0]);
-                
-                macroPaths.append(args[++i]);
-            }
-            else
-            {
-                if (args[i].startsWith("dact:"))
-                    a->openUrl(QUrl::fromUserInput(args[i]));
-                else
-                    corpusPaths.append(args[i]);
-            }
+            QString macros = QString::fromStdString(options.optionValue('m'));
+            macroPaths = macros.split(':', QString::SkipEmptyParts);
+        }
+
+        // Corpus paths
+        for (std::vector<std::string>::const_iterator iter = options.arguments().begin();
+                iter != options.arguments().end(); ++iter)
+        {
+            QString corpus = QString::fromStdString(*iter);
+
+            // Dact may have been started in a different directory.
+            QFileInfo corpusFileInfo(corpus);
+            corpusPaths.push_back(corpusFileInfo.absoluteFilePath());
+        }
+
+        // URI
+        QString uri = options.option('u') ?
+            QString::fromStdString(options.optionValue('u')) : QString();
+
+        if (dactIsRunning) {
+            if (corpusPaths.size() != 0)
+                a->sendMessage(QString("%1%2").arg(CORPUS_OPEN_MESSAGE,
+                      corpusPaths.join(CORPUS_SEPARATOR)));
+
+            if (!uri.isNull())
+                a->sendMessage(uri);
+
+          return 0;
         }
 
         a->openMacros(macroPaths);
 
         if (corpusPaths.size() != 0)
           a->openCorpora(corpusPaths);
+
+        if (!uri.isNull())
+            a->openUrl(QUrl::fromUserInput(uri));
         
         r = a->exec();
+    } catch (std::runtime_error &e) {
+        std::cerr << e.what() << std::endl << std::endl;
+        usage(argv[0]);
     } catch (std::logic_error const &e) {
         std::cerr << "dact: internal logic error: please report at\n"
                      "      https://github.com/rug-compling/dact/issues, citing"

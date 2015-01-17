@@ -104,6 +104,11 @@ QModelIndex DactMacrosModel::index(int row, int column, QModelIndex const &paren
     return QModelIndex();
 }
 
+bool DactMacrosModel::isFileBacked()
+{
+  return d_file;
+}
+
 QModelIndex DactMacrosModel::parent(QModelIndex const &index) const
 {
     return QModelIndex();
@@ -131,10 +136,13 @@ void DactMacrosModel::reloadFile()
         return;
 
     int prevCount = d_file->macros().size();
-    
-    d_file->reload();
-
-    dataChanged(index(0, 0), index(prevCount, 0));
+   
+    try {
+      d_file->reload();
+      dataChanged(index(0, 0), index(prevCount, 0));
+    } catch (std::runtime_error &e) {
+        emit readError(QString::fromUtf8(e.what()));
+    }
 }
 
 void DactMacrosModel::readFile(QString const &fileName)

@@ -89,6 +89,9 @@ void BracketedWindow::setModel(FilterModel *model)
     d_model.reset(model);
     d_ui->resultsTable->setModel(d_model.data());
 
+    d_ui->hitsLabel->clear();
+    d_ui->entriesLabel->clear();
+
     emit saveStateChanged();
 
     //d_ui->resultsTable->setColumnHidden(1, true);
@@ -109,6 +112,9 @@ void BracketedWindow::setModel(FilterModel *model)
         this, SLOT(updateResultsTotalCount()));
     */
 
+    connect(d_model.data(), SIGNAL(nEntriesFound(int, int)),
+        SLOT(updateCounts(int, int)));
+
     connect(d_model.data(), SIGNAL(queryFailed(QString)),
         SLOT(queryFailed(QString)));
 
@@ -127,11 +133,8 @@ void BracketedWindow::setModel(FilterModel *model)
 
 void BracketedWindow::startQuery()
 {
-    // XXX - only once
-    QFile file(":/stylesheets/bracketed-sentence-xml.xsl");
-    file.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&file);
-    QString stylesheet = xslStream.readAll();
+    d_ui->hitsLabel->clear();
+    d_ui->entriesLabel->clear();
 
     if (d_filter.trimmed().isEmpty())
         setModel(new FilterModel(QSharedPointer<ac::CorpusReader>()));
@@ -340,7 +343,7 @@ void BracketedWindow::exportSelection()
 {
     QString filename(QFileDialog::getSaveFileName(this,
         "Export selection",
-        QString(), "*.txt"));
+        QString("untitled"), "*.txt"));
 
     if (filename.isNull())
         return;
@@ -361,8 +364,6 @@ void BracketedWindow::exportSelection()
 
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream);
-
-    file.close();
 }
 
 void BracketedWindow::selectionAsCSV(QTextStream &output)
@@ -389,8 +390,6 @@ void BracketedWindow::selectionAsCSV(QTextStream &output)
         output << delegate->sentenceForClipboard(row)
                << '\n';
     }
-
-    output.flush();
 }
 
 QStyledItemDelegate* BracketedWindow::colorDelegateFactory(CorpusReaderPtr reader)
@@ -477,9 +476,6 @@ void BracketedWindow::saveAs()
     XSLTransformer trans(*stylesheet);
     out << trans.transform(xmlEntries, params);
 
-    out.flush();
-    data.close();
-
     emit statusMessage(tr("File saved as %1").arg(filename));
 
     /*
@@ -521,4 +517,10 @@ void BracketedWindow::showToolsMenu(QPoint const &position)
         selectedFiles,
         mapToGlobal(position),
         d_ui->resultsTable->actions());
+}
+
+void BracketedWindow::updateCounts(int entries, int hits)
+{
+    d_ui->hitsLabel->setText(QString("%L1").arg(hits));
+    d_ui->entriesLabel->setText(QString("%L1").arg(entries));
 }

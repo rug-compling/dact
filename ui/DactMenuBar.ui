@@ -68,7 +68,7 @@
    <property name="title">
     <string>&amp;Tools</string>
    </property>
-   <widget class="QMenu" name="menuConvertCorpus">
+   <widget class="QMenu" name="convertCorpusMenu">
     <property name="title">
      <string>Convert corpus</string>
     </property>
@@ -76,7 +76,7 @@
     <addaction name="convertCompactCorpusAction"/>
    </widget>
    <addaction name="webserviceAction"/>
-   <addaction name="menuConvertCorpus"/>
+   <addaction name="convertCorpusMenu"/>
    <addaction name="separator"/>
    <addaction name="clearHistoryAction"/>
    <addaction name="separator"/>

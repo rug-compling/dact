@@ -25,7 +25,7 @@
 #endif // USE_WEBSERVICE
 
 DactApplication::DactApplication(int &argc, char** argv) :
-    QApplication(argc, argv),
+    QtSingleApplication(argc, argv),
     d_dactStartedWithCorpus(false),
     d_historyModel(new QStandardItemModel),
     d_menu(new DactMenuBar(0, true)),
@@ -36,7 +36,8 @@ DactApplication::DactApplication(int &argc, char** argv) :
 #ifdef USE_WEBSERVICE
     d_webserviceWindow(new WebserviceWindow),
 #endif // USE_WEBSERVICE
-    d_preferencesWindow(new PreferencesWindow)
+    d_preferencesWindow(new PreferencesWindow),
+    d_lastMainWindow(0)
 {
 #if defined(Q_WS_MAC)
     setQuitOnLastWindowClosed(false);
@@ -46,6 +47,12 @@ DactApplication::DactApplication(int &argc, char** argv) :
 
     connect(this, SIGNAL(aboutToQuit()),
         SLOT(prepareQuit()));
+
+    connect(this, SIGNAL(focusChanged(QWidget *, QWidget *)),
+        SLOT(updateLastMainWindow(QWidget *, QWidget *)));
+
+    connect(this, SIGNAL(messageReceived(QString const &)),
+        SLOT(handleMessage(QString const &)));
 
 #ifdef USE_REMOTE_CORPUS
     connect(d_remoteWindow.data(), SIGNAL(openRemote(QString const &)),
@@ -60,6 +67,18 @@ DactApplication::DactApplication(int &argc, char** argv) :
 #endif // USE_WEBSERVICE
 }
 
+void DactApplication::updateLastMainWindow(QWidget *old, QWidget *now)
+{
+    QWidget *w = now == 0 ? 0 : now->window();
+    MainWindow *mw = dynamic_cast<MainWindow *>(w);
+
+    if (mw != 0)
+    {
+        d_lastMainWindow = mw;
+        setActivationWindow(mw);
+    }
+}
+
 void DactApplication::clearHistory()
 {
   d_historyModel->clear();
@@ -68,7 +87,7 @@ void DactApplication::clearHistory()
 void DactApplication::convertCorpus(QString const &path)
 {
     QString newPath = QFileDialog::getSaveFileName(0,
-        "New Dact corpus", QString(), "*.dact");
+        "New Dact corpus", QString("untitled"), "*.dact");
     if (newPath.isNull())
         return;
 
@@ -165,6 +184,18 @@ bool DactApplication::event(QEvent *event)
     return QApplication::event(event);
 }
 
+void DactApplication::handleMessage(QString const &msg)
+{
+    if (msg.startsWith("dact:"))
+      openUrl(QUrl::fromUserInput(msg));
+    else if (msg.startsWith(CORPUS_OPEN_MESSAGE))
+    {
+      QStringList corpora = msg.mid(CORPUS_OPEN_MESSAGE.length())
+          .split(CORPUS_SEPARATOR, QString::SkipEmptyParts);
+      openCorpora(corpora);
+    }
+}
+
 QStandardItemModel *DactApplication::historyModel()
 {
     return d_historyModel.data();
@@ -212,6 +243,7 @@ void DactApplication::_openCorpora(QStringList const &fileNames)
     window->show();
     window->readCorpora(fileNames, true);
     window->readMacros(d_argMacros);
+    d_lastMainWindow = window;
 }
 
 void DactApplication::openHelp()
@@ -244,16 +276,7 @@ void DactApplication::_openUrl(QUrl const &url)
     {
         QByteArray encodedFilter(url.queryItemValue("filter").toUtf8());
 
-        // If we don't have an active window, ask the user to open a corpus
-        // and execute the query. Execute the query on the active window
-        // otherwise.
-        if (activeWindow() == 0)
-        {
-          MainWindow *w = showOpenCorpus();
-          if (w)
-            w->setFilter(QUrl::fromPercentEncoding(encodedFilter));
-        }
-        else
+        if (activeWindow() != 0)
           // The active window can be some other window, such as the corpus
           // opening window, so we have to check the cast.
           try
@@ -262,6 +285,20 @@ void DactApplication::_openUrl(QUrl const &url)
               dynamic_cast<MainWindow &>(*activeWindow());
             activeMainWindow.setFilter(QUrl::fromPercentEncoding(encodedFilter));
           } catch (std::bad_cast &) {}
+        // There could be a window that was previously active, but was
+        // deactivated by switching to another application.
+        else if (topLevelWidgets().contains(d_lastMainWindow))
+            d_lastMainWindow->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+        // If we don't have an active window, ask the user to open a corpus
+        // and execute the query. Execute the query on the active window
+        // otherwise.
+        else
+        {
+          d_dactStartedWithCorpus = true;
+          MainWindow *w = showOpenCorpus();
+          if (w)
+            w->setFilter(QUrl::fromPercentEncoding(encodedFilter));
+        }
     }
 
     // Disabled because I don't trust this functionality. I think it can

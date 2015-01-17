@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <typeinfo>
 
+#include "config.hh"
 #include "CorpusWidget.hh"
 #include "SimpleDTD.hh"
 #include "StatisticsWindow.hh"
@@ -72,6 +73,9 @@ void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> c
     //d_xpathValidator->setCorpusReader(d_corpusReader);
 
     setModel(new QueryModel(corpusReader));
+
+    // Ensure that percentage column is hidden when necessary.
+    showPercentageChanged();
 }
 
 void StatisticsWindow::setFilter(QString const &filter, QString const &raw_filter)
@@ -109,7 +113,7 @@ void StatisticsWindow::setModel(QueryModel *model)
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
 
-    connect(d_model.data(), SIGNAL(queryFinished(int, int, bool)),
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, QString, bool, bool)),
         SLOT(progressStopped(int, int)));
 
     connect(d_model.data(), SIGNAL(progressChanged(int)),
@@ -147,7 +151,7 @@ void StatisticsWindow::saveAs()
     QString filename;
     QStringList filenames;
 
-    QFileDialog fd(this, tr("Save"), QString(), tr("Microsoft Excel 2003 XML (*.xls);;Text (*.txt);;HTML (*.html *.htm);;CSV (*.csv)"));
+    QFileDialog fd(this, tr("Save"), QString("untitled"), tr("Microsoft Excel 2003 XML (*.xls);;Text (*.txt);;HTML (*.html *.htm);;CSV (*.csv)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
@@ -193,9 +197,6 @@ void StatisticsWindow::saveAs()
     XSLTransformer trans(*stylesheet);
     out << trans.transform(xmlStats);
 
-    out.flush();
-    data.close();
-
     emit statusMessage(tr("File saved as %1").arg(filename));
 }
 
@@ -236,8 +237,6 @@ void StatisticsWindow::exportSelection()
 
     textstream.setGenerateByteOrderMark(true);
     selectionAsCSV(textstream, ";", true);
-
-    file.close();
 }
 
 void StatisticsWindow::createActions()
@@ -263,16 +262,24 @@ void StatisticsWindow::createActions()
     connect(d_ui->percentageCheckBox, SIGNAL(toggled(bool)),
         SLOT(showPercentageChanged()));
 
+    connect(d_ui->yieldCheckBox, SIGNAL(toggled(bool)),
+        SLOT(showYieldChanged()));
+
     connect(d_ui->attributeComboBox, SIGNAL(currentIndexChanged(int)),
         SLOT(attributeChanged(int)));
 }
 
 void StatisticsWindow::generateQuery(QModelIndex const &index)
 {
+    // We are not able to generate a query (yet) for yield items.
+    // I guess such queries become really long and tedious.
+    if (d_ui->yieldCheckBox->isChecked())
+      return;
+
     // Get the text from the first column, that is the found value
     QString data = index.sibling(index.row(), 0).data(Qt::UserRole).toString();
 
-    if (data == QueryModel::MISSING_ATTRIBUTE)
+    if (data == MISSING_ATTRIBUTE)
       return;
 
     QString query = ::generateQuery(
@@ -308,14 +315,6 @@ void StatisticsWindow::selectionAsCSV(QTextStream &output, QString const &separa
             << d_model->data(row.sibling(row.row(), 1)).toString() // count
             << '\n';
     }
-
-    output.flush();
-}
-
-void StatisticsWindow::showPercentage(bool show)
-{
-   d_ui->resultsTable->setColumnHidden(2, !show);
-   d_ui->percentageCheckBox->setChecked(show);
 }
 
 void StatisticsWindow::startQuery()
@@ -327,15 +326,24 @@ void StatisticsWindow::startQuery()
     d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
+    d_ui->distinctValuesLabel->clear();
 
-    d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText());
+    bool yield = d_ui->yieldCheckBox->isChecked();
+
+    d_model->runQuery(d_filter, d_ui->attributeComboBox->currentText(), yield);
 
     emit saveStateChanged();
 }
 
 void StatisticsWindow::showPercentageChanged()
 {
-    showPercentage(d_ui->percentageCheckBox->isChecked());
+    d_ui->resultsTable->setColumnHidden(2, !d_ui->percentageCheckBox->isChecked());
+}
+
+void StatisticsWindow::showYieldChanged()
+{
+    if (!d_model.isNull())
+        startQuery();
 }
 
 void StatisticsWindow::progressStarted(int total)
@@ -352,6 +360,7 @@ void StatisticsWindow::progressChanged(int percentage)
 
 void StatisticsWindow::progressStopped(int n, int total)
 {
+    updateResultsTotalCount();
     d_ui->filterProgress->setVisible(false);
     emit saveStateChanged();
 }
@@ -408,7 +417,7 @@ void StatisticsWindow::readSettings()
     QSettings settings;
 
     bool show = settings.value("query_show_percentage", true).toBool();
-    showPercentage(show);
+    d_ui->percentageCheckBox->setChecked(show);
 
     // Window geometry.
     QPoint pos = settings.value("query_pos", QPoint(200, 200)).toPoint();
@@ -430,22 +439,3 @@ void StatisticsWindow::writeSettings()
     settings.setValue("query_size", size());
 }
 
-QString StatisticsWindow::XMLescape(QString s)
-{
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-}
-
-QString StatisticsWindow::XMLescape(std::string s)
-{
-    return XMLescape(QString(s.c_str()));
-}
-
-QString StatisticsWindow::HTMLescape(QString s)
-{
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-}
-
-QString StatisticsWindow::HTMLescape(std::string s)
-{
-    return HTMLescape(QString(s.c_str()));
-}

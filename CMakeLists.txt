@@ -17,6 +17,9 @@ endif()
 if(APPLE)
   set(CMAKE_OSX_ARCHITECTURES "x86_64")
   set(ENABLE_BUNDLE OFF CACHE BOOL "Compile an application bundle")
+  if(ENABLE_BUNDLE AND ENABLE_CODESIGN)
+    set(ENABLE_SANDBOXING OFF CACHE BOOL "Build a sandboxed application")
+  endif(ENABLE_BUNDLE AND ENABLE_CODESIGN)
   set(ENABLE_CODESIGN OFF CACHE BOOL "Sign the application bundle")
   if(ENABLE_CODESIGN)
     set(CODESIGN_IDENTITY "John Doe" CACHE STRING "Code signing identity")
@@ -35,7 +38,7 @@ else()
 endif()
 
 
-set(VERSION "2.0.8")
+set(VERSION "2.2.8")
 
 set(GIT_REVISION ${VERSION})
 #exec_program(git
@@ -154,6 +157,9 @@ SET(dact_SRCS
   src/PercentageCellDelegate.cpp
   src/PopupItem.cpp
   src/PreferencesWindow.cpp
+  src/ProgramOptions.cpp
+  src/QtLocalPeer.cpp
+  src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
@@ -210,7 +216,11 @@ SET(dact_HDRS
   include/PercentageCellDelegate.hh
   include/PopupItem.hh
   include/PreferencesWindow.hh
+  include/ProgramOptions.hh
   include/QtIOCompressor.hh
+  include/QtLocalPeer.hh
+  include/QtLockedFile.hh
+  include/QtSingleApplication.hh
   include/Query.hh
   include/QueryModel.hh
   include/QueryScope.hh
@@ -264,6 +274,8 @@ SET(dact_MOC_HDRS
   include/OpenCorpusDialog.hh
   include/PercentageCellDelegate.hh
   include/PreferencesWindow.hh
+  include/QtLocalPeer.hh
+  include/QtSingleApplication.hh
   include/RecentFilesMenu.hh
   include/StatisticsWindow.hh
   include/TreeNodeInspector.hh
@@ -316,6 +328,12 @@ if(WIN32)
   set(dact_SRCS
     ${dact_SRCS}
     resources/dact.rc
+    src/win_getopt.c
+  )
+
+  set(dact_HDRS
+    ${DACT_HDRS}
+    include/win_getopt.h
   )
 endif(WIN32)
 
@@ -435,8 +453,17 @@ if(APPLE)
       execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtCore.framework/Versions/4/QtCore\")
       execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtGui.framework/Versions/4/QtGui\")
       execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtNetwork.framework/Versions/4/QtNetwork\")
-      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
       " COMPONENT Runtime)
+
+      if(ENABLE_SANDBOXING)
+        INSTALL(CODE "
+          execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" --entitlements ${DACT_SOURCE_DIR}/resources/entitlements.plist \"${APP}\")
+        " COMPONENT Runtime)
+      else(ENABLE_SANDBOXING)
+        INSTALL(CODE "
+          execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
+        " COMPONENT Runtime)
+      endif(ENABLE_SANDBOXING)
     endif(ENABLE_CODESIGN)
 
     set(CPACK_BINARY_DRAGNDROP ON)

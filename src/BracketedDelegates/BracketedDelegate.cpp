@@ -21,7 +21,7 @@ BracketedDelegate::BracketedDelegate(CorpusReaderPtr corpus, QWidget *parent)
 std::vector<ac::LexItem> BracketedDelegate::retrieveSentence(QModelIndex const &index) const
 {
     QString filename(index.sibling(index.row(), 0).data(Qt::UserRole).toString());
-    return reinterpret_cast<FilterModel const *>(index.model())->bracketedSentence(filename);
+    return dynamic_cast<FilterModel const *>(index.model())->bracketedSentence(filename);
 }
 
 QString BracketedDelegate::bracketedSentence(QModelIndex const &index) const

@@ -29,8 +29,6 @@ private:
     };
     
 public:
-    static QString const MISSING_ATTRIBUTE;
-
     QueryModel(CorpusPtr corpus, QObject *parent = 0);
     ~QueryModel();
     QString asXML() const;
@@ -41,7 +39,7 @@ public:
     QVariant headerData(int column, Qt::Orientation orientation, int role) const;
     inline int totalHits() const { return d_totalHits; }
     
-    void runQuery(QString const &query, QString const &attribute);
+    void runQuery(QString const &query, QString const &attribute, bool yield);
     void cancelQuery();
     bool validQuery(QString const &query) const;
     
@@ -49,19 +47,21 @@ signals:
     void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
-    void queryFinished(int n, int totalEntries, bool cached);
+    void queryFinished(int n, int totalEntries, QString query, bool cached, bool yield);
     void queryEntryFound(QString entry);
     void progressChanged(int progress);
     
 private:
-    void getEntries(EntryIterator const &i);
-    void getEntriesWithQuery(QString const &query);
+    void getEntries(EntryIterator const &i, std::string const &query,
+        std::string const &attribute, bool yield);
+    void getEntriesWithQuery(QString const &query, QString const &attribute,
+        bool yield);
     
 private slots:
     void updateProgress();
     void stopProgress();
     void mapperEntryFound(QString entry);
-    void finalizeQuery(int n, int totalEntries, bool cached);
+    void finalizeQuery(int n, int totalEntries, QString query, bool cached, bool yield);
     
 private:
     typedef QList<int> EntryIndex;
@@ -75,7 +75,8 @@ private:
         EntryList entries;
     };
 
-    typedef QCache<QString, CacheItem> EntryCache;
+    typedef QPair<QString, bool> QueryYieldPair;
+    typedef QCache<QueryYieldPair, CacheItem> EntryCache;
 
     bool volatile d_cancelled;
     CorpusPtr d_corpus;

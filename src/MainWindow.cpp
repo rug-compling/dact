@@ -33,6 +33,10 @@
 
 #include <config.hh>
 
+#if defined(ENABLE_SANDBOXING) 
+#include <QTemporaryFile>
+#endif
+
 #include <AppleUtils.hh>
 #include <DactApplication.hh>
 #include <DactMenuBar.hh>
@@ -74,14 +78,14 @@ MainWindow::MainWindow(QWidget *parent) :
     setMenuBar(new DactMenuBar(this));
 
     d_ui->filterComboBox->setModel(
-        reinterpret_cast<DactApplication *>(qApp)->historyModel());
+        dynamic_cast<DactApplication *>(qApp)->historyModel());
 
     initTaintedWidgets();
 
     // Ensure that we have a status bar.
     statusBar();
 
-    reinterpret_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
+    dynamic_cast<DactMenuBar *>(menuBar())->setMacrosModel(d_macrosModel);
 
     d_ui->filterComboBox->lineEdit()->setValidator(d_xpathValidator.data());
 
@@ -91,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createActions();
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->saveAsAction->setEnabled(false);
 
 #if defined(Q_WS_MAC) && defined(USE_SPARKLE)
@@ -208,7 +212,7 @@ void MainWindow::saveAs()
 void MainWindow::saveStateChanged()
 {
     CorpusWidget *widget = dynamic_cast<CorpusWidget *>(QObject::sender());
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->saveAsAction->setEnabled(widget->saveEnabled());
 }
 
@@ -300,7 +304,7 @@ void MainWindow::createActions()
     connect(d_ui->mainTabWidget, SIGNAL(currentChanged(int)),
         SLOT(tabChanged(int)));
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
 
     // Actions
     connect(menu->ui()->closeAction, SIGNAL(triggered(bool)),
@@ -441,7 +445,7 @@ void MainWindow::openMacrosFile()
     if (filePath.isNull())
         return;
 
-    d_macrosModel->loadFile(filePath);
+    readMacros(QStringList(filePath));
 
     d_ui->filterComboBox->revalidate();
 }
@@ -454,7 +458,10 @@ void MainWindow::readMacros(QStringList const &fileNames)
 
 void MainWindow::exportPDF()
 {
-    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
+    QItemSelectionModel *selectionModel = d_ui->dependencyTreeWidget->selectionModel();
+    QString entryName = selectionModel->currentIndex().data(Qt::UserRole).toString();
+    QFileInfo entryFI(entryName);
+    QString pdfFilename = QFileDialog::getSaveFileName(this, "Export to PDF", entryFI.baseName(), "*.pdf");
     if (pdfFilename.isNull())
         return;
 
@@ -556,10 +563,18 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList c
     int nLoadedCorpora = 0;
 
     foreach (QString const &path, paths) {
-        if (QFileInfo(path).isDir())
+        QFileInfo pathInfo(path);
+
+        if (pathInfo.isDir())
           readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), recursive);
-        else
+        else if (pathInfo.isFile())
           readers->push_back(deriveNameFromPath(path).toUtf8().constData(), path.toUtf8().constData(), false);
+        else
+        {
+          qWarning() << "Corpus is not a file or directory: " << path;
+          continue;
+        }
+
         nLoadedCorpora++;
         emit corpusReaderCreated();
     }
@@ -598,7 +613,7 @@ void MainWindow::setCorpusReader(QSharedPointer<ac::CorpusReader> reader, QStrin
 
         if (QFileInfo(path).exists() || path.startsWith("http://") || path.startsWith("https://"))
             // Add file to the recent files menu
-            reinterpret_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
+            dynamic_cast<DactMenuBar *>(menuBar())->addRecentFile(path);
     }
     else
     {
@@ -663,7 +678,6 @@ void MainWindow::readSettings()
 
 void MainWindow::exportCorpus()
 {
-
     if (d_corpusWriteWatcher.isRunning()) {
         d_corpusWriteWatcher.cancel();
         d_corpusWriteWatcher.waitForFinished();
@@ -677,7 +691,7 @@ void MainWindow::exportCorpus()
 
     QString filename(QFileDialog::getSaveFileName(this,
         selectionOnly ? "Export selection" : "Export corpus",
-        QString(), "*.dact"));
+        QString("untitled"), "*.dact"));
 
     if (!filename.isNull())
     {
@@ -709,8 +723,8 @@ void MainWindow::exportCorpus()
         d_writeCorpusCancelled = false;
         d_exportProgressDialog->setCancelButtonText(tr("Cancel"));
 
-        QFuture<bool> corpusWriterFuture =
-            QtConcurrent::run(this, &MainWindow::writeCorpus, filename, d_corpusReader, files);
+        QFuture<bool> corpusWriterFuture = QtConcurrent::run(
+          this, &MainWindow::writeCorpus, filename, d_corpusReader, files);
         d_corpusWriteWatcher.setFuture(corpusWriterFuture);
     }
 }
@@ -719,9 +733,21 @@ bool MainWindow::writeCorpus(QString const &filename,
     QSharedPointer<ac::CorpusReader> corpusReader,
     QList<QString> const &files)
 {
+#if defined(ENABLE_SANDBOXING) 
+    QTemporaryFile tmpFile;
+    // Ensure the temp file name is created.
+    tmpFile.open();
+    tmpFile.close();
+
+    QString const writeTarget = tmpFile.fileName();
+#else
+    QString const writeTarget = filename;
+#endif // defined(ENABLE_SANDBOXING)
+
+
     try {
         QSharedPointer<ac::CorpusWriter> corpus(
-          ac::CorpusWriter::open(filename.toUtf8().constData(), true,
+          ac::CorpusWriter::open(writeTarget.toUtf8().constData(), true,
           ac::CorpusWriter::DBXML_CORPUS_WRITER));
 
         emit exportProgressMaximum(files.size());
@@ -738,6 +764,7 @@ bool MainWindow::writeCorpus(QString const &filename,
             if (percent == 0 || progress % percent == 0)
               emit exportProgress(progress);
         }
+
     } catch (ac::OpenError const &e) {
         emit exportError(e.what());
         return false;
@@ -745,6 +772,21 @@ bool MainWindow::writeCorpus(QString const &filename,
         emit exportError(QString("Could not export %1:\n%2").arg(filename).arg(e.what()));
         return false;
     }
+
+#if defined(ENABLE_SANDBOXING)
+    bool failed = false;
+    QFile::remove(filename);
+    if (!QFile::rename(writeTarget, filename))
+      if (!QFile::copy(writeTarget, filename))
+        failed = true;
+    
+    QFile::remove(writeTarget);
+
+    if (failed)
+      emit exportError(QString("Could not move temporary file %1 to %2")
+          .arg(writeTarget).arg(filename));
+      return false;
+#endif
 
     emit corpusWriterFinished(filename);
 
@@ -801,7 +843,7 @@ void MainWindow::tabChanged(int index)
 {
     bool treeWidgetsEnabled = index == 0 ? true : false;
 
-    DactMenuBar *menu = reinterpret_cast<DactMenuBar *>(menuBar());
+    DactMenuBar *menu = dynamic_cast<DactMenuBar *>(menuBar());
     menu->ui()->previousAction->setEnabled(treeWidgetsEnabled);
     menu->ui()->nextAction->setEnabled(treeWidgetsEnabled);
     menu->ui()->zoomInAction->setEnabled(treeWidgetsEnabled);

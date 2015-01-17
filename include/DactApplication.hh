@@ -1,7 +1,6 @@
 #ifndef DACTAPPLICATION_H
 #define DACTAPPLICATION_H
 
-#include <QApplication>
 #include <QMenuBar>
 #include <QScopedPointer>
 #include <QStandardItemModel>
@@ -12,6 +11,7 @@
 #include "AboutWindow.hh"
 #include "MainWindow.hh"
 #include "PreferencesWindow.hh"
+#include "QtSingleApplication.hh"
 #ifdef USE_REMOTE_CORPUS
 #include <RemoteWindow.hh>
 #endif // USE_REMOTE_CORPUS
@@ -19,7 +19,10 @@
 #include "WebserviceWindow.hh"
 #endif // USE_WEBSERVICE
 
-class DactApplication: public QApplication
+QString const CORPUS_OPEN_MESSAGE = "openCorpus:";
+QString const CORPUS_SEPARATOR = "+:+";
+
+class DactApplication: public QtSingleApplication
 {
     Q_OBJECT
 public:
@@ -86,7 +89,9 @@ protected:
 
 private slots:
     void emitColorPreferencesChanged();
+    void handleMessage(QString const &msg);
     void prepareQuit();
+    void updateLastMainWindow(QWidget *old, QWidget *now);
 
     /*!
      Used when starting Dact, does not show the dialog if a corpus was provided
@@ -114,6 +119,7 @@ private:
     QScopedPointer<WebserviceWindow> d_webserviceWindow;
 #endif // USE_WEBSERVICE
     QScopedPointer<PreferencesWindow> d_preferencesWindow;
+    MainWindow *d_lastMainWindow;
 };
 
 #endif

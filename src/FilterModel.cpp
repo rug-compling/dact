@@ -12,6 +12,7 @@
 #include <AlpinoCorpus/Error.hh>
 #include <AlpinoCorpus/LexItem.hh>
 
+#include "config.hh"
 #include "FilterModel.hh"
 
 namespace ac = alpinocorpus;
@@ -352,7 +353,8 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 if (bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
-                        d_corpus->sentence(e.name, d_query.toUtf8().constData());
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData(), "word",
+                            MISSING_ATTRIBUTE);
                     d_bracketedSentences[name] = lexItems;
                 }
             }
