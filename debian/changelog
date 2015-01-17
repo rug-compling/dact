@@ -1,3 +1,9 @@
+alpino-dact (2.2.0-1trusty1) trusty; urgency=low
+
+  * New upstream release.
+
+ -- Daniël de Kok <me@danieldk.eu>  Thu, 17 Jan 2015 12:36:25 +0100
+
 alpino-dact (2.0.8-1trusty1) trusty; urgency=low
 
   * New upstream release.
