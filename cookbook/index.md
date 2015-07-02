@@ -227,7 +227,7 @@ Indirect yes/no-questions can be found with the query:
 
 ## Proper name subjects
 
-    //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)"]
+    //node[@rel="su" and (@ntype="eigen" or @postag="SPEC(deeleigen)")]
 
 Note that this query will only return single-word subjects, as in:
 
