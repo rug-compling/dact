@@ -13,8 +13,8 @@ def createGraph(tokens, n):
 
   for token in tokens:
     tokenElem = etree.Element("node")
-    tokenElem.set('word', token[1].decode('utf-8'))
-    tokenElem.set('lemma', token[2].decode('utf-8'))
+    tokenElem.set('word', token[1])
+    tokenElem.set('lemma', token[2])
     tokenElem.set('cpos', token[3])
     tokenElem.set('pos', token[4])
     tokenElem.set('morph', token[5])
@@ -33,12 +33,12 @@ def createGraph(tokens, n):
   wrap = etree.Element("simple_ds")
   wrap.append(root)
 
-  with open("s%d.xml" % n, 'w') as f:
+  with open("s%d.xml" % n, 'wb') as f:
     f.write(etree.tostring(wrap, pretty_print = True))
 
 if __name__ == "__main__":
   if len(sys.argv) != 2:
-    print "Usage: %s export.xml" % sys.argv[0]
+    print("Usage: %s export.xml" % sys.argv[0])
     sys.exit(1)
 
   with open(sys.argv[1], 'r') as conllInput:
