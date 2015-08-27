@@ -29,10 +29,10 @@ def addWordsSent(elem, begin):
 
 if __name__ == "__main__":
   if len(sys.argv) != 2:
-    print "Usage: %s export.xml" % sys.argv[0]
+    print("Usage: %s export.xml" % sys.argv[0])
     sys.exit(1)
 
-  exportXML = open(sys.argv[1], 'r')
+  exportXML = open(sys.argv[1], 'rb')
   for evt, elem in etree.iterparse(exportXML):
     if elem.tag == 'text':
       textElem = elem
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         ident = sentElem.get('{http://www.w3.org/XML/1998/namespace}id')
 
 
-        with open("%s.xml" % ident, 'w') as f:
+        with open("%s.xml" % ident, 'wb') as f:
           wrap = etree.Element("tueba_tree")
           wrapNode = etree.Element("node")
           wrapNode.set('cat', 'root')
@@ -50,5 +50,5 @@ if __name__ == "__main__":
           addWordsSent(wrapNode, 0)
           wrap.append(wrapNode)
           f.write(etree.tostring(wrap))
-          print ident,
+          print("%s\t" % ident)
       elem.clear()
