@@ -322,9 +322,9 @@ void StatisticsWindow::startQuery()
 {
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
 
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
     d_ui->distinctValuesLabel->clear();

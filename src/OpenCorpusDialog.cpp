@@ -16,6 +16,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
+#include <QtConcurrent>
 #include <QtCore>
 #include <QtDebug>
 #include <QtIOCompressor.hh>

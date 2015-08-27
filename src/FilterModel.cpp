@@ -128,7 +128,7 @@ QString FilterModel::asXML() const
               prevDepth = depth;
             }
 
-            sent.append(Qt::escape(QString::fromUtf8(lexItem.word.c_str())));
+            sent.append(QString::fromUtf8(lexItem.word.c_str()).toHtmlEscaped());
         }
 
         if (prevDepth > 0)
