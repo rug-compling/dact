@@ -17,10 +17,10 @@ extern "C" {
 #include <XSLTransformer.hh>
 #include <QtDebug>
 
-XSLTransformer::XSLTransformer(QFile &file)
+XSLTransformer::XSLTransformer(QFile *file)
 {
-    file.open(QIODevice::ReadOnly);
-    QTextStream xslStream(&file);
+    file->open(QIODevice::ReadOnly);
+    QTextStream xslStream(file);
     initWithStylesheet(xslStream.readAll());
 }
 

@@ -2,6 +2,7 @@
 #define DACTTOOL_H
 
 #include <QMetaType>
+#include <QObject>
 #include <QString>
 #include <QRegExp>
 

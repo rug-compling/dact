@@ -1,3 +1,6 @@
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
+
 #include "AppleUtils.hh"
 
 void enableFullScreenOnMac(QMainWindow const *window)

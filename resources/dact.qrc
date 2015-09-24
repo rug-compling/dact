@@ -2,7 +2,10 @@
     <qresource prefix="/">
         <file>dact-espresso.png</file>
         <file>dtd/alpino_ds.dtd</file>
+        <file>dtd/tueba_tree.dtd</file>
         <file>stylesheets/tree.xsl</file>
+        <file>stylesheets/tueba-tree.xsl</file>
+        <file>stylesheets/simple_ds.xsl</file>
         <file>stylesheets/bracketed-html.xsl</file>
         <file>stylesheets/bracketed-sentence.xsl</file>
         <file>stylesheets/bracketed-text.xsl</file>

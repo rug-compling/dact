@@ -8,6 +8,7 @@
 #include <QString>
 #include <QTimer>
 #include <QUrl>
+#include <QUrlQuery>
 
 #include <config.hh>
 #include <AboutWindow.hh>
@@ -272,9 +273,11 @@ void DactApplication::_openUrl(QUrl const &url)
     if (url.scheme() != "dact")
         return;
 
-    if (url.hasQueryItem("filter"))
+    QUrlQuery query(url);
+
+    if (query.hasQueryItem("filter"))
     {
-        QByteArray encodedFilter(url.queryItemValue("filter").toUtf8());
+        QByteArray encodedFilter(query.queryItemValue("filter").toUtf8());
 
         if (activeWindow() != 0)
           // The active window can be some other window, such as the corpus

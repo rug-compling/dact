@@ -11,6 +11,33 @@
 #include <QSharedPointer>
 #include <QTimer>
 
+struct CacheKey {
+    CacheKey(QString query, QString attribute, bool yield)
+        : query(query), attribute(attribute), yield(yield) {}
+
+    bool operator==(CacheKey const &other) const;
+
+    QString query;
+    QString attribute;
+    bool yield;
+};
+
+inline bool CacheKey::operator==(CacheKey const &other) const
+{
+  return query == other.query &&
+      attribute == other.attribute &&
+      yield == other.yield;
+}
+
+inline uint qHash(CacheKey const &cacheKey)
+{
+    // Qt-pair style combination. 
+    uint seed = qHash(cacheKey.query);
+    seed = ((seed << 16) | (seed >> 16)) ^ qHash(cacheKey.attribute);
+    seed = ((seed << 16) | (seed >> 16)) ^ qHash(cacheKey.yield);
+    return seed;
+}
+
 class QueryModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -47,7 +74,8 @@ signals:
     void queryFailed(QString error);
     void queryStarted(int totalEntries);
     void queryStopped(int n, int totalEntries);
-    void queryFinished(int n, int totalEntries, QString query, bool cached, bool yield);
+    void queryFinished(int n, int totalEntries, QString query,
+        QString attribute, bool cached, bool yield);
     void queryEntryFound(QString entry);
     void progressChanged(int progress);
     
@@ -61,7 +89,8 @@ private slots:
     void updateProgress();
     void stopProgress();
     void mapperEntryFound(QString entry);
-    void finalizeQuery(int n, int totalEntries, QString query, bool cached, bool yield);
+    void finalizeQuery(int n, int totalEntries, QString query,
+        QString attribute, bool cached, bool yield);
     
 private:
     typedef QList<int> EntryIndex;
@@ -75,8 +104,7 @@ private:
         EntryList entries;
     };
 
-    typedef QPair<QString, bool> QueryYieldPair;
-    typedef QCache<QueryYieldPair, CacheItem> EntryCache;
+    typedef QCache<CacheKey, CacheItem> EntryCache;
 
     bool volatile d_cancelled;
     CorpusPtr d_corpus;

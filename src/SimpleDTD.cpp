@@ -34,17 +34,20 @@ void scanElement(void *payload, void *data, xmlChar *name)
 void scanAttribute(void *payload, void *data, xmlChar *name)
 {
     xmlAttribute *attr = reinterpret_cast<xmlAttribute*>(payload);
-    AttributeMap &attributeMap = *reinterpret_cast<AttributeMap *>(data);
+    ElementAttributeMap &attributeMap = *reinterpret_cast<ElementAttributeMap *>(data);
 
+    char const *elementName(reinterpret_cast<char const *>(attr->elem));
     char const *attributeName(reinterpret_cast<char const *>(attr->name));
-    AttributeMap::iterator attributeMapPos = attributeMap.find(attributeName);
+
+    AttributeMap::iterator attributeMapPos = attributeMap[elementName].find(attributeName);
+    ElementAttributeMap::iterator elementIter = attributeMap.find(elementName);
     
     switch (attr->atype)
     {
         case XML_ATTRIBUTE_CDATA:
         {
-            if (attributeMapPos == attributeMap.end())
-                attributeMap[attributeName] =
+            if (attributeMapPos == elementIter->second.end())
+                elementIter->second[attributeName] =
                     QSharedPointer<SimpleDTDAttribute>(new SimpleDTDCDATAAttribute());
             else
                 qWarning() << "Warning: are we redefining " << attributeName << "?";
@@ -54,8 +57,8 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
 
         case XML_ATTRIBUTE_NMTOKEN:
         {
-            if (attributeMapPos == attributeMap.end())
-                attributeMap[attributeName] =
+            if (attributeMapPos == elementIter->second.end())
+                elementIter->second[attributeName] =
                     QSharedPointer<SimpleDTDAttribute>(new SimpleDTDNameTokenAttribute());
             else
                 qWarning() << "Warning: are we redefining " << attributeName << "?";
@@ -67,14 +70,21 @@ void scanAttribute(void *payload, void *data, xmlChar *name)
         {
             QSharedPointer<SimpleDTDEnumerationAttribute> simpleAttr;
 
-            if (attributeMapPos != attributeMap.end())
-                simpleAttr = qSharedPointerCast<SimpleDTDEnumerationAttribute>(
+            if (attributeMapPos != elementIter->second.end()) {
+                simpleAttr = qSharedPointerDynamicCast<SimpleDTDEnumerationAttribute>(
                     attributeMapPos->second);
+
+                if (simpleAttr.isNull()) {
+                    qWarning() << "Attribute '" << attributeName <<
+                        "' used twice and incompatibly, skipping!";
+                    break;
+                }
+            }
             else
             {
                 simpleAttr = QSharedPointer<SimpleDTDEnumerationAttribute>(
                     new SimpleDTDEnumerationAttribute());
-                attributeMap[attributeName] = simpleAttr;
+                elementIter->second[attributeName] = simpleAttr;
             }
 
             for (xmlEnumerationPtr value = attr->tree; value != 0; value = value->next)
@@ -124,8 +134,17 @@ bool SimpleDTD::allowElement(std::string const &element, std::string const &pare
 
 bool SimpleDTD::allowAttribute(std::string const &attribute, std::string const &element) const
 {
-    if (element == "*")
-        return d_attributes.find(attribute) != d_attributes.end();
+    if (element == "*") {
+        // Loop over all elements, check corresponding attributes.
+        for (ElementAttributeMap::const_iterator iter = d_attributes.begin();
+            iter != d_attributes.end(); ++iter)
+        {
+            if (iter->second.find(attribute) != iter->second.end())
+                return true;
+        }
+
+        return false;
+    }
 
     ElementMap::const_iterator pos = d_elements.find(element);
 
@@ -135,14 +154,38 @@ bool SimpleDTD::allowAttribute(std::string const &attribute, std::string const &
     return pos->second.count(attribute) > 0;
 }
 
-bool SimpleDTD::allowValueForAttribute(std::string const &value, std::string const &attribute) const
+bool SimpleDTD::allowValueForAttribute(std::string const &value, std::string const &attribute,
+    std::string const &element) const
 {
-    AttributeMap::const_iterator pos = d_attributes.find(attribute);
+    if (element == "*") {
+        // Loop over all elements, check if any of the elements:
+        //
+        // - Has the given attribute.
+        // - Allows the given value for that attribute.
+        for (ElementAttributeMap::const_iterator iter = d_attributes.begin();
+            iter != d_attributes.end(); ++iter)
+        {
+            AttributeMap::const_iterator attrIter = iter->second.find(attribute);
+            if (attrIter != iter->second.end()) {
+                if (attrIter->second->test(value))
+                  return true;
+            }
+        }
 
-    if (pos == d_attributes.end())
+        return false;
+    }
+
+    ElementAttributeMap::const_iterator iter = d_attributes.find(element);
+    if (iter == d_attributes.end())
         return false;
 
-    return pos->second->test(value);
+    // We have found the element, see if it has the attribute.
+    AttributeMap::const_iterator attrIter = iter->second.find(attribute);
+
+    if (attrIter == iter->second.end())
+        return false;
+
+    return attrIter->second->test(value);
 }
 
 ElementMap const &SimpleDTD::elementMap()

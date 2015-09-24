@@ -2,8 +2,9 @@
 
 ## Introduction
 
-Dact is a tool for viewing and analyzing treebanks generated and used by
-the [Alpino parser](http://www.let.rug.nl/~vannoord/alp/Alpino/).
+Dact is a tool for viewing and analyzing treebanks generated and used by the
+[Alpino parser](http://www.let.rug.nl/~vannoord/alp/Alpino/). There is also
+experimental support for the TüBa-D/Z treebank of written German.
 
 See the [Dact homepage](http://rug-compling.github.com/dact/) for more information.
 
@@ -32,7 +33,7 @@ This will fetch, compile, and install Dact and its dependencies.
 ## License
 
 ~~~
-Copyright 2010-2013 Daniël de Kok
+Copyright 2010-2014 Daniël de Kok
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or

@@ -39,9 +39,4 @@ private:
     QSharedPointer<SimpleDTD> d_dtd;
 };
 
-inline void XPathValidator::setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader)
-{
-    d_corpusReader = corpusReader;
-}
-
 #endif // XPATHVALIDATOR_HH

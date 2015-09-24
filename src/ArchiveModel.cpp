@@ -1,5 +1,4 @@
 #include <QByteArray>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
 #include <QIODevice>
@@ -10,10 +9,13 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QScopedPointer>
+#include <QStandardPaths>
 #include <QString>
 #include <QStringList>
 #include <QUrl>
 #include <QVariant>
+
+#include <stdexcept>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -29,7 +31,13 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 
 QString ArchiveEntry::filePath() const
 {
-    return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".dact";
+    QString path = QStandardPaths::locate(QStandardPaths::DataLocation, name + ".dact");
+    
+    if (!path.isEmpty())
+      return path;
+
+    
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + name + ".dact";
 }
 
 bool ArchiveEntry::existsLocally() const
@@ -299,7 +307,13 @@ int ArchiveModel::rowCount(QModelIndex const &parent) const
 
 void ArchiveModel::addLocalFiles()
 {
-    QDir localFiles(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+
+    if (locations.isEmpty()) {
+      throw std::runtime_error("No standard data location.");
+    }
+    
+    QDir localFiles(locations.at(0));
 
     QStringList extensions;
     extensions << "*.dact";
@@ -331,7 +345,7 @@ void ArchiveModel::refresh()
 
 void ArchiveModel::writeLocalArchiveIndex(QByteArray const &data)
 {
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
+    QFile file(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/index.xml");
 
     if (!file.open(QIODevice::WriteOnly))
         return;
@@ -341,7 +355,12 @@ void ArchiveModel::writeLocalArchiveIndex(QByteArray const &data)
 
 QByteArray ArchiveModel::readLocalArchiveIndex() const
 {
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/index.xml");
+    QString indexName(QStandardPaths::locate(QStandardPaths::DataLocation, "index.xml"));
+
+    if (indexName.isEmpty())
+        return QByteArray();
+
+    QFile file(indexName);
 
     if (!file.exists() || !file.open(QIODevice::ReadOnly))
         return QByteArray();

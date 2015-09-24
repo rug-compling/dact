@@ -10,6 +10,11 @@ DactTreeView::DactTreeView(QWidget* parent)
     QGraphicsView(parent)
 {
     QFile stylesheet(":/stylesheets/tree.xsl");
+    setStylesheet(&stylesheet);
+}
+
+void DactTreeView::setStylesheet(QFile *stylesheet)
+{
     d_transformer = QSharedPointer<XSLTransformer>(new XSLTransformer(stylesheet));
 }
 

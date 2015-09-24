@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QTextDocument>
 
+#include <AlpinoCorpus/CorpusInfo.hh>
 #include <AlpinoCorpus/Entry.hh>
 #include <AlpinoCorpus/Error.hh>
 #include <AlpinoCorpus/LexItem.hh>
@@ -127,7 +128,7 @@ QString FilterModel::asXML() const
               prevDepth = depth;
             }
 
-            sent.append(Qt::escape(QString::fromUtf8(lexItem.word.c_str())));
+            sent.append(QString::fromUtf8(lexItem.word.c_str()).toHtmlEscaped());
         }
 
         if (prevDepth > 0)
@@ -313,6 +314,9 @@ void FilterModel::getEntriesWithQuery(QString const &query,
 // run async
 void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
 {
+    alpinocorpus::CorpusInfo corpusInfo =
+        alpinocorpus::predefinedCorpusOrFallback(d_corpus->type());
+
     if (i.hasProgress())
         emit queryStarted(100);
     else
@@ -353,8 +357,9 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 if (bracketedSentences)
                 {
                     std::vector<alpinocorpus::LexItem> lexItems =
-                        d_corpus->sentence(e.name, d_query.toUtf8().constData(), "word",
-                            MISSING_ATTRIBUTE);
+                        d_corpus->sentence(e.name, d_query.toUtf8().constData(),
+                            corpusInfo.tokenAttribute(), MISSING_ATTRIBUTE,
+                            corpusInfo);
                     d_bracketedSentences[name] = lexItems;
                 }
             }

@@ -20,6 +20,7 @@ public:
     
     DactTreeScene* scene() const;
     void setScene(DactTreeScene *scene);
+    void setStylesheet(QFile *stylesheet);
     
     void showTree(QString const &xml);
     void focusTreeNode(int direction);

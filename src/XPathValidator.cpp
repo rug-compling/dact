@@ -220,7 +220,7 @@ bool inspect(ASTNode *node, QSharedPointer<QueryScope> scope, SimpleDTD const &d
                 std::string attribute = getAttribute(args); 
                 
                 if (!literal.empty() && !attribute.empty())
-                    if (!dtd.allowValueForAttribute(literal, attribute))
+                    if (!dtd.allowValueForAttribute(literal, attribute, scope->nodeName()))
                         return false;
             }
 
@@ -421,7 +421,10 @@ XPathValidator::XPathValidator(QSharedPointer<DactMacrosModel> macrosModel, QObj
 
 void XPathValidator::parseDTD()
 {
-    QFile dtdFile(":/dtd/alpino_ds.dtd"); // XXX - hardcode?
+    QString dtdPath = (d_corpusReader && d_corpusReader->type() == "tueba_tree") ?
+      ":/dtd/tueba_tree.dtd" : ":/dtd/alpino_ds.dtd"; // XXX - hardcode?
+    QFile dtdFile(dtdPath);
+
     if (!dtdFile.open(QFile::ReadOnly)) {
         qWarning() << "StatisticsWindow::readNodeAttributes(): Could not read DTD.";
         return;
@@ -473,6 +476,13 @@ bool XPathValidator::checkAgainstDTD(QString const &query) const
     } catch (XQException &e) {
         return false;
     }
+}
+
+
+void XPathValidator::setCorpusReader(QSharedPointer<ac::CorpusReader> corpusReader)
+{
+    d_corpusReader = corpusReader;
+    parseDTD();
 }
 
 bool XPathValidator::validateAgainstDTD(QString const &exprStr) const

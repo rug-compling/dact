@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(DACT)
 
 set(CMAKE_CXX_FLAGS "-pthread")
@@ -104,8 +104,20 @@ if (XQILLA_FOUND)
   include_directories(${XQILLA_INCLUDE_DIR})
 endif()
 
-find_package(Qt4 4.8.0 COMPONENTS QtCore QtGui QtMain QtNetwork REQUIRED)
-INCLUDE(${QT_USE_FILE})
+find_package(Qt5Core REQUIRED)
+include_directories(${Qt5Core_INCLUDE_DIRS})
+
+find_package(Qt5Concurrent REQUIRED)
+include_directories(${Qt5Concurrent_INCLUDE_DIRS})
+
+find_package(Qt5Network REQUIRED)
+include_directories(${Qt5Network_INCLUDE_DIRS})
+
+find_package(Qt5PrintSupport REQUIRED)
+include_directories(${Qt5PrintSupport_INCLUDE_DIRS})
+
+find_package(Qt5Widgets REQUIRED)
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
 
@@ -139,6 +151,7 @@ SET(dact_SRCS
   src/DactToolsModel.cpp
   src/DelayedLoadFileCallback.cpp
   src/DactMenuBar.cpp
+  src/Edge.cpp
   src/QueryModel.cpp
   src/QueryScope.cpp
   src/QtIOCompressor.cpp
@@ -161,6 +174,7 @@ SET(dact_SRCS
   src/QtLocalPeer.cpp
   src/QtSingleApplication.cpp
   src/RecentFilesMenu.cpp
+  src/SecEdge.cpp
   src/StatisticsWindow.cpp
   src/TreeNode.cpp
   src/TreeNodeInspector.cpp
@@ -204,6 +218,7 @@ SET(dact_HDRS
   include/DactTreeScene.hh
   include/DactTreeView.hh
   include/DelayedLoadFileCallback.hh
+  include/Edge.hh
   include/FilterModel.hh
   include/GlobalCopyCommand.hh
   include/GlobalCutCommand.hh
@@ -225,6 +240,7 @@ SET(dact_HDRS
   include/QueryModel.hh
   include/QueryScope.hh
   include/RecentFilesMenu.hh
+  include/SecEdge.hh
   include/SimpleDTD.hh
   include/SimpleDTDAttribute.hh
   include/StatisticsWindow.hh
@@ -373,9 +389,9 @@ set_source_files_properties(
   MACOSX_PACKAGE_LOCATION Resources
 )
 
-qt4_add_resources(dact_SRCS ${dact_RCS})
-qt4_wrap_ui(dact_UI_HDRS ${dact_UI})
-qt4_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
+qt5_add_resources(dact_SRCS ${dact_RCS})
+qt5_wrap_ui(dact_UI_HDRS ${dact_UI})
+qt5_wrap_cpp(dact_MOC_SRCS ${dact_MOC_HDRS})
 
 if(ENABLE_BUNDLE)
   add_executable(${PROGNAME} MACOSX_BUNDLE
@@ -393,7 +409,11 @@ else()
     ${dact_MACOSX_RESOURCE_FILES})
 endif()
 
-target_link_libraries(${PROGNAME} ${QT_LIBRARIES})
+target_link_libraries(${PROGNAME} ${Qt5Core_LIBRARIES})
+target_link_libraries(${PROGNAME} ${Qt5Concurrent_LIBRARIES})
+target_link_libraries(${PROGNAME} ${Qt5Network_LIBRARIES})
+target_link_libraries(${PROGNAME} ${Qt5PrintSupport_LIBRARIES})
+target_link_libraries(${PROGNAME} ${Qt5Widgets_LIBRARIES})
 target_link_libraries(${PROGNAME} ${ALPINOCORPUS_LIBRARIES})
 target_link_libraries(${PROGNAME} ${DBXML_LIBRARY})
 target_link_libraries(${PROGNAME} ${ZLIB_LIBRARIES})

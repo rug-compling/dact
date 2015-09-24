@@ -17,7 +17,7 @@ class XSLTransformer
 public:
     typedef QHash<QString, QString> ParamHash;
 
-    XSLTransformer(QFile &xslt);
+    XSLTransformer(QFile *xslt);
     XSLTransformer(QString const &xslt);
     ~XSLTransformer();
     QString transform(QString const &xml,

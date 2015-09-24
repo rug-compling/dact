@@ -68,6 +68,7 @@ void StatisticsWindow::queryFailed(QString error)
 void StatisticsWindow::switchCorpus(QSharedPointer<alpinocorpus::CorpusReader> corpusReader)
 {
     d_corpusReader = corpusReader;
+    readNodeAttributes();
     emit saveStateChanged();
 
     //d_xpathValidator->setCorpusReader(d_corpusReader);
@@ -113,7 +114,7 @@ void StatisticsWindow::setModel(QueryModel *model)
     connect(d_model.data(), SIGNAL(queryStopped(int, int)),
         SLOT(progressStopped(int, int)));
 
-    connect(d_model.data(), SIGNAL(queryFinished(int, int, QString, bool, bool)),
+    connect(d_model.data(), SIGNAL(queryFinished(int, int, QString, QString, bool, bool)),
         SLOT(progressStopped(int, int)));
 
     connect(d_model.data(), SIGNAL(progressChanged(int)),
@@ -194,7 +195,7 @@ void StatisticsWindow::saveAs()
 
     QString xmlStats = d_model->asXML();
 
-    XSLTransformer trans(*stylesheet);
+    XSLTransformer trans(stylesheet.data());
     out << trans.transform(xmlStats);
 
     emit statusMessage(tr("File saved as %1").arg(filename));
@@ -321,9 +322,9 @@ void StatisticsWindow::startQuery()
 {
     setAggregateAttribute(d_ui->attributeComboBox->currentText());
 
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 
     d_ui->totalHitsLabel->clear();
     d_ui->distinctValuesLabel->clear();
@@ -373,7 +374,10 @@ void StatisticsWindow::closeEvent(QCloseEvent *event)
 
 void StatisticsWindow::readNodeAttributes()
 {
-    QFile dtdFile(":/dtd/alpino_ds.dtd"); // XXX - hardcode?
+    QString dtdPath = (d_corpusReader && d_corpusReader->type() == "tueba_tree") ?
+      ":/dtd/tueba_tree.dtd" : ":/dtd/alpino_ds.dtd"; // XXX - hardcode?
+    QFile dtdFile(dtdPath);
+
     if (!dtdFile.open(QFile::ReadOnly)) {
         qWarning() << "StatisticsWindow::readNodeAttributes(): Could not read DTD.";
         return;

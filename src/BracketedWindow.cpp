@@ -100,8 +100,8 @@ void BracketedWindow::setModel(FilterModel *model)
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
     //d_ui->resultsTable->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
 
-    d_ui->resultsTable->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    d_ui->resultsTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    d_ui->resultsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    d_ui->resultsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     d_ui->resultsTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     // disables horizontal jumping when a sentence is selected
@@ -473,7 +473,7 @@ void BracketedWindow::saveAs()
     if (d_ui->filenamesCheckBox->isChecked())
         params["showFilenames"] = "1";
 
-    XSLTransformer trans(*stylesheet);
+    XSLTransformer trans(stylesheet.data());
     out << trans.transform(xmlEntries, params);
 
     emit statusMessage(tr("File saved as %1").arg(filename));
