@@ -155,7 +155,11 @@
           sc              CDATA       #IMPLIED
           special         CDATA       #IMPLIED
           wh              CDATA       #IMPLIED
-
+	  iets            CDATA       #IMPLIED
+	  pron            CDATA       #IMPLIED
+	  personalized    CDATA       #IMPLIED
+	  rnum            CDATA       #IMPLIED
+	  stype           CDATA       #IMPLIED
 
 	  pb
 	  (Arg0|Arg1|Arg2|Arg3|Arg4|Arg5|ArgM-ADV|ArgM-CAU|ArgM-DIR|ArgM-DIS|ArgM-EXT|ArgM-LOC|ArgM-MNR|ArgM-MOD|ArgM-NEG|ArgM-PNC|ArgM-PRD|ArgM-REC|ArgM-STR|ArgM-TMP|rel|SYNT)
