@@ -14,7 +14,7 @@ Make sure that you have the following dependencies installed before building Dac
 
  * [AlpinoCorpus](http://github.com/rug-compling/alpinocorpus)
  * CMake
- * Qt 4.8
+ * Qt 5
 
 If you want to build the current stable/release version of Dact, check out the
 *release* branch first. Then build Dact with:
@@ -33,7 +33,7 @@ This will fetch, compile, and install Dact and its dependencies.
 ## License
 
 ~~~
-Copyright 2010-2014 Daniël de Kok
+Copyright 2010-2015 Daniël de Kok
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or
