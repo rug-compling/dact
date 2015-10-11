@@ -451,14 +451,24 @@ if(APPLE)
       PROPERTIES
       MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
 
+
+
+    get_target_property(QT_LIBRARY_DIR Qt5::Core LOCATION)
+    get_filename_component(QT_LIBRARY_DIR ${QT_LIBRARY_DIR} PATH)
+    get_filename_component(QT_LIBRARY_DIR ${QT_LIBRARY_DIR} PATH)
+
     INSTALL(CODE "
       file(WRITE \"${APP}/Contents/Resources/qt.conf\")
       file(MAKE_DIRECTORY \"${APP}/Contents/Resources/qt_menu.nib\")
       execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
         \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
         \"${APP}/Contents/Resources/qt_menu.nib\")
+      file(MAKE_DIRECTORY \"${APP}/Contents/plugins/platforms\")
+      execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+        \"${QT_LIBRARY_DIR}/../plugins/platforms/libqcocoa.dylib\"
+        \"${APP}/Contents/plugins/platforms/libqcocoa.dylib\")
       include(BundleUtilities)
-      fixup_bundle(\"${APP}\" \"\" \"${DIRS}\")
+      fixup_bundle(\"${APP}\" \"${APP}/Contents/plugins/platforms/libqcocoa.dylib\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
 
     # XXX - Automatically find frameworks?
