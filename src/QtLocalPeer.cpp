@@ -40,6 +40,7 @@
 
 
 #include <QCoreApplication>
+#include <QDataStream>
 #include <QTime>
 
 #include <QtLocalPeer.hh>
