@@ -1,3 +1,10 @@
+alpino-dact (2.4.1-1xenial1) xenial; urgency=medium
+
+  * Update to Dact 2.4.1.
+  * Update for Ubuntu Xenial Xerus.
+
+ -- Daniël de Kok <me@danieldk.eu>  Sun, 19 Jun 2016 19:50:01 +0200
+
 alpino-dact (2.4.0-1trusty1) trusty; urgency=medium
 
   * New upstream release.
