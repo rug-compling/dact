@@ -37,7 +37,7 @@ QString ArchiveEntry::filePath() const
       return path;
 
     
-    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + name + ".dact";
+    return QString("%1/%2.dact").arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation), name);
 }
 
 bool ArchiveEntry::existsLocally() const
