@@ -1,3 +1,9 @@
+alpino-dact (2.4.2-1xenial1) xenial; urgency=medium
+
+  * Update to Dact 2.4.2.
+
+ -- Daniël de Kok <me@danieldk.eu>  Mon, 20 Jun 2016 22:35:35 +0200
+
 alpino-dact (2.4.1-1xenial1) xenial; urgency=medium
 
   * Update to Dact 2.4.1.
