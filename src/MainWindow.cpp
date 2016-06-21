@@ -75,6 +75,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     setupUi();
 
+    d_exportProgressDialog->reset();
+    d_openProgressDialog->reset();
+
     setMenuBar(new DactMenuBar(this));
 
     d_ui->filterComboBox->setModel(
