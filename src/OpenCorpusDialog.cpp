@@ -62,11 +62,11 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     d_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(false);
 
     d_downloadProgressDialog->setWindowTitle("Downloading corpus");
-    d_downloadProgressDialog->setRange(0, 100);
+    d_downloadProgressDialog->reset();
     
     d_inflateProgressDialog->setWindowTitle("Decompressing corpus");
     d_inflateProgressDialog->setLabelText("Decompressing downloaded corpus");
-    d_inflateProgressDialog->setRange(0, 100);
+    d_inflateProgressDialog->reset();
     
     connect(d_ui->buttonBox, SIGNAL(accepted()),
         SLOT(openSelectedCorpus()));
@@ -91,17 +91,17 @@ OpenCorpusDialog::OpenCorpusDialog(QWidget *parent, Qt::WindowFlags f)
     connect(d_corpusAccessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(corpusReplyFinished(QNetworkReply*)));
     
-    connect(d_downloadProgressDialog, SIGNAL(canceled()),
+    connect(d_downloadProgressDialog.data(), SIGNAL(canceled()),
         SLOT(downloadCanceled()));
-    connect(d_inflateProgressDialog, SIGNAL(canceled()),
+    connect(d_inflateProgressDialog.data(), SIGNAL(canceled()),
             SLOT(cancelInflate()));
     
     connect(this, SIGNAL(inflateProgressed(int)),
-        d_inflateProgressDialog, SLOT(setValue(int)));
+        d_inflateProgressDialog.data(), SLOT(setValue(int)));
     connect(this, SIGNAL(inflateError(QString)),
         SLOT(inflateHandleError(QString)));
     connect(this, SIGNAL(inflateFinished()),
-        d_inflateProgressDialog, SLOT(accept()));
+        d_inflateProgressDialog.data(), SLOT(accept()));
     connect(this, SIGNAL(inflateFinished()),
         SLOT(accept()));
     
@@ -160,16 +160,10 @@ void OpenCorpusDialog::corpusReplyFinished(QNetworkReply *reply)
                         QString("Downloading of corpus failed with error: %1").arg(errorValue),
                         QMessageBox::Ok);
         
-        d_downloadProgressDialog->accept();
-        
         box.exec();
 
         return;
     }
-    
-    d_downloadProgressDialog->accept();
-    d_inflateProgressDialog->setValue(0);
-    d_inflateProgressDialog->open();
     
     QtConcurrent::run(this, &OpenCorpusDialog::inflate, reply);
 }
@@ -202,14 +196,13 @@ void OpenCorpusDialog::downloadCanceled()
 {
     Q_ASSERT(d_reply != 0);
     d_reply->abort();
+    d_downloadProgressDialog->reset();
 }
 
 void OpenCorpusDialog::downloadProgress(qint64 progress, qint64 maximum)
 {
-    if (maximum == 0)
-        return;
-    
-    d_downloadProgressDialog->setValue((progress * 100) / maximum);
+    d_downloadProgressDialog->setMaximum(maximum);
+    d_downloadProgressDialog->setValue(progress);
 }
 
 QString OpenCorpusDialog::getCorpusFileName(QWidget *parent)
@@ -234,6 +227,7 @@ QSharedPointer<ac::CorpusReader> OpenCorpusDialog::getCorpusReader(QWidget *pare
 void OpenCorpusDialog::inflate(QIODevice *dev)
 {
     qint64 initAvailable = dev->bytesAvailable();
+    d_inflateProgressDialog->setMaximum(initAvailable);
         
     QtIOCompressor data(dev);
     data.setStreamFormat(QtIOCompressor::GzipFormat);
@@ -265,7 +259,7 @@ void OpenCorpusDialog::inflate(QIODevice *dev)
     
     while (!data.atEnd() && !d_cancelInflate) {
         emit inflateProgressed(static_cast<int>(
-            ((initAvailable - dev->bytesAvailable()) * 100) / initAvailable));
+            initAvailable - dev->bytesAvailable()));
         QByteArray newData = data.read(65535);
         sha1.addData(newData);
         out.write(newData);
