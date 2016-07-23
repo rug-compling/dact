@@ -19,7 +19,10 @@ Make sure that you have the following dependencies installed before building Dac
 If you want to build the current stable/release version of Dact, check out the
 *release* branch first. Then build Dact with:
 
-    cmake .
+    mkdir build
+    cd build
+    cmake ..
+    # OS X: cmake .. -DCMAKE_PREFIX_PATH=$(brew --prefix qt5)
     make
     make install
 
