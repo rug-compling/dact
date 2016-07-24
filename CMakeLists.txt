@@ -473,19 +473,13 @@ if(APPLE)
 
     # XXX - Automatically find frameworks?
     if(ENABLE_CODESIGN)
-      INSTALL(CODE "
-      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtCore.framework/Versions/4/QtCore\")
-      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtGui.framework/Versions/4/QtGui\")
-      execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}/Contents/Frameworks/QtNetwork.framework/Versions/4/QtNetwork\")
-      " COMPONENT Runtime)
-
       if(ENABLE_SANDBOXING)
         INSTALL(CODE "
-          execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" --entitlements ${DACT_SOURCE_DIR}/resources/entitlements.plist \"${APP}\")
+          execute_process(COMMAND codesign --verbose --verify --deep --sign \"${CODESIGN_IDENTITY}\" --entitlements ${DACT_SOURCE_DIR}/resources/entitlements.plist \"${APP}\")
         " COMPONENT Runtime)
       else(ENABLE_SANDBOXING)
         INSTALL(CODE "
-          execute_process(COMMAND codesign --verbose --verify --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
+          execute_process(COMMAND codesign --verbose --verify --deep --sign \"${CODESIGN_IDENTITY}\" \"${APP}\")
         " COMPONENT Runtime)
       endif(ENABLE_SANDBOXING)
     endif(ENABLE_CODESIGN)
