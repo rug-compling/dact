@@ -302,7 +302,7 @@ This technique can be extended to longer N-grams, e.g. for "wel of niet" use:
                      ]/%b%
           ]
 
-These examples can be improved if we have access to parameterized macros.
+These examples can be improved if we have access to parameterized macros. See below for an example of Ngrams within a particular dominating node, using quantifiers.
 
 ### Location of the head of a phrase
 
@@ -544,7 +544,7 @@ As it turns out, such cases occur regularly, as in:
 > Verschillende pogingen van de zusjes om elkaar terug te vinden worden uiteindelijk door de oorlog gefrustreerd .
 
 ### Example 2
-Another example is illustrated by the following problem: find the leftmost word inside a te-infinitive phrase,
+Another example is given by the following problem: find the leftmost word inside a te-infinitive phrase,
 i.e., a node with @cat="ti". Note that the begin position of the leftmost word is not identical to
 the begin position of the ti, as the begin position of the ti (often) equals that of the subject or
 object NP that controls the subject of the ti.
@@ -564,6 +564,22 @@ An alternative solution uses the XPath function 'min':
             satisfies %b% = min($vp//node[@word]/%b%)
            )]
     
+### Example 3
+A further illustration is the solution to the following problem: find sequences of three verbs within a subordinate clause. 
+
+    //node[@cat="ssub" and
+
+           ( some $x in .//node[@pt="ww"],
+                  $y in .//node[@pt="ww"],
+                  $z in .//node[@pt="ww"]
+
+             satisfies
+
+             (  $x/%e% = $y/%b% and
+                $y/%e% = $z/%b%
+             )
+           )
+          ]
 
 
 ## Extraposition, the "nachfeld"
