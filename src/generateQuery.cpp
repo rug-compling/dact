@@ -1,3 +1,5 @@
+#include <QtDebug>
+
 #include "Query.hh"
 
 QString generateQuery(QString const &base, QString const &attribute, QString const &value)
@@ -13,14 +15,23 @@ QString generateQuery(QString const &base, QString const &condition)
     
     if (!subSelectionPos)
         return QString();
+   
+    int openingBracketPos = base.indexOf('[', subSelectionPos);
     
-    int closingBracketPos = base.mid(subSelectionPos).lastIndexOf(']');
-    
-    if (closingBracketPos == -1)
+    if (openingBracketPos == -1)
         return QString("%1[%2]").arg(base).arg(condition);
-    else
-        return QString("%1 and %2%3").arg(
-            base.left(subSelectionPos + closingBracketPos),
-            condition,
-            base.mid(subSelectionPos + closingBracketPos));
+
+    // Add parenthesis around original predicates.
+    QString expanded = base;
+    expanded.insert(openingBracketPos + 1, '(');
+
+    int closingBracketPos = expanded.lastIndexOf(']');
+    if (closingBracketPos == -1) {
+      qDebug() << "Malformed query?: " << base;
+      return base;
+    }
+
+    expanded.insert(closingBracketPos, QString(") and %1").arg(condition));
+    
+    return expanded;
 }
