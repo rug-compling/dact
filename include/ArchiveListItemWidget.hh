@@ -8,7 +8,7 @@ namespace Ui {
     class ArchiveListItemWidget;
 }
 
-class ArchiveEntry;
+struct ArchiveEntry;
 
 class ArchiveListItemWidget : public QWidget
 {
