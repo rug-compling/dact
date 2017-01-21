@@ -1,3 +1,9 @@
+alpino-dact (2.4.4-1xenial1) xenial; urgency=medium
+
+  * Build against alpinocorpus 2.6.
+
+ -- Daniël de Kok <me@danieldk.eu>  Sat, 21 Jan 2017 10:24:22 +0100
+
 alpino-dact (2.4.3-1xenial1) xenial; urgency=medium
 
   * Update to Dact 2.4.3.
