@@ -18,9 +18,6 @@
 #include <MainWindow.hh>
 #include <OpenCorpusDialog.hh>
 #include <PreferencesWindow.hh>
-#ifdef USE_REMOTE_CORPUS
-#include <RemoteWindow.hh>
-#endif // USE_REMOTE_CORPUS
 #ifdef USE_WEBSERVICE
 #include <WebserviceWindow.hh>
 #endif // USE_WEBSERVICE
@@ -31,9 +28,6 @@ DactApplication::DactApplication(int &argc, char** argv) :
     d_historyModel(new QStandardItemModel),
     d_menu(new DactMenuBar(0, true)),
     d_aboutWindow(new AboutWindow(0, Qt::Window)),
-#ifdef USE_REMOTE_CORPUS
-    d_remoteWindow(new RemoteWindow(0, Qt::Window)),
-#endif // USE_REMOTE_CORPUS
 #ifdef USE_WEBSERVICE
     d_webserviceWindow(new WebserviceWindow),
 #endif // USE_WEBSERVICE
@@ -54,11 +48,6 @@ DactApplication::DactApplication(int &argc, char** argv) :
 
     connect(this, SIGNAL(messageReceived(QString const &)),
         SLOT(handleMessage(QString const &)));
-
-#ifdef USE_REMOTE_CORPUS
-    connect(d_remoteWindow.data(), SIGNAL(openRemote(QString const &)),
-        SLOT(openCorpus(QString const &)));
-#endif // USE_REMOTE_CORPUS
 
 #ifdef USE_WEBSERVICE
     // Open a corpus if we have parsed some sentences.
@@ -382,14 +371,6 @@ void DactApplication::showPreferencesWindow()
     d_preferencesWindow->show();
     d_preferencesWindow->raise();
 }
-
-#ifdef USE_REMOTE_CORPUS
-void DactApplication::showRemoteWindow()
-{
-    d_remoteWindow->show();
-    d_remoteWindow->raise();
-}
-#endif // USE_REMOTE_CORPUS
 
 #ifdef USE_WEBSERVICE
 void DactApplication::showWebserviceWindow()

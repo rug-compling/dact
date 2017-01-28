@@ -316,14 +316,6 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="remoteAction">
-   <property name="text">
-    <string>Open &amp;Remote…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
   <action name="saveAsAction">
    <property name="text">
     <string>&amp;Save as…</string>

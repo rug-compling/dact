@@ -18,10 +18,6 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 {
     d_ui->setupUi(this);
 
-#ifndef USE_REMOTE_CORPUS
-    d_ui->groupBox_x->hide();
-#endif
-
 #ifndef USE_WEBSERVICE
     d_ui->groupBoxWebservice->hide();
 #endif
@@ -39,7 +35,6 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     loadAppearanceTab();
     loadColorsTab();
     loadNetworkTab();
-    loadRemoteTab();
     loadToolsTab();
 
     connect(d_ui->appFontPushButton, SIGNAL(clicked()),
@@ -57,9 +52,6 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
     connect(d_ui->archiveBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveArchiveBaseUrl()));
 
-    connect(d_ui->remoteBaseUrlLineEdit, SIGNAL(editingFinished()),
-        SLOT(saveRemoteBaseUrl()));
-
     connect(d_ui->webserviceBaseUrlLineEdit, SIGNAL(editingFinished()),
         SLOT(saveWebserviceBaseUrl()));
     
@@ -71,9 +63,6 @@ d_ui(QSharedPointer<Ui::PreferencesWindow>(new Ui::PreferencesWindow))
 
     connect(d_ui->restoreDefaultNetworkButton, SIGNAL(clicked()),
         SLOT(restoreDefaultNetwork()));
-
-    connect(d_ui->restoreDefaultRemoteButton, SIGNAL(clicked()),
-        SLOT(restoreDefaultRemote()));
 
     connect(d_ui->restoreDefaultWebserviceButton, SIGNAL(clicked()),
         SLOT(restoreDefaultWebservice()));
@@ -154,13 +143,6 @@ void PreferencesWindow::loadNetworkTab()
         settings.value(WEBSERVICE_BASEURL_KEY, DEFAULT_WEBSERVICE_BASEURL).toString());
 }
 
-void PreferencesWindow::loadRemoteTab()
-{
-    QSettings settings;
-    d_ui->remoteBaseUrlLineEdit->setText(
-        settings.value(REMOTE_BASEURL_KEY, DEFAULT_REMOTE_BASEURL).toString());
-}
-
 void PreferencesWindow::loadToolsTab()
 {
     d_ui->toolsFilePath->setText(
@@ -171,12 +153,6 @@ void PreferencesWindow::saveArchiveBaseUrl()
 {
     QSettings settings;
     settings.setValue(ARCHIVE_BASEURL_KEY, d_ui->archiveBaseUrlLineEdit->text());
-}
-
-void PreferencesWindow::saveRemoteBaseUrl()
-{
-    QSettings settings;
-    settings.setValue(REMOTE_BASEURL_KEY, d_ui->remoteBaseUrlLineEdit->text());
 }
 
 void PreferencesWindow::saveWebserviceBaseUrl()
@@ -229,15 +205,6 @@ void PreferencesWindow::restoreDefaultNetwork()
     settings.remove(ARCHIVE_BASEURL_KEY);
 
     loadNetworkTab();
-}
-
-void PreferencesWindow::restoreDefaultRemote()
-{
-    QSettings settings;
-
-    settings.remove(REMOTE_BASEURL_KEY);
-
-    loadRemoteTab();
 }
 
 void PreferencesWindow::restoreDefaultWebservice()

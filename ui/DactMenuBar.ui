@@ -20,7 +20,6 @@
     </property>
    </widget>
    <addaction name="openAction"/>
-   <addaction name="remoteAction"/>
    <addaction name="menuRecentFiles"/>
    <addaction name="separator"/>
    <addaction name="saveAsAction"/>
@@ -302,14 +301,6 @@
    </property>
    <property name="shortcut">
     <string>F1</string>
-   </property>
-  </action>
-  <action name="remoteAction">
-   <property name="text">
-    <string>Open &amp;Remote…</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="saveAsAction">

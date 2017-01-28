@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>455</width>
-    <height>445</height>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -285,56 +285,6 @@
        </item>
        <item>
         <layout class="QVBoxLayout" name="horizontalLayout_x">
-         <item>
-          <widget class="QGroupBox" name="groupBox_x">
-           <property name="title">
-            <string>Remote corpus server</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_3x">
-            <item>
-             <layout class="QFormLayout" name="formLayout_x">
-              <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::ExpandingFieldsGrow</enum>
-              </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_9x">
-                <property name="text">
-                 <string>URL:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="remoteBaseUrlLineEdit"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3x">
-              <item>
-               <spacer name="horizontalSpacer_2x">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="restoreDefaultRemoteButton">
-                <property name="text">
-                 <string>Restore to Default</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item>
           <spacer name="verticalSpacer_2">
            <property name="orientation">

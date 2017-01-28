@@ -25,19 +25,12 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     d_ui->menuTools->removeAction(d_ui->webserviceAction);
 #endif
 
-#ifndef USE_REMOTE_CORPUS
-    d_ui->menuFile->removeAction(d_ui->remoteAction);
-#endif
-
     if (global) {
         disableLocalActions();
 
 #ifdef Q_WS_MAC
         QMenu *appleDockMenu = new QMenu(this);
         appleDockMenu->addAction(d_ui->openAction);
-#ifdef USE_REMOTE_CORPUS
-        appleDockMenu->addAction(d_ui->remoteAction);
-#endif
         qt_mac_set_dock_menu(appleDockMenu);
 #endif
     }
@@ -56,10 +49,6 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
         qApp, SLOT(showOpenCorpus()));
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         qApp, SLOT(openCorpus(QString)));
-#ifdef USE_REMOTE_CORPUS
-    connect(d_ui->remoteAction, SIGNAL(triggered(bool)),
-        qApp, SLOT(showRemoteWindow()));
-#endif // USE_REMOTE_CORPUS
 
 #ifdef ENABLE_SANDBOXING
     d_ui->menuTools->removeAction(d_ui->convertCorpusMenu->menuAction());

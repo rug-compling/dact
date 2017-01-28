@@ -12,9 +12,6 @@
 #include "MainWindow.hh"
 #include "PreferencesWindow.hh"
 #include "QtSingleApplication.hh"
-#ifdef USE_REMOTE_CORPUS
-#include <RemoteWindow.hh>
-#endif // USE_REMOTE_CORPUS
 #ifdef USE_WEBSERVICE
 #include "WebserviceWindow.hh"
 #endif // USE_WEBSERVICE
@@ -69,14 +66,6 @@ public slots:
      */
     void showPreferencesWindow();
 
-#ifdef USE_REMOTE_CORPUS
-    /*!
-     Instantiate (if not already instantiated) and raise the remote window.
-     */
-    void showRemoteWindow();
-#endif // USE_REMOTE_CORPUS
-
-
 #ifdef USE_WEBSERVICE
     /*!
      Instantiate (if not already instantiated) and raise the Alpinowebservice query window.
@@ -112,9 +101,6 @@ private:
     QScopedPointer<QStandardItemModel> d_historyModel;
     QScopedPointer<QMenuBar> d_menu;
     QScopedPointer<AboutWindow> d_aboutWindow;
-#ifdef USE_REMOTE_CORPUS
-    QScopedPointer<RemoteWindow> d_remoteWindow;
-#endif // USE_REMOTE_CORPUS
 #ifdef USE_WEBSERVICE
     QScopedPointer<WebserviceWindow> d_webserviceWindow;
 #endif // USE_WEBSERVICE

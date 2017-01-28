@@ -119,9 +119,7 @@ include_directories(${Qt5PrintSupport_INCLUDE_DIRS})
 find_package(Qt5Widgets REQUIRED)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-option(USE_REMOTE_CORPUS "Enable remote corpus" OFF)
-
-option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
+option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
 
 # Dact sources
 SET(dact_SRCS
@@ -314,20 +312,6 @@ SET(dact_UI
 SET(dact_RCS
   resources/dact.qrc
 )
-
-if(USE_REMOTE_CORPUS)
-  list(APPEND dact_HEADERS
-    include/RemoteWindow.hh
-    include/RemoteArchiveModel.hh)
-  list(APPEND dact_MOC_HDRS
-    include/RemoteWindow.hh
-    include/RemoteArchiveModel.hh)
-  list(APPEND dact_SRCS
-    src/RemoteWindow.cpp
-    src/RemoteArchiveModel.cpp)
-  list(APPEND dact_UI
-    ui/RemoteWindow.ui)
-endif()
 
 if(USE_WEBSERVICE)
   list(APPEND dact_HEADERS
