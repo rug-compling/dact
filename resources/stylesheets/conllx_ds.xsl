@@ -10,33 +10,11 @@
 
   <xsl:template match="/">
     <tree>
-      <xsl:apply-templates select="/simple_ds/node"/>
+      <xsl:apply-templates select="/conllx_ds/word"/>
     </tree>
   </xsl:template>
 
-  <!-- Interior nodes -->
-  <xsl:template match="node[node]">
-    <node>
-      <xsl:copy-of select="@*"/>
-      <label>
-        <xhtml:p align="center">
-        <xsl:value-of select="@rel"/>
-        <xhtml:br/>
-        <xsl:value-of select="@pos"/>
-        <xsl:if test="@word">
-          <xhtml:br/>
-          <xhtml:i>
-            <xsl:value-of select="@word"/>
-          </xhtml:i>
-        </xsl:if>
-        </xhtml:p>
-      </label>
-      <xsl:apply-templates select="node"/>
-    </node>
-  </xsl:template>
-
-  <!-- Leaf nodes -->
-  <xsl:template match="node">
+  <xsl:template match="word">
     <node>
       <xsl:copy-of select="@*"/>
       <label>
@@ -45,7 +23,7 @@
         <xhtml:br/>
         <xsl:value-of select="@pos"/>
         <xhtml:br/>
-        <xsl:value-of select="@word"/>
+        <xsl:value-of select="@form"/>
         </xhtml:p>
       </label>
       <xsl:if test="@morph">
@@ -55,6 +33,7 @@
           </xhtml:i>
         </tooltip>
       </xsl:if>
+      <xsl:apply-templates select="word"/>
     </node>
   </xsl:template>
 </xsl:stylesheet>

@@ -434,8 +434,8 @@ void DependencyTreeWidget::switchCorpus(QSharedPointer<alpinocorpus::CorpusReade
     QString stylesheetFilename = ":/stylesheets/tree.xsl";
     if (d_corpusReader->type() == "tueba_tree")
         stylesheetFilename = ":/stylesheets/tueba-tree.xsl";
-    else if (d_corpusReader->type() == "simple_ds")
-        stylesheetFilename = ":/stylesheets/simple_ds.xsl";
+    else if (d_corpusReader->type() == "conllx_ds")
+        stylesheetFilename = ":/stylesheets/conllx_ds.xsl";
 
     QFile stylesheet(stylesheetFilename);
     d_ui->treeGraphicsView->setStylesheet(&stylesheet);
