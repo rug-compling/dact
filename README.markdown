@@ -22,7 +22,6 @@ If you want to build the current stable/release version of Dact, check out the
     mkdir build
     cd build
     cmake ..
-    # OS X: cmake .. -DCMAKE_PREFIX_PATH=$(brew --prefix qt5)
     make
     make install
 
