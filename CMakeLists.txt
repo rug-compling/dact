@@ -122,7 +122,7 @@ include_directories(${Qt5PrintSupport_INCLUDE_DIRS})
 find_package(Qt5Widgets REQUIRED)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-option(USE_WEBSERVICE "Enable Alpino webservice client" ON)
+option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
 SET(dact_SRCS
