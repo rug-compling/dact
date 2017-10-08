@@ -234,7 +234,7 @@ void OpenCorpusDialog::inflate(QIODevice *dev)
     if (!data.open(QIODevice::ReadOnly))
     {
         dev->deleteLater();
-        emit inflateError("could not compressed data stream.");
+        emit inflateError("could not open compressed data stream.");
         return;
     }
     
