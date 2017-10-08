@@ -11,14 +11,22 @@
 #include <QVariant>
 #include <QVector>
 
+enum EntryType {
+    Local,
+    Downloaded,
+    Downloadable
+};
+
 struct ArchiveEntry {
     QString name;
+    QString path;
     QString url;
     size_t sentences;
     double size;
     QString description;
     QString longDescription;
     QString checksum;
+    EntryType type;
 
     QString filePath() const;
     bool existsLocally() const;
@@ -55,6 +63,7 @@ private:
 
     QString networkErrorToString(QNetworkReply::NetworkError error);
     void addLocalFiles();
+    void addRecentFiles();
 
     void writeLocalArchiveIndex(QByteArray const &data);
     QByteArray readLocalArchiveIndex() const;

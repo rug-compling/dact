@@ -9,6 +9,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QScopedPointer>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QString>
 #include <QStringList>
@@ -21,8 +22,6 @@
 #include <libxml/tree.h>
 #include <libxml/xmlmemory.h>
 
-#include <QtDebug>
-
 #include <ArchiveModel.hh>
 #include <HumanReadableSize.hh>
 #include <XMLDeleters.hh>
@@ -31,11 +30,8 @@ QString const DOWNLOAD_EXTENSION(".dact.gz");
 
 QString ArchiveEntry::filePath() const
 {
-    QString path = QStandardPaths::locate(QStandardPaths::DataLocation, name + ".dact");
-    
     if (!path.isEmpty())
-      return path;
-
+        return path;
     
     return QString("%1/%2.dact").arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation), name);
 }
@@ -65,7 +61,10 @@ void ArchiveModel::init()
     connect(d_accessManager.data(), SIGNAL(finished(QNetworkReply *)),
         SLOT(replyFinished(QNetworkReply*)));
 
-    // First of all, add the local files to the list
+    // Add recently-opened corpora.
+    addRecentFiles();
+
+    // Add downloaded files.
     addLocalFiles();
 
     // Then, if there is a local copy of the archive index, read it
@@ -212,6 +211,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
 {
     // Clear the list, but add the local files again.
     d_corpora.clear();
+    addRecentFiles();
     addLocalFiles();
     
     QScopedPointer<xmlDoc, XmlDocDeleter> xmlDoc(
@@ -268,6 +268,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
             if (it->name == name)
             {
                 corpus = it;
+                corpus->type = EntryType::Downloaded;
                 break;
             }
         }
@@ -281,6 +282,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
 
             d_corpora.push_back(ArchiveEntry());
             corpus = &d_corpora.last();
+            corpus->type = EntryType::Downloadable;
         }
 
         corpus->name = name;
@@ -322,10 +324,51 @@ void ArchiveModel::addLocalFiles()
     {
         ArchiveEntry corpus;
         corpus.name = entry.baseName();
+        corpus.path = entry.absoluteFilePath();
+        corpus.type = EntryType::Local;
 
-        d_corpora.push_back(corpus);
+        // Try to find if the file is already in the index (through recents)
+        bool found = false;
+        for (QVector<ArchiveEntry>::iterator it = d_corpora.begin(); it != d_corpora.end(); it++)
+        {
+            if (it->name == corpus.name)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        { 
+            d_corpora.push_back(corpus);
+        } 
     }
 
+    emit layoutChanged();
+}
+
+void ArchiveModel::addRecentFiles()
+{
+    QSettings settings;
+
+    int size = settings.beginReadArray("recent_files");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        QFileInfo file(settings.value("path").toString());
+        if (!file.exists())
+        {
+	  continue;
+        }
+
+        ArchiveEntry corpus;
+        corpus.name = file.baseName();
+        corpus.path = file.absoluteFilePath();
+        corpus.size = file.size();
+        corpus.type = EntryType::Local;
+        d_corpora.push_back(corpus);
+    }
+    
     emit layoutChanged();
 }
 
