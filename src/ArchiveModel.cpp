@@ -268,7 +268,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
             if (it->name == name)
             {
                 corpus = it;
-                corpus->type = EntryType::Downloaded;
+                corpus->type = DownloadedEntryType;
                 break;
             }
         }
@@ -282,7 +282,7 @@ bool ArchiveModel::parseArchiveIndex(QByteArray const &xmlData, bool listLocalFi
 
             d_corpora.push_back(ArchiveEntry());
             corpus = &d_corpora.last();
-            corpus->type = EntryType::Downloadable;
+            corpus->type = DownloadableEntryType;
         }
 
         corpus->name = name;
@@ -325,7 +325,7 @@ void ArchiveModel::addLocalFiles()
         ArchiveEntry corpus;
         corpus.name = entry.baseName();
         corpus.path = entry.absoluteFilePath();
-        corpus.type = EntryType::Local;
+        corpus.type = LocalEntryType;
 
         // Try to find if the file is already in the index (through recents)
         bool found = false;
@@ -365,7 +365,7 @@ void ArchiveModel::addRecentFiles()
         corpus.name = file.baseName();
         corpus.path = file.absoluteFilePath();
         corpus.size = file.size();
-        corpus.type = EntryType::Local;
+        corpus.type = LocalEntryType;
         d_corpora.push_back(corpus);
     }
     

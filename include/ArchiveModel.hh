@@ -11,10 +11,10 @@
 #include <QVariant>
 #include <QVector>
 
-enum class EntryType {
-    Local,
-    Downloaded,
-    Downloadable
+enum EntryType {
+    LocalEntryType,
+    DownloadedEntryType,
+    DownloadableEntryType
 };
 
 struct ArchiveEntry {

@@ -27,9 +27,9 @@ void ArchiveListItemWidget::setArchiveEntry(ArchiveEntry const &entry)
     d_ui->sizeLabel->setText(humanReadableSize(entry.size));
     d_ui->sizeLabel->setVisible(!entry.existsLocally());
 
-    if (entry.type == EntryType::Local) {
+    if (entry.type == LocalEntryType) {
         d_ui->downloadedLabel->setText("Local");
-    } else if (entry.type == EntryType::Downloaded) {
+    } else if (entry.type == DownloadedEntryType) {
         d_ui->downloadedLabel->setText("Downloaded");
     }
     d_ui->downloadedLabel->setVisible(entry.existsLocally());
