@@ -11,7 +11,7 @@
 #include <QVariant>
 #include <QVector>
 
-enum EntryType {
+enum class EntryType {
     Local,
     Downloaded,
     Downloadable
