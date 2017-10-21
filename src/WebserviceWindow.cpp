@@ -23,11 +23,14 @@ WebserviceWindow::WebserviceWindow(QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f),
     d_ui(QSharedPointer<Ui::WebserviceWindow>(new Ui::WebserviceWindow)),
     d_accessManager(new QNetworkAccessManager),
-    d_progressDialog(new QProgressDialog(parent))
+    d_progressDialog(new QProgressDialog(this))
 {
     d_ui->setupUi(this);
 
-    connect(d_progressDialog,
+    d_progressDialog->setWindowTitle("Parsing text");
+    d_progressDialog->reset();
+
+    connect(d_progressDialog.data(),
         SIGNAL(canceled()), SLOT(cancelResponse()));
 
     connect(this, SIGNAL(progress()), SLOT(updateProgressDialog()),
@@ -36,7 +39,6 @@ WebserviceWindow::WebserviceWindow(QWidget *parent, Qt::WindowFlags f) :
 
 WebserviceWindow::~WebserviceWindow()
 {
-    delete d_progressDialog;
 }
 
 void WebserviceWindow::openSentencesFile()
@@ -91,6 +93,7 @@ void WebserviceWindow::parseSentences()
     // Show the progress dialog
     d_progressDialog->setWindowTitle(tr("Parsing sentences"));
     d_progressDialog->setLabelText("Sending sentences to webservice");
+    d_progressDialog->reset();
     d_progressDialog->open();
 
     d_buffer = QByteArray();
@@ -232,15 +235,21 @@ void WebserviceWindow::finishResponse()
 
 void WebserviceWindow::errorResponse(QNetworkReply::NetworkError error)
 {
+    d_progressDialog->reset();
+
     QMessageBox box(QMessageBox::Warning,
-        tr("Failed to receive sentences"),
-        tr("Could not receive sentences: %1")
+        tr("Failed to parse sentences"),
+        tr("Could not parse sentences: %1")
             .arg(d_reply->errorString()),
         QMessageBox::Ok);
+
+    box.exec();
 }
 
 void WebserviceWindow::cancelResponse()
 {
     if (d_reply)
         d_reply->abort();
+
+    d_progressDialog->reset();
 }

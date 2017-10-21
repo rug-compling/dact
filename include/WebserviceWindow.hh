@@ -3,6 +3,7 @@
 
 #include <QNetworkReply>
 #include <QWidget>
+#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QString>
 
@@ -73,7 +74,7 @@ private slots:
 private:
     QSharedPointer<Ui::WebserviceWindow> d_ui;
     QSharedPointer<QNetworkAccessManager> d_accessManager;
-    QProgressDialog *d_progressDialog;
+    QScopedPointer<QProgressDialog> d_progressDialog;
 
     QNetworkReply *d_reply;
     QByteArray d_buffer;
