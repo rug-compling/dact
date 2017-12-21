@@ -40,11 +40,11 @@ if(APPLE AND EXISTS /usr/local/opt/qt5)
   list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5")
 endif()
 
-set(VERSION "0.0.1")
+set(VERSION "2.6.0")
 
 set(GIT_REVISION "unknown")
 exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -1"
+  ARGS "log --pretty=format:\"${VERSION} (commit: %h)\" -1"
   OUTPUT_VARIABLE GIT_REVISION 
 )
 
