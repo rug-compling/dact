@@ -122,6 +122,13 @@ include_directories(${Qt5PrintSupport_INCLUDE_DIRS})
 find_package(Qt5Widgets REQUIRED)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
+if(APPLE)
+  get_target_property(_qcocoa_dylib Qt5::QCocoaIntegrationPlugin LOCATION)
+  if(NOT Qt5Core_VERSION STRLESS "5.10")
+    get_target_property(_qmacstyle_dylib Qt5::QMacStylePlugin LOCATION)
+  endif()
+endif(APPLE)
+
 option(USE_WEBSERVICE "Enable Alpino webservice client" OFF)
 
 # Dact sources
@@ -413,6 +420,10 @@ target_link_libraries(${PROGNAME} ${LIBEXSLT_LIBRARIES})
 target_link_libraries(${PROGNAME} ${XERCESC_LIBRARY})
 target_link_libraries(${PROGNAME} ${XQILLA_LIBRARY})
 
+if(APPLE)
+  target_link_libraries(${PROGNAME} ${Qt5MacExtras_LIBRARIES})
+endif(APPLE)
+
 install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime
   RUNTIME DESTINATION bin COMPONENT Runtime) 
@@ -438,11 +449,32 @@ if(APPLE)
       PROPERTIES
       MACOSX_BUNDLE_INFO_PLIST ${DACT_SOURCE_DIR}/resources/Info.plist)
 
-
-
     get_target_property(QT_LIBRARY_DIR Qt5::Core LOCATION)
     get_filename_component(QT_LIBRARY_DIR ${QT_LIBRARY_DIR} PATH)
     get_filename_component(QT_LIBRARY_DIR ${QT_LIBRARY_DIR} PATH)
+
+    # Qt Platform Plugin
+    #
+    # And yet again, completely u(nder)documented Qt/CMake hacks
+    # to get the Mac styling plugin. Thanks to the openconnect
+    # project for this snippet!
+    install(FILES
+        ${_qcocoa_dylib}
+        DESTINATION ${APP}/Contents/plugins/platforms
+        COMPONENT Runtime
+    )
+    set(additionalLib ${APP}/Contents/plugins/platforms/libqcocoa.dylib)
+    if(NOT Qt5Core_VERSION STRLESS "5.10")
+        install(FILES
+            ${_qmacstyle_dylib}
+            DESTINATION ${APP}/Contents/plugins/styles
+            COMPONENT Runtime
+        )
+        set(additionalLib 
+            ${additionalLib}
+            ${APP}/Contents/plugins/styles/libqmacstyle.dylib
+        )
+    endif()
 
     INSTALL(CODE "
       file(WRITE \"${APP}/Contents/Resources/qt.conf\")
@@ -451,11 +483,8 @@ if(APPLE)
         \"${QT_LIBRARY_DIR}/QtGui.framework/Resources/qt_menu.nib\"
         \"${APP}/Contents/Resources/qt_menu.nib\")
       file(MAKE_DIRECTORY \"${APP}/Contents/plugins/platforms\")
-      execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-        \"${QT_LIBRARY_DIR}/../plugins/platforms/libqcocoa.dylib\"
-        \"${APP}/Contents/plugins/platforms/libqcocoa.dylib\")
       include(BundleUtilities)
-      fixup_bundle(\"${APP}\" \"${APP}/Contents/plugins/platforms/libqcocoa.dylib\" \"\" \"${DIRS}\")
+      fixup_bundle(\"${APP}\" \"${additionalLib}\" \"\" \"${DIRS}\")
     " COMPONENT Runtime)
 
     # XXX - Automatically find frameworks?
