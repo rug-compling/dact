@@ -44,8 +44,15 @@ int main(int argc, char *argv[])
     int r = 0;
 
     try {
+#if defined(ENABLE_SANDBOXING)
+        // Use different identifier for sandboxed version to avoid clashes
+        // between application state (e.g. recent files).
+        QCoreApplication::setOrganizationName("danieldk");
+        QCoreApplication::setOrganizationDomain("danieldk.eu");
+#else
         QCoreApplication::setOrganizationName("RUG");
         QCoreApplication::setOrganizationDomain("rug.nl");
+#endif
         QCoreApplication::setApplicationName("Dact");
 
         QSettings settings;
