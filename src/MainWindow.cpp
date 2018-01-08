@@ -551,9 +551,10 @@ QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReader(QString const 
             reader = ac::CorpusReaderFactory::open(path.toUtf8().constData());
     } catch (std::runtime_error const &e) {
         emit openError(e.what());
+        return QPair<ac::CorpusReader*, QString>(0, path);
     }
 
-    return QPair< ac::CorpusReader*, QString >(reader, path);
+    return QPair<ac::CorpusReader*, QString>(reader, path);
 }
 
 QPair< ac::CorpusReader*, QString> MainWindow::createCorpusReaders(QStringList const &paths, bool recursive)
@@ -638,6 +639,10 @@ void MainWindow::corporaRead()
     d_openProgressDialog->accept();
 
     QPair<ac::CorpusReader*, QString> result(d_corpusOpenWatcher.result());
+
+    if (result.first == 0) {
+        return;
+    }
 
     setCorpusReader(QSharedPointer<ac::CorpusReader>(result.first), result.second);
 }
