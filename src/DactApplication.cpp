@@ -328,7 +328,11 @@ void DactApplication::readHistory(QString const &settingsKey)
     QSettings settings;
     QVariant value = settings.value(settingsKey, QStringList());
 
-    if (value.type() == QVariant::StringList) {
+    if (value.type() == QVariant::String) {
+      QString history(value.toString());
+      d_historyModel->appendRow(new QStandardItem(history));
+    }
+    else if (value.type() == QVariant::StringList) {
       QStringList history(value.toStringList());
 
       QStringListIterator iter(history);
@@ -336,7 +340,7 @@ void DactApplication::readHistory(QString const &settingsKey)
         d_historyModel->appendRow(new QStandardItem(iter.next()));
     }
     else
-      qWarning() << "Read history, but it is not a QStringList.";
+      qWarning() << "Read history, but it is not a QString or QStringList.";
   }
 }
 

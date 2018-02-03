@@ -221,7 +221,6 @@ SET(dact_HDRS
   include/DactMacrosFile.hh
   include/DactMacrosMenu.hh
   include/DactMacrosModel.hh
-  include/DactQueryHistory.hh
   include/DactSettings.hh
   include/DactTableView.hh
   include/DactTool.hh

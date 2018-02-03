@@ -22,7 +22,6 @@ namespace Ui {
 }
 
 class DactMacrosModel;
-class DactQueryHistory;
 class DactQueryWindow;
 class DactTreeNode;
 class DactTreeScene;
