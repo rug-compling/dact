@@ -3,6 +3,6 @@ Type=Application
 Version=1.0
 Name=Dact
 Comment=Decaffeinated Alpino corpus tool
-Exec=/usr/bin/dact
+Exec=dact
 Categories=Science;Education
 Icon=dact
