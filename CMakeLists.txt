@@ -434,7 +434,7 @@ install(TARGETS ${PROGNAME}
 
 if(UNIX AND NOT APPLE)
   install(FILES ${DACT_SOURCE_DIR}/resources/unix/dact.desktop DESTINATION ${DATA_INSTALL_DIR}/applications)
-  install(FILES ${DACT_SOURCE_DIR}/resources/unix/dact.png DESTINATION ${DATA_INSTALL_DIR}/pixmaps)
+  install(FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.svg DESTINATION ${DATA_INSTALL_DIR}/icons/hicolor/scalable/apps RENAME dact.svg)
 endif(UNIX AND NOT APPLE)
 
 if(UNIX)
