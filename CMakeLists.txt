@@ -62,6 +62,10 @@ list(APPEND CMAKE_MODULE_PATH "${DACT_SOURCE_DIR}/cmake")
 include_directories(${DACT_SOURCE_DIR}/include)
 include_directories(${DACT_BINARY_DIR})
 
+if(NOT DEFINED DATA_INSTALL_DIR)
+  set(DATA_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share")
+endif(NOT DEFINED DATA_INSTALL_DIR)
+
 find_package(Boost 1.46.1)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
@@ -427,6 +431,15 @@ endif(APPLE)
 install(TARGETS ${PROGNAME} 
   BUNDLE DESTINATION . COMPONENT Runtime
   RUNTIME DESTINATION bin COMPONENT Runtime) 
+
+if(UNIX AND NOT APPLE)
+  install(FILES ${DACT_SOURCE_DIR}/resources/unix/dact.desktop DESTINATION ${DATA_INSTALL_DIR}/applications)
+  install(FILES ${DACT_SOURCE_DIR}/resources/dact-espresso.svg DESTINATION ${DATA_INSTALL_DIR}/icons/hicolor/scalable/apps RENAME dact.svg)
+endif(UNIX AND NOT APPLE)
+
+if(UNIX)
+  install(FILES ${DACT_SOURCE_DIR}/man/dact.1 DESTINATION ${DATA_INSTALL_DIR}/man/man1)
+endif(UNIX)
 
 # OS X bundle creation
 if(APPLE)
