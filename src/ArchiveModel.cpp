@@ -310,7 +310,6 @@ int ArchiveModel::rowCount(QModelIndex const &parent) const
 void ArchiveModel::addLocalFiles()
 {
     QStringList locations = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-    qDebug() << locations;
 
     if (locations.isEmpty()) {
       throw std::runtime_error("No standard data location.");
