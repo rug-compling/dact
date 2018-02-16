@@ -6,3 +6,4 @@ Comment=Decaffeinated Alpino corpus tool
 Exec=dact
 Categories=Science;Education
 Icon=dact
+MimeType=x-scheme-handler/dact
