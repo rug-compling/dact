@@ -24,8 +24,7 @@ namespace {
     {
         std::cerr << "Usage: " << progname << " [OPTION] corpus ..." <<
           std::endl << std::endl <<
-          "  -m filename\tMacro file, multiple files are separated by a colon (:)" << std::endl <<
-          "  -u URI\tURI, for instance a query URI" << std::endl << std::endl;
+          "  -m filename\tMacro file, multiple files are separated by a colon (:)" << std::endl << std::endl;
         std::exit(1);
     }
 }
@@ -94,20 +93,23 @@ int main(int argc, char *argv[])
             macroPaths = macros.split(':', QString::SkipEmptyParts);
         }
 
-        // Corpus paths
+        QString uri;
+
+        // Corpus paths and URIs.
         for (std::vector<std::string>::const_iterator iter = options.arguments().begin();
                 iter != options.arguments().end(); ++iter)
         {
-            QString corpus = QString::fromStdString(*iter);
+            QString arg = QString::fromStdString(*iter);
+
+            if (arg.startsWith("dact:")) {
+                uri = arg;
+                continue;
+            }
 
             // Dact may have been started in a different directory.
-            QFileInfo corpusFileInfo(corpus);
+            QFileInfo corpusFileInfo(arg);
             corpusPaths.push_back(corpusFileInfo.absoluteFilePath());
         }
-
-        // URI
-        QString uri = options.option('u') ?
-            QString::fromStdString(options.optionValue('u')) : QString();
 
         if (dactIsRunning) {
             if (corpusPaths.size() != 0)
