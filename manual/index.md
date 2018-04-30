@@ -58,7 +58,7 @@ other distributions, including Ubuntu, you have to
 you can install Dact with the following commands:
 
 ~~~
-# Ensure that the Flathub repois available
+# Ensure that the Flathub repos available
 flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # Add the Dact flatpak repo.
