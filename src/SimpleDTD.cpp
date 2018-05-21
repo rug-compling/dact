@@ -15,7 +15,7 @@
 
 namespace {
 
-void scanElement(void *payload, void *data, xmlChar *name)
+void scanElement(void *payload, void *data, xmlChar const *name)
 {
     xmlElement *elem = reinterpret_cast<xmlElement*>(payload);
     ElementMap *elements = reinterpret_cast<ElementMap *>(data);
@@ -31,7 +31,7 @@ void scanElement(void *payload, void *data, xmlChar *name)
         (*elements)[elemName].insert(reinterpret_cast<char const *>(attr->name));
 }
 
-void scanAttribute(void *payload, void *data, xmlChar *name)
+void scanAttribute(void *payload, void *data, xmlChar const *name)
 {
     xmlAttribute *attr = reinterpret_cast<xmlAttribute*>(payload);
     ElementAttributeMap &attributeMap = *reinterpret_cast<ElementAttributeMap *>(data);
