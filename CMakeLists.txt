@@ -40,7 +40,7 @@ if(APPLE AND EXISTS /usr/local/opt/qt5)
   list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5")
 endif()
 
-set(VERSION "2.6.3")
+set(VERSION "2.6.4")
 
 set(GIT_REVISION "unknown")
 exec_program(git
