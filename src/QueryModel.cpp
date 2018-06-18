@@ -284,9 +284,7 @@ void QueryModel::runQuery(QString const &query, QString const &attribute,
 
     if (!query.isEmpty())
     {
-        d_timer->setInterval(100);
-        d_timer->setSingleShot(false);
-        d_timer->start();
+        QTimer::singleShot(0, this, SLOT(startTimer()));
 
         if (yield)
           d_entriesFuture = QtConcurrent::run(this, &QueryModel::getEntriesWithQuery,
@@ -296,6 +294,12 @@ void QueryModel::runQuery(QString const &query, QString const &attribute,
               expandQuery(query, attribute), attribute, yield);
     }
     // If the query is empty, QueryModel is not supposed to do anything.
+}
+
+void QueryModel::startTimer() {
+    d_timer->setInterval(100);
+    d_timer->setSingleShot(false);
+    d_timer->start();
 }
 
 bool QueryModel::validQuery(QString const &query) const

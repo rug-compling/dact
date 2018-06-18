@@ -87,6 +87,7 @@ private:
     
 private slots:
     void updateProgress();
+    void startTimer();
     void stopProgress();
     void mapperEntryFound(QString entry);
     void finalizeQuery(int n, int totalEntries, QString query,
