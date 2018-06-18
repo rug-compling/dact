@@ -176,7 +176,8 @@ QString QueryModel::expandQuery(QString const &query,
 
 void QueryModel::updateProgress()
 {
-    emit progressChanged(d_entryIterator.progress());
+    if (d_entryIterator.hasProgress())
+        emit progressChanged(d_entryIterator.progress());
 }
 
 QVariant QueryModel::headerData(int column, Qt::Orientation orientation, int role) const
