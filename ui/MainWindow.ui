@@ -130,7 +130,7 @@
   <action name="fitAction">
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/viewmagfit.png</normaloff>:/icons/viewmagfit.png</iconset>
+     <normaloff>:/icons/zoom-fit-best-symbolic.symbolic.png</normaloff>:/icons/zoom-fit-best-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Fit</string>
@@ -148,7 +148,7 @@
   <action name="zoomInAction">
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/viewmag+.png</normaloff>:/icons/viewmag+.png</iconset>
+     <normaloff>:/icons/zoom-in-symbolic.symbolic.png</normaloff>:/icons/zoom-in-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Zoom in</string>
@@ -166,7 +166,7 @@
   <action name="zoomOutAction">
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/viewmag-.png</normaloff>:/icons/viewmag-.png</iconset>
+     <normaloff>:/icons/zoom-out-symbolic.symbolic.png</normaloff>:/icons/zoom-out-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Zoom out</string>
@@ -187,7 +187,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/1rightarrow.png</normaloff>:/icons/1rightarrow.png</iconset>
+     <normaloff>:/icons/media-skip-forward-symbolic.symbolic.png</normaloff>:/icons/media-skip-backward-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Next node</string>
@@ -208,7 +208,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/1leftarrow.png</normaloff>:/icons/1leftarrow.png</iconset>
+     <normaloff>:/icons/media-skip-backward-symbolic.symbolic.png</normaloff>:/icons/media-skip-backward-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Previous node</string>
@@ -226,7 +226,7 @@
   <action name="nextAction">
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/next.png</normaloff>:/icons/next.png</iconset>
+     <normaloff>:/icons/go-next-symbolic.symbolic.png</normaloff>:/icons/go-next-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Next</string>
@@ -244,7 +244,7 @@
   <action name="previousAction">
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/previous.png</normaloff>:/icons/previous.png</iconset>
+     <normaloff>:/icons/go-previous-symbolic.symbolic.png</normaloff>:/icons/go-previous-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Previous</string>
@@ -359,7 +359,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources/dact.qrc">
-     <normaloff>:/icons/documentinfo.png</normaloff>:/icons/documentinfo.png</iconset>
+     <normaloff>:/icons/view-list-symbolic.symbolic.png</normaloff>:/icons/view-list-symbolic.symbolic.png</iconset>
    </property>
    <property name="text">
     <string>Inspector</string>

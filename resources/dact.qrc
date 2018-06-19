@@ -14,16 +14,16 @@
         <file>stylesheets/stats-html.xsl</file>
         <file>stylesheets/stats-officexml.xsl</file>
         <file>stylesheets/stats-text.xsl</file>
-        <file>icons/1leftarrow.png</file>
-        <file>icons/1rightarrow.png</file>
-        <file>icons/viewmag-.png</file>
-        <file>icons/viewmag+.png</file>
-        <file>icons/viewmagfit.png</file>
         <file>icons/fileopen.png</file>
         <file>icons/fileprint.png</file>
-        <file>icons/next.png</file>
         <file>icons/pdf.png</file>
-        <file>icons/previous.png</file>
-        <file>icons/documentinfo.png</file>
+        <file>icons/go-next-symbolic.symbolic.png</file>
+        <file>icons/go-previous-symbolic.symbolic.png</file>
+        <file>icons/media-skip-backward-symbolic.symbolic.png</file>
+        <file>icons/media-skip-forward-symbolic.symbolic.png</file>
+        <file>icons/view-list-symbolic.symbolic.png</file>
+        <file>icons/zoom-fit-best-symbolic.symbolic.png</file>
+        <file>icons/zoom-in-symbolic.symbolic.png</file>
+        <file>icons/zoom-out-symbolic.symbolic.png</file>
     </qresource>
 </RCC>

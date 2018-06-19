@@ -1,4 +1,12 @@
-The icons used in dact are extracted from the Crystal icon theme. The
+The icons used in Dact are extracted from the Adwaita icon theme, which is
+developed by the GNOME project.
+
+This work is licenced under the terms of either the GNU LGPL v3 or Creative
+Commons Attribution-Share Alike 3.0 United States License.
+
+---
+
+Some remaining low-DPI icons were extracted from the Crystal icon theme. The
 following copyright/license notice applies:
 
 Copyright 2006-2007 Everaldo Coelho
