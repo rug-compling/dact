@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(DACT)
+cmake_minimum_required(VERSION 3.00)
+cmake_policy(SET CMP0025 NEW)
+
+project(DACT CXX)
 
 set(CMAKE_CXX_FLAGS "-pthread")
 
