@@ -347,6 +347,11 @@ all nodes dominated by the current node:
 Rather than "minimal" nodes, we might also want to identify "maximal" nodes. Such an example occurs in the next
 section on topicalization, where the "ancestor::" axis is helpful.
 
+In some cases, this technique does not quite give you the desired results (thanks to Jan Odijk for pointing
+this out). In the NP PP sequence case, it might be that a particular node directly dominates such an NP PP sequence, but 
+is not found by the suggested query because another daughter of that node dominates a different NP PP sequence. To be 
+able to get such situations sorted out, we provide an example below in the section on Quantifiers in XPath.
+
 ## Topicalization, fronting, the "vorfeld"
 
 In order to find constituents which are "topicalized" in root sentences (in other words, 
@@ -580,6 +585,28 @@ A further illustration is the solution to the following problem: find sequences 
              )
            )
           ]
+
+
+### Example 4: minimal dominating node revisited
+
+Suppose we want to find the minimal node which dominates three verbs. An initial attempt could be:
+
+    //node[count(.//node[@pt="ww"])>=3 and 
+           not(node[count(.//node[@pt="ww"])>=3]) ]
+           
+This will work, but it may give unintended results in that it will not match a node which does dominate three
+verbs, but which itself dominates a node which dominates three *different* verbs. If we want to return that node as well,
+we can use existential quantification as follows:
+
+    //node[ ( some $x in .//node[@pt="ww"],
+                   $y in .//node[@pt="ww"],
+                   $z in .//node[@pt="ww"]
+
+             satisfies ($x/number(@begin) < $y/number(@begin) and
+                        $y/number(@begin) < $z/number(@begin) and
+                        not(node[.//node = $z and
+                                 .//node = $x and
+                                 .//node = $y])))  ]
 
 
 ## Extraposition, the "nachfeld"
