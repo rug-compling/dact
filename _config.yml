@@ -1,4 +1,4 @@
 lsi: false
-pygments: true
+highlighter: rouge
 baseurl: /dact
 markdown: kramdown
