@@ -755,7 +755,7 @@ the only documents which might contain hits contain a node with @lemma="drinken"
 
     //node[@lemma="drinken"]
 
-is very efficient because of the underlying index-mechanism of the database. For the compliated query the indexing
+is very efficient because of the underlying index-mechanism of the database. For the complicated query, the indexing
 scheme is not powerful enough. Query pipelines come to the rescue:
 
     //node[@lemma='drinken'] +|+ //node[%obj1_drinken%]
