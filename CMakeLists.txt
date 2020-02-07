@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(DACT)
 
+set (CMAKE_CXX_STANDARD 11)
+
 set(CMAKE_CXX_FLAGS "-pthread")
 
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
