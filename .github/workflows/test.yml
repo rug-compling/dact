@@ -1,0 +1,17 @@
+name: "Test"
+on:
+  pull_request:
+  push:
+jobs:
+  tests:
+    strategy:
+      matrix:
+        channel:
+          - "https://nixos.org/channels/nixos-20.03"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v7
+    - run: nix-channel --add ${{ matrix.channel }} nixpkgs
+    - run: nix-channel --update
+    - run: nix-build

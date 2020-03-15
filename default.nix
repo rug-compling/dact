@@ -1,7 +1,16 @@
-with import <nixpkgs> {};
-stdenv.mkDerivation rec {
-  name = "alpinocorpus-env";
-  env = buildEnv { name = name; paths = buildInputs; };
+{
+  pkgs ? import <nixpkgs> {}
+}:
+
+with pkgs;
+
+let
+  sources = import nix/sources.nix;
+  alpinocorpus = callPackage sources.alpinocorpus {};
+in qt5.mkDerivation {
+  name = "dact";
+
+  src = nix-gitignore.gitignoreSource [] ./.; 
 
   nativeBuildInputs = [
     cmake
@@ -19,4 +28,4 @@ stdenv.mkDerivation rec {
     xqilla
     zlib
   ];
-}
+} 
