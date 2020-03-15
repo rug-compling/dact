@@ -1,22 +1,9 @@
 with import <nixpkgs> {};
-stdenv.mkDerivation rec {
-  name = "alpinocorpus-env";
-  env = buildEnv { name = name; paths = buildInputs; };
 
-  nativeBuildInputs = [
-    cmake
-    git
-    pkgconfig
-  ];
+let
+  dact = callPackage ./default.nix {};
+in mkShell {
+  inherit (dact) nativeBuildInputs buildInputs;
 
-  buildInputs = [
-    alpinocorpus
-    boost
-    libxml2
-    libxslt
-    qt5.qtbase
-    xercesc
-    xqilla
-    zlib
-  ];
+  QT_PLUGIN_PATH = "${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix}";
 }
