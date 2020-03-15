@@ -19,7 +19,6 @@ qrc_dact.cxx
 CMakeCache.txt
 CMakeFiles/*
 Makefile
-*.cmake
 include/config.hh
 include/moc_*.cxx
 install_manifest.txt

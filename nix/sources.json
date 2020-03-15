@@ -1,0 +1,14 @@
+{
+    "alpinocorpus": {
+        "branch": "master",
+        "description": "Library for handling Alpino corpora",
+        "homepage": "",
+        "owner": "rug-compling",
+        "repo": "alpinocorpus",
+        "rev": "8e994d0621ce5d484c1c75e1673773cdf653798a",
+        "sha256": "0y3mkkwlxggi9gcsh5c3mx17cibfywwy5yf29q61z2c9r0swn3am",
+        "type": "tarball",
+        "url": "https://github.com/rug-compling/alpinocorpus/archive/8e994d0621ce5d484c1c75e1673773cdf653798a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
