@@ -39,11 +39,15 @@ endif()
 
 set(VERSION "0.0.1")
 
-set(GIT_REVISION "unknown")
-exec_program(git
-  ARGS "log --pretty=format:\"%ad (commit: %h)\" --date=iso -1"
+execute_process(
+  COMMAND git log "--pretty=format:'%ad (commit: %h)'" --date=iso -n 1
   OUTPUT_VARIABLE GIT_REVISION 
+  ERROR_QUIET
 )
+
+if("${GIT_REVISION}" STREQUAL "")
+  set(GIT_REVISION "${VERSION}")
+endif()
 
 message(STATUS "Building revision: ${GIT_REVISION}")
 
