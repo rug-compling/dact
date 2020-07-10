@@ -8,6 +8,7 @@ jobs:
       matrix:
         channel:
           - "https://nixos.org/channels/nixos-20.03"
+          - "https://nixos.org/channels/nixos-unstable"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
