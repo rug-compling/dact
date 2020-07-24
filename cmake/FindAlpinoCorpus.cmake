@@ -1,6 +1,6 @@
 FIND_PATH(ALPINOCORPUS_INCLUDE_DIR NAMES AlpinoCorpus/CorpusReader.hh)
 
-FIND_LIBRARY(ALPINOCORPUS_LIBRARIES NAMES alpino_corpus )
+FIND_LIBRARY(ALPINOCORPUS_LIBRARIES NAMES alpinocorpus )
 
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE if 
 # all listed variables are TRUE
