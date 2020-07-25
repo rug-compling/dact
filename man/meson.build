@@ -1,0 +1,1 @@
+install_man('dact.1')
