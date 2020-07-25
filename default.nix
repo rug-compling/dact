@@ -13,8 +13,9 @@ in qt5.mkDerivation {
   src = nix-gitignore.gitignoreSource [] ./.; 
 
   nativeBuildInputs = [
-    cmake
     git
+    meson
+    ninja
     pkgconfig
   ];
 
