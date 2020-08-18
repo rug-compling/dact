@@ -13,24 +13,19 @@ See the [Dact homepage](http://rug-compling.github.com/dact/) for more informati
 Make sure that you have the following dependencies installed before building Dact:
 
  * [AlpinoCorpus](http://github.com/rug-compling/alpinocorpus)
- * CMake
+ * Meson
  * Qt 5
 
 If you want to build the current stable/release version of Dact, check out the
 *release* branch first. Then build Dact with:
 
-    mkdir build
-    cd build
-    cmake ..
-    make
-    make install
-
-If you are using Homebrew on Mac OS X, you can simply compile Dact with:
-
-    brew tap rug-compling/dact
-    brew install dact
-
-This will fetch, compile, and install Dact and its dependencies.
+```bash
+$ meson builddir
+$ cd builddir
+$ meson compile
+# If you want to install the Dact:
+$ meson install
+```
 
 ## License
 
