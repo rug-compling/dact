@@ -5,10 +5,10 @@
         "homepage": "",
         "owner": "rug-compling",
         "repo": "alpinocorpus",
-        "rev": "204e3c3bac429a12607013980a4afc6a30bafed0",
-        "sha256": "15601i35l2c5s3mxa06fk1dmkpm222x29188zg2zs7paari8s16c",
+        "rev": "d885911da61d3b0922704995bb0f4de3c82ad24c",
+        "sha256": "1cv2sg03l1aii7w7llqa7ix9qf055prw5nfnjfgbafyd5wa5j3lm",
         "type": "tarball",
-        "url": "https://github.com/rug-compling/alpinocorpus/archive/204e3c3bac429a12607013980a4afc6a30bafed0.tar.gz",
+        "url": "https://github.com/rug-compling/alpinocorpus/archive/d885911da61d3b0922704995bb0f4de3c82ad24c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
