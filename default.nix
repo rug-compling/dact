@@ -1,16 +1,14 @@
 {
   pkgs ? import <nixpkgs> {}
+, alpinocorpus ? pkgs.callPackage (import nix/sources.nix).alpinocorpus {}
 }:
 
 with pkgs;
 
-let
-  sources = import nix/sources.nix;
-  alpinocorpus = callPackage sources.alpinocorpus {};
-in qt5.mkDerivation {
+qt5.mkDerivation {
   name = "dact";
 
-  src = nix-gitignore.gitignoreSource [] ./.; 
+  src = nix-gitignore.gitignoreSource [ ".git" "*.nix" "flake.lock" ] ./.;
 
   nativeBuildInputs = [
     git
