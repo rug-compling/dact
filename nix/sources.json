@@ -10,5 +10,17 @@
         "type": "tarball",
         "url": "https://github.com/rug-compling/alpinocorpus/archive/d885911da61d3b0922704995bb0f4de3c82ad24c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nix-bundle": {
+        "branch": "master",
+        "description": "Bundle Nix derivations to run anywhere!",
+        "homepage": "",
+        "owner": "matthewbauer",
+        "repo": "nix-bundle",
+        "rev": "f7417243f7678a23db19589469e10cf67800b391",
+        "sha256": "1537haalw8a8mh7s8sdpgiaab7pq11ngcgrns2k4lzk1qm1gvima",
+        "type": "tarball",
+        "url": "https://github.com/matthewbauer/nix-bundle/archive/f7417243f7678a23db19589469e10cf67800b391.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
