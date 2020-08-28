@@ -1,0 +1,44 @@
+name: "Test"
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  tests:
+    strategy:
+      matrix:
+        channel:
+          - "https://nixos.org/channels/nixos-unstable"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get release version
+      run: echo ::set-env name=TAG_NAME::$(echo ${GITHUB_REF:10})
+    - uses: cachix/install-nix-action@v10
+    - run: nix-channel --add ${{ matrix.channel }} nixpkgs
+    - run: nix-channel --update
+    - name: Build AppImage
+      run: nix-build appimage.nix
+    - name: Rename AppImage
+      id: rename_appimage
+      run: |
+        APPIMAGE=Dact-${TAG_NAME}-x86_64.AppImage
+        cp result/Dact-x86_64.AppImage ${APPIMAGE}
+        echo ::set-output name=ASSET::$APPIMAGE
+    - uses: actions/create-release@v1.0.0
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+    - uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.rename_appimage.outputs.ASSET }}
+        asset_name: ${{ steps.rename_appimage.outputs.ASSET }}
+        asset_content_type: application/octet-stream
