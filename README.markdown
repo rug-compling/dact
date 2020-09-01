@@ -16,21 +16,58 @@ Make sure that you have the following dependencies installed before building Dac
  * Meson
  * Qt 5
 
-If you want to build the current stable/release version of Dact, check out the
-*release* branch first. Then build Dact with:
+### Build against system packages
+
+If Xerces-C and XQilla are installed as a system package, Dact can be
+built as follows:
 
 ```bash
 $ meson builddir
-$ cd builddir
-$ meson compile
-# If you want to install the Dact:
-$ meson install
+$ ninja -C builddir
+# If you want to install dact:
+$ ninja -C builddir install
 ```
+
+### Build against DB XML bundle
+
+If Berkeley DB XML, XQilla, Xerces-C, and Berkeley DB are installed as
+a bundle using the upstream Berkeley DB XML distribution, there are
+two options for building Dact.
+
+Assuming that the DB XML bundle is installed in `/opt/dbxml`, the
+first option is to build Dact as follows:
+
+```bash
+$ meson builddir -D dbxml_bundle=/opt/dbxml
+$ ninja -C builddir
+# If you want to install the library:
+$ ninja -C builddir install
+```
+
+This embeds the DB, Xerces-C, XQilla, and DB XML library paths in the
+Dact binary. This will allow you to use Dact without further ado.
+
+The second option is to instead define some variables before building
+to point Meson to the headers and libraries:
+
+```bash
+$ export LD_LIBRARY_PATH=/opt/dbxml/lib
+$ export LIBRARY_PATH=/opt/dbxml/lib
+$ export CPATH=/opt/dbxml/include
+$ meson builddir
+$ ninja -C builddir
+# If you want to install the library:
+$ ninja -C builddir install
+```
+
+This does not embed the DB XML library paths into the Dact binary.
+Consequently, `LD_LIBRARY_PATH` should always be set when using Dact
+(`LIBRARY_PATH` and `CPATH` only have to be set at build time).
 
 ## License
 
 ~~~
-Copyright 2010-2015 Daniël de Kok
+Copyright 2010-2020 Daniël de Kok
 Copyright 2010-2012 University of Groningen
 
 This library is free software; you can redistribute it and/or

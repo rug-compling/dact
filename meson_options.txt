@@ -1,0 +1,2 @@
+option('dbxml_bundle', type: 'string', value: 'system',
+  description: 'DB XML bundle installation directory')
