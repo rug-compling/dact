@@ -352,7 +352,7 @@ void FilterModel::getEntries(EntryIterator const &i, bool bracketedSentences)
                 ++row;
 
                 QMutexLocker locker(&d_resultsMutex);
-                d_results.append(Entry(name, 1, QString::null));
+                d_results.append(Entry(name, 1, QString()));
 
                 if (bracketedSentences)
                 {

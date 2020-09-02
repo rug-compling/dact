@@ -218,7 +218,7 @@ void QueryModel::mapperEntryFound(QString entry)
         HitsCompare compare(*this);
         
         // find new position, just above the result with less hits.
-        QList<int>::iterator insertPos = qLowerBound(
+        QList<int>::iterator insertPos = std::lower_bound(
             d_hitsIndex.begin(), d_hitsIndex.end(), idx, compare);
         
         // insert at new position
@@ -233,7 +233,7 @@ void QueryModel::mapperEntryFound(QString entry)
         // Find the current position to remove
         
         // Binary search: does not work? Why not? :(
-        QList<int>::iterator current_pos = qBinaryFind(
+        QList<int>::iterator current_pos = std::lower_bound(
             d_hitsIndex.begin(), d_hitsIndex.end(), idx,
             compare);
         
@@ -248,7 +248,7 @@ void QueryModel::mapperEntryFound(QString entry)
         d_results[idx].second = hits + 1;
         
         // find new position, just above the result with less hits.
-        QList<int>::iterator insertPos = qLowerBound(
+        QList<int>::iterator insertPos = std::lower_bound(
             d_hitsIndex.begin(), d_hitsIndex.end(), idx, compare);
         
         // insert at new position
