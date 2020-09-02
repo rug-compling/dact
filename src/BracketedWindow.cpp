@@ -422,7 +422,6 @@ void BracketedWindow::saveAs()
 
     QFileDialog fd(this, tr("Save"), QString(), tr("Text (*.txt);;HTML (*.html *.htm)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
-    fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
     if (d_lastfilterchoice.size())
         fd.selectNameFilter(d_lastfilterchoice);

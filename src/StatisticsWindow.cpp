@@ -154,7 +154,6 @@ void StatisticsWindow::saveAs()
 
     QFileDialog fd(this, tr("Save"), QString("untitled"), tr("Microsoft Excel 2003 XML (*.xls);;Text (*.txt);;HTML (*.html *.htm);;CSV (*.csv)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
-    fd.setConfirmOverwrite(true);
     fd.setLabelText(QFileDialog::Accept, tr("Save"));
     if (d_lastFilterChoice.size())
         fd.selectNameFilter(d_lastFilterChoice);

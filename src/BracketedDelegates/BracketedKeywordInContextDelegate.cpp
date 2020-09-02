@@ -118,7 +118,7 @@ void BracketedKeywordInContextDelegate::paint(QPainter *painter, const QStyleOpt
                         word += " ";
                 }
 
-                wordBox.setWidth(option.fontMetrics.width(word));
+                wordBox.setWidth(option.fontMetrics.horizontalAdvance(word));
                 wordBox.setHeight(fontHeight);
 
                 if (depth == 0 || lexItems[j].matches.count(*matchIter) == 0)

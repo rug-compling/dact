@@ -85,7 +85,7 @@ void BracketedColorDelegate::paint(QPainter *painter, const QStyleOptionViewItem
                     word += " ";
             }
 
-            wordBox.setWidth(option.fontMetrics.width(word));
+            wordBox.setWidth(option.fontMetrics.horizontalAdvance(word));
         
             if (depth != prevDepth) {
                 if (depth == 0)
