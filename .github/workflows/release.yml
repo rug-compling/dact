@@ -5,24 +5,18 @@ on:
       - '*'
 jobs:
   tests:
-    strategy:
-      matrix:
-        channel:
-          - "https://nixos.org/channels/nixos-unstable"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Get release version
-      run: echo ::set-env name=TAG_NAME::$(echo ${GITHUB_REF:10})
-    - uses: cachix/install-nix-action@v10
-    - run: nix-channel --add ${{ matrix.channel }} nixpkgs
-    - run: nix-channel --update
+      run: echo "tag_name=${GITHUB_REF:10}" >> $GITHUB_ENV
+    - uses: cachix/install-nix-action@v12
     - name: Build AppImage
       run: nix-build appimage.nix
     - name: Rename AppImage
       id: rename_appimage
       run: |
-        APPIMAGE=Dact-${TAG_NAME}-x86_64.AppImage
+        APPIMAGE=Dact-${tag_name}-x86_64.AppImage
         cp result/Dact-x86_64.AppImage ${APPIMAGE}
         echo ::set-output name=ASSET::$APPIMAGE
     - uses: actions/create-release@v1.0.0
