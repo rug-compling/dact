@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v10
+    - uses: cachix/install-nix-action@v13
     - run: nix-channel --add ${{ matrix.channel }} nixpkgs
     - run: nix-channel --update
     - run: nix-build
