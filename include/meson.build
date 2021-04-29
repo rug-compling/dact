@@ -1,7 +1,9 @@
-vcs_tag(
-  command: ['git', 'log', '--pretty=format:%ad (commit: %h)', '--date=iso', '-n 1'],
-  input: 'config.hh.in',
-  output: 'config.hh'
+config_hh = declare_dependency(
+  sources: vcs_tag(
+    command: ['git', 'log', '--pretty=format:%ad (commit: %h)', '--date=iso', '-n 1'],
+    input: 'config.hh.in',
+    output: 'config.hh'
+  )
 )
 
 inc = include_directories('.')
@@ -54,4 +56,7 @@ moc_files = qt5.preprocess(
     'XPathValidator.hh',
   ],
   include_directories: inc,
-  dependencies: qt5_dep)
+  dependencies: [
+    config_hh,
+    qt5_dep
+  ])
