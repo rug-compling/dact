@@ -68,6 +68,7 @@ executable('dact',
   install: true,
   dependencies: [
     alpinocorpus_dep,
+    config_hh,
     libexslt_dep,
     libxml_dep,
     libxslt_dep,
