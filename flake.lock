@@ -1,0 +1,67 @@
+{
+  "nodes": {
+    "alpinocorpus": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "utils": [
+          "utils"
+        ]
+      },
+      "locked": {
+        "lastModified": 1619950572,
+        "narHash": "sha256-xkD1ScksZBMIDoYoJtwcFfh0WQiRCRGzysucwX7BFRg=",
+        "owner": "rug-compling",
+        "repo": "alpinocorpus",
+        "rev": "a224dbc1dc83c4bfc01cce6a2ee1004081ec9464",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rug-compling",
+        "repo": "alpinocorpus",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1619893517,
+        "narHash": "sha256-lB4LCA2LAHMgq6LXOE4iBItXadscTrorOn1GlD2YLkQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "2685792d396d82cec5f68e33719055f862991179",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "release-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "alpinocorpus": "alpinocorpus",
+        "nixpkgs": "nixpkgs",
+        "utils": "utils"
+      }
+    },
+    "utils": {
+      "locked": {
+        "lastModified": 1619345332,
+        "narHash": "sha256-qHnQkEp1uklKTpx3MvKtY6xzgcqXDsz5nLilbbuL+3A=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "2ebf2558e5bf978c7fb8ea927dfaed8fefab2e28",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

@@ -1,9 +1,7 @@
-with import <nixpkgs> {};
-
-let
-  dact = callPackage ./default.nix {};
-in mkShell {
-  inherit (dact) nativeBuildInputs buildInputs;
-
-  QT_PLUGIN_PATH = "${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix}";
-}
+(import (
+  fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/99f1c2157fba4bfe6211a321fd0ee43199025dbf.tar.gz";
+    sha256 = "0x2jn3vrawwv9xp15674wjz9pixwjyj3j771izayl962zziivbx2"; }
+) {
+  src =  ./.;
+}).shellNix

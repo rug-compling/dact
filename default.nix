@@ -1,30 +1,7 @@
-{
-  pkgs ? import <nixpkgs> {}
-, alpinocorpus ? pkgs.callPackage (import nix/sources.nix).alpinocorpus {}
-}:
-
-with pkgs;
-
-qt5.mkDerivation {
-  name = "dact";
-
-  src = nix-gitignore.gitignoreSource [ ".git" "*.nix" "flake.lock" ] ./.;
-
-  nativeBuildInputs = [
-    git
-    meson
-    ninja
-    pkgconfig
-  ];
-
-  buildInputs = [
-    alpinocorpus
-    boost
-    libxml2
-    libxslt
-    qt5.qtbase
-    xercesc
-    xqilla
-    zlib
-  ];
-} 
+(import (
+  fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/99f1c2157fba4bfe6211a321fd0ee43199025dbf.tar.gz";
+    sha256 = "0x2jn3vrawwv9xp15674wjz9pixwjyj3j771izayl962zziivbx2"; }
+) {
+  src =  ./.;
+}).defaultNix
