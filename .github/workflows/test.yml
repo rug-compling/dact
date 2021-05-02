@@ -6,15 +6,8 @@ on:
       - '*'
 jobs:
   tests:
-    strategy:
-      matrix:
-        channel:
-          - "nixos-20.03"
-          - "nixos-unstable"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v13
-      with:
-        nix_path: nixpkgs=channel:${{ matrix.channel }}
     - run: nix-build
