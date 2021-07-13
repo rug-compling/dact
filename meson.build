@@ -4,6 +4,12 @@ project('dact', 'cpp',
 
 cpp = meson.get_compiler('cpp')
 
+if host_machine.system() == 'darwin'
+  add_languages('objcpp')
+  add_global_arguments('-std=c++11', language : 'objcpp')
+  appkit = dependency('appleframeworks', modules : 'appkit')
+endif
+
 alpinocorpus_dep = dependency('alpinocorpus')
 libexslt_dep = dependency('libexslt')
 libxml_dep = dependency('libxml-2.0')

@@ -59,6 +59,27 @@ dact_sources = [
   'validityColor.cpp',
 ]
 
+dact_deps = [
+  alpinocorpus_dep,
+  config_hh,
+  libexslt_dep,
+  libxml_dep,
+  libxslt_dep,
+  qt5_dep,
+  xercesc_dep,
+  xqilla_dep,
+  zlib_dep
+]
+
+if host_machine.system() == 'darwin'
+  dact_sources += [
+    'AppleUtils.mm'
+  ]
+  dact_deps += [
+    appkit
+  ]
+endif
+
 executable('dact',
   dact_sources,
   moc_files,
@@ -66,14 +87,5 @@ executable('dact',
   ui_files,
   include_directories: inc,
   install: true,
-  dependencies: [
-    alpinocorpus_dep,
-    config_hh,
-    libexslt_dep,
-    libxml_dep,
-    libxslt_dep,
-    qt5_dep,
-    xercesc_dep,
-    xqilla_dep,
-    zlib_dep
-  ])
+  dependencies: dact_deps,
+)
