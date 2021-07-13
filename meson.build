@@ -11,7 +11,7 @@ libxslt_dep = dependency('libxslt')
 zlib_dep = dependency('zlib')
 
 qt5 = import('qt5')
-qt5_dep = dependency('qt5', modules: ['Concurrent', 'Core', 'Network', 'PrintSupport', 'Widgets'])
+qt5_dep = dependency('qt5', modules: ['Concurrent', 'Core', 'Gui', 'Network', 'PrintSupport', 'Widgets'])
 
 dbxml_bundle = get_option('dbxml_bundle')
 if dbxml_bundle == 'system'
