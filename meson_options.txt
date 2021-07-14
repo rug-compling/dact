@@ -1,2 +1,5 @@
 option('dbxml_bundle', type: 'string', value: 'system',
   description: 'DB XML bundle installation directory')
+
+option('signing_key', type: 'string', value: '-',
+  description: 'Signing key for macOS app bundle')

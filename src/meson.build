@@ -71,7 +71,7 @@ dact_deps = [
   zlib_dep
 ]
 
-if host_machine.system() == 'darwin'
+if is_darwin
   dact_sources += [
     'AppleUtils.mm'
   ]
