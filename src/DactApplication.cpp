@@ -198,7 +198,7 @@ void DactApplication::init()
 
 void DactApplication::openCookbook()
 {
-    static QUrl const cookbook("http://rug-compling.github.com/dact/manual/cookbook.xhtml");
+    static QUrl const cookbook("http://rug-compling.github.io/dact/manual/cookbook.xhtml");
     QDesktopServices::openUrl(cookbook);
 }
 
@@ -238,7 +238,7 @@ void DactApplication::_openCorpora(QStringList const &fileNames)
 
 void DactApplication::openHelp()
 {
-    static QUrl const usage("http://rug-compling.github.com/dact/manual/");
+    static QUrl const usage("http://rug-compling.github.io/dact/manual/");
     QDesktopServices::openUrl(usage);
 }
 
