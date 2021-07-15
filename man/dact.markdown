@@ -33,5 +33,5 @@ SEE ALSO
 
 For more information, please refer to these online resources:
 
- * Manual: http://rug-compling.github.com/dact/manual/
- * Cookbook: http://rug-compling.github.com/dact/cookbook/
+ * Manual: http://rug-compling.github.io/dact/manual/
+ * Cookbook: http://rug-compling.github.io/dact/cookbook/

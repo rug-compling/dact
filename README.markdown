@@ -6,7 +6,7 @@ Dact is a tool for viewing and analyzing treebanks generated and used by the
 [Alpino parser](http://www.let.rug.nl/~vannoord/alp/Alpino/). There is also
 experimental support for the TüBa-D/Z treebank of written German.
 
-See the [Dact homepage](http://rug-compling.github.com/dact/) for more information.
+See the [Dact homepage](http://rug-compling.github.io/dact/) for more information.
 
 ## Building
 
