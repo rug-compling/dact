@@ -1,2 +1,8 @@
 option('dbxml_bundle', type: 'string', value: 'system',
   description: 'DB XML bundle installation directory')
+
+option('signing_key', type: 'string', value: '-',
+  description: 'Signing key for macOS app bundle')
+
+option('use_sandboxing', type: 'boolean', value: false,
+  description: 'Use application sandboxing on macOS')

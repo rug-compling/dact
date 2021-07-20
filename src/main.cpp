@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     int r = 0;
 
     try {
-#if defined(ENABLE_SANDBOXING)
+#if defined(USE_SANDBOXING)
         // Use different identifier for sandboxed version to avoid clashes
         // between application state (e.g. recent files).
         QCoreApplication::setOrganizationName("danieldk");

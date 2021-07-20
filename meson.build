@@ -4,10 +4,14 @@ project('dact', 'cpp',
 
 cpp = meson.get_compiler('cpp')
 
-if host_machine.system() == 'darwin'
+is_darwin = host_machine.system() == 'darwin'
+
+if is_darwin
   add_languages('objcpp')
   add_global_arguments('-std=c++11', language : 'objcpp')
   appkit = dependency('appleframeworks', modules : 'appkit')
+
+  use_sandboxing = get_option('use_sandboxing')
 endif
 
 alpinocorpus_dep = dependency('alpinocorpus')
