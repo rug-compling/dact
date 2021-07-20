@@ -1,3 +1,5 @@
+extra_cpp_args = []
+
 dact_sources = [
   'AboutWindow.cpp',
   'ArchiveModel.cpp',
@@ -71,13 +73,19 @@ dact_deps = [
   zlib_dep
 ]
 
-if host_machine.system() == 'darwin'
+if is_darwin
   dact_sources += [
     'AppleUtils.mm'
   ]
   dact_deps += [
     appkit
   ]
+
+  if use_sandboxing
+    extra_cpp_args += [
+      '-DUSE_SANDBOXING'
+    ]
+  endif
 endif
 
 executable('dact',
@@ -88,4 +96,5 @@ executable('dact',
   include_directories: inc,
   install: true,
   dependencies: dact_deps,
+  cpp_args: extra_cpp_args,
 )

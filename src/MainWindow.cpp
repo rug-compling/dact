@@ -33,7 +33,7 @@
 
 #include <config.hh>
 
-#if defined(ENABLE_SANDBOXING) 
+#if defined(USE_SANDBOXING)
 #include <QTemporaryFile>
 #endif
 
@@ -741,7 +741,7 @@ bool MainWindow::writeCorpus(QString const &filename,
     QSharedPointer<ac::CorpusReader> corpusReader,
     QList<QString> const &files)
 {
-#if defined(ENABLE_SANDBOXING) 
+#if defined(USE_SANDBOXING)
     QTemporaryFile tmpFile;
     // Ensure the temp file name is created.
     tmpFile.open();
@@ -750,7 +750,7 @@ bool MainWindow::writeCorpus(QString const &filename,
     QString const writeTarget = tmpFile.fileName();
 #else
     QString const writeTarget = filename;
-#endif // defined(ENABLE_SANDBOXING)
+#endif // defined(USE_SANDBOXING)
 
 
     try {
@@ -781,7 +781,7 @@ bool MainWindow::writeCorpus(QString const &filename,
         return false;
     }
 
-#if defined(ENABLE_SANDBOXING)
+#if defined(USE_SANDBOXING)
     bool failed = false;
     QFile::remove(filename);
     if (!QFile::rename(writeTarget, filename))

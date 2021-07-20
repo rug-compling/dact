@@ -50,14 +50,14 @@ DactMenuBar::DactMenuBar(QWidget *parent, bool global) :
     connect(d_ui->menuRecentFiles, SIGNAL(fileSelected(QString)),
         qApp, SLOT(openCorpus(QString)));
 
-#ifdef ENABLE_SANDBOXING
+#ifdef USE_SANDBOXING
     d_ui->menuTools->removeAction(d_ui->convertCorpusMenu->menuAction());
 #else
     connect(d_ui->convertCompactCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertCompactCorpus()));
     connect(d_ui->convertDirectoryCorpusAction, SIGNAL(triggered()),
         qApp, SLOT(convertDirectoryCorpus()));
-#endif // ENABLE_SANDBOXING
+#endif // USE_SANDBOXING
 
 #ifdef USE_WEBSERVICE
     connect(d_ui->webserviceAction, SIGNAL(triggered()),
