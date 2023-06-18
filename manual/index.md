@@ -31,7 +31,7 @@ On Windows XP, Vista, and 7, you can start Dact by clicking on the
 Vista, 7, and 8, you can press the Windows key and type *dact*. Dact
 should appear in the list of programs, where you can select it.
 
-### Mac OS X
+### macOS
 
 Dact is provided as a disk image. Click the on the disk image in your
 browser or double click on the disk image in Finder to open it. Then
@@ -48,46 +48,8 @@ Dact can also be installed with [Homebrew](http://brew.sh/):
 
 ### Linux
 
-Dact for Linux is distributed as a [Flatpak](https://flatpak.org/).
-Flatpak is a distribution-independent software distribution format.
-As a bonus, most Flatpak applications (including Dact) are sandboxed.
-
-Some distributions (such as Fedora) include Flatpak by default. On
-other distributions, including Ubuntu, you have to
-[install Flatpak](https://flatpak.org/setup/). Once Flatpak is available,
-you can install Dact with the following commands:
-
-~~~
-# Ensure that the Flathub repos available
-flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# Add the Dact flatpak repo.
-flatpak remote-add --user dact https://flatpak.danieldk.eu/dact.flatpakrepo
-
-# Install Dact.
-flatpak install --user dact eu.danieldk.Dact//stable
-~~~
-
-After the installation, Dact is immediately available in any XDG-compliant
-desktop environment (GNOME, KDE, etc.). For instance, to start Dact in GNOME,
-press the *Super* (Windows) key to bring up GNOME's search interface,
-type *dact*, and press *Return*.
-
-You can update Dact using Flatpak as well:
-
-~~~
-flatpak update
-
-# Or for Flatpak versions older than 0.10.2:
-flatpak update --user
-~~~
-
-It is also possible to install a development version of Dact:
-
-~~~
-flatpak remote-add --user dact https://flatpak.danieldk.eu/dact.flatpakrepo
-flatpak install --user dact eu.danieldk.Dact//master
-~~~
+No up-to-date precompiled Linux packages are available. The recommended
+installation method is compiling Dact from source.
 
 ## Getting started
 
